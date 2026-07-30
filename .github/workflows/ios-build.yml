@@ -1,0 +1,378 @@
+name: iOS build
+
+on:
+  workflow_dispatch:
+    inputs:
+      bootstrap_signing:
+        description: "One-time only: allow match to create and push signing assets"
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches: [main]
+
+concurrency:
+  group: ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 1: Simulator build (always runs — fast sanity check, no secrets needed)
+  # ─────────────────────────────────────────────────────────────────────────────
+  simulator:
+    name: Build – Simulator (unsigned)
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - name: Show macOS / Xcode info
+        run: |
+          sw_vers
+          xcodebuild -version
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install JS dependencies
+        run: npm install
+
+      - name: Capacitor sync
+        run: |
+          n=0
+          until [ $n -ge 5 ]; do
+            npx cap sync ios && exit 0
+            n=$((n+1)); echo "cap sync failed (attempt $n) — retrying in 20s..."; sleep 20
+          done
+          echo "cap sync failed after retries"; exit 1
+
+      - name: Restore custom plugins and purge legacy alternate icons
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # cap sync rewrites project.pbxproj and strips manually-added native files.
+          # Restore only the two custom plugins that actually exist.
+          test -f ios/App/App/CameraOvalPlugin.swift || { echo "ERROR: CameraOvalPlugin.swift missing"; exit 1; }
+          test -f ios/App/App/CameraOvalPlugin.m || { echo "ERROR: CameraOvalPlugin.m missing"; exit 1; }
+          test -f ios/App/App/ScreenshotPlugin.swift || { echo "ERROR: ScreenshotPlugin.swift missing"; exit 1; }
+          test -f ios/App/App/ScreenshotPlugin.m || { echo "ERROR: ScreenshotPlugin.m missing"; exit 1; }
+          python3 ios/App/scripts/restore_plugins_pbxproj.py
+
+          # Some older copies of restore_plugins_pbxproj.py re-add AppIconPlugin
+          # and AltIcons. Purge them AFTER the restore, so this workflow remains
+          # safe even if an old script was accidentally committed.
+          python3 - <<'PY_PURGE'
+          from pathlib import Path
+          import re
+
+          pbx = Path("ios/App/App.xcodeproj/project.pbxproj")
+          text = pbx.read_text(encoding="utf-8")
+          lines = text.splitlines(keepends=True)
+
+          markers = (
+              "AltIcons",
+              "AppIconPlugin",
+              "AppIcon-Day",
+              "AppIcon-Streak",
+          )
+          id_re = re.compile(r"\b[A-F0-9]{24}\b")
+
+          # Collect every PBX UUID associated with legacy alternate icons.
+          legacy_ids = set()
+          for line in lines:
+              if any(marker in line for marker in markers):
+                  legacy_ids.update(id_re.findall(line))
+
+          # Remove matching definitions and every child/build-phase reference.
+          removed = 0
+          while True:
+              kept = []
+              discovered = set()
+              pass_removed = 0
+              for line in lines:
+                  is_legacy = any(marker in line for marker in markers)
+                  references_legacy_id = any(object_id in line for object_id in legacy_ids)
+                  if is_legacy or references_legacy_id:
+                      discovered.update(id_re.findall(line))
+                      pass_removed += 1
+                      continue
+                  kept.append(line)
+
+              removed += pass_removed
+              new_ids = discovered - legacy_ids
+              lines = kept
+              if not new_ids:
+                  break
+              legacy_ids.update(new_ids)
+
+          pbx.write_text("".join(lines), encoding="utf-8")
+          print(f"Legacy alternate-icon cleanup: removed {removed} pbxproj line(s)")
+
+          remaining = [
+              (index, line.rstrip())
+              for index, line in enumerate(lines, start=1)
+              if any(marker in line for marker in markers)
+          ]
+          if remaining:
+              for index, line in remaining:
+                  print(f"{index}:{line}")
+              raise SystemExit("ERROR: stale alternate-icon references remain")
+          PY_PURGE
+
+          # These obsolete native files are not part of the current app.
+          rm -rf ios/App/App/AltIcons
+          rm -f ios/App/App/AppIconPlugin.swift ios/App/App/AppIconPlugin.m
+
+          PBX="ios/App/App.xcodeproj/project.pbxproj"
+          if grep -En "AltIcons|AppIconPlugin|AppIcon-(Day|Streak)" "$PBX"; then
+            echo "ERROR: stale alternate-icon references remain in project.pbxproj"
+            exit 1
+          fi
+
+          # Confirm the real custom plugins survived the cleanup.
+          for plugin in CameraOvalPlugin ScreenshotPlugin; do
+            count=$(grep -c "$plugin" "$PBX" || true)
+            echo "$plugin: $count references"
+            test "$count" -ge 4 || { echo "ERROR: $plugin is not fully registered"; exit 1; }
+          done
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: false
+
+      - name: Install CocoaPods
+        run: gem install cocoapods -v 1.16.2 --no-document
+
+      - name: Pod install
+        working-directory: ios/App
+        run: |
+          n=0
+          until [ $n -ge 5 ]; do
+            pod install --repo-update && exit 0
+            n=$((n+1)); echo "pod install failed (attempt $n) — retrying in 20s..."; sleep 20
+          done
+          echo "pod install failed after retries"; exit 1
+
+      - name: Show installed RC pod version
+        working-directory: ios/App
+        run: grep -A1 "RevenuecatPurchasesCapacitor" Podfile.lock | head -4
+
+      - name: Build (simulator, unsigned)
+        working-directory: ios/App
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build | xcpretty || true
+
+      - name: Verify .app exists
+        working-directory: ios/App
+        run: test -d build/Build/Products/Debug-iphonesimulator/App.app
+
+      - name: Upload simulator artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FaceMaxAI-simulator-${{ github.sha }}
+          path: ios/App/build/Build/Products/Debug-iphonesimulator/App.app
+          if-no-files-found: error
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 2: App Store build — signed .ipa → uploaded to TestFlight
+  #
+  # Required GitHub Secrets:
+  #   APPLE_TEAM_ID                      — e.g. "ABC123DEF4"
+  #   APP_STORE_CONNECT_KEY_ID           — e.g. "ABCD123456"
+  #   APP_STORE_CONNECT_ISSUER_ID        — UUID from App Store Connect
+  #   APP_STORE_CONNECT_API_KEY_CONTENT  — RAW .p8 key content (NOT base64!)
+  #                                        Copy everything from the .p8 file
+  #                                        including -----BEGIN/END----- lines
+  #   MATCH_GIT_BASIC_AUTHORIZATION      — base64("github_username:personal_access_token")
+  #   MATCH_PASSWORD                     — password used to encrypt match certs
+  # ─────────────────────────────────────────────────────────────────────────────
+  appstore:
+    name: Build – App Store .ipa + TestFlight upload
+    runs-on: macos-26
+    timeout-minutes: 90
+    if: github.ref == 'refs/heads/main'
+    needs: simulator
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install JS dependencies
+        run: npm install
+
+      - name: Capacitor sync
+        run: |
+          n=0
+          until [ $n -ge 5 ]; do
+            npx cap sync ios && exit 0
+            n=$((n+1)); echo "cap sync failed (attempt $n) — retrying in 20s..."; sleep 20
+          done
+          echo "cap sync failed after retries"; exit 1
+
+      - name: Restore custom plugins and purge legacy alternate icons
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # cap sync rewrites project.pbxproj and strips manually-added native files.
+          # Restore only the two custom plugins that actually exist.
+          test -f ios/App/App/CameraOvalPlugin.swift || { echo "ERROR: CameraOvalPlugin.swift missing"; exit 1; }
+          test -f ios/App/App/CameraOvalPlugin.m || { echo "ERROR: CameraOvalPlugin.m missing"; exit 1; }
+          test -f ios/App/App/ScreenshotPlugin.swift || { echo "ERROR: ScreenshotPlugin.swift missing"; exit 1; }
+          test -f ios/App/App/ScreenshotPlugin.m || { echo "ERROR: ScreenshotPlugin.m missing"; exit 1; }
+          python3 ios/App/scripts/restore_plugins_pbxproj.py
+
+          # Some older copies of restore_plugins_pbxproj.py re-add AppIconPlugin
+          # and AltIcons. Purge them AFTER the restore, so this workflow remains
+          # safe even if an old script was accidentally committed.
+          python3 - <<'PY_PURGE'
+          from pathlib import Path
+          import re
+
+          pbx = Path("ios/App/App.xcodeproj/project.pbxproj")
+          text = pbx.read_text(encoding="utf-8")
+          lines = text.splitlines(keepends=True)
+
+          markers = (
+              "AltIcons",
+              "AppIconPlugin",
+              "AppIcon-Day",
+              "AppIcon-Streak",
+          )
+          id_re = re.compile(r"\b[A-F0-9]{24}\b")
+
+          # Collect every PBX UUID associated with legacy alternate icons.
+          legacy_ids = set()
+          for line in lines:
+              if any(marker in line for marker in markers):
+                  legacy_ids.update(id_re.findall(line))
+
+          # Remove matching definitions and every child/build-phase reference.
+          removed = 0
+          while True:
+              kept = []
+              discovered = set()
+              pass_removed = 0
+              for line in lines:
+                  is_legacy = any(marker in line for marker in markers)
+                  references_legacy_id = any(object_id in line for object_id in legacy_ids)
+                  if is_legacy or references_legacy_id:
+                      discovered.update(id_re.findall(line))
+                      pass_removed += 1
+                      continue
+                  kept.append(line)
+
+              removed += pass_removed
+              new_ids = discovered - legacy_ids
+              lines = kept
+              if not new_ids:
+                  break
+              legacy_ids.update(new_ids)
+
+          pbx.write_text("".join(lines), encoding="utf-8")
+          print(f"Legacy alternate-icon cleanup: removed {removed} pbxproj line(s)")
+
+          remaining = [
+              (index, line.rstrip())
+              for index, line in enumerate(lines, start=1)
+              if any(marker in line for marker in markers)
+          ]
+          if remaining:
+              for index, line in remaining:
+                  print(f"{index}:{line}")
+              raise SystemExit("ERROR: stale alternate-icon references remain")
+          PY_PURGE
+
+          # These obsolete native files are not part of the current app.
+          rm -rf ios/App/App/AltIcons
+          rm -f ios/App/App/AppIconPlugin.swift ios/App/App/AppIconPlugin.m
+
+          PBX="ios/App/App.xcodeproj/project.pbxproj"
+          if grep -En "AltIcons|AppIconPlugin|AppIcon-(Day|Streak)" "$PBX"; then
+            echo "ERROR: stale alternate-icon references remain in project.pbxproj"
+            exit 1
+          fi
+
+          # Confirm the real custom plugins survived the cleanup.
+          for plugin in CameraOvalPlugin ScreenshotPlugin; do
+            count=$(grep -c "$plugin" "$PBX" || true)
+            echo "$plugin: $count references"
+            test "$count" -ge 4 || { echo "ERROR: $plugin is not fully registered"; exit 1; }
+          done
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: false
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: ios/App/Pods
+          key: pods-${{ hashFiles('ios/App/Podfile.lock', 'package.json') }}
+          restore-keys: pods-
+
+      - name: Install CocoaPods
+        run: gem install cocoapods -v 1.16.2 --no-document
+
+      - name: Pod install
+        working-directory: ios/App
+        run: |
+          n=0
+          until [ $n -ge 5 ]; do
+            pod install && exit 0
+            n=$((n+1)); echo "pod install failed (attempt $n) — retrying in 20s..."; sleep 20
+          done
+          echo "pod install failed after retries"; exit 1
+
+      - name: Show installed RC pod version
+        working-directory: ios/App
+        run: grep -A1 "RevenuecatPurchasesCapacitor" Podfile.lock | head -4
+
+      - name: Upload Podfile.lock
+        uses: actions/upload-artifact@v4
+        with:
+          name: Podfile.lock
+          path: ios/App/Podfile.lock
+          retention-days: 7
+
+      - name: Install Fastlane via Bundler
+        working-directory: ios/App
+        run: bundle install
+
+      # ── Fastlane beta lane (match + build + upload) ──────────────────────────
+
+      - name: Run Fastlane beta
+        working-directory: ios/App
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          FACEMAX_MATCH_BOOTSTRAP: ${{ inputs.bootstrap_signing && '1' || '0' }}
+          MATCH_GIT_URL: https://github.com/maks200r1-png/facemax-ai-cert.git
+          MATCH_GIT_BRANCH: main
+          APP_MARKETING_VERSION: "1.6"
+        run: |
+          bundle exec fastlane beta
