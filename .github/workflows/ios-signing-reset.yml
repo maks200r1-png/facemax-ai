@@ -1,0 +1,64 @@
+name: Reset iOS signing
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type DELETE_AND_RECREATE to revoke and rebuild App Store signing"
+        required: true
+        type: string
+
+concurrency:
+  group: ios-signing-reset
+  cancel-in-progress: false
+
+jobs:
+  reset-signing:
+    name: Revoke and recreate App Store signing
+    if: ${{ inputs.confirm == 'DELETE_AND_RECREATE' }}
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: false
+
+      - name: Install Fastlane bundle
+        working-directory: ios/App
+        run: bundle install
+
+      - name: Validate required secrets
+        shell: bash
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for name in APPLE_TEAM_ID APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_API_KEY_CONTENT MATCH_GIT_BASIC_AUTHORIZATION MATCH_PASSWORD; do
+            test -n "${!name:-}" || { echo "ERROR: missing GitHub secret $name"; exit 1; }
+          done
+
+      - name: Revoke and recreate signing assets
+        working-directory: ios/App
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: https://github.com/maks200r1-png/facemax-ai-cert.git
+          MATCH_GIT_BRANCH: main
+          FACEMAX_SIGNING_RESET_CONFIRM: ${{ inputs.confirm }}
+        run: bundle exec fastlane reset_appstore_signing
