@@ -1,0 +1,19 @@
+FaceMax AI — AI-only audit results
+Date: 2026-07-23
+
+PASS: Worker JavaScript syntax
+PASS: all inline JavaScript extracted from web/index.html parses
+PASS: web build
+PASS: web/index.html and ios/App/App/public/index.html are byte-identical
+PASS: existing subscription restore/expiry/webhook/server-gate/3-plan paywall audit
+PASS: AI endpoints fail closed when OPENROUTER_API_KEY is missing
+PASS: AI endpoints reject malformed model output
+PASS: invalid output is not written to Meal Plan or Report KV records
+PASS: valid AI output is accepted only with source=openrouter
+PASS: safe vegan plan may mention chicken only in its avoid section
+PASS: vegan plan recommending chicken is rejected and not saved
+PASS: legacy static AI-plan/advice constants are absent
+PASS: .github directory is byte-identical to the input project
+
+Live OpenRouter/Cloudflare production calls were not performed in this local test.
+Model responses were mocked to test success, failure, malformed JSON, caching, and dietary-restriction behavior deterministically.

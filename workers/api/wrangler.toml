@@ -1,0 +1,45 @@
+name = "facemax-api"
+main = "src/worker.js"
+compatibility_date = "2026-05-15"
+
+# Apple bundle identifier; the worker uses this to validate StoreKit JWS
+# payloads on /api/apple-receipt-verify. Override via the dashboard if you
+# change the bundle ID.
+[vars]
+APPLE_BUNDLE_ID = "ai.facemax.app"
+# Public iOS SDK key; safe to ship and valid for read-only GET /v1/subscribers.
+REVENUECAT_PUBLIC_API_KEY = "appl_najSElZgKcUrHaOrJuCQfcFbXpg"
+
+# Premium subscription state (mirrors what RevenueCat webhooks set).
+[[kv_namespaces]]
+binding = "PREMIUM_KV"
+id = "c2d93ef4414440988ba881feb8c0a81b"
+
+# ---------------------------------------------------------------------------
+# Secrets (set via `wrangler secret put NAME` or the Cloudflare dashboard):
+#
+#   OPENROUTER_API_KEY      - OpenRouter API key (all AI flows: face report,
+#                             face-check, food scan, glow plan).
+#   APPLE_SHARED_SECRET     - StoreKit shared secret (optional)
+#   APPLE_ROOT_CA_B64       - REQUIRED. Base64 of the DER bytes of Apple's
+#                             "Apple Root CA - G3" certificate. Download the
+#                             official .cer from Apple PKI
+#                             (https://www.apple.com/certificateauthority/)
+#                             and base64-encode the raw file:
+#                               base64 -i AppleRootCA-G3.cer | tr -d '\n'
+#                             Without this set, /api/apple-receipt-verify and
+#                             /api/apple-server-notification REFUSE to grant
+#                             or change premium from a JWS payload, since the
+#                             signature can't be checked against anything.
+#   REVENUECAT_WEBHOOK_AUTH - Recommended. Exact Authorization header value
+#                             configured in RevenueCat Webhooks. Enforced when set.
+#   REVENUECAT_SECRET_API_KEY - Optional server key. When absent, the Worker uses
+#                             the public iOS SDK key above for the read-only
+#                             GET /v1/subscribers/{app_user_id} verification.
+#                             Never place a secret key in the iOS/web client.
+#   ADMIN_SECRET            - REQUIRED to use /api/test-grant or
+#                             /api/payment-success at all (sent as
+#                             X-Admin-Secret). Without it those endpoints
+#                             return 404. Keep this unset/rotated in
+#                             production unless you're actively using them.
+# ---------------------------------------------------------------------------

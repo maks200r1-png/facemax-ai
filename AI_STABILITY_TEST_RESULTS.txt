@@ -1,0 +1,6 @@
+PASS: Google Gemini 2.5 Flash Lite only
+PASS: Google Vertex EU endpoint only
+PASS: provider fallbacks disabled
+PASS: data collection denied in provider preferences
+PASS: Meal Plan reliability improvements do not change provider or region
+PASS: all project audits pass

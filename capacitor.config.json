@@ -1,0 +1,34 @@
+{
+  "appId": "ai.facemax.app",
+  "appName": "FaceMax AI: Glow Up Lab",
+  "webDir": "web",
+  "bundledWebRuntime": false,
+  "ios": {
+    "contentInset": "automatic",
+    "scrollEnabled": false,
+    "backgroundColor": "#100A14",
+    "allowsLinkPreview": false,
+    "limitsNavigationsToAppBoundDomains": true,
+    "allowsInlineMediaPlayback": true,
+    "mediaTypesRequiringUserActionForPlayback": []
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2200,
+      "launchAutoHide": false,
+      "backgroundColor": "#100A14",
+      "androidScaleType": "CENTER_CROP",
+      "splashFullScreen": true,
+      "splashImmersive": true,
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "Dark",
+      "backgroundColor": "#100A14",
+      "overlaysWebView": true
+    },
+    "Camera": {
+      "permissions": ["camera", "photos"]
+    }
+  }
+}

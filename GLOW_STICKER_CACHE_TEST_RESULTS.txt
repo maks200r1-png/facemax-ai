@@ -1,0 +1,9 @@
+PASS  web and iOS index files are identical
+PASS  Glow plan cache schema bumped to v6
+PASS  AI sticker validator exists
+PASS  full Glow plan validator exists
+PASS  stale cache purge rejects invalid plans
+PASS  memory cache is validated before reuse
+PASS  localStorage cache is validated before reuse
+PASS  network response is validated before saving
+PASS  renderer uses AI sticker field

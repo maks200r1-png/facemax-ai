@@ -1,0 +1,14 @@
+PASS: Glow Up tasks require AI-selected stickers
+PASS: client-side Glow Up keyword sticker mapping removed
+PASS: Meal Plan requires AI-selected stickers for meals and Eat/Limit items
+PASS: generic meal sticker fallback removed
+PASS: Meal Plan requires Morning + Midday + Evening + 1-2 Snacks
+PASS: old Glow Up cache invalidated with v5
+PASS: old Meal Plan cache invalidated with schema v2
+PASS: Food Scanner swaps use AI-selected stickers
+PASS: AI-only endpoints fail closed on missing/invalid AI output
+PASS: subscription restore/expiry/paywall audit
+PASS: Worker and inline JavaScript syntax
+PASS: web build and Cloudflare site Worker build
+PASS: web/iOS public HTML parity
+PASS: .github unchanged

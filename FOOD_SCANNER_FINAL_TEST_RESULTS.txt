@@ -1,0 +1,29 @@
+PASS: Food Scanner semantic card colours and packaged-drink calorie validation
+(node:17072) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///mnt/data/facemax_food_visual_calorie_fix/workers/api/src/worker.js?food=1784882136990 is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /mnt/data/facemax_food_visual_calorie_fix/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS: subscription restore, expiry, webhook, server-gate and 3-plan paywall audit
+(node:17099) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///mnt/data/facemax_food_visual_calorie_fix/workers/api/src/worker.js?audit=1784882137512 is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /mnt/data/facemax_food_visual_calorie_fix/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+AI-only audit passed
+- AI endpoints fail closed when the key/model is unavailable
+- valid results are accepted only with source=openrouter
+- invalid JSON is rejected and never cached
+- meal restrictions are validated before saving
+- legacy static plan/advice constants are absent
+PASS: Meal Plan stays on Google Vertex EU and accepts a complete full-day AI response
+PASS: incomplete Meal Plan output is retried once on the same Vertex EU endpoint
+PASS: notifications and meal-plan hardening audit
+PASS  web and iOS index files are identical
+PASS  Glow plan cache schema bumped to v6
+PASS  AI sticker validator exists
+PASS  full Glow plan validator exists
+PASS  stale cache purge rejects invalid plans
+PASS  memory cache is validated before reuse
+PASS  localStorage cache is validated before reuse
+PASS  network response is validated before saving
+PASS  renderer uses AI sticker field
+PASS: full-day meal plan UI and cache migration audit
