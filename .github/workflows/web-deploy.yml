@@ -1,0 +1,63 @@
+name: Web + Worker deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "workers/**"
+      - "package.json"
+      - ".github/workflows/web-deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: web-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy-api:
+    name: Deploy facemax-api Worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Verify Cloudflare deployment settings
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN secret is missing"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID repository variable is missing"; exit 1; }
+
+      - name: Install Wrangler
+        run: npm i -g wrangler@3
+
+      - name: Deploy
+        working-directory: workers/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: wrangler deploy --minify
+
+      - name: Verify deployed current-app-compatible Worker
+        env:
+          HEALTH_URL: https://facemax-api.voou96329.workers.dev/health
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 12); do
+            body="$(curl -fsS --max-time 15 "$HEALTH_URL" || true)"
+            if BODY="$body" node -e 'try { const d=JSON.parse(process.env.BODY||""); process.exit(d.ok===true && d.build==="meal-plan-v3-current-app-compatible" && d.meal_plan_schema_version===3 ? 0 : 1); } catch { process.exit(1); }'; then
+              echo "Verified Meal Plan Worker compatible with the current iOS app"
+              exit 0
+            fi
+            echo "Verification attempt $attempt failed; retrying..."
+            sleep 5
+          done
+          echo "The public Worker does not report the expected build. Last response: $body"
+          exit 1
