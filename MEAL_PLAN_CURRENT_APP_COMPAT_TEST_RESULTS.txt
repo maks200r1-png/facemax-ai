@@ -1,0 +1,16 @@
+PASS: current iOS v3 client accepts the Worker response
+{
+  "status": 200,
+  "schema_version": 3,
+  "build": "meal-plan-v3-current-app-compatible",
+  "slots": [
+    "Morning",
+    "Midday",
+    "Evening",
+    "Snack"
+  ]
+}
+(node:8450) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///mnt/data/mealplan_v3_compat/workers/api/src/worker.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /mnt/data/mealplan_v3_compat/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)

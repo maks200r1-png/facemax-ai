@@ -1,0 +1,19 @@
+PASS: Worker JavaScript syntax
+PASS: web and iOS index files are identical
+PASS: model is google/gemini-2.5-flash-lite
+PASS: provider order is google-vertex/eu only
+PASS: allow_fallbacks is false
+PASS: data_collection is deny
+PASS: full-day output contains Morning, Midday, Evening and 1–2 Snacks
+PASS: all meal and Eat/Limit stickers must come from AI
+PASS: incomplete first AI output is retried once on the same Vertex EU endpoint
+PASS: valid lactose-free plan with oat milk is accepted
+PASS: plan is stored in PREMIUM_KV only after validation
+PASS: static/fallback Meal Plan is absent
+PASS: client can recover a plan saved after a request timeout
+PASS: subscription restore, expiry, paywall and server-gate audit
+PASS: notification audit
+PASS: Glow Up sticker-cache audit
+PASS: web build
+PASS: Worker build
+PASS: .github workflow SHA-256 values unchanged

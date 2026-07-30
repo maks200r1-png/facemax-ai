@@ -1,0 +1,22 @@
+PASS web/index.html and ios/App/App/public/index.html are byte-identical
+PASS web/js/native-bridge.js and iOS native bridge are byte-identical
+PASS all inline JavaScript syntax checks
+PASS native bridge JavaScript syntax check
+PASS Worker JavaScript syntax check
+PASS AI-only fail-closed audit
+PASS Glow Up Plan AI sticker/cache audit
+PASS Meal Plan Morning/Midday/Evening/Snacks UI audit
+PASS Meal Plan full record + sticker validation audit
+PASS Meal Plan 18+ form/server validation consistency
+PASS notification permission-state synchronization
+PASS morning 08:00 schedule
+PASS conditional evening 20:00 schedule
+PASS evening cancellation after full daily-plan completion
+PASS re-scan anchored to actual last scan date
+PASS default iOS notification sound configured
+PASS permission prompt removed from quiz step 2
+PASS permission prompt retained after quiz result
+PASS subscription restore/expiry/paywall regression audit
+PASS web build
+PASS Cloudflare Worker build
+PASS .github SHA-256 unchanged

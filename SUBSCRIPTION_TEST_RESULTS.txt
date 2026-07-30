@@ -1,0 +1,14 @@
+PASS: active purchase sync works without a newly provisioned RevenueCat secret
+PASS: worker uses RevenueCat read-only subscriber lookup and exact expiration
+PASS: actual RevenueCat App User ID is sent after purchase and restore
+PASS: RevenueCat anonymous IDs are accepted
+PASS: one RevenueCat customer cannot be linked to two local accounts
+PASS: expired restore does not unlock or add days
+PASS: unknown product and unrelated entitlement do not unlock
+PASS: cancellation retains access until expiration
+PASS: expiration/refund state is rechecked against RevenueCat
+PASS: paid server endpoints reject expired users
+PASS: paywalls contain exactly Weekly / Monthly / Yearly
+PASS: web build
+PASS: JavaScript syntax
+PASS: .github workflows unchanged

@@ -1,0 +1,15 @@
+web/index.html: PASS
+ios/App/App/public/index.html: PASS
+PASS: current iOS v3 client accepts the Worker response
+{
+  "status": 200,
+  "schema_version": 3,
+  "build": "meal-plan-v3-current-app-compatible",
+  "slots": [
+    "Morning",
+    "Midday",
+    "Evening",
+    "Snack"
+  ]
+}
+PASS: quiz capture -> prePay flash audit

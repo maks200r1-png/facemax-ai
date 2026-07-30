@@ -1,0 +1,11 @@
+PASS: web build
+PASS: Cloudflare site-worker build
+PASS: API worker syntax
+PASS: generated site-worker syntax
+PASS: AI-only audit
+PASS: subscription restore/expiry/paywall audit
+PASS: full-day Meal Plan UI grouping audit
+PASS: Meal Plan schema v3 cache migration
+PASS: exact Morning/Midday/Evening/Snack server validation
+PASS: web/index.html and ios/App/App/public/index.html byte-identical
+PASS: .github workflow hashes unchanged
