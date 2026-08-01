@@ -8829,6 +8829,12 @@ window.checkPremium = async function(showAlert = false){
       // so honour only the short, bounded local bridge — never an unbounded flag.
       quizUnlocked = hasValidLocalPremiumBridge();
       premium = forcePaywall ? false : (serverPremium || quizUnlocked);
+      // The server is the source of truth here (no native RevenueCat answer).
+      // If it says the subscription is NOT active, don't let a stale local
+      // bridge flag keep unlocking features on subsequent calls — clear it
+      // now so every following checkPremium()/ensurePremiumForAction() call
+      // consistently shows the paywall instead of flip-flopping.
+      if (!serverPremium && !forcePaywall) clearLocalPremiumUnlock();
     }
 
     document.body.classList.toggle('is-premium', premium);
@@ -13315,23 +13321,24 @@ checkPremium(false).then(() => {
   const quizDone = quizIsDone();
   const hasAccess = hasUnlockedAccess();
 
-  // "Was this user ever a paying customer on this device?"
-  // checkPremium() sets premiumUntil from the server only when a real purchase
-  // record exists. A brand-new unpaid user who closed at the paywall has no
-  // premiumUntil, so they still get sent back to the quiz.
-  const wasEverPremium = quizDone && !hasAccess && !!premiumUntil && Number(premiumUntil) > 0;
-
-  const isFirstLaunch = !quizDone || (!hasAccess && !wasEverPremium);
+  // Only users who have NEVER finished the quiz should be routed into it.
+  // Do NOT re-send a returning user back to the quiz just because their
+  // subscription lapsed or premiumUntil didn't arrive from the server in
+  // time. Any quizDone user without access simply stays in the app and
+  // hits the paywall on the next feature tap via ensurePremiumForAction().
+  const isFirstLaunch = !quizDone;
   if (isFirstLaunch) {
     onbStart();
     // Notification permission is offered after the quiz result is displayed.
   }
 }).catch(() => {
-  // Network failure — fall back to local state only (same as before the fix).
+  // Network failure — fall back to local state only. Same rule as above:
+  // only route into the quiz if it was never completed, never just because
+  // access is currently missing (offline or lapsed subscribers stay in the
+  // app and hit the paywall on their next feature tap instead).
   applyPremiumToResult();
   const quizDone = quizIsDone();
-  const hasAccess = hasUnlockedAccess();
-  if (!quizDone || !hasAccess) {
+  if (!quizDone) {
     onbStart();
   }
 });
