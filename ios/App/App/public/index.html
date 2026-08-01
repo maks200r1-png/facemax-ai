@@ -13303,9 +13303,15 @@ colorAllMetricBars(document);
 // against Home — fine, but we skip the prompt entirely since they've
 // already onboarded once.
 //
-// We await checkPremium() here so `premiumUntil` is populated before we
-// decide routing — otherwise the 50 ms window races the server response and
-// an expired subscriber could be mis-routed to the quiz on a slow connection.
+// First-launch routing must not wait on the network: quizIsDone() is a
+// purely local (localStorage) check, so we decide synchronously, before
+// checkPremium() even starts, to avoid the Home screen (which is "active"
+// by default in the static HTML) flashing for a couple seconds while the
+// premium-status request is in flight.
+if (!quizIsDone()) {
+  onbStart();
+}
+
 checkPremium(false).then(() => {
   applyPremiumToResult();
 
@@ -13317,7 +13323,8 @@ checkPremium(false).then(() => {
   // Quiz done + expired sub     → user previously paid, sub lapsed but did NOT
   //                               uninstall. Stay in the app — paywall shows on
   //                               feature tap. Do NOT re-run the quiz.
-  // Quiz not done               → fresh install or quiz was never finished.
+  // Quiz not done               → fresh install or quiz was never finished
+  //                               (already routed synchronously above).
   const quizDone = quizIsDone();
   const hasAccess = hasUnlockedAccess();
 
@@ -13326,11 +13333,8 @@ checkPremium(false).then(() => {
   // subscription lapsed or premiumUntil didn't arrive from the server in
   // time. Any quizDone user without access simply stays in the app and
   // hits the paywall on the next feature tap via ensurePremiumForAction().
-  const isFirstLaunch = !quizDone;
-  if (isFirstLaunch) {
-    onbStart();
-    // Notification permission is offered after the quiz result is displayed.
-  }
+  // (No further routing needed here — the synchronous check above already
+  // handles the !quizDone case before this promise even resolves.)
 }).catch(() => {
   // Network failure — fall back to local state only. Same rule as above:
   // only route into the quiz if it was never completed, never just because
