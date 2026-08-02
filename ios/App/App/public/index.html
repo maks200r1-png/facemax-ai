@@ -2801,7 +2801,13 @@ html.cam-active .app { background:transparent !important; }
 </button>
 
 <!-- =============================== HOME =============================== -->
-<section id="home" class="screen active">
+<!-- NOTE: no "active" class here on purpose. Home used to be active by default
+     in the raw markup, which meant it was visible the instant the browser
+     painted this element - before any JS (including checkPremium/quizIsDone)
+     had a chance to run. That caused Home to flash before routing into the
+     quiz on first launch. Routing JS (near quizIsDone()/onbStart()) now
+     explicitly adds "active" to whichever screen should show first. -->
+<section id="home" class="screen">
 
   <div class="home-v2">
 
@@ -13297,54 +13303,41 @@ setTimeout(() => { try { initDetector(); } catch {} }, 600);
 // visible behind the lock blur instead of a single purple tone.
 colorAllMetricBars(document);
 
-// First-launch: start the quiz BEFORE asking for notification permission so
-// the native iOS dialog appears over the quiz welcome screen instead of Home
-// (cleaner UX). For returning users (quiz already done) the dialog fires
-// against Home — fine, but we skip the prompt entirely since they've
-// already onboarded once.
+// ROUTING: decide Home vs Quiz synchronously, from localStorage only.
+// quizIsDone() does not need the network, so it must not wait on
+// checkPremium()'s round-trip — doing so left Home visible (its old static
+// "active" class) for however long the request took, causing a flash before
+// the quiz took over. Premium/paywall status is refreshed separately below
+// and does not affect this decision: routing only ever depends on whether
+// the quiz was completed before, never on subscription state.
 //
-// First-launch routing must not wait on the network: quizIsDone() is a
-// purely local (localStorage) check, so we decide synchronously, before
-// checkPremium() even starts, to avoid the Home screen (which is "active"
-// by default in the static HTML) flashing for a couple seconds while the
-// premium-status request is in flight.
-if (!quizIsDone()) {
+// Quiz done + paid            → returning user, go straight to home.
+// Quiz done + unpaid + NEVER  → user completed quiz steps but never subscribed
+//                               (closed app at paywall, or skipped). Send back to
+//                               the start of the quiz so they can't bypass the
+//                               pay-first gate by just re-launching.
+// Quiz done + expired sub     → user previously paid, sub lapsed but did NOT
+//                               uninstall. Stay in the app — paywall shows on
+//                               feature tap. Do NOT re-run the quiz.
+// Quiz not done               → fresh install or quiz was never finished.
+const isFirstLaunch = !quizIsDone();
+if (isFirstLaunch) {
   onbStart();
+  // Notification permission is offered after the quiz result is displayed.
+} else {
+  // Returning user: #home no longer ships "active" in the static markup
+  // (that was the source of the flash), so it must be activated explicitly.
+  openScreen("home");
 }
 
+// Premium/paywall status still needs the network, but it no longer gates
+// which screen we route to — it only affects what's shown once we're there
+// (locked metric bars, paywall on feature tap, etc.) via applyPremiumToResult().
 checkPremium(false).then(() => {
   applyPremiumToResult();
-
-  // Quiz done + paid            → returning user, go straight to home.
-  // Quiz done + unpaid + NEVER  → user completed quiz steps but never subscribed
-  //                               (closed app at paywall, or skipped). Send back to
-  //                               the start of the quiz so they can't bypass the
-  //                               pay-first gate by just re-launching.
-  // Quiz done + expired sub     → user previously paid, sub lapsed but did NOT
-  //                               uninstall. Stay in the app — paywall shows on
-  //                               feature tap. Do NOT re-run the quiz.
-  // Quiz not done               → fresh install or quiz was never finished
-  //                               (already routed synchronously above).
-  const quizDone = quizIsDone();
-  const hasAccess = hasUnlockedAccess();
-
-  // Only users who have NEVER finished the quiz should be routed into it.
-  // Do NOT re-send a returning user back to the quiz just because their
-  // subscription lapsed or premiumUntil didn't arrive from the server in
-  // time. Any quizDone user without access simply stays in the app and
-  // hits the paywall on the next feature tap via ensurePremiumForAction().
-  // (No further routing needed here — the synchronous check above already
-  // handles the !quizDone case before this promise even resolves.)
 }).catch(() => {
-  // Network failure — fall back to local state only. Same rule as above:
-  // only route into the quiz if it was never completed, never just because
-  // access is currently missing (offline or lapsed subscribers stay in the
-  // app and hit the paywall on their next feature tap instead).
+  // Offline: fall back to local state only. Routing already happened above.
   applyPremiumToResult();
-  const quizDone = quizIsDone();
-  if (!quizDone) {
-    onbStart();
-  }
 });
 
 // Hide pure-web payment polling toast on native (StoreKit is synchronous from
