@@ -14,7 +14,8 @@ assert.equal(bridge, iosBridge, 'web and iOS native bridge must match');
 assert.ok(pkg.dependencies['@capacitor/local-notifications'], 'local-notifications dependency missing');
 assert.ok(!bridge.includes('lastOpenDate'), 'obsolete lastOpenDate gate still present');
 assert.equal((bridge.match(/sound:\s*"default"/g) || []).length, 2, 'both notification schedulers must use default sound');
-assert.ok(web.includes('hour: 8, minute: 0'), 'morning reminder must be at 08:00');
+assert.ok(web.includes('prefs.dailyTime || "08:00"'), 'morning reminder must default to stored 08:00 preference');
+assert.ok(web.includes('hour: reminderHour, minute: reminderMinute'), 'morning reminder must honor stored reminder time');
 assert.ok(web.includes('eveningAt.setHours(20, 0, 0, 0)'), 'evening reminder must target 20:00');
 assert.ok(web.includes('if (!ctx.completedToday)'), 'evening reminder must stop after full plan completion');
 assert.ok(web.includes('const lastScanMs = Number(scanHistory[0] && scanHistory[0].date)'), 're-scan reminder must anchor to actual scan time');
@@ -30,7 +31,7 @@ assert.ok(web.includes('isValidMealPlanSectionList(plan.avoid)'), 'meal plan Lim
 assert.ok(web.includes('class="mr-reason"'), 'AI meal reasoning is not rendered');
 assert.ok(worker.includes('requireAiEmoji(it?.e, `stored.meals['), 'stored meal stickers are not validated');
 assert.ok(worker.includes('validSections(plan.eat, "eat") && validSections(plan.avoid, "avoid")'), 'stored Eat/Limit sections are not validated');
-assert.ok(worker.includes('meals.snacks must contain one or two snacks') && worker.includes('Meal plan must contain four or five meals'), 'AI meal count is not strictly validated');
+assert.ok(worker.includes('meals.snacks must contain one or two snacks') && worker.includes('snacks.length < 1 || snacks.length > 2'), 'AI snack count is not strictly validated');
 
 function extractFunction(source, name) {
   const asyncMarker = `async function ${name}(`;
@@ -74,6 +75,8 @@ const context = {
   _guGetStreak: () => ({ count: 4 }),
   _guGetProgress: () => [0, 1],
   localStorage: { getItem: () => null },
+  notifLoadPrefs: () => ({ dailyOn: true, dailyTime: '08:00' }),
+  _fmReminderFocus: () => 'glow-up',
   window: {
     facemax: {
       notif: {

@@ -1,0 +1,22 @@
+import fs from "node:fs";
+const html = fs.readFileSync(new URL("../web/index.html", import.meta.url), "utf8");
+const worker = fs.readFileSync(new URL("../workers/api/src/worker.js", import.meta.url), "utf8");
+const must = (cond, msg) => { if (!cond) throw new Error(msg); };
+must(html.includes("Smart reminders"), "Smart reminders label missing");
+must(html.includes("Goals &amp; preferences"), "Goals & preferences UI missing");
+must(html.includes("_fmPlanTargetSteps"), "plan target-step helper missing");
+must(html.includes('PLAN_VER = "v8"'), "new personalized cache version missing");
+must(html.includes('data.steps.length < 3 || data.steps.length > 6'), "frontend variable step validation missing");
+must(worker.includes("const targetSteps = commitment == null ? 6 : commitment <= 5 ? 3 : commitment <= 10 ? 4 : commitment <= 20 ? 5 : 6"), "worker target step mapping missing");
+must(worker.includes("Questionnaire answers are preference/context signals ONLY"), "worker questionnaire scoring boundary missing");
+// Face Scan request must stay isolated from questionnaire data.
+const faceFnStart = html.indexOf("async function fetchGeminiScan");
+const faceFnEnd = html.indexOf("async function", faceFnStart + 20);
+const faceFn = html.slice(faceFnStart, faceFnEnd > faceFnStart ? faceFnEnd : faceFnStart + 9000);
+must(faceFn.includes('API_BASE + "/api/full-report"'), "face full-report call missing");
+must(!faceFn.includes("quizState") && !faceFn.includes("profile:"), "quiz/profile data leaked into visual Face Scan request");
+const reportFnStart = html.indexOf("window.openReport = async function");
+const reportFnEnd = html.indexOf("window.", reportFnStart + 30);
+const reportFn = html.slice(reportFnStart, reportFnEnd > reportFnStart ? reportFnEnd : reportFnStart + 7000);
+must(!reportFn.includes("quizState") && !reportFn.includes("profile:"), "quiz/profile data leaked into numeric full report request");
+console.log("quiz-personalization-audit: PASS");

@@ -8,7 +8,7 @@ function check(name, cond) {
   if (!cond) process.exitCode = 1;
 }
 check('web and iOS index files are identical', web === ios);
-check('Glow plan cache schema bumped to v6', web.includes('const PLAN_VER = "v6"'));
+check('Glow plan cache schema bumped to v8', web.includes('const PLAN_VER = "v8"'));
 check('AI sticker validator exists', web.includes('function _guHasAiSticker(value)'));
 check('full Glow plan validator exists', web.includes('function _guIsValidAiPlanData(data)'));
 check('stale cache purge rejects invalid plans', web.includes('const hasInvalidPlan = !_guIsValidAiPlanData(d)'));

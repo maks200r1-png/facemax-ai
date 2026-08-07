@@ -55,9 +55,8 @@ platform :ios do
       targets: ["App"],
     )
 
-    # App Store Connect already has approved marketing version 1.6.
-    # A new upload must therefore use a higher CFBundleShortVersionString.
-    marketing_version = ENV.fetch("APP_MARKETING_VERSION", "1.7")
+    # Keep the CI/TestFlight marketing version explicit and in sync with the workflow.
+    marketing_version = ENV.fetch("APP_MARKETING_VERSION", "1.8")
     UI.message("Marketing version: #{marketing_version}")
 
     increment_version_number(
