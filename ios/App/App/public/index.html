@@ -5,8 +5,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="v-1780329029000">
-  <!-- BUILD: v-1780329029000 -->
+  <meta name="build-version" content="v-1786115166269">
+  <!-- BUILD: v-1786115166269 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#100A14">
@@ -2439,6 +2439,43 @@ html.cam-active .app { background:transparent !important; }
 
 
 
+
+<style id="facemax-notification-inbox-v1">
+/* In-app Notification Center. Keeps retention messages accessible after the
+   iOS banner disappears, without mixing notification settings into the inbox. */
+.home-inbox-row{display:flex;justify-content:flex-end;align-items:center;min-height:40px;margin:0 0 2px}
+.fm-notif-bell{position:relative;width:40px;height:40px;border:0;background:transparent;color:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:none;transition:transform .12s ease,opacity .12s ease}
+.fm-notif-bell:active{transform:scale(.92);opacity:.72;background:transparent}
+.fm-notif-bell svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.fm-notif-bell.compact{position:absolute;right:0;top:0;width:40px;height:40px;box-shadow:none}
+.fm-notif-badge{position:absolute;right:-5px;top:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid #100A14;font-size:10px;font-weight:850;line-height:14px;display:none;align-items:center;justify-content:center;letter-spacing:-.02em}
+.fm-notif-badge.show{display:flex}
+.notifications-screen{padding-bottom:8px}
+.notif-inbox-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:4px 0 12px}
+.notif-inbox-head>div{display:flex;flex-direction:column;gap:2px}
+.notif-inbox-head h2{font-size:22px;margin:0;letter-spacing:-.035em}
+.notif-inbox-head p{font-size:12px;color:var(--muted);margin:0}
+.notif-mark-read{border:0;background:transparent;color:#c4b5fd;font-size:12px;font-weight:750;padding:8px 0;white-space:nowrap}
+.notif-inbox-list{display:flex;flex-direction:column;gap:8px}
+.notif-item{position:relative;width:100%;display:grid;grid-template-columns:42px minmax(0,1fr) 18px;gap:11px;align-items:center;text-align:left;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.045);border-radius:19px;padding:13px 12px;color:#fff;cursor:pointer}
+.notif-item.unread{background:linear-gradient(145deg,rgba(139,92,246,.12),rgba(255,255,255,.05));border-color:rgba(196,181,253,.20)}
+.notif-item:active{background:rgba(255,255,255,.075)}
+.notif-item-icon{width:42px;height:42px;border-radius:14px;background:rgba(167,139,250,.12);color:#c4b5fd;display:grid;place-items:center;flex:0 0 42px}
+.notif-item-icon.streak{background:rgba(251,146,60,.13);color:#fb923c}.notif-item-icon.scan{background:rgba(96,165,250,.13);color:#60a5fa}.notif-item-icon.progress{background:rgba(74,222,128,.13);color:#4ade80}
+.notif-item-icon svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.notif-item-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
+.notif-item-title{font-size:13.5px;font-weight:760;line-height:1.25;letter-spacing:-.015em}
+.notif-item-body{font-size:11.5px;line-height:1.38;color:var(--muted)}
+.notif-item-time{font-size:9.5px;color:rgba(255,255,255,.34);margin-top:2px}
+.notif-item-chevron{width:18px;height:18px;stroke:rgba(255,255,255,.34);fill:none;stroke-width:2.3}
+.notif-unread-dot{position:absolute;right:12px;top:11px;width:7px;height:7px;border-radius:50%;background:#a78bfa;box-shadow:0 0 0 3px rgba(167,139,250,.12)}
+.notif-empty{padding:42px 22px;text-align:center;border:1px dashed rgba(255,255,255,.10);border-radius:22px;background:rgba(255,255,255,.025)}
+.notif-empty-icon{width:52px;height:52px;border-radius:18px;margin:0 auto 12px;background:rgba(167,139,250,.11);display:grid;place-items:center;color:#c4b5fd}
+.notif-empty-icon svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:1.8}
+.notif-empty b{display:block;font-size:14px;margin-bottom:4px}.notif-empty span{font-size:11.5px;line-height:1.45;color:var(--muted)}
+.notif-inbox-note{font-size:10.5px;color:rgba(255,255,255,.35);text-align:center;margin:14px 14px 0;line-height:1.45}
+</style>
+
 </head>
 <body>
 
@@ -2861,6 +2898,13 @@ html.cam-active .app { background:transparent !important; }
 <section id="home" class="screen active">
 
   <div class="home-v2">
+
+    <div class="home-inbox-row">
+      <button type="button" class="fm-notif-bell" onclick="openNotificationInbox()" aria-label="Notifications">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+        <span class="fm-notif-badge" id="homeNotifBadge">0</span>
+      </button>
+    </div>
 
     <!-- Last scan card (umax-style) -->
     <div class="last-scan-card empty" id="lastScanCard" onclick="openLatestScanFromHome()" role="button" aria-label="No scan yet">
@@ -3437,11 +3481,36 @@ html.cam-active .app { background:transparent !important; }
   </div>
 </div>
 
+<!-- ============================ NOTIFICATIONS ============================ -->
+<section id="notifications" class="screen notifications-screen">
+  <div class="screen-topbar">
+    <button type="button" class="stb-back" onclick="goBack()" aria-label="Back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="stb-logo"><img src="assets/logo.png" alt=""></div>
+    <span class="stb-title">Notifications</span>
+  </div>
+
+  <div class="notif-inbox-head">
+    <div>
+      <h2>Updates</h2>
+      <p id="notificationInboxSub">Your FaceMax reminders and progress updates</p>
+    </div>
+    <button type="button" class="notif-mark-read" id="notificationMarkAll" onclick="fmInboxMarkAllRead()">Mark all read</button>
+  </div>
+  <div class="notif-inbox-list" id="notificationInboxList"></div>
+  <div class="notif-inbox-note">Push settings stay in Profile → Smart Reminders. This inbox keeps FaceMax updates after the iOS banner is gone.</div>
+</section>
+
 <!-- =============================== PROFILE =============================== -->
 <section id="profile" class="screen design-profile-screen">
   <div class="screen-topbar">
     <div class="stb-logo"><img src="assets/logo.png" alt=""></div>
     <span class="stb-title">Profile</span>
+    <button type="button" class="fm-notif-bell compact" onclick="openNotificationInbox()" aria-label="Notifications">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+      <span class="fm-notif-badge" id="profileNotifBadge">0</span>
+    </button>
   </div>
 
   <div class="profile-hero-v4">
@@ -5220,6 +5289,11 @@ function _guCompleteToday(animate) {
   if (s.lastDate === today) return false; // already secured
   const count = _guUpdateStreak();
   _guMarkWeekToday();
+  try {
+    if ([3,7,14,30,60,100].includes(Number(count))) {
+      fmInboxAdd({ key:`streak-milestone:${count}`, title:`${count}-day streak secured 🔥`, body:"Consistency is building. Keep tomorrow's plan going.", route:"glowupHub", type:"progress", ts:Date.now() });
+    }
+  } catch {}
   _guClearBrokenStreak();
   try { localStorage.setItem("gu_last_completed_day", today); } catch {}
   if (animate) _guShowCompletionCelebration(count);
@@ -6337,6 +6411,7 @@ window.openScreen = function(id){
   }
   if (id === "home") { renderHomeHistory(); renderHomeStats(); renderGlowUpPlan(); refreshDailyTiles && refreshDailyTiles(); updateDailyCalWidget(); }
   if (id === "profile") { renderProfileScreen(); }
+  if (id === "notifications") { renderNotificationInbox(); fmInboxSyncDelivered(); }
   if (id === "daily") { refreshDailyGreeting && refreshDailyGreeting(); refreshDailyTiles && refreshDailyTiles(); }
   if (id === "calories") { updateDailyCalWidget(); renderCalScreenEntries && renderCalScreenEntries(); }
   if (id === "upload") {
@@ -6857,6 +6932,155 @@ window.saveGoalPreferences = function(){
   showToast("Preferences saved");
 };
 
+
+/* =========================== NOTIFICATION INBOX ============================
+ * Persistent, local-only inbox for FaceMax notifications. iOS banners are
+ * mirrored here when Capacitor reports them as delivered/acted-on. The inbox
+ * does not control notification permission; Smart Reminders in Profile does.
+ */
+const FM_INBOX_KEY = "facemax_notification_inbox_v1";
+const FM_INBOX_LIMIT = 80;
+function fmInboxLoad(){
+  try { const v = JSON.parse(localStorage.getItem(FM_INBOX_KEY) || "[]"); return Array.isArray(v) ? v : []; }
+  catch { return []; }
+}
+function fmInboxSave(items){
+  try { localStorage.setItem(FM_INBOX_KEY, JSON.stringify((items || []).slice(0, FM_INBOX_LIMIT))); } catch {}
+}
+function _fmInboxDayKey(ts){
+  const d = new Date(Number(ts) || Date.now());
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function _fmInboxMetaForId(id, extra){
+  const ids = window.facemax && window.facemax.notif && window.facemax.notif.ids || {};
+  const n = Number(id);
+  if (extra && extra.route) return { route:String(extra.route), type:String(extra.inboxType || "plan") };
+  if (n === ids.RESCAN_7D || n === ids.WINBACK_7D || n === ids.WINBACK_14D) return { route:"upload", type:"scan" };
+  if (n === ids.STREAK || n === ids.EVENING || n === ids.WINBACK_3D) return { route:"glowupHub", type:"streak" };
+  if (n === ids.DAILY) return { route:"glowupHub", type:"plan" };
+  return { route:"home", type:"plan" };
+}
+function fmInboxAdd(item){
+  if (!item || !item.title) return null;
+  const ts = Number(item.ts) || Date.now();
+  const meta = _fmInboxMetaForId(item.notifId, item.extra || {});
+  const title = String(item.title || "FaceMax AI");
+  const body = String(item.body || "");
+  const key = String(item.key || `os:${Number(item.notifId)||0}:${_fmInboxDayKey(ts)}:${title}:${body}`);
+  const items = fmInboxLoad();
+  const existing = items.find(x => x && x.key === key);
+  if (existing) {
+    existing.title = title; existing.body = body; existing.ts = Math.max(Number(existing.ts)||0, ts);
+    existing.route = item.route || existing.route || meta.route;
+    existing.type = item.type || existing.type || meta.type;
+    if (item.read === true) existing.read = true;
+  } else {
+    items.unshift({
+      key, notifId:Number(item.notifId)||0, title, body, ts,
+      route:item.route || meta.route, type:item.type || meta.type,
+      read:item.read === true
+    });
+  }
+  items.sort((a,b)=>(Number(b.ts)||0)-(Number(a.ts)||0));
+  fmInboxSave(items);
+  updateNotificationBadges();
+  if (document.getElementById("notifications")?.classList.contains("active")) renderNotificationInbox();
+  return key;
+}
+function _fmInboxIcon(type){
+  if (type === "streak") return '<svg viewBox="0 0 24 24"><path d="M13 3s1 3-2 5c-2 1-4 3-4 6a5 5 0 0 0 10 0c0-2-1-4-4-6 1 3-1 4-1 4s0-3-3-5"/></svg>';
+  if (type === "scan") return '<svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><circle cx="12" cy="11" r="3"/><path d="M7.5 17c1.1-2 2.6-3 4.5-3s3.4 1 4.5 3"/></svg>';
+  if (type === "progress") return '<svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>';
+  return '<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>';
+}
+function _fmInboxTimeLabel(ts){
+  const d = new Date(Number(ts)||Date.now());
+  const delta = Date.now()-d.getTime();
+  if (delta < 60000) return "Now";
+  if (delta < 3600000) return `${Math.max(1,Math.floor(delta/60000))}m ago`;
+  if (_fmInboxDayKey(d.getTime()) === _fmInboxDayKey(Date.now())) return d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  const yd = new Date(); yd.setDate(yd.getDate()-1);
+  if (_fmInboxDayKey(d.getTime()) === _fmInboxDayKey(yd.getTime())) return "Yesterday";
+  return d.toLocaleDateString([], {month:"short",day:"numeric"});
+}
+function updateNotificationBadges(){
+  const items = fmInboxLoad();
+  const unread = items.filter(x => x && !x.read).length;
+  ["homeNotifBadge","profileNotifBadge"].forEach(id => {
+    const b = el(id); if (!b) return;
+    b.textContent = unread > 99 ? "99+" : String(unread);
+    b.classList.toggle("show", unread > 0);
+  });
+}
+function renderNotificationInbox(){
+  const host = el("notificationInboxList"); if (!host) return;
+  const items = fmInboxLoad();
+  const unread = items.filter(x => x && !x.read).length;
+  const sub = el("notificationInboxSub"); if (sub) sub.textContent = unread ? `${unread} unread · reminders and progress updates` : "Your FaceMax reminders and progress updates";
+  const mark = el("notificationMarkAll"); if (mark) mark.style.visibility = unread ? "visible" : "hidden";
+  if (!items.length) {
+    host.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">${_fmInboxIcon("plan")}</div><b>No updates yet</b><span>Your streak reminders, re-scan nudges and important FaceMax updates will appear here.</span></div>`;
+    updateNotificationBadges(); return;
+  }
+  host.innerHTML = items.map((it,idx) => `<button type="button" class="notif-item${it.read?'':' unread'}" onclick="openNotificationItem(${idx})">`
+    + `${it.read?'':'<span class="notif-unread-dot"></span>'}`
+    + `<span class="notif-item-icon ${escapeHtml(it.type||'plan')}">${_fmInboxIcon(it.type)}</span>`
+    + `<span class="notif-item-copy"><span class="notif-item-title">${escapeHtml(it.title||'FaceMax AI')}</span><span class="notif-item-body">${escapeHtml(it.body||'')}</span><span class="notif-item-time">${escapeHtml(_fmInboxTimeLabel(it.ts))}</span></span>`
+    + `<svg class="notif-item-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>`).join("");
+  updateNotificationBadges();
+}
+function fmInboxMarkAllRead(){
+  const items = fmInboxLoad(); items.forEach(x=>{ if(x) x.read=true; }); fmInboxSave(items); renderNotificationInbox(); updateNotificationBadges();
+}
+window.fmInboxMarkAllRead = fmInboxMarkAllRead;
+function _fmInboxNavigate(route){
+  const r = String(route || "home");
+  if (r === "glowupHub") { if (typeof window.openGlowUpHub === "function") return window.openGlowUpHub(); return openScreen("home"); }
+  if (r === "upload") return openScreen("upload");
+  if (r === "profile") return openScreen("profile");
+  return openScreen("home");
+}
+function openNotificationItem(index){
+  const items = fmInboxLoad(); const it = items[Number(index)]; if (!it) return;
+  it.read = true; fmInboxSave(items); updateNotificationBadges(); _fmInboxNavigate(it.route);
+}
+window.openNotificationItem = openNotificationItem;
+async function fmInboxSyncDelivered(){
+  try {
+    if (!window.facemax || !window.facemax.notif || !window.facemax.notif.isAvailable() || typeof window.facemax.notif.getDelivered !== "function") return;
+    const delivered = await window.facemax.notif.getDelivered();
+    (Array.isArray(delivered) ? delivered : []).forEach(n => {
+      const id = Number(n && n.id);
+      if (!(id >= 1000 && id < 2000)) return;
+      const meta = _fmInboxMetaForId(id, n.extra || {});
+      fmInboxAdd({ notifId:id, title:n.title || "FaceMax AI", body:n.body || "", extra:n.extra || {}, route:meta.route, type:meta.type, ts:Date.now() });
+    });
+  } catch {}
+}
+window.fmInboxSyncDelivered = fmInboxSyncDelivered;
+function openNotificationInbox(){
+  openScreen("notifications");
+}
+window.openNotificationInbox = openNotificationInbox;
+window.addEventListener("facemax:local-notification", function(evt){
+  try {
+    const detail = evt && evt.detail || {};
+    const payload = detail.notification || (detail.action && detail.action.notification) || detail.action || {};
+    if (!payload || !payload.title) return;
+    const meta = _fmInboxMetaForId(payload.id, payload.extra || {});
+    const key = fmInboxAdd({ notifId:payload.id, title:payload.title, body:payload.body || "", extra:payload.extra || {}, route:meta.route, type:meta.type, ts:Date.now(), read:detail.kind === "action" });
+    if (detail.kind === "action") {
+      const items = fmInboxLoad(); const hit = items.find(x=>x && x.key===key); if (hit) { hit.read=true; fmInboxSave(items); }
+      updateNotificationBadges();
+      setTimeout(()=>_fmInboxNavigate(meta.route), 120);
+    }
+  } catch {}
+});
+(function _fmInboxBoot(){
+  const run=()=>{ updateNotificationBadges(); setTimeout(fmInboxSyncDelivered,1200); };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, {once:true}); else run();
+})();
+
 /* ============================== NOTIFICATIONS ==============================
  * Local-only retention pushes via Capacitor LocalNotifications. Web build
  * silently no-ops (facemax.notif.isAvailable() === false).
@@ -7063,6 +7287,7 @@ async function scheduleRetentionPack(){
     hour: reminderHour, minute: reminderMinute,
     title: morning.title,
     body: morning.body,
+    extra: { route:"glowupHub", inboxType:"plan" },
   });
 
   // Evening reminder — one-shot for TODAY only. Never carry today's stale
@@ -7078,6 +7303,7 @@ async function scheduleRetentionPack(){
         at: eveningAt,
         title: evening.title,
         body: evening.body,
+        extra: { route:"glowupHub", inboxType:"streak" },
       });
     }
 
@@ -7093,6 +7319,7 @@ async function scheduleRetentionPack(){
           at: lateAt,
           title: late.title,
           body: late.body,
+          extra: { route:"glowupHub", inboxType:"streak" },
         });
       }
     }
@@ -7116,6 +7343,7 @@ async function scheduleRetentionPack(){
       at: rescan,
       title: "Time to re-scan",
       body: "See how your score moved this week.",
+      extra: { route:"upload", inboxType:"scan" },
     });
   }
 
@@ -7139,6 +7367,7 @@ async function scheduleRetentionPack(){
     body: ctx2.streak >= 2
       ? `That ${ctx2.streak}-day run will have ended — one completed plan starts the comeback.`
       : `It's been 3 days. Your ${Math.max(1, Number(ctx2.commitmentMinutes) || 5)}-minute plan gets you moving again.`,
+    extra: { route:"glowupHub", inboxType:"streak" },
   });
 
   await window.facemax.notif.scheduleAt({
@@ -7148,6 +7377,7 @@ async function scheduleRetentionPack(){
     body: ctx2.hasEverScanned
       ? "Your last scan is getting old — see what's changed (or hasn't)."
       : "Still haven't taken your first scan. Takes 30 seconds.",
+    extra: { route:"upload", inboxType:"scan" },
   });
 
   await window.facemax.notif.scheduleAt({
@@ -7155,6 +7385,7 @@ async function scheduleRetentionPack(){
     at: winback14,
     title: "Don't give up on the glow-up 💔",
     body: "Two weeks off. Restart with a fresh scan — no pressure, just progress.",
+    extra: { route:"upload", inboxType:"scan" },
   });
 }
 
@@ -8121,7 +8352,14 @@ window.startScan = async function(_premiumChecked){
 
   // Save to history with a small thumbnail + detected face shape.
   const thumb = await makeThumbnail(selectedImageData, 240).catch(() => null);
+  const _fmPrevScanScore = (scanHistory && scanHistory.length) ? Number(scanHistory[0].score) : null;
   saveToHistory(lastScanScore, thumb, { shape: detectedShape, metrics: finalMetrics, report: aiReport || null, archetype: archetypeFor(lastScanScore) });
+  try {
+    if (Number.isFinite(_fmPrevScanScore) && Number(lastScanScore) > _fmPrevScanScore) {
+      const delta = Math.max(1, Math.round(Number(lastScanScore) - _fmPrevScanScore));
+      fmInboxAdd({ key:`scan-improved:${scanHistory[0] && scanHistory[0].date || Date.now()}`, title:"Your Face Score improved ✨", body:`+${delta} since your previous scan. Open your latest result to see what moved.`, route:"home", type:"progress", ts:Date.now() });
+    }
+  } catch {}
   renderHomeHistory();
   renderHomeStats();
 
