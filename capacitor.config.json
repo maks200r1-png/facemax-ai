@@ -4,7 +4,7 @@
   "webDir": "web",
   "bundledWebRuntime": false,
   "ios": {
-    "contentInset": "automatic",
+    "contentInset": "never",
     "scrollEnabled": false,
     "backgroundColor": "#100A14",
     "allowsLinkPreview": false,

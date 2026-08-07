@@ -1,0 +1,16 @@
+Food Scanner custom camera change
+
+PASS: Native iOS Food Scanner opens FaceMax CameraOval/AVCapture preview with BACK camera.
+PASS: Native preview requests RECT/full-screen shape with adaptive face zoom disabled.
+PASS: Food camera does not use Capacitor's system Camera UI on the normal native path.
+PASS: Shutter returns the captured photo directly to the existing Food Scanner preview.
+PASS: Capturing a photo does NOT call runFoodScan(); Analyze meal with AI remains a separate tap.
+PASS: CameraOval can switch between FRONT/OVAL face scan and BACK/RECT food scan by rebuilding the AVCaptureSession when mode changes.
+PASS: web/index.html and bundled ios/App/App/public/index.html match.
+PASS: web/js/native-bridge.js and bundled iOS bridge match.
+PASS: swiftc -parse CameraOvalPlugin.swift.
+PASS: Food Scanner semantic colour/calorie audit.
+PASS: Subscription audit.
+PASS: AI stability audit.
+
+Note: the existing ai-only-audit.mjs has a pre-existing unrelated Meal Plan assertion failure in the source archive; the same failure reproduces before this camera change.
