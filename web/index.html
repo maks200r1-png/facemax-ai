@@ -327,26 +327,8 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .gu-header-top-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .gu-header-streak-row{margin:6px 0 0;display:flex;justify-content:flex-end}
 .gu-header-streak-row span{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:900;letter-spacing:-.01em;color:#fff;background:rgba(0,0,0,.16);border-radius:999px;padding:3px 10px 3px 8px}
-.gu-home-week{margin-top:2px}
-.gu-momentum-status{display:flex;align-items:center;justify-content:center;min-height:27px;margin-top:4px;padding:5px 10px;border-radius:999px;font-size:10.5px;font-weight:800;line-height:1.2;text-align:center;letter-spacing:.005em;color:rgba(255,255,255,.80);background:rgba(0,0,0,.13);border:1px solid rgba(255,255,255,.10)}
-.gu-momentum-status.progress{color:#e9d5ff;border-color:rgba(216,180,254,.24);background:rgba(88,28,135,.18)}
-.gu-momentum-status.risk{color:#fed7aa;border-color:rgba(251,146,60,.50);background:rgba(124,45,18,.30)}
-.gu-momentum-status.done{color:#bbf7d0;border-color:rgba(74,222,128,.42);background:rgba(20,83,45,.28)}
-.gu-momentum-status.broken{color:#cbd5e1;border-color:rgba(148,163,184,.20);background:rgba(51,65,85,.24)}
 .gu-header-title{font-size:17px;font-weight:800;letter-spacing:-.02em;color:#fff;line-height:1}
 
-/* Duolingo-style completion moment — uses the existing streak, never Face Score. */
-.gu-complete-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;visibility:hidden;background:rgba(8,5,12,.38);backdrop-filter:blur(4px);transition:opacity .18s ease,visibility .18s ease}
-.gu-complete-overlay.show{opacity:1;visibility:visible}
-.gu-complete-pop{min-width:210px;padding:24px 28px 22px;border-radius:32px;text-align:center;background:linear-gradient(160deg,#3b1d67,#6d28d9 55%,#8b5cf6);border:1px solid rgba(255,255,255,.20);box-shadow:0 24px 70px rgba(76,29,149,.48);transform:scale(.82) translateY(14px);opacity:0}
-.gu-complete-overlay.show .gu-complete-pop{transform:scale(1) translateY(0);opacity:1;transition:transform .42s cubic-bezier(.2,1.25,.35,1),opacity .2s ease}
-.gu-complete-fire{font-size:48px;line-height:1;margin-bottom:7px;filter:drop-shadow(0 8px 14px rgba(251,146,60,.35))}
-.gu-complete-count{font-size:48px;font-weight:950;letter-spacing:-.055em;color:#fff;line-height:1}
-.gu-complete-label{margin-top:3px;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fde68a}
-.gu-complete-sub{margin-top:10px;font-size:13px;font-weight:700;color:rgba(255,255,255,.78)}
-@media (prefers-reduced-motion:reduce){.gu-complete-overlay,.gu-complete-pop{transition:none!important}}
-
-/* week-dots → pill segments like Umax */
 .gu-week-row{display:flex;flex-direction:column;gap:4px;margin-top:0}
 .gu-dots{display:flex;align-items:center;gap:3px;width:100%}
 .gu-dot{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.10);border:none;transition:background .2s}
@@ -354,6 +336,12 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .gu-dot.today{box-shadow:0 0 0 2px rgba(139,92,246,.50)}
 .gu-dot-labels{display:flex;gap:3px}
 .gu-dot-label{flex:1;text-align:center;font-size:8px;font-weight:700;color:var(--muted);letter-spacing:0;text-transform:uppercase}
+.gu-home-week{margin-top:2px}
+.gu-momentum-status{display:flex;align-items:center;justify-content:center;min-height:27px;margin-top:4px;padding:5px 10px;border-radius:999px;font-size:10.5px;font-weight:800;line-height:1.2;text-align:center;letter-spacing:.005em;color:rgba(255,255,255,.80);background:rgba(0,0,0,.13);border:1px solid rgba(255,255,255,.10)}
+.gu-momentum-status.progress{color:#e9d5ff;border-color:rgba(216,180,254,.24);background:rgba(88,28,135,.18)}
+.gu-momentum-status.risk{color:#fed7aa;border-color:rgba(251,146,60,.50);background:rgba(124,45,18,.30)}
+.gu-momentum-status.done{color:#bbf7d0;border-color:rgba(74,222,128,.42);background:rgba(20,83,45,.28)}
+.gu-momentum-status.broken{color:#cbd5e1;border-color:rgba(148,163,184,.20);background:rgba(51,65,85,.24)}
 .gu-streak-mini{font-size:9.5px;font-weight:700;color:rgba(251,191,36,.80);margin-top:1px}
 /* step subtitle */
 .gu-step-sub{font-size:11px;color:var(--muted);font-weight:500;line-height:1.3;margin-top:1px}
@@ -1539,6 +1527,17 @@ html.fm-native #scoreRing{filter:drop-shadow(0 0 18px rgba(167,139,250,.22))}
 .quiz-proof-text b{color:var(--text)}
 /* =================================================================== */
 html.fm-quiz-active .topbar,html.fm-quiz-active .bottom{display:none!important}
+/* Never expose main-app chrome during onboarding/paywall, even if WKWebView
+   drops the transient html class for a frame after camera/StoreKit resume. */
+html:has(#quiz.screen.active) .topbar,html:has(#quiz.screen.active) .bottom,
+html:has(#genderSelect.screen.active) .topbar,html:has(#genderSelect.screen.active) .bottom,
+html:has(#capture.screen.active) .topbar,html:has(#capture.screen.active) .bottom,
+html:has(#quizResult.screen.active) .topbar,html:has(#quizResult.screen.active) .bottom,
+html:has(#quizAnalyze.screen.active) .topbar,html:has(#quizAnalyze.screen.active) .bottom,
+html:has(#prePay.screen.active) .topbar,html:has(#prePay.screen.active) .bottom,
+html:has(#quizPaywall.screen.active) .topbar,html:has(#quizPaywall.screen.active) .bottom,
+html:has(#loading.screen.active) .topbar,html:has(#loading.screen.active) .bottom{display:none!important}
+#quizPaywall.screen.active{animation:none!important}
 html.fm-quiz-active .app{padding-top:calc(env(safe-area-inset-top,0px) + 10px);padding-bottom:max(16px,env(safe-area-inset-bottom,0px));background:radial-gradient(70% 38% at 50% -10%,rgba(167,139,250,.18),transparent 70%),radial-gradient(60% 40% at 100% 50%,rgba(232,121,249,.08),transparent 60%),radial-gradient(50% 30% at 0% 80%,rgba(192,132,252,.06),transparent 60%),var(--bg)}
 #prePay.screen.active~*,#prePay.screen.active{--quiz-bg:var(--bg)}
 html.fm-quiz-active:has(#prePay.screen.active) .app{background:var(--bg)}
@@ -2443,11 +2442,11 @@ html.cam-active .app { background:transparent !important; }
 <style id="facemax-notification-inbox-v1">
 /* In-app Notification Center. Keeps retention messages accessible after the
    iOS banner disappears, without mixing notification settings into the inbox. */
-.home-inbox-row{display:flex;justify-content:flex-end;align-items:center;min-height:40px;margin:0 0 2px}
-.fm-notif-bell{position:relative;width:40px;height:40px;border:0;background:transparent;color:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:none;transition:transform .12s ease,opacity .12s ease}
+.home-inbox-row{position:fixed;right:18px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:72;width:40px;height:40px;margin:0;padding:0;pointer-events:none}
+.fm-notif-bell{position:relative;width:40px;height:40px;border:0;background:transparent;color:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:none;transition:transform .12s ease,opacity .12s ease;pointer-events:auto}
 .fm-notif-bell:active{transform:scale(.92);opacity:.72;background:transparent}
-.fm-notif-bell svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.fm-notif-bell.compact{position:absolute;right:0;top:0;width:40px;height:40px;box-shadow:none}
+.fm-notif-bell svg{width:21px;height:21px;display:block;fill:currentColor;stroke:none}
+.fm-notif-bell.compact{position:fixed;right:18px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:72;width:40px;height:40px;box-shadow:none}
 .fm-notif-badge{position:absolute;right:-5px;top:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid #100A14;font-size:10px;font-weight:850;line-height:14px;display:none;align-items:center;justify-content:center;letter-spacing:-.02em}
 .fm-notif-badge.show{display:flex}
 .notifications-screen{padding-bottom:8px}
@@ -2461,7 +2460,7 @@ html.cam-active .app { background:transparent !important; }
 .notif-item.unread{background:linear-gradient(145deg,rgba(139,92,246,.12),rgba(255,255,255,.05));border-color:rgba(196,181,253,.20)}
 .notif-item:active{background:rgba(255,255,255,.075)}
 .notif-item-icon{width:42px;height:42px;border-radius:14px;background:rgba(167,139,250,.12);color:#c4b5fd;display:grid;place-items:center;flex:0 0 42px}
-.notif-item-icon.streak{background:rgba(251,146,60,.13);color:#fb923c}.notif-item-icon.scan{background:rgba(96,165,250,.13);color:#60a5fa}.notif-item-icon.progress{background:rgba(74,222,128,.13);color:#4ade80}
+.notif-item-icon.streak{background:rgba(251,146,60,.13);color:#fb923c}.notif-item-icon.scan{background:rgba(96,165,250,.13);color:#60a5fa}.notif-item-icon.progress{background:rgba(74,222,128,.13);color:#4ade80}.notif-item-icon.achievement{background:rgba(251,191,36,.14);color:#fbbf24}
 .notif-item-icon svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .notif-item-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
 .notif-item-title{font-size:13.5px;font-weight:760;line-height:1.25;letter-spacing:-.015em}
@@ -2901,7 +2900,7 @@ html.cam-active .app { background:transparent !important; }
 
     <div class="home-inbox-row">
       <button type="button" class="fm-notif-bell" onclick="openNotificationInbox()" aria-label="Notifications">
-        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a5 5 0 0 0-5 5v2.7c0 2.65-.85 4.63-2.43 6.31A1.15 1.15 0 0 0 5.41 18h13.18a1.15 1.15 0 0 0 .84-1.99C17.85 14.33 17 12.35 17 9.7V7a5 5 0 0 0-5-5Zm-2.48 18a2.65 2.65 0 0 0 4.96 0H9.52Z"/></svg>
         <span class="fm-notif-badge" id="homeNotifBadge">0</span>
       </button>
     </div>
@@ -2990,11 +2989,6 @@ html.cam-active .app { background:transparent !important; }
               <div class="gu-progress-row">
                 <div class="gu-progress-bar"><div class="gu-progress-fill" id="guProgressFill" style="width:0%"></div></div>
                 <span class="gu-progress-label" id="guProgressLabel">0 / 6 done</span>
-              </div>
-              <!-- Weekly completion strip: a day lights up only when today's plan is completed. -->
-              <div class="gu-week-row gu-home-week" id="guHomeWeekRow">
-                <div class="gu-dots" id="guWeekDots"></div>
-                <div class="gu-dot-labels" id="guWeekLabels"></div>
               </div>
               <div class="gu-momentum-status progress" id="guMomentumStatus">Complete today's plan to build your streak</div>
               <!-- streak callout (shown when streak >= 1, sits at bottom of card) -->
@@ -3508,7 +3502,7 @@ html.cam-active .app { background:transparent !important; }
     <div class="stb-logo"><img src="assets/logo.png" alt=""></div>
     <span class="stb-title">Profile</span>
     <button type="button" class="fm-notif-bell compact" onclick="openNotificationInbox()" aria-label="Notifications">
-      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a5 5 0 0 0-5 5v2.7c0 2.65-.85 4.63-2.43 6.31A1.15 1.15 0 0 0 5.41 18h13.18a1.15 1.15 0 0 0 .84-1.99C17.85 14.33 17 12.35 17 9.7V7a5 5 0 0 0-5-5Zm-2.48 18a2.65 2.65 0 0 0 4.96 0H9.52Z"/></svg>
       <span class="fm-notif-badge" id="profileNotifBadge">0</span>
     </button>
   </div>
@@ -3881,15 +3875,6 @@ html.cam-active .app { background:transparent !important; }
   <div id="ghChips" style="display:none"></div>
 
 </section>
-
-<div class="gu-complete-overlay" id="guCompletionOverlay" aria-hidden="true">
-  <div class="gu-complete-pop">
-    <div class="gu-complete-fire">🔥</div>
-    <div class="gu-complete-count" id="guCompletionCount">1</div>
-    <div class="gu-complete-label">Day streak</div>
-    <div class="gu-complete-sub">Today's plan complete</div>
-  </div>
-</div>
 
 <!-- =============================== FOOD SCAN =============================== -->
 <section id="foodScan" class="screen">
@@ -4708,6 +4693,8 @@ function saveToHistory(score, thumbData, extra){
   scanHistory.unshift(entry);
   if (scanHistory.length > 90) scanHistory = scanHistory.slice(0, 90);
   try { localStorage.setItem("facemax_history", JSON.stringify(scanHistory)); } catch {}
+  // A fresh scan can unlock scan-count / score achievements immediately.
+  try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch {}
   // A fresh scan changes "days since last scan" — re-pick notification copy.
   try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch {}
 }
@@ -4885,13 +4872,13 @@ function _guIsValidAiPlanData(data) {
   if (!data || typeof data !== "object") return false;
   if (!String(data.focus || "").trim() || !String(data.motivation || "").trim()) return false;
   if (!String(data.food_tip || "").trim() || !String(data.face_tip || "").trim()) return false;
-  if (!Array.isArray(data.steps) || data.steps.length < 3 || data.steps.length > 6) return false;
+  if (!Array.isArray(data.steps) || data.steps.length !== 6) return false;
   for (const step of data.steps) {
     const sticker = String(step && step.e || "").trim();
     if (!_guHasAiSticker(sticker)) return false;
     if (!String(step && step.label || "").trim() || !String(step && step.sub || "").trim()) return false;
   }
-  return Array.isArray(data.chips) && data.chips.length === 3;
+  return Array.isArray(data.chips) && data.chips.length === 8;
 }
 
 // Clear stale plan cache entries: remove plans older than 2 days + invalid schema
@@ -4931,7 +4918,7 @@ async function _fetchAiGlowPlan(last, _premiumRetried) {
   // Cache key includes the local calendar date — a new plan is requested after
   // local midnight or after a new scan, never during the same day.
   const today = new Date().toLocaleDateString('en-CA'); // local TZ, not UTC
-  const PLAN_VER = "v8"; // quiz-personalized plan length + validated AI-selected task stickers
+  const PLAN_VER = "v9"; // classic 6-task layout + 8 AI metric coaching cards
   const dailyKey = cacheKey + "_" + today + "_" + PLAN_VER + "_" + _fmPreferenceSignature();
 
   // 1) check in-memory first
@@ -5213,24 +5200,12 @@ function _guSavePlanTotal(total) {
   } catch {}
 }
 function _guExpectedPlanTotal() {
-  // Same mapping used by the Worker. This gives Home the right progress total
-  // even before the user opens the AI plan for the first time today.
-  try {
-    const answers = (typeof _fmLoadQuizAnswers === "function") ? _fmLoadQuizAnswers() : (window.quizState?.answers || {});
-    const mins = Number(answers && answers.commitment);
-    if (Number.isFinite(mins) && mins > 0) return mins <= 5 ? 3 : mins <= 10 ? 4 : mins <= 20 ? 5 : 6;
-  } catch {}
+  // Classic Glow Up layout always shows six actionable cards. Questionnaire
+  // time still personalises intensity/wording, not how many cards disappear.
   return 6;
 }
 function _guGetPlanTotal() {
-  try {
-    const key = _guPlanTotalStorageKey();
-    const stored = key ? Number(localStorage.getItem(key)) : NaN;
-    if (Number.isFinite(stored) && stored >= 1 && stored <= 12) return stored;
-  } catch {}
-  const dynamic = Number(_guCurrentTotal);
-  if (Number.isFinite(dynamic) && dynamic >= 3 && dynamic <= 6 && dynamic !== 6) return dynamic;
-  return _guExpectedPlanTotal();
+  return 6;
 }
 function _guGetCommitmentMinutes() {
   try {
@@ -5289,11 +5264,7 @@ function _guCompleteToday(animate) {
   if (s.lastDate === today) return false; // already secured
   const count = _guUpdateStreak();
   _guMarkWeekToday();
-  try {
-    if ([3,7,14,30,60,100].includes(Number(count))) {
-      fmInboxAdd({ key:`streak-milestone:${count}`, title:`${count}-day streak secured 🔥`, body:"Consistency is building. Keep tomorrow's plan going.", route:"glowupHub", type:"progress", ts:Date.now() });
-    }
-  } catch {}
+  try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch {}
   _guClearBrokenStreak();
   try { localStorage.setItem("gu_last_completed_day", today); } catch {}
   if (animate) _guShowCompletionCelebration(count);
@@ -5567,10 +5538,12 @@ function renderGlowUpPlan(){
   const momentum = _guBuildMomentumState();
   const momentumEl = el("guMomentumStatus");
   if (momentumEl) {
+    momentumEl.style.display = "flex";
     momentumEl.classList.remove("progress","risk","done","broken");
     if (momentum.completedToday) {
-      momentumEl.classList.add("done");
-      momentumEl.textContent = `✓ Day complete · ${momentum.streak}-day streak secured`;
+      // The large white streak row below is the completion state. Avoid duplicating it
+      // with a smaller green "Day complete" pill.
+      momentumEl.style.display = "none";
     } else if (momentum.atRisk && momentum.isEvening) {
       momentumEl.classList.add("risk");
       momentumEl.textContent = `🔥 ${momentum.left} ${momentum.left === 1 ? "step" : "steps"} left · streak at risk tonight`;
@@ -6391,17 +6364,15 @@ window.goBack = function(){
 };
 
 window.openScreen = function(id){
+  // Apply the onboarding/paywall chrome lock before touching visible screens.
+  // This makes Quiz → prePay → paywall atomic on WKWebView: the Home tab bar
+  // never gets a paint opportunity between the two screens.
+  const QUIZ_SCREENS = new Set(["quiz", "quizPaywall", "prePay", "capture", "genderSelect", "quizResult", "quizAnalyze", "loading"]);
+  const isQuizScreen = QUIZ_SCREENS.has(id);
+  document.documentElement.classList.toggle("fm-quiz-active", isQuizScreen);
+  document.documentElement.classList.toggle("fm-fixed-screen", id === "genderSelect" || id === "capture" || id === "quiz");
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   el(id)?.classList.add("active");
-  // Gender select + capture lock to the viewport height (no page scroll).
-  document.documentElement.classList.toggle("fm-fixed-screen", id === "genderSelect" || id === "capture" || id === "quiz");
-  // Keep quiz/onboarding chrome state derived from the destination screen.
-  // iOS can restore WKWebView after the native camera/photo picker and lose
-  // transient <html> classes while leaving the capture DOM active. Previously
-  // openScreen("capture") only avoided REMOVING fm-quiz-active; it never added
-  // it back, so the app bottom nav could flash for one frame before prePay.
-  const QUIZ_SCREENS = new Set(["quiz", "quizPaywall", "prePay", "capture", "genderSelect", "quizResult", "quizAnalyze", "loading"]);
-  document.documentElement.classList.toggle("fm-quiz-active", QUIZ_SCREENS.has(id));
   const tabId = NAV_TAB_FOR_SCREEN[id];
   if (tabId) setActiveNavTab(tabId);
   window.scrollTo(0, 0);
@@ -6837,11 +6808,6 @@ function _fmQuizLabel(list, value){
   return hit ? hit[1] : "";
 }
 function _fmPlanTargetSteps(answers){
-  const a = answers || _fmLoadQuizAnswers();
-  const n = Number(a.commitment);
-  if (n <= 5) return 3;
-  if (n <= 10) return 4;
-  if (n <= 20) return 5;
   return 6;
 }
 function _fmPersonalFocusSummary(answers){
@@ -6958,6 +6924,7 @@ function _fmInboxMetaForId(id, extra){
   if (n === ids.RESCAN_7D || n === ids.WINBACK_7D || n === ids.WINBACK_14D) return { route:"upload", type:"scan" };
   if (n === ids.STREAK || n === ids.EVENING || n === ids.WINBACK_3D) return { route:"glowupHub", type:"streak" };
   if (n === ids.DAILY) return { route:"glowupHub", type:"plan" };
+  if (n >= 1300 && n < 1400) return { route:"daily", type:"achievement" };
   return { route:"home", type:"plan" };
 }
 function fmInboxAdd(item){
@@ -6988,6 +6955,7 @@ function fmInboxAdd(item){
   return key;
 }
 function _fmInboxIcon(type){
+  if (type === "achievement") return '<svg viewBox="0 0 24 24"><path d="M8 4h8v3a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5v1a4 4 0 0 0 4 4M16 6h3v1a4 4 0 0 1-4 4M12 11v5M9 20h6M10 16h4"/></svg>';
   if (type === "streak") return '<svg viewBox="0 0 24 24"><path d="M13 3s1 3-2 5c-2 1-4 3-4 6a5 5 0 0 0 10 0c0-2-1-4-4-6 1 3-1 4-1 4s0-3-3-5"/></svg>';
   if (type === "scan") return '<svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><circle cx="12" cy="11" r="3"/><path d="M7.5 17c1.1-2 2.6-3 4.5-3s3.4 1 4.5 3"/></svg>';
   if (type === "progress") return '<svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>';
@@ -7038,6 +7006,7 @@ function _fmInboxNavigate(route){
   if (r === "glowupHub") { if (typeof window.openGlowUpHub === "function") return window.openGlowUpHub(); return openScreen("home"); }
   if (r === "upload") return openScreen("upload");
   if (r === "profile") return openScreen("profile");
+  if (r === "daily") { if (typeof window.openDailyHub === "function") return window.openDailyHub(); return openScreen("daily"); }
   return openScreen("home");
 }
 function openNotificationItem(index){
@@ -7053,7 +7022,7 @@ async function fmInboxSyncDelivered(){
       const id = Number(n && n.id);
       if (!(id >= 1000 && id < 2000)) return;
       const meta = _fmInboxMetaForId(id, n.extra || {});
-      fmInboxAdd({ notifId:id, title:n.title || "FaceMax AI", body:n.body || "", extra:n.extra || {}, route:meta.route, type:meta.type, ts:Date.now() });
+      fmInboxAdd({ key:n?.extra?.inboxKey || undefined, notifId:id, title:n.title || "FaceMax AI", body:n.body || "", extra:n.extra || {}, route:meta.route, type:meta.type, ts:Date.now() });
     });
   } catch {}
 }
@@ -7068,7 +7037,7 @@ window.addEventListener("facemax:local-notification", function(evt){
     const payload = detail.notification || (detail.action && detail.action.notification) || detail.action || {};
     if (!payload || !payload.title) return;
     const meta = _fmInboxMetaForId(payload.id, payload.extra || {});
-    const key = fmInboxAdd({ notifId:payload.id, title:payload.title, body:payload.body || "", extra:payload.extra || {}, route:meta.route, type:meta.type, ts:Date.now(), read:detail.kind === "action" });
+    const key = fmInboxAdd({ key:payload?.extra?.inboxKey || undefined, notifId:payload.id, title:payload.title, body:payload.body || "", extra:payload.extra || {}, route:meta.route, type:meta.type, ts:Date.now(), read:detail.kind === "action" });
     if (detail.kind === "action") {
       const items = fmInboxLoad(); const hit = items.find(x=>x && x.key===key); if (hit) { hit.read=true; fmInboxSave(items); }
       updateNotificationBadges();
@@ -8261,6 +8230,7 @@ window.startScan = async function(_premiumChecked){
   // capture automatically after purchase.
   if (!_premiumChecked) {
     if (onbState && onbState.flow === "onboarding") {
+      document.documentElement.classList.add("fm-quiz-active");
       const active = await checkPremium(false).catch(() => hasUnlockedAccess());
       if (!active && !hasUnlockedAccess()) {
         onbState.pendingScan = true;
@@ -9948,18 +9918,15 @@ function refreshDailyGreeting(){
 function premiumGate(title, msg, resumeAction){ showGate(title, msg, resumeAction); return false; }
 
 // ── Daily Achievements ─────────────────────────────────────────────────────
-function renderDailyAchievements() {
-  const grid = el("dailyAchievGrid");
-  const countEl = el("dailyAchievCount");
-  if (!grid) return;
+const FM_ACHIEVEMENT_UNLOCKS_KEY = "facemax_achievement_unlocks_v1";
 
+function _fmAchievementData(){
   const exStreak = exerciseStreakCount ? exerciseStreakCount() : 0;
   const wStreak  = waterStreakCount   ? waterStreakCount()    : 0;
   const guStreak = (typeof _guGetStreak === "function") ? _guGetStreak().count : 0;
   const scans    = (scanHistory && scanHistory.length) ? scanHistory.length : 0;
   const topScore = scans ? Math.max(...scanHistory.map(s => Number(s.score) || 0)) : 0;
-
-  const ACHIEVEMENTS = [
+  return [
     // ── Exercise streak ──
     { id:"ex3",   icon:"🔥", label:"On Fire",        desc:"3-day exercise streak",   type:"ex",  target:3,   current:exStreak },
     { id:"ex7",   icon:"🥇", label:"Week Warrior",   desc:"7-day exercise streak",   type:"ex",  target:7,   current:exStreak },
@@ -9988,11 +9955,87 @@ function renderDailyAchievements() {
     { id:"s10",   icon:"🎞️", label:"Scan Addict",    desc:"10 face scans completed",        type:"scan", target:10, current:scans },
     { id:"s20",   icon:"🧬", label:"Data Driven",    desc:"20 face scans completed",        type:"scan", target:20, current:scans },
     // ── Score milestones ──
-    { id:"sc80",  icon:"⚡️", label:"High Scorer",    desc:"Face score reached 80+",  type:"score", target:80,  current:topScore },
-    { id:"sc90",  icon:"⭐️", label:"Elite Glow",     desc:"Face score reached 90+",  type:"score", target:90,  current:topScore },
-    { id:"sc95",  icon:"💫", label:"Untouchable",    desc:"Face score reached 95+",  type:"score", target:95,  current:topScore },
+    { id:"sc80",  icon:"⚡️", label:"High Scorer",    desc:"Face score reached 80+",  type:"score", target:80, current:topScore },
+    { id:"sc90",  icon:"⭐️", label:"Elite Glow",     desc:"Face score reached 90+",  type:"score", target:90, current:topScore },
+    { id:"sc95",  icon:"💫", label:"Untouchable",    desc:"Face score reached 95+",  type:"score", target:95, current:topScore },
   ];
+}
 
+function _fmAchievementSeen(){
+  try {
+    const raw = localStorage.getItem(FM_ACHIEVEMENT_UNLOCKS_KEY);
+    if (raw === null) return null;
+    const arr = JSON.parse(raw || "[]");
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+function _fmAchievementSaveSeen(ids){
+  try { localStorage.setItem(FM_ACHIEVEMENT_UNLOCKS_KEY, JSON.stringify(Array.from(new Set(ids || [])))); } catch {}
+}
+function _fmAchievementNotifId(id){
+  const defs = _fmAchievementData();
+  const idx = Math.max(0, defs.findIndex(a => a.id === id));
+  return 1300 + Math.min(99, idx);
+}
+async function _fmPushAchievement(a){
+  try {
+    if (!a || !window.facemax?.notif?.isAvailable?.()) return;
+    // The user's Smart Reminders switch is the in-app opt-in for banners.
+    // Inbox entries are still created even when system banners are disabled.
+    if (!notifLoadPrefs().dailyOn) return;
+    const perm = await window.facemax.notif.getPermission();
+    if (!perm || perm.display !== "granted") return;
+    const extra = { route:"daily", inboxType:"achievement", inboxKey:`achievement:${a.id}` };
+    if (typeof window.facemax.notif.notifyNow === "function") {
+      await window.facemax.notif.notifyNow({
+        id:_fmAchievementNotifId(a.id),
+        title:`Achievement unlocked ${a.icon}`,
+        body:`${a.label} — ${a.desc}`,
+        extra,
+      });
+    }
+  } catch {}
+}
+function _fmSyncAchievementUnlocks(opts){
+  const defs = _fmAchievementData();
+  const unlocked = defs.filter(a => Number(a.current) >= Number(a.target));
+  let seen = _fmAchievementSeen();
+  // Migration/bootstrap: don't blast existing users with every old achievement
+  // the first time they open a build that contains achievement notifications.
+  if (seen === null) {
+    _fmAchievementSaveSeen(unlocked.map(a => a.id));
+    return [];
+  }
+  const seenSet = new Set(seen);
+  const fresh = unlocked.filter(a => !seenSet.has(a.id));
+  if (!fresh.length) return [];
+  fresh.forEach(a => seenSet.add(a.id));
+  _fmAchievementSaveSeen([...seenSet]);
+  fresh.forEach(a => {
+    fmInboxAdd({
+      key:`achievement:${a.id}`,
+      title:`Achievement unlocked ${a.icon}`,
+      body:`${a.label} — ${a.desc}`,
+      route:"daily",
+      type:"achievement",
+      ts:Date.now(),
+    });
+    _fmPushAchievement(a);
+  });
+  if (!(opts && opts.silentToast)) {
+    if (fresh.length === 1) showToast(`${fresh[0].icon} Achievement unlocked: ${fresh[0].label}`);
+    else showToast(`🏆 ${fresh.length} achievements unlocked`);
+  }
+  return fresh;
+}
+window._fmSyncAchievementUnlocks = _fmSyncAchievementUnlocks;
+
+function renderDailyAchievements() {
+  const grid = el("dailyAchievGrid");
+  const countEl = el("dailyAchievCount");
+  if (!grid) return;
+
+  const ACHIEVEMENTS = _fmAchievementData();
   const done   = ACHIEVEMENTS.filter(a => a.current >= a.target).length;
   const total  = ACHIEVEMENTS.length;
   if (countEl) countEl.textContent = `${done} / ${total}`;
@@ -11455,6 +11498,7 @@ window.setWater = function(val){
   writeWaterLog(log);
   renderWater();
   refreshDailyTiles();
+  try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch {}
 };
 window.addWater = function(delta){
   const log = readWaterLog();
@@ -11465,6 +11509,7 @@ window.addWater = function(delta){
   if (delta > 0 && next === WATER_GOAL) showToast("Daily hydration goal hit");
   renderWater();
   refreshDailyTiles();
+  try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch {}
 };
 
 // ---------- Morning routine ----------
@@ -11653,6 +11698,7 @@ window.markExerciseDone = function(id){
   renderExerciseList();
   renderExerciseWeekTracker();
   refreshDailyTiles();
+  try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch {}
 };
 
 window.openExerciseDetail = function(id){
@@ -13939,6 +13985,9 @@ window.centerFaceInAvatar = centerFaceInAvatar;
 // ---------- BOOTSTRAP ----------
 loadHistory();
 try { loadHistory(); } catch {}
+// Snapshot achievements already earned before this feature existed so an
+// update does not spam old unlocks. New unlocks after this point notify once.
+try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks({ silentToast:true }); } catch {}
 try { _guGetStreak(); _guEnsureCompletionState(); } catch {}
 renderHomeHistory();
 renderHomeStats();

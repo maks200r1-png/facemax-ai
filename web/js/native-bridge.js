@@ -1069,6 +1069,27 @@
       catch (e) { /* ignore */ }
     },
 
+    // Show a one-off notification immediately (used for achievements).
+    // The caller is still responsible for respecting the app-level opt-in.
+    async notifyNow({ id, title, body, extra }) {
+      const p = notifPlugin();
+      if (!p || !facemax.native) return false;
+      try {
+        await this.cancel(id);
+        await p.schedule({
+          notifications: [{
+            id,
+            title: String(title || "FaceMax AI"),
+            body: String(body || ""),
+            sound: "default",
+            smallIcon: "ic_stat_icon",
+            extra: (extra && typeof extra === "object") ? extra : undefined,
+          }],
+        });
+        return true;
+      } catch (e) { return false; }
+    },
+
     // Schedule a notification at a specific Date. Cancels any prior with same id.
     async scheduleAt({ id, at, title, body, extra }) {
       const p = notifPlugin();

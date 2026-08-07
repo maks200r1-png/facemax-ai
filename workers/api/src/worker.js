@@ -2109,7 +2109,7 @@ const GLOW_PLAN_RESPONSE_FORMAT = {
         motivation: { type: "string", minLength: 1 },
         steps: {
           type: "array",
-          minItems: 3,
+          minItems: 6,
           maxItems: 6,
           items: {
             type: "object",
@@ -2128,8 +2128,8 @@ const GLOW_PLAN_RESPONSE_FORMAT = {
         },
         chips: {
           type: "array",
-          minItems: 3,
-          maxItems: 3,
+          minItems: 8,
+          maxItems: 8,
           items: {
             type: "object",
             additionalProperties: false,
@@ -2314,7 +2314,9 @@ async function glowPlan(request, env) {
   };
   const commitmentRaw = Number(profile.commitment_minutes);
   const commitment = Number.isFinite(commitmentRaw) && commitmentRaw > 0 ? Math.round(commitmentRaw) : null;
-  const targetSteps = commitment == null ? 6 : commitment <= 5 ? 3 : commitment <= 10 ? 4 : commitment <= 20 ? 5 : 6;
+  // Classic Glow Up layout always renders six action cards. Commitment still
+  // controls how demanding/compact the actions are, not how many cards vanish.
+  const targetSteps = 6;
 
   // Validate and extract thumbnail for vision context
   const thumbRaw = String(body.thumb || "");
@@ -2372,7 +2374,8 @@ ${profile.commitment_minutes ? `Available daily time: ${profile.commitment_minut
 
 VARIETY DIRECTIVE:
 - Select today's approach only from the user's current weakest metrics, visible photo context, recent score changes and completion history. Do not rotate through a prewritten day-of-week topic list.
-- The ${targetSteps} steps must not all be the same generic actions. Use a varied set of safe actions only when each one is justified by this user's data.
+- The six steps must not all be the same generic actions. Use a varied set of safe actions only when each one is justified by this user's data.
+- Respect the stated daily time by making each action shorter/lighter when time is limited; do not reduce the six-card layout.
 - Include a nutrition-specific step only when nutrition plausibly addresses the current weakest area; otherwise use a more relevant action.
 
 QUESTIONNAIRE BOUNDARY:
@@ -2410,15 +2413,15 @@ Use independent reasoning from the supplied data. Do not copy a canned example p
 Output rules:
 - focus: 4–6 words — name the specific issue clearly; generate the wording from this user's data rather than copying a canned label
 - motivation: 1 punchy sentence. If score dropped → call it out by name and pts. If improved → celebrate it. Reference their actual lowest metric.
-- steps: exactly ${targetSteps} steps to fit the user's stated daily time. Order by impact, highest-ROI first. Do not default to the same actions every time. Pick only actions justified by today's lowest metrics and context. At least 2 steps should be specific rather than generic, using safe food, exercise, grooming, breathing or skincare techniques where relevant.
-  - e: exactly one emoji/sticker selected by you to match this exact action. Choose it independently from the wording and do not repeat an emoji across the ${targetSteps} steps.
+- steps: exactly 6 steps. Order by impact, highest-ROI first. Fit the user's stated daily time by adjusting the duration/intensity of each action, not by removing cards. Do not default to the same actions every time. Pick only actions justified by today's lowest metrics and context. At least 2 steps should be specific rather than generic, using safe food, exercise, grooming, breathing or skincare techniques where relevant.
+  - e: exactly one emoji/sticker selected by you to match this exact action. Choose it independently from the wording and do not repeat an emoji across the 6 steps.
   - label: 5–8 words, specific action
   - sub: max 8 words explaining why this action fits the user
   - area: root issue — one of: depuff | water_retention | face_fat | skin | jawline | eyes | cheekbones | symmetry | harmony | nutrition | sleep | overall
-- chips: exactly 3. Pick the 3 lowest-scoring metrics. Each chip:
-  - label: metric name
-  - score: their actual score number
-  - note: 1 ultra-short specific action justified by that metric and the rest of the user context
+- chips: exactly 8 coaching cards, in this exact order and with these exact labels: Jawline, Potential, Cheekbones, Eyes, Nose, Skin, Symmetry, Harmony.
+  - score: use the supplied metric score; Potential is the displayed glow-up potential derived from overall score.
+  - note: 1 ultra-short specific AI-generated action for that metric, justified by the metric plus the rest of the user context.
+  - Never omit a card just because its score is already good; for strong metrics give a maintenance/protection action rather than a generic compliment.
 - food_tip: 1 sentence tied directly to the weakest area. Start with emoji. Be specific (name the food/ingredient, not just "eat healthy").
 - face_tip: 1 sentence technique for today's specific issue. Start with emoji. Choose and name the exact technique independently; do not draw from a fixed list.
 - skin_tip: 1 sentence skincare step — only include if skin score < 75, otherwise null. Start with emoji.
@@ -2431,9 +2434,14 @@ Return ONLY valid JSON, no markdown fences:
 ${Array.from({ length: targetSteps }, () => '    { "e": "single emoji", "label": "string", "sub": "string", "area": "string" }').join(",\n")}
   ],
   "chips": [
-    { "label": "string", "score": number, "note": "string" },
-    { "label": "string", "score": number, "note": "string" },
-    { "label": "string", "score": number, "note": "string" }
+    { "label": "Jawline", "score": number, "note": "string" },
+    { "label": "Potential", "score": number, "note": "string" },
+    { "label": "Cheekbones", "score": number, "note": "string" },
+    { "label": "Eyes", "score": number, "note": "string" },
+    { "label": "Nose", "score": number, "note": "string" },
+    { "label": "Skin", "score": number, "note": "string" },
+    { "label": "Symmetry", "score": number, "note": "string" },
+    { "label": "Harmony", "score": number, "note": "string" }
   ],
   "food_tip": "string",
   "face_tip": "string",
@@ -2470,16 +2478,30 @@ ${Array.from({ length: targetSteps }, () => '    { "e": "single emoji", "label":
       : [];
     if (steps.length !== targetSteps) throw new Error(`Glow plan must contain exactly ${targetSteps} steps`);
 
-    const chips = Array.isArray(parsed.chips)
-      ? parsed.chips.slice(0, 3).map((c, index) => {
-          const label = String(c?.label || "").trim();
-          const note = String(c?.note || "").trim();
-          const score = Number(c?.score);
-          if (!label || !note || !Number.isFinite(score)) throw new Error(`Invalid glow chip ${index + 1}`);
-          return { label, score: Math.max(0, Math.min(100, Math.round(score))), note };
-        })
-      : [];
-    if (chips.length !== 3) throw new Error("Glow plan must contain exactly 3 metric chips");
+    const chipDefs = [
+      ["Jawline", Number(m.jawline)],
+      ["Potential", Math.min(100, overall + 9)],
+      ["Cheekbones", Number(m.cheekbones)],
+      ["Eyes", Number(m.eyes ?? m.eye_area)],
+      ["Nose", Number(m.nose)],
+      ["Skin", Number(m.skin)],
+      ["Symmetry", Number(m.symmetry)],
+      ["Harmony", Number(m.harmony)],
+    ];
+    const parsedChips = Array.isArray(parsed.chips) ? parsed.chips : [];
+    if (parsedChips.length !== 8) throw new Error("Glow plan must contain exactly 8 metric coaching cards");
+    const chipByLabel = new Map(parsedChips.map((c, index) => {
+      const label = String(c?.label || "").trim();
+      const note = String(c?.note || "").trim();
+      if (!label || !note) throw new Error(`Invalid glow chip ${index + 1}`);
+      return [label.toLowerCase(), { label, note }];
+    }));
+    const chips = chipDefs.map(([label, sourceScore], index) => {
+      const ai = chipByLabel.get(label.toLowerCase());
+      if (!ai || !ai.note) throw new Error(`Missing glow coaching card: ${label}`);
+      const score = Number.isFinite(sourceScore) ? sourceScore : overall;
+      return { label, score: Math.max(0, Math.min(100, Math.round(score))), note: ai.note };
+    });
 
     const focus = String(parsed.focus || "").trim();
     const motivation = String(parsed.motivation || "").trim();

@@ -364,13 +364,13 @@ async function testStaticPaywallAndGates() {
   for (const name of windowPaidFunctions) {
     const start = html.indexOf(`window.${name} = async function`);
     assert.notEqual(start, -1, `${name} must be async and gated`);
-    const chunk = html.slice(start, start + 950);
+    const chunk = html.slice(start, start + 1400);
     assert.match(chunk, /ensurePremiumForAction/, `${name} must call the common premium gate`);
   }
   for (const name of ['generateMealPlan', 'startGenderScan']) {
     const start = html.indexOf(`async function ${name}`);
     assert.notEqual(start, -1, `${name} must be async and gated`);
-    const chunk = html.slice(start, start + 950);
+    const chunk = html.slice(start, start + 1400);
     assert.match(chunk, /ensurePremiumForAction/, `${name} must call the common premium gate`);
   }
 

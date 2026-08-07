@@ -5,9 +5,11 @@ const must = (cond, msg) => { if (!cond) throw new Error(msg); };
 must(html.includes("Smart reminders"), "Smart reminders label missing");
 must(html.includes("Goals &amp; preferences"), "Goals & preferences UI missing");
 must(html.includes("_fmPlanTargetSteps"), "plan target-step helper missing");
-must(html.includes('PLAN_VER = "v8"'), "new personalized cache version missing");
-must(html.includes('data.steps.length < 3 || data.steps.length > 6'), "frontend variable step validation missing");
-must(worker.includes("const targetSteps = commitment == null ? 6 : commitment <= 5 ? 3 : commitment <= 10 ? 4 : commitment <= 20 ? 5 : 6"), "worker target step mapping missing");
+must(html.includes('PLAN_VER = "v9"'), "new Glow plan cache version missing");
+must(html.includes('data.steps.length !== 6'), "frontend fixed six-step validation missing");
+must(worker.includes("const targetSteps = 6"), "worker must preserve classic six-card plan length");
+must(html.includes("data.chips.length === 8"), "frontend must require all eight AI metric coaching cards");
+must(worker.includes("exactly 8 metric coaching cards"), "worker must return all eight metric coaching cards");
 must(worker.includes("Questionnaire answers are preference/context signals ONLY"), "worker questionnaire scoring boundary missing");
 // Face Scan request must stay isolated from questionnaire data.
 const faceFnStart = html.indexOf("async function fetchGeminiScan");
