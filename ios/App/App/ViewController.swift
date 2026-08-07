@@ -21,6 +21,18 @@ class ViewController: CAPBridgeViewController {
             webView.isOpaque = false
             webView.backgroundColor = .clear
             webView.scrollView.backgroundColor = .clear
+
+            // The HTML already handles the notch / home-indicator with CSS
+            // env(safe-area-inset-*). Letting UIScrollView also apply an
+            // automatic content inset means iOS can temporarily double-adjust
+            // the WebView after StoreKit/system sheets or foreground transitions,
+            // which makes the fixed bottom navigation jump below the viewport.
+            webView.scrollView.contentInsetAdjustmentBehavior = .never
+            webView.scrollView.contentInset = .zero
+            webView.scrollView.scrollIndicatorInsets = .zero
+            if #available(iOS 13.0, *) {
+                webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = false
+            }
         }
     }
 }

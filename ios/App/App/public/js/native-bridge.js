@@ -209,6 +209,8 @@
           await CameraOval.startEmbedded({
             x: rect.x, y: rect.y, width: rect.width, height: rect.height,
             direction: opts.direction || "FRONT",
+            shape: opts.shape || "OVAL",
+            adaptiveZoom: opts.adaptiveZoom !== false,
           });
           if (typeof window.fmLog === "function") window.fmLog("info", "CameraOval.startEmbedded() resolved OK");
           active = true;
@@ -271,7 +273,7 @@
             video.setAttribute("playsinline", "");
             video.setAttribute("autoplay", "");
             video.muted = true;
-            video.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);";
+            video.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:" + ((opts.direction === "BACK") ? "none" : "scaleX(-1)") + ";";
             el.insertBefore(video, el.firstChild);
           }
           video.srcObject = stream;
@@ -450,10 +452,10 @@
           _lastPriceError = "RevenueCat API key not configured (window.FACEMAX_REVENUECAT_API_KEY is empty).";
           return false;
         }
-        // TEMP DIAGNOSTIC: verbose RC logs go to Xcode/Console.app so the
-        // underlying StoreKit error (not just "empty offerings") is visible
-        // when connected to a Mac. Safe to leave in during debugging.
-        try { await Purchases.setLogLevel({ level: "VERBOSE" }); } catch (_) {}
+        // Keep RevenueCat logging quiet in TestFlight/production. VERBOSE can
+        // generate a large burst of native logs around StoreKit transaction
+        // updates/renewals and adds needless work while the WebView is resuming.
+        try { await Purchases.setLogLevel({ level: "WARN" }); } catch (_) {}
         await Purchases.configure({ apiKey, appUserID: userId || null });
         _rcConfiguredUserId = userId || null;
         // ── Warmup: fetch offerings immediately after configure() so the SDK

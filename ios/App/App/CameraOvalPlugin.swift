@@ -48,6 +48,11 @@ final class CameraOvalEmbeddedView: UIView {
     weak var webView: WKWebView?
 
     private(set) var cameraPosition: AVCaptureDevice.Position = .front
+    // OVAL is used by the face scanner. RECT is used by the Food Scanner's
+    // full-screen camera, where the native preview must fill the viewport with
+    // no oval/frame clipping.
+    private(set) var previewShape: String = "OVAL"
+    private(set) var adaptiveZoomEnabled: Bool = true
     private let session = AVCaptureSession()
     private let photoOutput = AVCapturePhotoOutput()
     private var previewLayer: AVCaptureVideoPreviewLayer?
@@ -74,8 +79,10 @@ final class CameraOvalEmbeddedView: UIView {
     // face is visible with .resizeAspectFill).
     private var ovalAspectRatio: CGFloat = 230.0 / 300.0
 
-    func configure(position: AVCaptureDevice.Position, ovalAspectRatio: CGFloat? = nil) {
+    func configure(position: AVCaptureDevice.Position, ovalAspectRatio: CGFloat? = nil, shape: String = "OVAL", adaptiveZoom: Bool = true) {
         cameraPosition = position
+        previewShape = (shape.uppercased() == "RECT") ? "RECT" : "OVAL"
+        adaptiveZoomEnabled = adaptiveZoom
         if let ratio = ovalAspectRatio, ratio > 0 {
             self.ovalAspectRatio = ratio
         }
@@ -84,7 +91,9 @@ final class CameraOvalEmbeddedView: UIView {
         // WebView immediately — that IS the black screen. We switch to .black only
         // once onSessionStarted fires (i.e. the preview layer has live pixels).
         backgroundColor = .clear
-        layer.mask = maskLayer
+        // Face scan keeps the existing CSS-matched oval mask; Food Scanner
+        // requests RECT so the live rear-camera preview is truly full-screen.
+        layer.mask = (previewShape == "RECT") ? nil : maskLayer
 
         let layer = AVCaptureVideoPreviewLayer(session: session)
         layer.videoGravity = .resizeAspectFill
@@ -209,7 +218,11 @@ final class CameraOvalEmbeddedView: UIView {
             guard let self = self else { return }
             self.previewLayer?.connection?.automaticallyAdjustsVideoMirroring = false
             self.previewLayer?.connection?.isVideoMirrored = (self.cameraPosition == .front)
-            self.applyAdaptiveZoom(to: liveDevice)
+            // The adaptive face-framing zoom is useful only for the oval selfie
+            // camera. A meal camera must show the real rear-camera field of view.
+            if self.adaptiveZoomEnabled && self.previewShape != "RECT" {
+                self.applyAdaptiveZoom(to: liveDevice)
+            }
             // Notify insertEmbedded that the session is running and first frames
             // are arriving. The JS promise only resolves at this point, so the
             // webview never goes transparent before there is a real camera feed
@@ -321,6 +334,15 @@ final class CameraOvalEmbeddedView: UIView {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         previewLayer?.frame = bounds
+        if previewShape == "RECT" {
+            // Full-screen Food Scanner camera: no native clipping/mask at all.
+            layer.mask = nil
+            maskLayer.path = nil
+            maskLayer.frame = .zero
+            CATransaction.commit()
+            return
+        }
+        layer.mask = maskLayer
         // The HTML `.cap-oval` uses CSS `border-radius: 50% / 42%`, which is
         // NOT a true ellipse — it's a rounded rect whose corners are
         // elliptical arcs with rx = 50% of width and ry = 42% of height.
@@ -555,6 +577,8 @@ public class CameraOvalPlugin: CAPPlugin {
         }
         let direction = call.getString("direction", "FRONT").uppercased()
         let position: AVCaptureDevice.Position = (direction == "BACK") ? .back : .front
+        let shape = call.getString("shape", "OVAL").uppercased() == "RECT" ? "RECT" : "OVAL"
+        let adaptiveZoom = call.getBool("adaptiveZoom") ?? true
 
         // webView is already made transparent once at app launch (see
         // ViewController.capacitorDidLoad) — repeating it here is a harmless
@@ -564,6 +588,38 @@ public class CameraOvalPlugin: CAPPlugin {
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
 
+        // One plugin instance serves both cameras. If we switch from the oval
+        // FRONT selfie session to the full-screen BACK food session (or back),
+        // the existing AVCaptureSession cannot simply be unhidden: it still has
+        // the old physical camera input and mask. Tear that old session down and
+        // create a fresh view for the requested mode. Same-mode reopens remain
+        // warm/instant via stopEmbedded(hideOnly: true).
+        if let existing = embeddedView, hasConfigured(existing),
+           (existing.cameraPosition != position ||
+            existing.previewShape != shape ||
+            existing.adaptiveZoomEnabled != adaptiveZoom) {
+            existing.stop(hideOnly: false) { [weak self, weak webView] in
+                guard let self = self, let webView = webView else {
+                    call.reject("Bridge/webView unavailable")
+                    return
+                }
+                existing.removeFromSuperview()
+                self.embeddedView = nil
+                self.startEmbeddedView(call: call, webView: webView,
+                                       frame: CGRect(x: x, y: y, width: w, height: h),
+                                       position: position, shape: shape, adaptiveZoom: adaptiveZoom)
+            }
+            return
+        }
+
+        startEmbeddedView(call: call, webView: webView,
+                          frame: CGRect(x: x, y: y, width: w, height: h),
+                          position: position, shape: shape, adaptiveZoom: adaptiveZoom)
+    }
+
+    private func startEmbeddedView(call: CAPPluginCall, webView: WKWebView,
+                                   frame: CGRect, position: AVCaptureDevice.Position,
+                                   shape: String, adaptiveZoom: Bool) {
         let view: CameraOvalEmbeddedView
         if let existing = embeddedView {
             view = existing
@@ -572,8 +628,8 @@ public class CameraOvalPlugin: CAPPlugin {
             view.onSetupFailure = { reason in
                 fmShowDebugAlert("Camera", "Camera failed: \(reason)")
             }
-            // Insert BELOW the webview in the same superview so HTML content
-            // (which must have a transparent hole at the oval) shows it.
+            // Insert BELOW the webview so transparent HTML areas reveal the live
+            // AVCapture preview while our custom HTML controls remain above it.
             if let superview = webView.superview {
                 superview.insertSubview(view, belowSubview: webView)
             } else {
@@ -585,31 +641,23 @@ public class CameraOvalPlugin: CAPPlugin {
 
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        view.frame = CGRect(x: x, y: y, width: w, height: h)
+        view.frame = frame
         view.updateLayout()
         CATransaction.commit()
 
-        // Only call configure() once per view instance (it starts the AVCaptureSession).
-        // Pass along the oval's actual on-screen aspect ratio (width/height)
-        // so the adaptive zoom targets the correct visible field of view —
-        // the oval is taller than wide, so this matters for accuracy.
-        if !self.hasConfigured(view) {
-            self.markConfigured(view)
-            let aspectRatio = h > 0 ? CGFloat(w / h) : nil
-            // Resolve the JS promise only once the session is actually running
-            // and first frames are arriving — not immediately after configure()
-            // returns. Without this delay the webview goes transparent before
-            // the camera feed exists, producing a black screen until the first
-            // frame lands (~200-400 ms later).
+        if !hasConfigured(view) {
+            markConfigured(view)
+            let aspectRatio = frame.height > 0 ? CGFloat(frame.width / frame.height) : nil
             view.webView = webView
             view.onSessionStarted = {
                 call.resolve()
             }
-            view.configure(position: position, ovalAspectRatio: aspectRatio)
+            view.configure(position: position, ovalAspectRatio: aspectRatio,
+                           shape: shape, adaptiveZoom: adaptiveZoom)
         } else {
-            // Session is already warm (stopEmbedded just hid the view, didn't kill the session).
-            // Unhide and resolve immediately — no AVCaptureSession startup cost at all.
+            // Same camera/mode: session stayed warm while hidden.
             view.isHidden = false
+            view.updateLayout()
             call.resolve()
         }
     }

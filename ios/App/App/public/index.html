@@ -51,8 +51,8 @@ html,body,*{scrollbar-width:none;-ms-overflow-style:none}
    We pin html to viewport height and let body be the scrollable layer. Without
    the explicit height cap, body would just grow to content size and there would
    be nothing to scroll. */
-html.fm-native{height:100%;height:100dvh;overflow:hidden}
-html.fm-native body{height:100%;height:100dvh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;align-items:flex-start}
+html.fm-native{height:100%;overflow:hidden}
+html.fm-native body{height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;align-items:flex-start}
 html.fm-native,html.fm-native body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','SF Pro',system-ui,sans-serif}
 html.fm-native h1,html.fm-native h2,html.fm-native .qp-title,html.fm-native .qa-title{letter-spacing:-0.038em}
 body{display:flex;justify-content:center}
@@ -607,24 +607,29 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .sec-hdr a{font-size:12px;color:var(--p-2);font-weight:600;cursor:pointer}
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 /* Progress chart on profile */
-.chart-card{margin-top:14px;padding:14px 12px 10px 12px;position:relative;border-radius:16px;background:linear-gradient(180deg,rgba(167,139,250,.07),rgba(167,139,250,.02));border:1px solid rgba(167,139,250,.18)}
-.chart-card.empty{padding:18px 14px}
-.chart-empty{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);text-align:center;padding:8px 8px}
-.chart-empty svg{width:20px;height:20px;color:var(--p);margin-bottom:2px}
-.chart-empty b{color:var(--text);font-size:13px;letter-spacing:-0.01em}
-.chart-empty span{font-size:11.5px;line-height:1.45;max-width:30ch}
-.chart-hdr{display:flex;align-items:center;justify-content:space-between;margin:0 4px 4px}
-.chart-title{font-size:12px;font-weight:700;color:var(--text);letter-spacing:-0.005em;text-transform:uppercase;letter-spacing:0.06em}
-.chart-delta{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:-0.01em}
+.chart-card{margin-top:14px;padding:16px 14px 12px;position:relative;min-height:218px;border-radius:22px;background:var(--v4-card,var(--surface));border:1px solid var(--v4-border,var(--line-2));overflow:hidden}
+.chart-card.empty{display:flex;align-items:center;justify-content:center;padding:20px 16px;min-height:176px}
+.chart-empty{width:100%;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--muted);text-align:center;padding:8px}
+.chart-empty-plot{width:100%;height:64px;position:relative;margin-bottom:4px}
+.chart-empty-plot::before,.chart-empty-plot::after{content:"";position:absolute;left:7%;right:7%;height:1px;background:rgba(255,255,255,.07)}
+.chart-empty-plot::before{top:16px}.chart-empty-plot::after{bottom:16px}
+.chart-empty-line{position:absolute;left:10%;right:10%;top:32px;border-top:2px dashed rgba(167,139,250,.28)}
+.chart-empty-dot{position:absolute;left:48%;top:25px;width:14px;height:14px;border-radius:50%;background:#A78BFA;border:3px solid var(--v4-card,var(--surface));box-shadow:0 0 0 1px rgba(167,139,250,.35)}
+.chart-empty b{color:var(--text);font-size:14px;letter-spacing:-.01em}
+.chart-empty span{font-size:12px;line-height:1.45;max-width:31ch}
+.chart-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 2px 8px}
+.chart-title-wrap{display:flex;flex-direction:column;gap:3px}
+.chart-title{font-size:15px;font-weight:750;color:var(--text);letter-spacing:-.015em}
+.chart-period{font-size:11.5px;color:var(--muted);font-weight:600}
+.chart-delta{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:-.01em;padding-top:1px}
 .chart-delta.up{color:#4ade80}
-.chart-delta.down{color:#93B8F2}
-.chart-svg{width:100%;height:auto;display:block;overflow:visible}
-.chart-tooltip{position:absolute;background:rgba(20,12,30,.96);border:1px solid rgba(167,139,250,.40);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;color:#fff;pointer-events:none;white-space:nowrap;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.5);transform:translate(-50%,-110%);opacity:0;transition:opacity .15s}
+.chart-delta.down{color:#f59e0b}
+.chart-svg{width:100%;height:154px;display:block;overflow:visible}
+.chart-tooltip{position:absolute;background:rgba(20,12,30,.97);border:1px solid rgba(167,139,250,.40);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;color:#fff;pointer-events:none;white-space:nowrap;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.5);transform:translate(-50%,-110%);opacity:0;transition:opacity .15s}
 .chart-tooltip.visible{opacity:1}
 .chart-tooltip .ct-score{font-size:18px;font-weight:900;color:#A78BFA;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .chart-tooltip .ct-date{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
-.chart-tooltip .ct-arch{font-size:10px;color:rgba(167,139,250,.80);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
-.chart-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:10.5px;font-weight:600;margin:2px 4px 0;letter-spacing:0.02em}
+.chart-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:10.5px;font-weight:600;margin:3px 2px 0 30px;letter-spacing:.01em}
 .stat{background:var(--surface-2);border:1px solid var(--line);border-radius:16px;padding:14px 8px;text-align:center}
 .stat b{display:block;font-size:19px;font-weight:800;letter-spacing:-0.025em;font-variant-numeric:tabular-nums}
 .stat span{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:4px;letter-spacing:0.02em;text-transform:uppercase}
@@ -994,14 +999,17 @@ html.fm-native .bottom{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bo
 .arch-badge-kcal{font-size:13px;font-weight:700;color:rgba(255,255,255,.9)}
 .fs-section-title{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.75);margin:18px 0 10px 2px}
 .fs-metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.fs-metric-card{background:linear-gradient(145deg,rgba(91,141,245,.10),rgba(124,92,245,.08) 48%,rgba(217,70,239,.05));border:1px solid rgba(167,139,250,.20);border-radius:14px;padding:12px 14px 10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+.fs-metric-card{background:#1a1420;border:1px solid #352a3d;border-radius:14px;padding:12px 14px 10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025);transition:background .2s ease,border-color .2s ease}
+.fs-metric-card.status-good{background:#123821;border-color:#2f7046}
+.fs-metric-card.status-moderate{background:#4a3608;border-color:#8a6818}
+.fs-metric-card.status-bad{background:#4a1b20;border-color:#8c3741}
 .fs-mc-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .fs-mc-val-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .fs-mc-val{font-size:40px;font-weight:900;letter-spacing:-.04em;line-height:1;color:#fff}
 .fs-mc-pill{font-size:10px;font-weight:800;letter-spacing:.04em;padding:3px 8px;border-radius:999px;white-space:nowrap}
-.fs-mc-pill.good{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
-.fs-mc-pill.moderate{background:rgba(250,204,21,.13);color:#facc15;border:1px solid rgba(250,204,21,.28)}
-.fs-mc-pill.bad{background:rgba(248,113,113,.13);color:#f87171;border:1px solid rgba(248,113,113,.28)}
+.fs-mc-pill.good{background:#1a4a2b;color:#4ade80;border:1px solid #2f7046}
+.fs-mc-pill.moderate{background:#5a430c;color:#facc15;border:1px solid #8a6818}
+.fs-mc-pill.bad{background:#5b2027;color:#f87171;border:1px solid #8c3741}
 .fs-mc-bar{height:4px;border-radius:999px;background:rgba(255,255,255,.04);overflow:hidden}
 .fs-mc-fill{height:100%;border-radius:999px;width:0%;transition:width 1.2s cubic-bezier(.34,1.2,.5,1),background .4s ease}
 .foodscan-upload{padding:30px 18px;border:1.5px dashed var(--line-3);border-radius:18px;background:var(--surface);text-align:center;cursor:pointer;position:relative;transition:.15s}
@@ -1035,9 +1043,9 @@ html.fm-native .bottom{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bo
 /* Face Effect grid */
 .fs-face-effect-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px}
 .fs-fe-card{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}
-.fs-fe-card.good{background:linear-gradient(145deg,rgba(74,222,128,.12),rgba(74,222,128,.035));border-color:rgba(74,222,128,.20)}
-.fs-fe-card.warn{background:linear-gradient(145deg,rgba(251,191,36,.12),rgba(124,92,245,.035));border-color:rgba(251,191,36,.20)}
-.fs-fe-card.bad{background:linear-gradient(145deg,rgba(248,113,113,.12),rgba(217,70,239,.035));border-color:rgba(248,113,113,.20)}
+.fs-fe-card.good{background:#123821;border-color:#2f7046}
+.fs-fe-card.warn{background:#4a3608;border-color:#8a6818}
+.fs-fe-card.bad{background:#4a1b20;border-color:#8c3741}
 .fs-fe-icon{font-size:22px;line-height:1}
 .fs-fe-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.5);line-height:1.2}
 .fs-fe-val{font-size:12px;font-weight:800;letter-spacing:.02em}
@@ -1048,20 +1056,20 @@ html.fm-native .bottom{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bo
 /* Ingredient breakdown */
 .fs-ingredient-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
 .fs-ing-row{display:flex;flex-direction:column;gap:7px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}
-.fs-ing-row.impact-low{background:linear-gradient(145deg,rgba(74,222,128,.10),rgba(74,222,128,.025));border-color:rgba(74,222,128,.18)}
-.fs-ing-row.impact-medium{background:linear-gradient(145deg,rgba(251,191,36,.10),rgba(124,92,245,.035));border-color:rgba(251,191,36,.18)}
-.fs-ing-row.impact-high{background:linear-gradient(145deg,rgba(248,113,113,.11),rgba(217,70,239,.035));border-color:rgba(248,113,113,.20)}
+.fs-ing-row.impact-low{background:#123821;border-color:#2f7046}
+.fs-ing-row.impact-medium{background:#4a3608;border-color:#8a6818}
+.fs-ing-row.impact-high{background:#4a1b20;border-color:#8c3741}
 .fs-ing-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;min-width:0}
 .fs-ing-name{font-size:14px;font-weight:800;color:#fff;line-height:1.3;min-width:0;overflow-wrap:anywhere;word-break:break-word}
 .fs-ing-amount{font-size:12.5px;font-weight:500;line-height:1.45;color:rgba(255,255,255,.58);width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-word}
 .fs-ing-badge{font-size:10.5px;font-weight:800;padding:4px 8px;border-radius:999px;flex:0 0 auto;white-space:nowrap}
-.fs-ing-badge.ok{background:rgba(74,222,128,.14);color:#4ade80;border:1px solid rgba(74,222,128,.25)}
-.fs-ing-badge.warn{background:rgba(251,191,36,.14);color:#fbbf24;border:1px solid rgba(251,191,36,.25)}
-.fs-ing-badge.bad{background:rgba(248,113,113,.14);color:#f87171;border:1px solid rgba(248,113,113,.25)}
+.fs-ing-badge.ok{background:#1a4a2b;color:#4ade80;border:1px solid #2f7046}
+.fs-ing-badge.warn{background:#5a430c;color:#fbbf24;border:1px solid #8a6818}
+.fs-ing-badge.bad{background:#5b2027;color:#f87171;border:1px solid #8c3741}
 
 /* Better swaps */
 .fs-swap-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
-.fs-swap-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(74,222,128,.08),rgba(74,222,128,.04));border:1px solid rgba(74,222,128,.2);border-radius:14px;padding:12px 14px}
+.fs-swap-card{display:flex;align-items:center;gap:12px;background:#123821;border:1px solid #2f7046;border-radius:14px;padding:12px 14px}
 .fs-swap-emoji{font-size:28px;flex-shrink:0;line-height:1}
 .fs-swap-body{flex:1;min-width:0}
 .fs-swap-name{font-size:14px;font-weight:800;color:#fff;margin-bottom:2px}
@@ -1092,6 +1100,23 @@ html.fm-native .bottom{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bo
    sees exactly where to position their face. */
 .live-camera .lc-oval-mask{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .live-camera .lc-guide-text{position:absolute;left:50%;top:12%;transform:translateX(-50%);color:rgba(255,255,255,.95);font-size:14px;font-weight:600;letter-spacing:.01em;text-shadow:0 2px 10px rgba(0,0,0,.7);pointer-events:none;z-index:3;text-align:center;padding:6px 14px;background:rgba(0,0,0,.25);border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+
+/* Food Scanner custom native camera — the AVCapture preview lives behind the
+   transparent WKWebView. Hide the app underneath and leave only minimal HTML
+   controls above the real rear-camera feed. No guide frame / oval mask. */
+html.food-camera-active,html.food-camera-active body{overflow:hidden!important;overscroll-behavior:none!important}
+html.food-camera-active #foodScan> :not(#liveCamera){visibility:hidden!important;pointer-events:none!important}
+html.food-camera-active .bottom{visibility:hidden!important;pointer-events:none!important}
+html.food-camera-active #liveCamera{visibility:visible!important}
+#liveCamera.native-food-camera{background:transparent!important}
+#liveCamera.native-food-camera #liveCameraVideo,#liveCamera.native-food-camera #liveCameraCanvas{display:none!important}
+#liveCamera.native-food-camera .live-camera-bar{background:linear-gradient(to top,rgba(0,0,0,.48),rgba(0,0,0,0) 80%);justify-content:center;padding:26px 24px calc(30px + env(safe-area-inset-bottom,0px))}
+#liveCamera.native-food-camera .lc-close{position:fixed;left:18px;top:calc(18px + env(safe-area-inset-top,0px));width:46px;height:46px;background:rgba(0,0,0,.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:4}
+#liveCamera.native-food-camera .lc-spacer{display:none}
+#liveCamera.native-food-camera .lc-shutter{width:78px;height:78px;border-width:4px}
+#liveCamera.native-food-camera .lc-shutter::before,#liveCamera.native-food-camera .lc-shutter::after{display:none}
+#liveCamera.native-food-camera .lc-error{bottom:calc(136px + env(safe-area-inset-bottom,0px));background:rgba(35,12,18,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+#liveCamera.native-food-camera.is-capturing .lc-shutter{opacity:.55;pointer-events:none}
 .bloat-ring{display:grid;place-items:center;text-align:center;padding:22px 16px;background:var(--surface);border:1px solid var(--line-2);border-radius:18px;margin:14px 0}
 .bloat-ring .br-circle{width:128px;height:128px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--br-color,#A78BFA) calc(var(--br-pct,55) * 1%),rgba(255,255,255,.08) 0);position:relative;margin-bottom:10px}
 .bloat-ring .br-circle::after{content:"";position:absolute;inset:11px;background:var(--bg-2);border-radius:50%;z-index:0}
@@ -2801,13 +2826,7 @@ html.cam-active .app { background:transparent !important; }
 </button>
 
 <!-- =============================== HOME =============================== -->
-<!-- NOTE: no "active" class here on purpose. Home used to be active by default
-     in the raw markup, which meant it was visible the instant the browser
-     painted this element - before any JS (including checkPremium/quizIsDone)
-     had a chance to run. That caused Home to flash before routing into the
-     quiz on first launch. Routing JS (near quizIsDone()/onbStart()) now
-     explicitly adds "active" to whichever screen should show first. -->
-<section id="home" class="screen">
+<section id="home" class="screen active">
 
   <div class="home-v2">
 
@@ -3817,7 +3836,7 @@ html.cam-active .app { background:transparent !important; }
           <circle class="fs-ring-track" cx="75" cy="75" r="65"/>
           <circle class="fs-ring-fill" id="fsRingFill" cx="75" cy="75" r="65"/>
         </svg>
-        <div class="fs-ring-center" id="fsRingEmoji" style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1"><b id="faceScore" style="font-size:34px;font-weight:800;letter-spacing:-0.03em;color:#fff">0</b><span style="font-size:13px;font-weight:600;color:var(--muted)">/100</span></div>
+        <div class="fs-ring-center" id="fsRingEmoji" style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05"><b id="faceScore" style="font-size:34px;font-weight:800;letter-spacing:-0.03em;color:#fff">0</b><span style="font-size:13px;font-weight:600;color:var(--muted);max-width:86px;text-align:center;line-height:1.15;margin-top:4px">Food Quality</span></div>
       </div>
       <div class="arch-badge" id="fsMealBadge" style="display:inline-flex;margin-top:12px">
         <span class="arch-badge-name" id="fsMealName">Meal</span>
@@ -6752,71 +6771,65 @@ async function maybeOfferNotifications(){
 function renderProgressChart(){
   const wrap = el("progressChartWrap");
   if (!wrap) return;
-  const pts = (scanHistory || []).slice().reverse().filter(h => typeof h.score === "number").slice(-10);
-  if (pts.length < 2) {
+
+  // The profile chart always uses the user's latest 10 valid face scans.
+  // scanHistory is stored newest-first, so reverse only the selected window
+  // to draw time from left to right.
+  if (!scanHistory.length) { try { loadHistory(); } catch {} }
+  const pts = (scanHistory || [])
+    .filter(h => Number.isFinite(Number(h && h.score)))
+    .slice(0, 10)
+    .reverse()
+    .map(h => ({ ...h, score: Math.max(0, Math.min(100, Number(h.score))) }));
+
+  if (!pts.length) {
     wrap.classList.add("empty");
     wrap.innerHTML = `<div class="chart-empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 9 11l4 4 8-8M14 7h7v7"/></svg>
-      <b>Progress chart</b>
-      <span>Run at least 2 scans to see your score over time.</span>
+      <div class="chart-empty-plot" aria-hidden="true"><span class="chart-empty-line"></span></div>
+      <b>Progress</b>
+      <span>Your last 10 scan scores will appear here.</span>
     </div>`;
     return;
   }
+
   wrap.classList.remove("empty");
-  const W = 320, H = 190, PAD_L = 34, PAD_R = 34, PAD_T = 14, PAD_B = 24;
+  const W = 320, H = 154, PAD_L = 30, PAD_R = 10, PAD_T = 10, PAD_B = 18;
   const innerW = W - PAD_L - PAD_R, innerH = H - PAD_T - PAD_B;
-  const rawMin = Math.min(...pts.map(p => p.score));
-  const rawMax = Math.max(...pts.map(p => p.score));
-  const minS = Math.max(0, rawMin - 5);
-  const maxS = Math.min(100, rawMax + 5);
-  const span = Math.max(1, maxS - minS);
-  const yScale = s => PAD_T + innerH - ((s - minS) / span) * innerH;
+  const yScale = s => PAD_T + innerH - (s / 100) * innerH;
   const xScale = i => PAD_L + (pts.length === 1 ? innerW / 2 : (i / (pts.length - 1)) * innerW);
   const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${xScale(i).toFixed(1)},${yScale(p.score).toFixed(1)}`).join(" ");
-  const area = `${path} L${xScale(pts.length - 1).toFixed(1)},${(PAD_T + innerH).toFixed(1)} L${PAD_L},${(PAD_T + innerH).toFixed(1)} Z`;
+  const area = `${path} L${xScale(pts.length - 1).toFixed(1)},${(PAD_T + innerH).toFixed(1)} L${xScale(0).toFixed(1)},${(PAD_T + innerH).toFixed(1)} Z`;
   const dots = pts.map((p, i) => {
     const dateStr = p.date ? new Date(p.date).toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "";
     const timeStr = p.date ? new Date(p.date).toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" }) : "";
-    const tip = [p.score, dateStr + (timeStr ? " · " + timeStr : "")].filter(Boolean).join("|");
-    return `<circle cx="${xScale(i).toFixed(1)}" cy="${yScale(p.score).toFixed(1)}" r="5" fill="#A78BFA" stroke="#100A14" stroke-width="2" style="cursor:pointer" data-tip="${tip}" onclick="chartShowTip(this,event)"/>`;
+    const tip = [Math.round(p.score), dateStr + (timeStr ? " · " + timeStr : "")].filter(Boolean).join("|");
+    return `<circle cx="${xScale(i).toFixed(1)}" cy="${yScale(p.score).toFixed(1)}" r="4.5" fill="#A78BFA" stroke="#17131f" stroke-width="2" data-tip="${tip}" onclick="chartShowTip(this,event)"/>`;
   }).join("");
-  const last = pts[pts.length - 1];
-  const first = pts[0];
-  const delta = last.score - first.score;
+  const first = pts[0], last = pts[pts.length - 1];
+  const delta = Math.round(last.score - first.score);
   const deltaSign = delta > 0 ? "+" : "";
   const deltaCls = delta > 0 ? "up" : (delta < 0 ? "down" : "");
-  const levels = [0, 0.5, 1].map(t => ({
-    y: PAD_T + innerH * t,
-    value: Math.round(maxS - (maxS - minS) * t)
-  }));
-  const gridLines = levels.map(lv =>
-    `<line x1="${PAD_L}" y1="${lv.y.toFixed(1)}" x2="${W - PAD_R}" y2="${lv.y.toFixed(1)}" stroke="rgba(255,255,255,.08)" stroke-width="1" stroke-dasharray="2,3"/>`
+  const levels = [100, 50, 0];
+  const gridLines = levels.map(value => {
+    const y = yScale(value).toFixed(1);
+    return `<line x1="${PAD_L}" y1="${y}" x2="${W-PAD_R}" y2="${y}" stroke="rgba(255,255,255,.075)" stroke-width="1"/>`;
+  }).join("");
+  const labels = levels.map(value =>
+    `<text x="${PAD_L-7}" y="${yScale(value).toFixed(1)}" text-anchor="end" dominant-baseline="middle" fill="rgba(255,255,255,.42)" font-size="9.5" font-weight="650">${value}</text>`
   ).join("");
-  const labels = levels.map(lv =>
-    `<text x="${PAD_L - 8}" y="${lv.y.toFixed(1)}" text-anchor="end" dominant-baseline="middle" fill="rgba(255,255,255,.5)" font-size="10" font-weight="700">${lv.value}</text>`
-  ).join("");
+  const lineAndArea = pts.length > 1
+    ? `<path d="${area}" fill="url(#chartGrad)"/><path d="${path}" stroke="#A78BFA" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+    : "";
+
   wrap.innerHTML = `<div class="chart-hdr">
-      <div class="chart-title">Last 10 scans</div>
-      <div class="chart-delta ${deltaCls}">${deltaSign}${delta}</div>
+      <div class="chart-title-wrap"><div class="chart-title">Progress</div><div class="chart-period">Last ${pts.length} of 10 scans</div></div>
+      <div class="chart-delta ${deltaCls}">${pts.length > 1 ? deltaSign + delta : "—"}</div>
     </div>
-    <svg viewBox="0 0 ${W} ${H}" class="chart-svg" preserveAspectRatio="none" style="width:100%;height:${H}px">
-      <defs>
-        <linearGradient id="chartGrad" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stop-color="#A78BFA" stop-opacity=".35"/>
-          <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      ${gridLines}
-      <path d="${area}" fill="url(#chartGrad)"/>
-      <path d="${path}" stroke="#A78BFA" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      ${dots}
-      ${labels}
+    <svg viewBox="0 0 ${W} ${H}" class="chart-svg" preserveAspectRatio="none" role="img" aria-label="Face score progress across the last ${pts.length} scans">
+      <defs><linearGradient id="chartGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#A78BFA" stop-opacity=".30"/><stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/></linearGradient></defs>
+      ${gridLines}${lineAndArea}${dots}${labels}
     </svg>
-    <div class="chart-foot" style="padding-left:${PAD_L}px;padding-right:${PAD_R}px">
-      <span>${fmtDateShort(first.date)}</span>
-      <span>${pts.length} scans</span>
-      <span>${fmtDateShort(last.date)}</span>
-    </div>`;
+    <div class="chart-foot"><span>${fmtDateShort(first.date)}</span><span>${pts.length === 1 ? "1 more scan to show a trend" : pts.length + " scans"}</span><span>${fmtDateShort(last.date)}</span></div>`;
 }
 
 // MediaPipe detector preload: fire-and-forget at boot so first-tap doesn't
@@ -9179,6 +9192,7 @@ function _compactFoodScanEntry(entry){
     face_score: entry.face_score,
     face_label: entry.face_label,
     bloat_score: entry.bloat_score,
+    health_score: Number.isFinite(entry.health_score) ? entry.health_score : (entry.full && Number.isFinite(entry.full.health_score) ? entry.full.health_score : null),
     detected: entry.detected,
     photo,
     full: entry.full,
@@ -9807,47 +9821,49 @@ async function handleFoodScanFile(file){
 
 // ---------- Live camera (works in Telegram webview, Android Chrome, iOS Safari) ----------
 let _liveCameraStream = null;
+let _foodNativeCameraActive = false;
 
 async function openLiveCamera(){
-  // On native iOS use Capacitor Camera plugin with rear-facing camera —
-  // food photos are best taken with the back camera.
-  if (window.facemax && window.facemax.pickPhoto) {
-    if (typeof window.fmLog === "function") window.fmLog("info", "openLiveCamera: native path, calling pickPhoto BACK", {
-      hasFacemax: !!window.facemax, hasPickPhoto: !!(window.facemax && window.facemax.pickPhoto),
-      isNative: typeof fmIsNative === "function" ? fmIsNative() : "unknown",
-    });
-    try {
-      const res = await window.facemax.pickPhoto({ fromCamera: true, direction: "BACK" });
-      if (typeof window.fmLog === "function") window.fmLog("info", "openLiveCamera: pickPhoto returned", { res: typeof res === "string" ? res.slice(0,60) : res });
-      // pickPhoto returns a plain data URL string (or null on cancel, "__error__" on real error).
-      // Guard against both string and legacy {dataUrl} object shapes.
-      const dataUrlRaw = (res && typeof res === "object") ? (res.dataUrl || res.base64Data || null) : res;
-      if (dataUrlRaw && dataUrlRaw !== "__error__") {
-        const dataUrl = await downscaleImage(dataUrlRaw, 1800, 0.92);
-        foodScanImage = dataUrl;
-        el("foodScanImg").src = dataUrl;
-        el("foodScanUploadBlock").classList.add("hidden");
-        el("foodScanPreviewBlock").classList.remove("hidden");
-        el("foodScanResult").classList.add("hidden");
-      } else if (dataUrlRaw === "__error__") {
-        if (typeof window.fmLog === "function") window.fmLog("error", "openLiveCamera: pickPhoto returned __error__", {});
-        showToast("Could not open camera. Try 'Pick from library'.");
-      }
-      // null = user cancelled, do nothing
-    } catch (e) {
-      if (typeof window.fmLog === "function") window.fmLog("error", "openLiveCamera: pickPhoto threw", { message: e && e.message, name: e && e.name, str: String(e) });
-      if (!e || (!e.userCancelled && !/cancel/i.test(String(e.message || "")))) {
-        showToast("Could not open camera");
-      }
-    }
-    return;
-  }
-
   const overlay = el("liveCamera");
   const video = el("liveCameraVideo");
   const errBox = el("liveCameraError");
-  errBox.classList.add("hidden"); errBox.textContent = "";
+  if (errBox) { errBox.classList.add("hidden"); errBox.textContent = ""; }
 
+  // Native iOS: use FaceMax's own AVCapture preview full-screen. The preview
+  // is inserted underneath the transparent WKWebView; this HTML overlay only
+  // draws the close + shutter controls. No system Camera UI and no Retake/Use
+  // Photo confirmation. Capturing only puts the photo into Food Scanner — it
+  // intentionally DOES NOT call runFoodScan().
+  if (typeof fmIsNative === "function" && fmIsNative() &&
+      window.facemax && window.facemax.embeddedCamera) {
+    overlay.classList.remove("hidden");
+    overlay.classList.add("native-food-camera");
+    document.documentElement.classList.add("cam-active", "food-camera-active");
+    try {
+      const ok = await window.facemax.embeddedCamera.start(overlay, {
+        direction: "BACK",
+        shape: "RECT",
+        adaptiveZoom: false,
+      });
+      if (ok) {
+        _foodNativeCameraActive = true;
+        return;
+      }
+      throw new Error("Native camera preview unavailable");
+    } catch (e) {
+      _foodNativeCameraActive = false;
+      try { await window.facemax.embeddedCamera.stop(); } catch (_) {}
+      document.documentElement.classList.remove("food-camera-active", "cam-active");
+      overlay.classList.remove("native-food-camera");
+      overlay.classList.add("hidden");
+      if (typeof window.fmLog === "function") window.fmLog("error", "Food custom camera failed", { message: e && e.message });
+      showToast("Could not open camera. You can still pick a photo from your library.");
+      return;
+    }
+  }
+
+  // Browser fallback: keep the existing full-screen custom camera overlay, but
+  // prefer the rear/environment camera for food instead of the selfie camera.
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     showLiveCameraFallback("Your browser doesn't support live camera. Use 'Pick from library' below or open the site in Chrome / Safari directly.");
     return;
@@ -9856,10 +9872,9 @@ async function openLiveCamera(){
   overlay.classList.remove("hidden");
 
   try {
-    // Prefer front camera for selfie capture; fall back to any camera.
     let stream;
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "user" } }, audio: false });
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
     } catch (_) {
       stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
     }
@@ -9871,7 +9886,7 @@ async function openLiveCamera(){
       ? "Camera permission denied. Allow camera access in your browser settings, or use 'Pick from library'."
       : (e && e.name === "NotFoundError"
           ? "No camera found on this device. Use 'Pick from library' instead."
-          : "Couldn't open the camera in this browser (Telegram's built-in browser sometimes blocks it). Open the app in Chrome or Safari directly, or use 'Pick from library'.");
+          : "Couldn't open the camera in this browser. Use 'Pick from library' or open the app in Safari / Chrome.");
     showLiveCameraFallback(msg);
   }
 }
@@ -9883,18 +9898,54 @@ function showLiveCameraFallback(msg){
   errBox.classList.remove("hidden");
 }
 
-function closeLiveCamera(){
+async function closeLiveCamera(){
   const overlay = el("liveCamera");
   const video = el("liveCameraVideo");
+
+  if (_foodNativeCameraActive && window.facemax && window.facemax.embeddedCamera) {
+    _foodNativeCameraActive = false;
+    try { await window.facemax.embeddedCamera.stop(); } catch (_) {}
+  }
+
   if (_liveCameraStream) {
     try { _liveCameraStream.getTracks().forEach(t => t.stop()); } catch {}
     _liveCameraStream = null;
   }
   try { video.pause(); video.srcObject = null; } catch {}
+  overlay.classList.remove("native-food-camera", "is-capturing");
   overlay.classList.add("hidden");
+  document.documentElement.classList.remove("food-camera-active", "cam-active");
 }
 
 async function snapLiveCamera(){
+  const overlay = el("liveCamera");
+
+  if (_foodNativeCameraActive && window.facemax && window.facemax.embeddedCamera) {
+    if (overlay.classList.contains("is-capturing")) return;
+    overlay.classList.add("is-capturing");
+    try { if (typeof quizHaptic === "function") quizHaptic(); } catch (_) {}
+    try {
+      const dataUrl = await window.facemax.embeddedCamera.capture();
+      if (!dataUrl || dataUrl === "__error__") throw new Error("Capture failed");
+
+      // Show the captured photo immediately. The AI scan stays a separate user
+      // action on the existing "Analyze meal with AI" button.
+      foodScanImage = dataUrl;
+      el("foodScanImg").src = dataUrl;
+      el("foodScanUploadBlock").classList.add("hidden");
+      el("foodScanPreviewBlock").classList.remove("hidden");
+      el("foodScanResult").classList.add("hidden");
+      await closeLiveCamera();
+      return;
+    } catch (e) {
+      if (typeof window.fmLog === "function") window.fmLog("error", "Food custom camera capture failed", { message: e && e.message });
+      const errBox = el("liveCameraError");
+      if (errBox) { errBox.textContent = "Couldn't take the photo. Try again."; errBox.classList.remove("hidden"); }
+      overlay.classList.remove("is-capturing");
+      return;
+    }
+  }
+
   const video = el("liveCameraVideo");
   if (!video || !video.videoWidth) return;
   const canvas = el("liveCameraCanvas");
@@ -9908,7 +9959,7 @@ async function snapLiveCamera(){
   el("foodScanUploadBlock").classList.add("hidden");
   el("foodScanPreviewBlock").classList.remove("hidden");
   el("foodScanResult").classList.add("hidden");
-  closeLiveCamera();
+  await closeLiveCamera();
 }
 
 // ---------- Face Scan Camera (selfie for the main Upload screen) ----------
@@ -10422,30 +10473,6 @@ function renderFoodScanResult(r){
   const noFoodMsg = document.getElementById("fsNoFoodMsg");
   if (noFoodMsg) noFoodMsg.style.display = "none";
 
-  // bloat_score from worker (0=no bloat, 100=severe)
-  const bloat = Math.max(0, Math.min(100, Number(r.bloat_score) || 0));
-
-  // ring fills proportionally to bloat_score
-  const circumference = 408;
-  const fill = el("fsRingFill");
-  fill.style.strokeDashoffset = circumference - (circumference * bloat / 100);
-
-  // count-up shows bloat_score
-  (function(){ const sEl = el("faceScore"); const t0 = performance.now(); const dur = 700;
-    function step(now){ const p = Math.min(1,(now-t0)/dur); sEl.textContent = Math.round(bloat*(1-Math.pow(1-p,2))); if(p<1) requestAnimationFrame(step); else sEl.textContent=bloat; }
-    requestAnimationFrame(step);
-  })();
-
-  // photo
-  if (foodScanImage) {
-    const photoEl = el("foodResultPhoto"); const photoImg = el("foodResultPhotoImg");
-    photoImg.src = foodScanImage; photoEl.style.display = "block";
-  }
-
-  // meal badge
-  el("fsMealName").textContent = r.detected || "Meal";
-  el("fsMealKcal").textContent = r.calories_est ? "~" + Math.round(r.calories_est) + " kcal" : "-- kcal";
-
   // helpers
   function levelToScore(lvl){ return lvl==="low"?20:lvl==="medium"?55:lvl==="high"?85:50; }
   function pillClass(pill){ const p=String(pill||"").toLowerCase(); return p==="good"||p==="low"?"good":p==="moderate"||p==="medium"?"moderate":"bad"; }
@@ -10458,7 +10485,13 @@ function renderFoodScanResult(r){
   }
   function setMetric(valId,pillId,fillId,sc,pill){
     el(valId).textContent = sc!=null ? Math.round(sc) : "--";
-    const pEl=el(pillId); pEl.textContent=pill||"—"; pEl.className="fs-mc-pill "+pillClass(pill);
+    const statusCls = pillClass(pill);
+    const pEl=el(pillId); pEl.textContent=pill||"—"; pEl.className="fs-mc-pill "+statusCls;
+    const cardEl = pEl.closest(".fs-metric-card");
+    if(cardEl){
+      cardEl.classList.remove("status-good","status-moderate","status-bad");
+      cardEl.classList.add(statusCls === "good" ? "status-good" : statusCls === "moderate" ? "status-moderate" : "status-bad");
+    }
     setTimeout(()=>{
       const fillEl=el(fillId);
       const pct=Math.max(0,Math.min(100,Number(sc)||0));
@@ -10466,8 +10499,13 @@ function renderFoodScanResult(r){
       fillEl.style.background=fsBарColor(pct);
     },100);
   }
+  function qualityPenalty(lvl, low, med, high){
+    const v = String(lvl || "medium").toLowerCase();
+    return v === "low" ? low : v === "high" ? high : med;
+  }
 
-  // derive 6 metrics from worker fields
+  // derive 6 face-impact metrics from worker fields
+  const bloat = Math.max(0, Math.min(100, Number(r.bloat_score) || 0));
   const sodiumSc  = levelToScore(r.sodium_level    || "medium");
   const sugarSc   = levelToScore(r.sugar_level     || "medium");
   const procSc    = levelToScore(r.processed_level || "medium");
@@ -10489,10 +10527,42 @@ function renderFoodScanResult(r){
   setMetric("fsBloatingVal",    "fsBloatingPill",    "fsBloatingFill",    bloat,       inv2pill(bloat));
   setMetric("fsProteinVal",     "fsProteinPill",     "fsProteinFill",     proteinSc,   sc2pill(proteinSc));
 
-  // Overall food healthiness score (0-100) — average of the 6 metrics,
-  // with Bloating Risk inverted (low risk = good)
-  const healthSc = Math.round((collagenSc + (100 - inflammSc) + hydrationSc + skinSc + (100 - bloat) + proteinSc) / 6);
-  r.health_score = Math.max(0, Math.min(100, healthSc));
+  // Real Food Quality score (0-100).
+  // It is based mostly on processing, sugar and sodium, with smaller
+  // adjustments for dairy, bloating tendency and ingredient impact.
+  const qualityDeductions =
+    qualityPenalty(r.processed_level, 4, 18, 36) +
+    qualityPenalty(r.sugar_level, 4, 16, 32) +
+    qualityPenalty(r.sodium_level, 4, 14, 28) +
+    qualityPenalty(r.dairy_level, 0, 5, 10) +
+    Math.round(bloat * 0.08);
+  const ingredientAdj = (Array.isArray(r.key_ingredients) ? r.key_ingredients : []).reduce((acc, ing) => {
+    const imp = String((ing && ing.impact) || "medium").toLowerCase();
+    return acc + (imp === "low" ? 3 : imp === "high" ? -3 : 0);
+  }, 0);
+  const healthSc = Math.max(0, Math.min(100, Math.round(100 - qualityDeductions + ingredientAdj)));
+  r.health_score = healthSc;
+
+  // ring now represents Food Quality, not bloating risk
+  const circumference = 408;
+  const fill = el("fsRingFill");
+  fill.style.strokeDashoffset = circumference - (circumference * healthSc / 100);
+
+  // count-up shows Food Quality
+  (function(){ const sEl = el("faceScore"); const t0 = performance.now(); const dur = 700;
+    function step(now){ const p = Math.min(1,(now-t0)/dur); sEl.textContent = Math.round(healthSc*(1-Math.pow(1-p,2))); if(p<1) requestAnimationFrame(step); else sEl.textContent=healthSc; }
+    requestAnimationFrame(step);
+  })();
+
+  // photo
+  if (foodScanImage) {
+    const photoEl = el("foodResultPhoto"); const photoImg = el("foodResultPhotoImg");
+    photoImg.src = foodScanImage; photoEl.style.display = "block";
+  }
+
+  // meal badge
+  el("fsMealName").textContent = r.detected || "Meal";
+  el("fsMealKcal").textContent = r.calories_est ? "~" + Math.round(r.calories_est) + " kcal" : "-- kcal";
 
   // ── Face Effect grid ──────────────────────────────────────────────
   const faceEffects = [
@@ -10606,6 +10676,7 @@ function saveFoodScanToHistory(result, imgData){
     face_score: result.face_score,
     face_label: result.face_label,
     bloat_score: result.bloat_score,
+    health_score: Number.isFinite(result.health_score) ? result.health_score : null,
     detected: result.detected,
     photo: "",
     full: result,
@@ -10638,7 +10709,7 @@ function renderFoodScanHistory(){
   grid.innerHTML = arr.map(entry => {
     return `<div class="fs-history-item" onclick="viewFoodScanFromHistory(${entry.date})">
       ${entry.photo ? `<img src="${entry.photo}" alt="">` : `<div style="width:100%;height:100%;display:grid;place-items:center;color:rgba(255,255,255,.35);font-size:24px">🍽️</div>`}
-      <div class="fs-h-score">${entry.bloat_score ?? entry.face_score ?? "?"}</div>
+      <div class="fs-h-score">${entry.health_score ?? entry.bloat_score ?? entry.face_score ?? "?"}</div>
     </div>`;
   }).join("");
 }
@@ -13303,47 +13374,75 @@ setTimeout(() => { try { initDetector(); } catch {} }, 600);
 // visible behind the lock blur instead of a single purple tone.
 colorAllMetricBars(document);
 
-// ROUTING: decide Home vs Quiz synchronously, from localStorage only.
-// quizIsDone() does not need the network, so it must not wait on
-// checkPremium()'s round-trip — doing so left Home visible (its old static
-// "active" class) for however long the request took, causing a flash before
-// the quiz took over. Premium/paywall status is refreshed separately below
-// and does not affect this decision: routing only ever depends on whether
-// the quiz was completed before, never on subscription state.
+// First-launch: start the quiz BEFORE asking for notification permission so
+// the native iOS dialog appears over the quiz welcome screen instead of Home
+// (cleaner UX). For returning users (quiz already done) the dialog fires
+// against Home — fine, but we skip the prompt entirely since they've
+// already onboarded once.
 //
-// Quiz done + paid            → returning user, go straight to home.
-// Quiz done + unpaid + NEVER  → user completed quiz steps but never subscribed
-//                               (closed app at paywall, or skipped). Send back to
-//                               the start of the quiz so they can't bypass the
-//                               pay-first gate by just re-launching.
-// Quiz done + expired sub     → user previously paid, sub lapsed but did NOT
-//                               uninstall. Stay in the app — paywall shows on
-//                               feature tap. Do NOT re-run the quiz.
-// Quiz not done               → fresh install or quiz was never finished.
-const isFirstLaunch = !quizIsDone();
-if (isFirstLaunch) {
-  onbStart();
-  // Notification permission is offered after the quiz result is displayed.
-} else {
-  // Returning user: #home no longer ships "active" in the static markup
-  // (that was the source of the flash), so it must be activated explicitly.
-  openScreen("home");
-}
-
-// Premium/paywall status still needs the network, but it no longer gates
-// which screen we route to — it only affects what's shown once we're there
-// (locked metric bars, paywall on feature tap, etc.) via applyPremiumToResult().
+// We await checkPremium() here so `premiumUntil` is populated before we
+// decide routing — otherwise the 50 ms window races the server response and
+// an expired subscriber could be mis-routed to the quiz on a slow connection.
 checkPremium(false).then(() => {
   applyPremiumToResult();
+
+  // Quiz done + paid            → returning user, go straight to home.
+  // Quiz done + unpaid + NEVER  → user completed quiz steps but never subscribed
+  //                               (closed app at paywall, or skipped). Send back to
+  //                               the start of the quiz so they can't bypass the
+  //                               pay-first gate by just re-launching.
+  // Quiz done + expired sub     → user previously paid, sub lapsed but did NOT
+  //                               uninstall. Stay in the app — paywall shows on
+  //                               feature tap. Do NOT re-run the quiz.
+  // Quiz not done               → fresh install or quiz was never finished.
+  const quizDone = quizIsDone();
+  const hasAccess = hasUnlockedAccess();
+
+  // Only users who have NEVER finished the quiz should be routed into it.
+  // Do NOT re-send a returning user back to the quiz just because their
+  // subscription lapsed or premiumUntil didn't arrive from the server in
+  // time. Any quizDone user without access simply stays in the app and
+  // hits the paywall on the next feature tap via ensurePremiumForAction().
+  const isFirstLaunch = !quizDone;
+  if (isFirstLaunch) {
+    onbStart();
+    // Notification permission is offered after the quiz result is displayed.
+  }
 }).catch(() => {
-  // Offline: fall back to local state only. Routing already happened above.
+  // Network failure — fall back to local state only. Same rule as above:
+  // only route into the quiz if it was never completed, never just because
+  // access is currently missing (offline or lapsed subscribers stay in the
+  // app and hit the paywall on their next feature tap instead).
   applyPremiumToResult();
+  const quizDone = quizIsDone();
+  if (!quizDone) {
+    onbStart();
+  }
 });
 
 // Hide pure-web payment polling toast on native (StoreKit is synchronous from
 // the user's point of view — no external checkout window opens).
 if (window.facemax && window.facemax.native) {
   document.documentElement.classList.add("fm-hide-web-only");
+}
+
+let _premiumResumeTimer = null;
+let _premiumResumeRefreshInFlight = false;
+function schedulePremiumRefreshAfterResume(){
+  // iOS may emit several visibility/foreground transitions around StoreKit and
+  // other system sheets. Collapse that burst into one non-blocking refresh so
+  // RevenueCat + backend checks cannot pile up while WKWebView is relaying out.
+  if (_premiumResumeTimer) clearTimeout(_premiumResumeTimer);
+  const delay = (premium || hasUnlockedAccess()) ? 3000 : 900;
+  _premiumResumeTimer = setTimeout(async () => {
+    _premiumResumeTimer = null;
+    if (_premiumResumeRefreshInFlight) return;
+    if (typeof _quizCheckingOut !== "undefined" && _quizCheckingOut) return;
+    _premiumResumeRefreshInFlight = true;
+    try { await checkPremium(false); }
+    catch (_) {}
+    finally { _premiumResumeRefreshInFlight = false; }
+  }, delay);
 }
 
 document.addEventListener("visibilitychange", () => {
@@ -13359,17 +13458,8 @@ document.addEventListener("visibilitychange", () => {
     renderMealPlanRoot();
     showToast("Previous meal plan request stopped. Try again.");
   }
-  // If a purchase is in-flight (_quizCheckingOut), skip the server round-trip:
-  // markPremiumActiveLocally() sets premium=true AFTER StoreKit confirms, but the
-  // App Store payment sheet can return the app to visible BEFORE that point —
-  // calling checkPremium() here would reset premium=false and break the flow.
-  if (typeof _quizCheckingOut !== "undefined" && _quizCheckingOut) return;
-  // Already confirmed premium locally — delay sync so the webhook has time to land.
-  if (premium || hasUnlockedAccess()) {
-    setTimeout(() => { checkPremium(false).catch(() => {}); }, 3000);
-  } else {
-    checkPremium(false).catch(() => {});
-  }
+
+  schedulePremiumRefreshAfterResume();
 });
 
 window.shareResultCard = async function() {

@@ -82,7 +82,7 @@
 		<string>cdn.jsdelivr.net</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>Used to capture a selfie for AI-powered face analysis.</string>
+	<string>Used to capture selfies and meal photos for AI-powered analysis.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>FaceMax AI: Glow Up Lab saves your before/after progress photos to your library so you can share or revisit them later.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
