@@ -2109,7 +2109,7 @@ const GLOW_PLAN_RESPONSE_FORMAT = {
         motivation: { type: "string", minLength: 1 },
         steps: {
           type: "array",
-          minItems: 6,
+          minItems: 3,
           maxItems: 6,
           items: {
             type: "object",
@@ -2311,8 +2311,10 @@ async function glowPlan(request, env) {
     concerns: Array.isArray(rawProfile.concerns) ? rawProfile.concerns.map(v => String(v).slice(0, 40)).slice(0, 8) : [],
     routine: rawProfile.routine ? String(rawProfile.routine).slice(0, 40) : null,
     commitment_minutes: rawProfile.commitment_minutes ? String(rawProfile.commitment_minutes).slice(0, 10) : null,
-    reason: rawProfile.reason ? String(rawProfile.reason).slice(0, 40) : null,
   };
+  const commitmentRaw = Number(profile.commitment_minutes);
+  const commitment = Number.isFinite(commitmentRaw) && commitmentRaw > 0 ? Math.round(commitmentRaw) : null;
+  const targetSteps = commitment == null ? 6 : commitment <= 5 ? 3 : commitment <= 10 ? 4 : commitment <= 20 ? 5 : 6;
 
   // Validate and extract thumbnail for vision context
   const thumbRaw = String(body.thumb || "");
@@ -2367,12 +2369,16 @@ ${profile.goal ? `User's stated primary goal: ${profile.goal}` : ""}
 ${profile.concerns.length ? `User's stated concerns: ${profile.concerns.join(", ")}` : ""}
 ${profile.routine ? `Current self-care routine level: ${profile.routine}` : ""}
 ${profile.commitment_minutes ? `Available daily time: ${profile.commitment_minutes} minutes` : ""}
-${profile.reason ? `Reason for starting: ${profile.reason}` : ""}
 
 VARIETY DIRECTIVE:
 - Select today's approach only from the user's current weakest metrics, visible photo context, recent score changes and completion history. Do not rotate through a prewritten day-of-week topic list.
-- The 6 steps must not all be the same generic actions. Use a varied set of safe actions only when each one is justified by this user's data.
+- The ${targetSteps} steps must not all be the same generic actions. Use a varied set of safe actions only when each one is justified by this user's data.
 - Include a nutrition-specific step only when nutrition plausibly addresses the current weakest area; otherwise use a more relevant action.
+
+QUESTIONNAIRE BOUNDARY:
+- Questionnaire answers are preference/context signals ONLY. Never alter, reinterpret, inflate or reduce any Face Scan score because of a stated goal, concern, routine or available time.
+- If a questionnaire goal conflicts with the scan metrics, keep the metrics factual and use the goal only to choose among safe actions that are relevant to the measured/visible data.
+- Mood, compliment frequency and self-image answers are intentionally not supplied here.
 
 DIAGNOSTIC GUIDANCE:
 - Use the lowest current metrics, visible photo context, questionnaire goals/constraints, changes since the previous scan and completion history to infer the most likely high-impact focus.
@@ -2382,9 +2388,9 @@ DIAGNOSTIC GUIDANCE:
 - When the data is insufficient, state the uncertainty inside the wording of the action rather than inventing a cause.
 
 TIME OF DAY AWARENESS:
-- morning: prioritise steps the user can do RIGHT NOW before leaving — cold rinse, ice compress, drainage massage, hydration, SPF
-- afternoon: mid-day resets — posture check, hydration top-up, nutrition audit for the day
-- evening: wind-down and repair — skincare routine, sodium cutoff, sleep prep, no screens
+- Respect the supplied time of day when deciding what is practical right now.
+- Do not choose from a fixed morning/afternoon/evening checklist. Infer suitable actions independently from the user's current data and context.
+- If an otherwise useful action is poorly timed for the current part of the day, choose a better-timed alternative with similar relevance.
 
 PROGRESSION AWARENESS:
 ${scoreDelta !== null && scoreDelta < -2 ? `Score dropped ${Math.abs(scoreDelta)} pts since last scan — be direct about what likely caused it and what to fix today specifically.` : ""}
@@ -2397,15 +2403,15 @@ Your task: generate ONE hyper-personalised Glow Up plan for TODAY.
 Look at ALL metrics. The plan must address the actual root cause shown by the scores — not generic advice.
 
 FORBIDDEN: never suggest mewing — the app has a dedicated exercises section for that.
-gua sha IS allowed and encouraged as a specific technique (direction matters: always drain toward lymph nodes).
+Do not force any named technique into the plan. Choose techniques independently only when they are safe and genuinely supported by the user context.
 
 Use independent reasoning from the supplied data. Do not copy a canned example plan or reuse a fixed sequence of actions.
 
 Output rules:
-- focus: 4–6 words — name the SPECIFIC issue (e.g. "De-puff & drain fluid" not "Jawline work", "Under-eye recovery" not "Eye area")
+- focus: 4–6 words — name the specific issue clearly; generate the wording from this user's data rather than copying a canned label
 - motivation: 1 punchy sentence. If score dropped → call it out by name and pts. If improved → celebrate it. Reference their actual lowest metric.
-- steps: exactly 6 steps. Order by impact, highest-ROI first. Do not default to the same actions every time. Pick only actions justified by today's lowest metrics and context. At least 2 steps should be specific rather than generic, using safe food, exercise, grooming, breathing or skincare techniques where relevant.
-  - e: exactly one emoji/sticker selected by you to match this exact action. Choose it independently from the wording and do not repeat an emoji across the 6 steps.
+- steps: exactly ${targetSteps} steps to fit the user's stated daily time. Order by impact, highest-ROI first. Do not default to the same actions every time. Pick only actions justified by today's lowest metrics and context. At least 2 steps should be specific rather than generic, using safe food, exercise, grooming, breathing or skincare techniques where relevant.
+  - e: exactly one emoji/sticker selected by you to match this exact action. Choose it independently from the wording and do not repeat an emoji across the ${targetSteps} steps.
   - label: 5–8 words, specific action
   - sub: max 8 words explaining why this action fits the user
   - area: root issue — one of: depuff | water_retention | face_fat | skin | jawline | eyes | cheekbones | symmetry | harmony | nutrition | sleep | overall
@@ -2414,7 +2420,7 @@ Output rules:
   - score: their actual score number
   - note: 1 ultra-short specific action justified by that metric and the rest of the user context
 - food_tip: 1 sentence tied directly to the weakest area. Start with emoji. Be specific (name the food/ingredient, not just "eat healthy").
-- face_tip: 1 sentence technique for today's specific issue. Start with emoji. Name the exact technique (gua sha direction, cold spoon duration, drainage pathway).
+- face_tip: 1 sentence technique for today's specific issue. Start with emoji. Choose and name the exact technique independently; do not draw from a fixed list.
 - skin_tip: 1 sentence skincare step — only include if skin score < 75, otherwise null. Start with emoji.
 
 Return ONLY valid JSON, no markdown fences:
@@ -2422,12 +2428,7 @@ Return ONLY valid JSON, no markdown fences:
   "focus": "string",
   "motivation": "string",
   "steps": [
-    { "e": "single emoji", "label": "string", "sub": "string", "area": "string" },
-    { "e": "single emoji", "label": "string", "sub": "string", "area": "string" },
-    { "e": "single emoji", "label": "string", "sub": "string", "area": "string" },
-    { "e": "single emoji", "label": "string", "sub": "string", "area": "string" },
-    { "e": "single emoji", "label": "string", "sub": "string", "area": "string" },
-    { "e": "single emoji", "label": "string", "sub": "string", "area": "string" }
+${Array.from({ length: targetSteps }, () => '    { "e": "single emoji", "label": "string", "sub": "string", "area": "string" }').join(",\n")}
   ],
   "chips": [
     { "label": "string", "score": number, "note": "string" },
@@ -2458,7 +2459,7 @@ Return ONLY valid JSON, no markdown fences:
 
     const allowedAreas = new Set(["depuff", "water_retention", "face_fat", "skin", "jawline", "eyes", "cheekbones", "symmetry", "harmony", "nutrition", "sleep", "overall"]);
     const steps = Array.isArray(parsed.steps)
-      ? parsed.steps.slice(0, 6).map((st, index) => {
+      ? parsed.steps.slice(0, targetSteps).map((st, index) => {
           const e = requireAiEmoji(st?.e, `steps[${index}].e`);
           const label = String(st?.label || "").trim();
           const sub = String(st?.sub || "").trim();
@@ -2467,7 +2468,7 @@ Return ONLY valid JSON, no markdown fences:
           return { e, label, sub, area };
         })
       : [];
-    if (steps.length !== 6) throw new Error("Glow plan must contain exactly 6 steps");
+    if (steps.length !== targetSteps) throw new Error(`Glow plan must contain exactly ${targetSteps} steps`);
 
     const chips = Array.isArray(parsed.chips)
       ? parsed.chips.slice(0, 3).map((c, index) => {

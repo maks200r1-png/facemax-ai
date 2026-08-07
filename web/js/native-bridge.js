@@ -1070,7 +1070,7 @@
     },
 
     // Schedule a notification at a specific Date. Cancels any prior with same id.
-    async scheduleAt({ id, at, title, body }) {
+    async scheduleAt({ id, at, title, body, extra }) {
       const p = notifPlugin();
       if (!p || !facemax.native) return false;
       if (!(at instanceof Date) || at.getTime() <= Date.now() + 5000) return false;
@@ -1084,6 +1084,7 @@
             schedule: { at, allowWhileIdle: true },
             sound: "default",
             smallIcon: "ic_stat_icon",
+            extra: (extra && typeof extra === "object") ? extra : undefined,
           }],
         });
         return true;
@@ -1091,7 +1092,7 @@
     },
 
     // Schedule a notification that repeats every day at the given local hour/minute.
-    async scheduleDaily({ id, hour, minute, title, body }) {
+    async scheduleDaily({ id, hour, minute, title, body, extra }) {
       const p = notifPlugin();
       if (!p || !facemax.native) return false;
       try {
@@ -1108,10 +1109,39 @@
             },
             sound: "default",
             smallIcon: "ic_stat_icon",
+            extra: (extra && typeof extra === "object") ? extra : undefined,
           }],
         });
         return true;
       } catch (e) { return false; }
+    },
+
+    async getDelivered() {
+      const p = notifPlugin();
+      if (!p || !facemax.native || typeof p.getDeliveredNotifications !== "function") return [];
+      try {
+        const res = await p.getDeliveredNotifications();
+        return (res && Array.isArray(res.notifications)) ? res.notifications : [];
+      } catch (e) { return []; }
+    },
+
+    async bindEvents() {
+      if (this._eventsBound) return true;
+      const p = notifPlugin();
+      if (!p || !facemax.native || typeof p.addListener !== "function") return false;
+      try {
+        this._eventsBound = true;
+        await p.addListener("localNotificationReceived", function (notification) {
+          try { window.dispatchEvent(new CustomEvent("facemax:local-notification", { detail: { kind:"received", notification } })); } catch (_) {}
+        });
+        await p.addListener("localNotificationActionPerformed", function (action) {
+          try { window.dispatchEvent(new CustomEvent("facemax:local-notification", { detail: { kind:"action", action, notification: action && action.notification } })); } catch (_) {}
+        });
+        return true;
+      } catch (e) {
+        this._eventsBound = false;
+        return false;
+      }
     },
   };
 
@@ -1151,6 +1181,18 @@
     detect();
     bindHaptics();
     styleStatusBar();
+    // Capacitor plugin registration can lag behind DOMContentLoaded. Bind the
+    // local-notification receive/action listeners only after native detection,
+    // then retry briefly until LocalNotifications appears on the bridge.
+    if (facemax.native) {
+      (function bindNotifEventsWhenReady(attempt) {
+        Promise.resolve(facemax.notif.bindEvents()).then(function(ok){
+          if (!ok && attempt < 24) setTimeout(function(){ bindNotifEventsWhenReady(attempt + 1); }, 250);
+        }).catch(function(){
+          if (attempt < 24) setTimeout(function(){ bindNotifEventsWhenReady(attempt + 1); }, 250);
+        });
+      })(0);
+    }
     // Diagnostic: log native detection + registered Capacitor plugins after
     // a short delay so the bridge has time to register them all.
     if (facemax.native) {

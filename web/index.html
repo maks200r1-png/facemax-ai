@@ -5,8 +5,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="v-1780329029000">
-  <!-- BUILD: v-1780329029000 -->
+  <meta name="build-version" content="v-1786115166269">
+  <!-- BUILD: v-1786115166269 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#100A14">
@@ -241,6 +241,19 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .hs-streak-active{background:linear-gradient(180deg,rgba(251,191,36,.20),rgba(251,146,60,.06));border-color:rgba(251,191,36,.45);box-shadow:0 4px 14px rgba(251,146,60,.20)}
 .hs-streak-active .hs-num{color:#fbbf24;font-size:17px}
 .hs-streak-active .hs-lbl{color:rgba(251,191,36,.85)}
+.hs-streak-risk{background:linear-gradient(180deg,rgba(251,146,60,.28),rgba(127,29,29,.10));border-color:rgba(251,146,60,.68);box-shadow:0 4px 18px rgba(251,146,60,.26)}
+.hs-streak-risk .hs-num{color:#fb923c}
+.hs-streak-risk .hs-lbl{color:#fdba74}
+.hs-streak-secured{background:linear-gradient(180deg,rgba(34,197,94,.22),rgba(16,185,129,.06));border-color:rgba(74,222,128,.48);box-shadow:0 4px 16px rgba(34,197,94,.18)}
+.hs-streak-secured .hs-num{color:#4ade80}
+.hs-streak-secured .hs-lbl{color:rgba(134,239,172,.92)}
+.hs-streak-broken{background:linear-gradient(180deg,rgba(148,163,184,.10),rgba(71,85,105,.04));border-color:rgba(148,163,184,.18)}
+.hs-streak-broken .hs-num{color:#cbd5e1}
+.hs-streak-broken .hs-lbl{color:#94a3b8}
+@media (prefers-reduced-motion:no-preference){
+  .hs-streak-risk{animation:fmStreakRiskPulse 2.2s ease-in-out infinite}
+  @keyframes fmStreakRiskPulse{0%,100%{box-shadow:0 4px 18px rgba(251,146,60,.18)}50%{box-shadow:0 4px 24px rgba(251,146,60,.38)}}
+}
 .hs-fire{display:inline-block;margin-right:2px;filter:drop-shadow(0 1px 4px rgba(251,146,60,.6))}
 .home-link-row{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:2px}
 .link-tile{display:flex;align-items:center;gap:12px;width:100%;background:linear-gradient(160deg,rgba(167,139,250,.10),rgba(255,182,193,.03) 65%);border:1px solid rgba(167,139,250,.22);border-radius:16px;padding:12px 14px;cursor:pointer;color:var(--text);text-align:left;transition:transform .12s,filter .15s}
@@ -314,7 +327,24 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .gu-header-top-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .gu-header-streak-row{margin:6px 0 0;display:flex;justify-content:flex-end}
 .gu-header-streak-row span{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:900;letter-spacing:-.01em;color:#fff;background:rgba(0,0,0,.16);border-radius:999px;padding:3px 10px 3px 8px}
+.gu-home-week{margin-top:2px}
+.gu-momentum-status{display:flex;align-items:center;justify-content:center;min-height:27px;margin-top:4px;padding:5px 10px;border-radius:999px;font-size:10.5px;font-weight:800;line-height:1.2;text-align:center;letter-spacing:.005em;color:rgba(255,255,255,.80);background:rgba(0,0,0,.13);border:1px solid rgba(255,255,255,.10)}
+.gu-momentum-status.progress{color:#e9d5ff;border-color:rgba(216,180,254,.24);background:rgba(88,28,135,.18)}
+.gu-momentum-status.risk{color:#fed7aa;border-color:rgba(251,146,60,.50);background:rgba(124,45,18,.30)}
+.gu-momentum-status.done{color:#bbf7d0;border-color:rgba(74,222,128,.42);background:rgba(20,83,45,.28)}
+.gu-momentum-status.broken{color:#cbd5e1;border-color:rgba(148,163,184,.20);background:rgba(51,65,85,.24)}
 .gu-header-title{font-size:17px;font-weight:800;letter-spacing:-.02em;color:#fff;line-height:1}
+
+/* Duolingo-style completion moment — uses the existing streak, never Face Score. */
+.gu-complete-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;visibility:hidden;background:rgba(8,5,12,.38);backdrop-filter:blur(4px);transition:opacity .18s ease,visibility .18s ease}
+.gu-complete-overlay.show{opacity:1;visibility:visible}
+.gu-complete-pop{min-width:210px;padding:24px 28px 22px;border-radius:32px;text-align:center;background:linear-gradient(160deg,#3b1d67,#6d28d9 55%,#8b5cf6);border:1px solid rgba(255,255,255,.20);box-shadow:0 24px 70px rgba(76,29,149,.48);transform:scale(.82) translateY(14px);opacity:0}
+.gu-complete-overlay.show .gu-complete-pop{transform:scale(1) translateY(0);opacity:1;transition:transform .42s cubic-bezier(.2,1.25,.35,1),opacity .2s ease}
+.gu-complete-fire{font-size:48px;line-height:1;margin-bottom:7px;filter:drop-shadow(0 8px 14px rgba(251,146,60,.35))}
+.gu-complete-count{font-size:48px;font-weight:950;letter-spacing:-.055em;color:#fff;line-height:1}
+.gu-complete-label{margin-top:3px;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fde68a}
+.gu-complete-sub{margin-top:10px;font-size:13px;font-weight:700;color:rgba(255,255,255,.78)}
+@media (prefers-reduced-motion:reduce){.gu-complete-overlay,.gu-complete-pop{transition:none!important}}
 
 /* week-dots → pill segments like Umax */
 .gu-week-row{display:flex;flex-direction:column;gap:4px;margin-top:0}
@@ -2339,6 +2369,8 @@ html.cam-active .app { background:transparent !important; }
 .profile-hero-v4 .profile-avatar{width:74px;height:74px;margin:0;flex:0 0 74px}.profile-hero-copy{min-width:0;flex:1}.profile-hero-copy .profile-name{font-size:22px}.profile-hero-copy .status-badge{margin-top:8px;padding:5px 10px;font-size:11px}.profile-hero-copy .premium-until{margin-top:6px;font-size:11.5px}
 .profile-stats-v4{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.profile-stat-v4{padding:13px 10px;border-radius:17px;background:var(--v4-card);border:1px solid var(--v4-border);display:flex;flex-direction:column;gap:4px}.profile-stat-v4 span{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:750}.profile-stat-v4 b{font-size:21px;letter-spacing:-.03em}.profile-chart-v4{border-radius:22px!important;margin-bottom:18px!important}
 .settings-section-v4{margin-top:18px}.settings-title-v4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.11em;color:rgba(255,255,255,.44);margin:0 5px 8px}.settings-card-v4{overflow:hidden;background:var(--v4-card);border:1px solid var(--v4-border);border-radius:22px}.settings-row-v4{display:flex;align-items:center;gap:12px;padding:14px 14px;min-height:68px}.settings-button-v4{width:100%;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}.settings-divider-v4{height:1px;background:rgba(255,255,255,.07);margin-left:60px}.settings-icon-v4{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:0 0 34px}.settings-icon-v4 svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.settings-icon-v4.purple{background:rgba(167,139,250,.15);color:#c4b5fd}.settings-icon-v4.blue{background:rgba(96,165,250,.14);color:#93c5fd}.settings-icon-v4.green{background:rgba(74,222,128,.12);color:#86efac}.settings-icon-v4.gray{background:rgba(255,255,255,.07);color:rgba(255,255,255,.72)}.settings-icon-v4.red{background:rgba(248,113,113,.12);color:#fca5a5}.settings-copy-v4{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}.settings-copy-v4 b{font-size:14px;font-weight:700;letter-spacing:-.01em}.settings-copy-v4 span{font-size:11.5px;color:var(--muted);line-height:1.3}.settings-chevron-v4{width:18px;height:18px;stroke:rgba(255,255,255,.28);fill:none;stroke-width:2;flex:0 0 18px}.settings-footnote-v4{font-size:10.5px;color:rgba(255,255,255,.34);margin:8px 8px 0;line-height:1.4}.gender-row-v4{flex-wrap:wrap}.gender-row-v4 .settings-copy-v4{min-width:155px}.gender-pills-v4{display:flex;gap:5px;margin-left:46px;width:calc(100% - 46px)}.gender-pill-v4{flex:1;border:1px solid var(--v4-border);background:rgba(255,255,255,.045);color:var(--muted);border-radius:11px;padding:8px;font-size:11.5px;font-weight:750}.gender-pill-v4.active,.gender-pill-v4[aria-pressed="true"]{background:rgba(167,139,250,.18);border-color:rgba(196,181,253,.38);color:#ddd6fe}.danger-section-v4{padding-bottom:16px}.danger-row-v4 .settings-copy-v4 b{color:#fca5a5}
+.gu-personal-focus{font-size:10.5px;color:#b8afc1;font-weight:650;line-height:1.3;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.goal-prefs-modal{position:fixed;inset:0;z-index:10050;background:rgba(5,3,8,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;padding:0}.goal-prefs-modal.hidden{display:none}.goal-prefs-sheet{width:min(100%,620px);max-height:88vh;overflow:auto;background:#17121d;border:1px solid rgba(255,255,255,.11);border-radius:28px 28px 0 0;padding:18px 18px calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.42)}.goal-prefs-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}.goal-prefs-head h3{margin:0;font-size:21px;letter-spacing:-.025em;text-transform:none}.goal-prefs-head p{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.4}.goal-prefs-close{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.06);color:#fff;font-size:22px;line-height:1}.goal-prefs-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.42);margin:16px 2px 8px}.goal-prefs-options{display:flex;flex-wrap:wrap;gap:7px}.goal-pref-chip{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.045);color:#c8c1cc;border-radius:13px;padding:9px 11px;font-size:12px;font-weight:700}.goal-pref-chip.active{background:rgba(167,139,250,.18);border-color:rgba(196,181,253,.45);color:#ede9fe}.goal-pref-save{width:100%;height:52px;border:0;border-radius:17px;margin-top:20px;background:linear-gradient(135deg,#8b5cf6,#c35bea);color:#fff;font-size:14px;font-weight:800}.goal-prefs-note{font-size:10.5px;color:rgba(255,255,255,.38);line-height:1.45;margin-top:10px;text-align:center}
 
 /* Calories */
 .calorie-hero-v4.fm-cal-widget{border-radius:28px!important;padding:19px!important;background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(139,92,246,.07))!important}.calorie-hero-v4 .fm-cal-bar-track{height:16px;border-radius:999px;margin:15px 0}.calorie-hero-v4 .fm-cal-stats{justify-content:flex-start;gap:18px}.calorie-hero-v4 .fm-cal-stat{align-items:flex-start}.calorie-stat-divider-v4{width:1px;height:42px;background:rgba(255,255,255,.1)}.calorie-hero-v4 .fm-health-row{margin-top:15px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)}
@@ -2406,6 +2438,43 @@ html.cam-active .app { background:transparent !important; }
 </style>
 
 
+
+
+<style id="facemax-notification-inbox-v1">
+/* In-app Notification Center. Keeps retention messages accessible after the
+   iOS banner disappears, without mixing notification settings into the inbox. */
+.home-inbox-row{display:flex;justify-content:flex-end;align-items:center;min-height:40px;margin:0 0 2px}
+.fm-notif-bell{position:relative;width:40px;height:40px;border:0;background:transparent;color:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:none;transition:transform .12s ease,opacity .12s ease}
+.fm-notif-bell:active{transform:scale(.92);opacity:.72;background:transparent}
+.fm-notif-bell svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.fm-notif-bell.compact{position:absolute;right:0;top:0;width:40px;height:40px;box-shadow:none}
+.fm-notif-badge{position:absolute;right:-5px;top:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid #100A14;font-size:10px;font-weight:850;line-height:14px;display:none;align-items:center;justify-content:center;letter-spacing:-.02em}
+.fm-notif-badge.show{display:flex}
+.notifications-screen{padding-bottom:8px}
+.notif-inbox-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:4px 0 12px}
+.notif-inbox-head>div{display:flex;flex-direction:column;gap:2px}
+.notif-inbox-head h2{font-size:22px;margin:0;letter-spacing:-.035em}
+.notif-inbox-head p{font-size:12px;color:var(--muted);margin:0}
+.notif-mark-read{border:0;background:transparent;color:#c4b5fd;font-size:12px;font-weight:750;padding:8px 0;white-space:nowrap}
+.notif-inbox-list{display:flex;flex-direction:column;gap:8px}
+.notif-item{position:relative;width:100%;display:grid;grid-template-columns:42px minmax(0,1fr) 18px;gap:11px;align-items:center;text-align:left;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.045);border-radius:19px;padding:13px 12px;color:#fff;cursor:pointer}
+.notif-item.unread{background:linear-gradient(145deg,rgba(139,92,246,.12),rgba(255,255,255,.05));border-color:rgba(196,181,253,.20)}
+.notif-item:active{background:rgba(255,255,255,.075)}
+.notif-item-icon{width:42px;height:42px;border-radius:14px;background:rgba(167,139,250,.12);color:#c4b5fd;display:grid;place-items:center;flex:0 0 42px}
+.notif-item-icon.streak{background:rgba(251,146,60,.13);color:#fb923c}.notif-item-icon.scan{background:rgba(96,165,250,.13);color:#60a5fa}.notif-item-icon.progress{background:rgba(74,222,128,.13);color:#4ade80}
+.notif-item-icon svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.notif-item-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
+.notif-item-title{font-size:13.5px;font-weight:760;line-height:1.25;letter-spacing:-.015em}
+.notif-item-body{font-size:11.5px;line-height:1.38;color:var(--muted)}
+.notif-item-time{font-size:9.5px;color:rgba(255,255,255,.34);margin-top:2px}
+.notif-item-chevron{width:18px;height:18px;stroke:rgba(255,255,255,.34);fill:none;stroke-width:2.3}
+.notif-unread-dot{position:absolute;right:12px;top:11px;width:7px;height:7px;border-radius:50%;background:#a78bfa;box-shadow:0 0 0 3px rgba(167,139,250,.12)}
+.notif-empty{padding:42px 22px;text-align:center;border:1px dashed rgba(255,255,255,.10);border-radius:22px;background:rgba(255,255,255,.025)}
+.notif-empty-icon{width:52px;height:52px;border-radius:18px;margin:0 auto 12px;background:rgba(167,139,250,.11);display:grid;place-items:center;color:#c4b5fd}
+.notif-empty-icon svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:1.8}
+.notif-empty b{display:block;font-size:14px;margin-bottom:4px}.notif-empty span{font-size:11.5px;line-height:1.45;color:var(--muted)}
+.notif-inbox-note{font-size:10.5px;color:rgba(255,255,255,.35);text-align:center;margin:14px 14px 0;line-height:1.45}
+</style>
 
 </head>
 <body>
@@ -2830,6 +2899,13 @@ html.cam-active .app { background:transparent !important; }
 
   <div class="home-v2">
 
+    <div class="home-inbox-row">
+      <button type="button" class="fm-notif-bell" onclick="openNotificationInbox()" aria-label="Notifications">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+        <span class="fm-notif-badge" id="homeNotifBadge">0</span>
+      </button>
+    </div>
+
     <!-- Last scan card (umax-style) -->
     <div class="last-scan-card empty" id="lastScanCard" onclick="openLatestScanFromHome()" role="button" aria-label="No scan yet">
       <div class="lsc-ring" id="homeScanRing">
@@ -2876,7 +2952,7 @@ html.cam-active .app { background:transparent !important; }
     <div class="home-stats">
       <div class="hs hs-streak" id="homeStreakTile">
         <span class="hs-num" id="homeStreak">0</span>
-        <span class="hs-lbl">day streak</span>
+        <span class="hs-lbl" id="homeStreakLabel">day streak</span>
       </div>
       <div class="hs">
         <span class="hs-num" id="homeScans">0</span>
@@ -2909,11 +2985,18 @@ html.cam-active .app { background:transparent !important; }
               <div class="gu-header-top-row">
                 <span class="gu-header-title">GLOW UP PLAN</span>
               </div>
+              <div class="gu-personal-focus" id="guPersonalFocus" style="display:none"></div>
               <!-- progress bar row -->
               <div class="gu-progress-row">
                 <div class="gu-progress-bar"><div class="gu-progress-fill" id="guProgressFill" style="width:0%"></div></div>
                 <span class="gu-progress-label" id="guProgressLabel">0 / 6 done</span>
               </div>
+              <!-- Weekly completion strip: a day lights up only when today's plan is completed. -->
+              <div class="gu-week-row gu-home-week" id="guHomeWeekRow">
+                <div class="gu-dots" id="guWeekDots"></div>
+                <div class="gu-dot-labels" id="guWeekLabels"></div>
+              </div>
+              <div class="gu-momentum-status progress" id="guMomentumStatus">Complete today's plan to build your streak</div>
               <!-- streak callout (shown when streak >= 1, sits at bottom of card) -->
               <div class="gu-header-streak-row" id="guHeaderStreakRow" style="display:none">
                 <span id="guHeaderStreakText"></span>
@@ -3398,11 +3481,36 @@ html.cam-active .app { background:transparent !important; }
   </div>
 </div>
 
+<!-- ============================ NOTIFICATIONS ============================ -->
+<section id="notifications" class="screen notifications-screen">
+  <div class="screen-topbar">
+    <button type="button" class="stb-back" onclick="goBack()" aria-label="Back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="stb-logo"><img src="assets/logo.png" alt=""></div>
+    <span class="stb-title">Notifications</span>
+  </div>
+
+  <div class="notif-inbox-head">
+    <div>
+      <h2>Updates</h2>
+      <p id="notificationInboxSub">Your FaceMax reminders and progress updates</p>
+    </div>
+    <button type="button" class="notif-mark-read" id="notificationMarkAll" onclick="fmInboxMarkAllRead()">Mark all read</button>
+  </div>
+  <div class="notif-inbox-list" id="notificationInboxList"></div>
+  <div class="notif-inbox-note">Push settings stay in Profile → Smart Reminders. This inbox keeps FaceMax updates after the iOS banner is gone.</div>
+</section>
+
 <!-- =============================== PROFILE =============================== -->
 <section id="profile" class="screen design-profile-screen">
   <div class="screen-topbar">
     <div class="stb-logo"><img src="assets/logo.png" alt=""></div>
     <span class="stb-title">Profile</span>
+    <button type="button" class="fm-notif-bell compact" onclick="openNotificationInbox()" aria-label="Notifications">
+      <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+      <span class="fm-notif-badge" id="profileNotifBadge">0</span>
+    </button>
   </div>
 
   <div class="profile-hero-v4">
@@ -3434,12 +3542,18 @@ html.cam-active .app { background:transparent !important; }
     <div class="settings-card-v4">
       <div class="settings-row-v4">
         <div class="settings-icon-v4 purple"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></div>
-        <div class="settings-copy-v4"><b>Daily reminder</b><span>Morning, evening and re-scan nudges</span></div>
-        <label class="notif-toggle" aria-label="Toggle daily reminder">
+        <div class="settings-copy-v4"><b>Smart reminders</b><span>Plan, streak, re-scan and return nudges</span></div>
+        <label class="notif-toggle" aria-label="Toggle smart reminders">
           <input type="checkbox" id="notifDailyToggle" onchange="toggleDailyReminder(this.checked)">
           <span class="notif-toggle-track"><span class="notif-toggle-dot"></span></span>
         </label>
       </div>
+      <div class="settings-divider-v4"></div>
+      <button class="settings-row-v4 settings-button-v4" type="button" onclick="openGoalPreferences()">
+        <div class="settings-icon-v4 purple"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="7"/></svg></div>
+        <div class="settings-copy-v4"><b>Goals &amp; preferences</b><span id="goalPrefsSummary">Personalize your daily plan</span></div>
+        <svg class="settings-chevron-v4" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
       <div class="settings-divider-v4"></div>
       <div class="settings-row-v4 gender-row-v4" id="genderSettingCard">
         <div class="settings-icon-v4 blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/></svg></div>
@@ -3493,6 +3607,25 @@ html.cam-active .app { background:transparent !important; }
     </div>
   </div>
 </section>
+
+<div id="goalPrefsModal" class="goal-prefs-modal hidden" onclick="if(event.target===this)closeGoalPreferences()">
+  <div class="goal-prefs-sheet" role="dialog" aria-modal="true" aria-labelledby="goalPrefsTitle">
+    <div class="goal-prefs-head">
+      <div><h3 id="goalPrefsTitle">Goals &amp; preferences</h3><p>These personalize your plan and reminders. They never change your Face Scan score.</p></div>
+      <button class="goal-prefs-close" type="button" onclick="closeGoalPreferences()" aria-label="Close">×</button>
+    </div>
+    <div class="goal-prefs-label">Main goal</div>
+    <div class="goal-prefs-options" id="goalPrefGoal"></div>
+    <div class="goal-prefs-label">Concerns</div>
+    <div class="goal-prefs-options" id="goalPrefConcerns"></div>
+    <div class="goal-prefs-label">Current routine</div>
+    <div class="goal-prefs-options" id="goalPrefRoutine"></div>
+    <div class="goal-prefs-label">Daily time</div>
+    <div class="goal-prefs-options" id="goalPrefCommitment"></div>
+    <button class="goal-pref-save" type="button" onclick="saveGoalPreferences()">Save preferences</button>
+    <div class="goal-prefs-note">Mood and compliment answers are not used for Face Scan scoring or plan recommendations.</div>
+  </div>
+</div>
 
 <!-- =============================== INTERNAL PREMIUM PAYWALL =============================== -->
 <section id="gate" class="screen internal-paywall-v4">
@@ -3748,6 +3881,15 @@ html.cam-active .app { background:transparent !important; }
   <div id="ghChips" style="display:none"></div>
 
 </section>
+
+<div class="gu-complete-overlay" id="guCompletionOverlay" aria-hidden="true">
+  <div class="gu-complete-pop">
+    <div class="gu-complete-fire">🔥</div>
+    <div class="gu-complete-count" id="guCompletionCount">1</div>
+    <div class="gu-complete-label">Day streak</div>
+    <div class="gu-complete-sub">Today's plan complete</div>
+  </div>
+</div>
 
 <!-- =============================== FOOD SCAN =============================== -->
 <section id="foodScan" class="screen">
@@ -4668,12 +4810,26 @@ function renderHomeStats(){
   const best = scans ? Math.max(...scanHistory.map(h => Number(h.score)||0)) : null;
   const lastEntry = scans ? scanHistory[0] : null;
   const last = lastEntry ? (Number(lastEntry.score) || 0) : null;
-  const streak = (typeof _guGetStreak === "function") ? _guGetStreak().count : 0;
+  const momentum = (typeof _guBuildMomentumState === "function") ? _guBuildMomentumState() : { streak:0, completedToday:false, atRisk:false, brokenCount:0 };
+  const streak = Number(momentum.streak) || 0;
   const setText = (id, val) => { const n = el(id); if (n) n.textContent = val; };
   const streakNumEl = el("homeStreak");
   if (streakNumEl) streakNumEl.innerHTML = (streak >= 1 ? '<span class="hs-fire">🔥</span>' : '') + String(streak);
   const streakTile = el("homeStreakTile");
-  if (streakTile) streakTile.classList.toggle("hs-streak-active", streak >= 1);
+  const streakLabel = el("homeStreakLabel");
+  if (streakTile) {
+    streakTile.classList.remove("hs-streak-active","hs-streak-risk","hs-streak-secured","hs-streak-broken");
+    if (momentum.completedToday && streak >= 1) streakTile.classList.add("hs-streak-secured");
+    else if (momentum.atRisk && momentum.isEvening) streakTile.classList.add("hs-streak-risk");
+    else if (streak >= 1) streakTile.classList.add("hs-streak-active");
+    else if (momentum.brokenCount >= 2) streakTile.classList.add("hs-streak-broken");
+  }
+  if (streakLabel) {
+    if (momentum.completedToday && streak >= 1) streakLabel.textContent = "streak secured";
+    else if (momentum.atRisk && momentum.isEvening) streakLabel.textContent = "at risk";
+    else if (!streak && momentum.brokenCount >= 2) streakLabel.textContent = "restart today";
+    else streakLabel.textContent = "day streak";
+  }
   setText("homeScans", String(scans));
   setText("homeBest", best != null ? String(best) : "—");
 
@@ -4729,7 +4885,7 @@ function _guIsValidAiPlanData(data) {
   if (!data || typeof data !== "object") return false;
   if (!String(data.focus || "").trim() || !String(data.motivation || "").trim()) return false;
   if (!String(data.food_tip || "").trim() || !String(data.face_tip || "").trim()) return false;
-  if (!Array.isArray(data.steps) || data.steps.length !== 6) return false;
+  if (!Array.isArray(data.steps) || data.steps.length < 3 || data.steps.length > 6) return false;
   for (const step of data.steps) {
     const sticker = String(step && step.e || "").trim();
     if (!_guHasAiSticker(sticker)) return false;
@@ -4775,8 +4931,8 @@ async function _fetchAiGlowPlan(last, _premiumRetried) {
   // Cache key includes the local calendar date — a new plan is requested after
   // local midnight or after a new scan, never during the same day.
   const today = new Date().toLocaleDateString('en-CA'); // local TZ, not UTC
-  const PLAN_VER = "v6"; // AI-only content + validated AI-selected task stickers
-  const dailyKey = cacheKey + "_" + today + "_" + PLAN_VER;
+  const PLAN_VER = "v8"; // quiz-personalized plan length + validated AI-selected task stickers
+  const dailyKey = cacheKey + "_" + today + "_" + PLAN_VER + "_" + _fmPreferenceSignature();
 
   // 1) check in-memory first
   if (_guAiPlanCache[dailyKey]?.source === "openrouter" && _guIsValidAiPlanData(_guAiPlanCache[dailyKey].data)) {
@@ -4844,7 +5000,7 @@ async function _fetchAiGlowPlan(last, _premiumRetried) {
       // This is the same photo already scanned — no new camera access needed.
       thumb: last.thumb || null,
       // ── enriched context ──
-      streak: _guGetStreak().count,          // consecutive days with completed tasks
+      streak: _guGetStreak().count,          // consecutive fully-completed plan days
       week_done: _guWeekBools(),             // [Mon..Sun] booleans for current week
       prev_metrics: prevMetrics,             // metrics from previous scan day (for targeted focus)
       score_delta: scoreDelta,               // overall score change since last scan day
@@ -4856,7 +5012,6 @@ async function _fetchAiGlowPlan(last, _premiumRetried) {
         concerns: Array.isArray(quizState?.answers?.concerns) ? quizState.answers.concerns : [],
         routine: quizState?.answers?.routine || null,
         commitment_minutes: quizState?.answers?.commitment || null,
-        reason: quizState?.answers?.why || null,
       },
     });
     _guLastAiError = null;
@@ -4948,7 +5103,7 @@ function _guSaveProgress(done) {
     const key = _guScanKey();
     if (key) localStorage.setItem(key, JSON.stringify(done));
     // Save daily completion % so tomorrow's AI plan knows how consistent you were
-    const total = _guCurrentTotal || 6;
+    const total = _guGetPlanTotal();
     const pct = Math.round((done.length / total) * 100);
     const weekCompKey = "gu_week_completion";
     const weekComp = JSON.parse(localStorage.getItem(weekCompKey) || "{}");
@@ -4961,7 +5116,7 @@ function _guSaveProgress(done) {
 }
 
 // ── week tracking (gu_week) ───────────────────────────────────────────────────
-// gu_week: { "YYYY-MM-DD": true, ... }  — truthy if ≥1 task done that day
+// gu_week: { "YYYY-MM-DD": true, ... }  — truthy only when the full plan was completed that day
 function _guGetWeek() {
   try { return JSON.parse(localStorage.getItem("gu_week") || "{}"); } catch { return {}; }
 }
@@ -4978,15 +5133,53 @@ function _guTodayKey() {
 }
 
 // ── streak helpers ────────────────────────────────────────────────────────────
+const GU_BROKEN_STREAK_KEY = "gu_last_broken_streak_v1";
+
 function _guGetStreak() {
   try {
     const raw = localStorage.getItem("gu_streak");
     if (!raw) return { count: 0, lastDate: null };
-    return JSON.parse(raw);
+    let s = JSON.parse(raw) || { count:0, lastDate:null };
+    s.count = Math.max(0, Number(s.count) || 0);
+    s.lastDate = s.lastDate || null;
+
+    // A streak is alive through the day after its most recent completed plan.
+    // If two local calendar days have passed, preserve the old run for the
+    // comeback UI, then reset the active streak. This fixes stale "12 day
+    // streak" labels after several days away.
+    if (s.count > 0 && s.lastDate) {
+      const today = _guDateKey();
+      const y = new Date(); y.setDate(y.getDate() - 1);
+      const yesterday = _guDateKey(y);
+      if (s.lastDate !== today && s.lastDate !== yesterday) {
+        try {
+          const old = JSON.parse(localStorage.getItem(GU_BROKEN_STREAK_KEY) || "null");
+          if (!old || old.lastDate !== s.lastDate || Number(old.count) !== s.count) {
+            localStorage.setItem(GU_BROKEN_STREAK_KEY, JSON.stringify({
+              count: s.count,
+              lastDate: s.lastDate,
+              detectedAt: Date.now(),
+            }));
+          }
+        } catch {}
+        s = { count: 0, lastDate: null };
+        try { localStorage.setItem("gu_streak", JSON.stringify(s)); } catch {}
+      }
+    }
+    return s;
   } catch { return { count: 0, lastDate: null }; }
 }
 function _guSaveStreak(obj) {
   try { localStorage.setItem("gu_streak", JSON.stringify(obj)); } catch {}
+}
+function _guGetBrokenStreak() {
+  try {
+    const b = JSON.parse(localStorage.getItem(GU_BROKEN_STREAK_KEY) || "null");
+    return b && Number(b.count) > 0 ? b : null;
+  } catch { return null; }
+}
+function _guClearBrokenStreak() {
+  try { localStorage.removeItem(GU_BROKEN_STREAK_KEY); } catch {}
 }
 function _guDateKey(d) {
   // Use local YYYY-MM-DD (same format as water/routine streaks) — avoids
@@ -5005,6 +5198,128 @@ function _guUpdateStreak() {
   return newCount;
 }
 
+function _guPlanTotalStorageKey() {
+  try {
+    const progressKey = _guScanKey();
+    return progressKey ? progressKey.replace(/^gu_progress_/, "gu_plan_total_") : null;
+  } catch { return null; }
+}
+function _guSavePlanTotal(total) {
+  const n = Math.max(1, Math.min(12, Number(total) || 0));
+  if (!n) return;
+  try {
+    const key = _guPlanTotalStorageKey();
+    if (key) localStorage.setItem(key, String(n));
+  } catch {}
+}
+function _guExpectedPlanTotal() {
+  // Same mapping used by the Worker. This gives Home the right progress total
+  // even before the user opens the AI plan for the first time today.
+  try {
+    const answers = (typeof _fmLoadQuizAnswers === "function") ? _fmLoadQuizAnswers() : (window.quizState?.answers || {});
+    const mins = Number(answers && answers.commitment);
+    if (Number.isFinite(mins) && mins > 0) return mins <= 5 ? 3 : mins <= 10 ? 4 : mins <= 20 ? 5 : 6;
+  } catch {}
+  return 6;
+}
+function _guGetPlanTotal() {
+  try {
+    const key = _guPlanTotalStorageKey();
+    const stored = key ? Number(localStorage.getItem(key)) : NaN;
+    if (Number.isFinite(stored) && stored >= 1 && stored <= 12) return stored;
+  } catch {}
+  const dynamic = Number(_guCurrentTotal);
+  if (Number.isFinite(dynamic) && dynamic >= 3 && dynamic <= 6 && dynamic !== 6) return dynamic;
+  return _guExpectedPlanTotal();
+}
+function _guGetCommitmentMinutes() {
+  try {
+    const answers = (typeof _fmLoadQuizAnswers === "function") ? _fmLoadQuizAnswers() : (window.quizState?.answers || {});
+    const mins = Number(answers && answers.commitment);
+    if (Number.isFinite(mins) && mins > 0) return mins;
+  } catch {}
+  return 5;
+}
+function _guBuildMomentumState() {
+  const done = (typeof _guGetProgress === "function") ? _guGetProgress() : [];
+  const total = Math.max(1, Number(_guGetPlanTotal()) || 6);
+  const count = Math.min(total, Array.isArray(done) ? done.length : 0);
+  const completedToday = count >= total;
+  const s = _guGetStreak();
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  const yesterday = _guDateKey(y);
+  const atRisk = !completedToday && s.count > 0 && s.lastDate === yesterday;
+  const broken = _guGetBrokenStreak();
+  const hour = new Date().getHours();
+  const left = Math.max(0, total - count);
+  const commitment = _guGetCommitmentMinutes();
+  const minsLeft = left > 0 ? Math.max(1, Math.ceil(commitment * (left / total))) : 0;
+  return {
+    streak: s.count,
+    lastDate: s.lastDate,
+    completedToday,
+    atRisk,
+    startedToday: count > 0,
+    done: count,
+    total,
+    left,
+    minsLeft,
+    isEvening: hour >= 18,
+    isLate: hour >= 21,
+    brokenCount: broken ? Number(broken.count) || 0 : 0,
+  };
+}
+function _guShowCompletionCelebration(count) {
+  const overlay = el("guCompletionOverlay");
+  const num = el("guCompletionCount");
+  if (!overlay) return;
+  if (num) num.textContent = String(Math.max(1, Number(count) || 1));
+  try { if (window.facemax && window.facemax.haptic) window.facemax.haptic("medium"); } catch {}
+  overlay.classList.remove("show");
+  void overlay.offsetWidth;
+  overlay.classList.add("show");
+  clearTimeout(window._guCompletionTimer);
+  window._guCompletionTimer = setTimeout(() => overlay.classList.remove("show"), 1750);
+}
+function _guCompleteToday(animate) {
+  const state = _guBuildMomentumState();
+  if (!state.completedToday) return false;
+  const today = _guDateKey();
+  const s = _guGetStreak();
+  if (s.lastDate === today) return false; // already secured
+  const count = _guUpdateStreak();
+  _guMarkWeekToday();
+  try {
+    if ([3,7,14,30,60,100].includes(Number(count))) {
+      fmInboxAdd({ key:`streak-milestone:${count}`, title:`${count}-day streak secured 🔥`, body:"Consistency is building. Keep tomorrow's plan going.", route:"glowupHub", type:"progress", ts:Date.now() });
+    }
+  } catch {}
+  _guClearBrokenStreak();
+  try { localStorage.setItem("gu_last_completed_day", today); } catch {}
+  if (animate) _guShowCompletionCelebration(count);
+  try { renderHomeStats(); renderGlowUpPlan(); } catch {}
+  try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch {}
+  return true;
+}
+function _guEnsureCompletionState() {
+  try { return _guCompleteToday(false); } catch { return false; }
+}
+
+// One-time cleanup: older builds lit a week dot after the first checked task.
+// Keep only days that reached 100% where completion data is available.
+(function _guMigrateWeekDotsToCompletedDays(){
+  try {
+    if (localStorage.getItem("gu_week_completed_migration_v1")) return;
+    const w = JSON.parse(localStorage.getItem("gu_week") || "{}");
+    const comp = JSON.parse(localStorage.getItem("gu_week_completion") || "{}");
+    for (const key of Object.keys(w)) {
+      if (Object.prototype.hasOwnProperty.call(comp, key) && Number(comp[key]) < 100) delete w[key];
+    }
+    localStorage.setItem("gu_week", JSON.stringify(w));
+    localStorage.setItem("gu_week_completed_migration_v1", "1");
+  } catch {}
+})();
+
 // ── week dots renderer (shared by home card and hub screen) ───────────────────
 // dayNames: ["Mo","Tu","We","Th","Fr","Sa","Su"]
 const _GU_DAY_LABELS = ["Mo","Tu","We","Th","Fr","Sa","Su"];
@@ -5013,7 +5328,7 @@ function _guDayIndex() {
   const d = new Date().getDay(); // 0=Sun
   return d === 0 ? 6 : d - 1;   // Mon=0…Sun=6
 }
-// Returns array of 7 booleans (Mon…Sun) whether each day had ≥1 task
+// Returns array of 7 booleans (Mon…Sun) whether each day was fully completed
 function _guWeekBools() {
   const w = _guGetWeek();
   const today = new Date();
@@ -5064,7 +5379,7 @@ function _renderWeekDots(dotsEl, labelsEl, streakEl, style) {
 
 function _guUpdateProgressUI() {
   const done = _guGetProgress();
-  const total = _guCurrentTotal;
+  const total = _guGetPlanTotal();
   const count = done.length;
   const pct = Math.round((count / total) * 100);
   const fill = el("guProgressFill");
@@ -5114,13 +5429,13 @@ function guToggleStep(el_, idx) {
   if (adding) done.push(idx); else done.splice(i, 1);
   _guSaveProgress(done);
   _guUpdateProgressUI();
-  // Always mark the week dot — once earned it stays even if you untick later
-  _guMarkWeekToday();
-  // Only advance streak when adding a task (not removing)
-  if (adding) {
-    _guUpdateStreak();
-    // Re-pick tonight's/tomorrow's notification copy now that the streak
-    // changed — silent no-op on web / if reminders are off.
+  // Duolingo-style semantics: a streak day is earned only when the whole
+  // personalised plan is completed. Partial progress still persists, but it
+  // does not falsely secure the streak.
+  if (adding && done.length >= _guGetPlanTotal()) {
+    _guCompleteToday(true);
+  } else {
+    try { renderHomeStats(); renderGlowUpPlan(); } catch {}
     try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch {}
   }
   // refresh hub progress if open
@@ -5138,11 +5453,10 @@ function guHubToggleStep(el_, idx) {
   if (adding) done.push(idx); else done.splice(i, 1);
   _guSaveProgress(done);
   _guUpdateProgressUI();
-  // Always mark the week dot — once earned it stays even if you untick later
-  _guMarkWeekToday();
-  // Only advance streak when adding a task (not removing)
-  if (adding) {
-    _guUpdateStreak();
+  if (adding && done.length >= _guGetPlanTotal()) {
+    _guCompleteToday(true);
+  } else {
+    try { renderHomeStats(); renderGlowUpPlan(); } catch {}
     try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch {}
   }
   _guUpdateHubProgress();
@@ -5240,15 +5554,49 @@ function renderGlowUpPlan(){
   if (empty)  empty.classList.toggle("hidden", hasScanData);
   if (active) active.classList.toggle("hidden", !hasScanData);
   if (!hasScanData) return;
+  const personalFocus = el("guPersonalFocus");
+  if (personalFocus) {
+    const summary = _fmPersonalFocusSummary();
+    personalFocus.textContent = summary ? "Your focus · " + summary : "";
+    personalFocus.style.display = summary ? "block" : "none";
+  }
+  _guEnsureCompletionState();
   _guUpdateProgressUI();
   _renderWeekDots(el("guWeekDots"), el("guWeekLabels"), el("guStreakMini"), "small");
+
+  const momentum = _guBuildMomentumState();
+  const momentumEl = el("guMomentumStatus");
+  if (momentumEl) {
+    momentumEl.classList.remove("progress","risk","done","broken");
+    if (momentum.completedToday) {
+      momentumEl.classList.add("done");
+      momentumEl.textContent = `✓ Day complete · ${momentum.streak}-day streak secured`;
+    } else if (momentum.atRisk && momentum.isEvening) {
+      momentumEl.classList.add("risk");
+      momentumEl.textContent = `🔥 ${momentum.left} ${momentum.left === 1 ? "step" : "steps"} left · streak at risk tonight`;
+    } else if (momentum.atRisk) {
+      momentumEl.classList.add("progress");
+      momentumEl.textContent = `${momentum.left} ${momentum.left === 1 ? "action" : "actions"} left today · protect your ${momentum.streak}-day streak`;
+    } else if (!momentum.streak && momentum.brokenCount >= 2) {
+      momentumEl.classList.add("broken");
+      momentumEl.textContent = `${momentum.brokenCount}-day streak ended · start the comeback today`;
+    } else {
+      momentumEl.classList.add("progress");
+      momentumEl.textContent = momentum.startedToday
+        ? `${momentum.left} ${momentum.left === 1 ? "action" : "actions"} left to complete today`
+        : "Complete today's plan to build your streak";
+    }
+  }
+
   // ── prominent streak callout on home card header ──
   const streakRow = el("guHeaderStreakRow");
   const streakTxt = el("guHeaderStreakText");
-  const streakCount = (typeof _guGetStreak === "function") ? _guGetStreak().count : 0;
+  const streakCount = momentum.streak;
   if (streakRow && streakTxt) {
     if (streakCount >= 1) {
-      streakTxt.textContent = "🔥 " + streakCount + " day streak";
+      if (momentum.completedToday) streakTxt.textContent = "🔥 " + streakCount + " day streak · secured";
+      else if (momentum.atRisk && momentum.isEvening) streakTxt.textContent = "🔥 " + streakCount + " day streak · ends tonight";
+      else streakTxt.textContent = "🔥 " + streakCount + " day streak";
       streakRow.style.display = "block";
     } else {
       streakRow.style.display = "none";
@@ -5437,6 +5785,8 @@ window.openGlowUpHub = async function(_premiumChecked) {
 
     // Update dynamic step count for progress tracking
     _guCurrentTotal = (plan.steps || []).length || 6;
+    _guSavePlanTotal(_guCurrentTotal);
+    _guEnsureCompletionState();
     // Sync home card progress label initial text
     const homeLabel = el("guProgressLabel");
     if (homeLabel) homeLabel.textContent = "0 / " + _guCurrentTotal + " done";
@@ -5483,48 +5833,10 @@ window.openGlowUpHub = async function(_premiumChecked) {
       { key: "symmetry", label: "Symmetry", icon: "⚖️" },
       { key: "harmony",  label: "Harmony",  icon: "🌟" },
     ];
-    const METRIC_IMPROVE_TIPS = {
-      jawline: {
-        good:     "Keep mewing daily and sleep on your back — you're maintaining great definition.",
-        moderate: "Add 10 min of jaw resistance training: chin-tuck holds and submental presses 3× per week.",
-        bad:      "Cut sodium after 7 PM, start mewing every waking hour, and do chin-tuck resistance sets daily — jaw bloat is reversible fast."
-      },
-      cheekbones: {
-        good:     "Facial massage upward along the cheekbone line 3× per week will keep definition sharp.",
-        moderate: "Try cheekbone lift exercises (smile + push cheeks up with 2 fingers, hold 5 sec × 10) and reduce processed foods.",
-        bad:      "For temporary puffiness, use very light gua sha strokes from the centre of the face outward, then glide down the sides of the neck toward the collarbones. Keep the tool clean and use serum or oil for slip."
-      },
-      eyes: {
-        good:     "Protect under-eye skin with SPF and sleep 7–8 h — your eye area looks healthy.",
-        moderate: "Cold eye compress for 60 sec each morning reduces puffiness; add eye cream with caffeine or retinol at night.",
-        bad:      "Sleep before midnight, add an extra pillow to reduce fluid pooling, and start a consistent vitamin C + eye cream routine."
-      },
-      potential: {
-        good:     "Your glow-up potential is strong — keep your current routine consistent and momentum will compound.",
-        moderate: "You have solid room to grow — stay consistent with your habits for 4–6 weeks and re-scan to see the shift.",
-        bad:      "Plenty of upside here — small consistent changes (sleep, posture, skincare) can move this score significantly over time."
-      },
-      nose: {
-        good:     "Nothing to fix here — symmetry and proportion look strong.",
-        moderate: "Nasal breathing exercises and face posture (chin level, tongue to roof) help with perceived nose proportion.",
-        bad:      "Consistent mewing and upright posture reduce nasal prominence over time; contouring can help visually in the short term."
-      },
-      skin: {
-        good:     "Maintain your barrier: SPF every day, one active at a time, and keep up the hydration.",
-        moderate: "Add a vitamin C serum in the morning and a niacinamide or retinol at night — results visible in 3–4 weeks.",
-        bad:      "Start with the basics: double cleanse nightly, barrier moisturiser, SPF 30+ daily. Skip multiple actives until skin is stable."
-      },
-      symmetry: {
-        good:     "Symmetry looks balanced — keep posture even and avoid one-sided habits like chewing on one side.",
-        moderate: "Switch sides when chewing gum and side-sleeping, and do a daily mirror posture check to even out tension.",
-        bad:      "Favor your weaker side deliberately: chew gum on it, sleep on your back instead of one side, and reset posture in the mirror daily."
-      },
-      harmony: {
-        good:     "Proportions read as balanced — keep grooming and framing consistent with what's already working.",
-        moderate: "Small grooming and framing tweaks (hairline, brow shape, photo angle) can sharpen overall balance.",
-        bad:      "Start with grooming basics — clean hairline, defined brows, consistent lighting and angle in photos — proportions read better once puffiness drops too."
-      },
-    };
+    // Per-metric coaching text comes from the AI plan's `chips[].note`.
+    // There is deliberately no canned advice table in the client.
+    const AI_METRIC_TIPS = Array.isArray(plan.chips) ? plan.chips : [];
+
 
     const mEntries = METRIC_DEFS.concat(
       METRIC_DEFS_CONDITIONAL.filter(d => {
@@ -5558,24 +5870,27 @@ window.openGlowUpHub = async function(_premiumChecked) {
           + `</div>`;
       }).join("");
 
-      // ── How-to-improve tips below the grid ──
+      // ── AI priority tips below the grid ──
       const tipsList = el("ghMetricsTips");
       if (tipsList) {
-        const allWithRaw = mEntries.map(d => ({ ...d, raw: isFinite(d.val) ? Math.round(d.val) : knownAvg }));
-        const displayTips = allWithRaw.slice().sort((a, b) => a.raw - b.raw);
-        const icoSvg = `<svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:rgba(167,139,250,.5)"><circle cx="10" cy="10" r="8.5"/><line x1="10" y1="9" x2="10" y2="13.5"/><circle cx="10" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>`;
-        tipsList.innerHTML = displayTips.map(d => {
-          const tips = METRIC_IMPROVE_TIPS[d.key];
-          if (!tips) return "";
-          const tier = d.raw >= 70 ? "good" : d.raw >= 45 ? "moderate" : "bad";
-          const text = tips[tier];
+        const metricIconByLabel = Object.fromEntries(
+          METRIC_DEFS.concat(METRIC_DEFS_CONDITIONAL).map(d => [String(d.label).toLowerCase(), d.icon])
+        );
+        tipsList.innerHTML = AI_METRIC_TIPS.map(c => {
+          const raw = Math.max(0, Math.min(100, Math.round(Number(c && c.score) || 0)));
+          const tier = raw >= 70 ? "good" : raw >= 45 ? "moderate" : "bad";
+          const label = String(c && c.label || "Priority");
+          const note = String(c && c.note || "");
+          if (!note) return "";
+          const icon = metricIconByLabel[label.toLowerCase()] || "✨";
+          const icoSvg = `<svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:rgba(167,139,250,.5)"><circle cx="10" cy="10" r="8.5"/><line x1="10" y1="9" x2="10" y2="13.5"/><circle cx="10" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg>`;
           return `<div class="gu-metric-tip-row">`
             + `<div class="gu-metric-tip-header">`
-            +   `<div class="gu-metric-tip-badge ${tier}">${d.icon}</div>`
-            +   `<span class="gu-metric-tip-label">${escapeHtml(d.label)}</span>`
+            +   `<div class="gu-metric-tip-badge ${tier}">${escapeHtml(icon)}</div>`
+            +   `<span class="gu-metric-tip-label">${escapeHtml(label)}</span>`
             +   `<span class="gu-metric-tip-info">${icoSvg}</span>`
             + `</div>`
-            + `<p class="gu-metric-tip-text">${escapeHtml(text)}</p>`
+            + `<p class="gu-metric-tip-text">${escapeHtml(note)}</p>`
             + `</div>`;
         }).join("");
       }
@@ -6096,6 +6411,7 @@ window.openScreen = function(id){
   }
   if (id === "home") { renderHomeHistory(); renderHomeStats(); renderGlowUpPlan(); refreshDailyTiles && refreshDailyTiles(); updateDailyCalWidget(); }
   if (id === "profile") { renderProfileScreen(); }
+  if (id === "notifications") { renderNotificationInbox(); fmInboxSyncDelivered(); }
   if (id === "daily") { refreshDailyGreeting && refreshDailyGreeting(); refreshDailyTiles && refreshDailyTiles(); }
   if (id === "calories") { updateDailyCalWidget(); renderCalScreenEntries && renderCalScreenEntries(); }
   if (id === "upload") {
@@ -6471,6 +6787,7 @@ function renderProfileScreen(){
   renderProgressChart();
   renderProfileHistory();
   refreshNotifSettings();
+  refreshGoalPreferencesSummary();
   renderGenderSetting();
 }
 
@@ -6486,6 +6803,283 @@ function renderGenderSetting(){
   male.setAttribute("aria-pressed", g === "male" ? "true" : "false");
   female.setAttribute("aria-pressed", g === "female" ? "true" : "false");
 }
+
+/* ======================== QUIZ PERSONALIZATION BOUNDARY ========================
+ * Questionnaire answers are allowed to personalize routines, plan length,
+ * visible focus labels and reminder copy ONLY. They are deliberately never
+ * added to /api/full-report, so self-reported goals cannot bias Face Scan
+ * scores or metric evaluation.
+ */
+const FM_QUIZ_STORAGE_KEY = "facemax_quiz_v2";
+const FM_PREF_GOALS = [
+  ["jawline","Sharper jawline"],["skin","Glowing skin"],["eyes","Eye area"],
+  ["harmony","Overall harmony"],["confidence","Confidence"]
+];
+const FM_PREF_CONCERNS = [
+  ["acne","Acne"],["dull","Dull skin"],["bloating","Bloating"],["round","Round face"],
+  ["asymmetry","Asymmetry"],["eyebags","Eye bags"],["hair","Hair / hairline"],["other","General improvement"]
+];
+const FM_PREF_ROUTINES = [["none","None"],["basic","Basic"],["advanced","Advanced"],["geek","Skincare nerd"]];
+const FM_PREF_COMMITMENT = [["5","5 min"],["10","10 min"],["20","20 min"],["30","30+ min"]];
+
+function _fmLoadQuizAnswers(){
+  try {
+    if (window.quizState && window.quizState.answers) return { ...window.quizState.answers };
+  } catch {}
+  try {
+    const raw = localStorage.getItem(FM_QUIZ_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return (parsed && parsed.answers && typeof parsed.answers === "object") ? { ...parsed.answers } : {};
+  } catch { return {}; }
+}
+function _fmQuizLabel(list, value){
+  const hit = list.find(x => x[0] === value);
+  return hit ? hit[1] : "";
+}
+function _fmPlanTargetSteps(answers){
+  const a = answers || _fmLoadQuizAnswers();
+  const n = Number(a.commitment);
+  if (n <= 5) return 3;
+  if (n <= 10) return 4;
+  if (n <= 20) return 5;
+  return 6;
+}
+function _fmPersonalFocusSummary(answers){
+  const a = answers || _fmLoadQuizAnswers();
+  const parts = [];
+  const goal = _fmQuizLabel(FM_PREF_GOALS, a.goal);
+  if (goal) parts.push(goal);
+  const cs = Array.isArray(a.concerns) ? a.concerns : [];
+  if (cs.length) {
+    const c = _fmQuizLabel(FM_PREF_CONCERNS, cs[0]);
+    if (c) parts.push(c);
+  }
+  const tm = _fmQuizLabel(FM_PREF_COMMITMENT, a.commitment);
+  if (tm) parts.push(tm);
+  return parts.join(" · ");
+}
+function _fmReminderFocus(answers){
+  const a = answers || _fmLoadQuizAnswers();
+  const goalMap = { jawline:"jawline", skin:"skin", eyes:"eye-area", harmony:"face-balance", confidence:"glow-up" };
+  return goalMap[a.goal] || "glow-up";
+}
+function _fmPreferenceSignature(){
+  const a = _fmLoadQuizAnswers();
+  const concerns = Array.isArray(a.concerns) ? a.concerns.slice().sort().join("-") : "";
+  return [a.age||"",a.goal||"",concerns,a.routine||"",a.commitment||""].join("_").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,100) || "default";
+}
+function refreshGoalPreferencesSummary(){
+  const node = el("goalPrefsSummary");
+  if (!node) return;
+  node.textContent = _fmPersonalFocusSummary() || "Personalize your daily plan";
+}
+let _goalPrefsDraft = null;
+function _renderGoalPrefChips(hostId, list, key, multi){
+  const host = el(hostId); if (!host || !_goalPrefsDraft) return;
+  const selected = multi ? (Array.isArray(_goalPrefsDraft[key]) ? _goalPrefsDraft[key] : []) : _goalPrefsDraft[key];
+  host.innerHTML = list.map(([v,label]) => {
+    const active = multi ? selected.includes(v) : selected === v;
+    return `<button type="button" class="goal-pref-chip${active?' active':''}" onclick="setGoalPreference('${key}','${v}',${multi?'true':'false'})">${escapeHtml(label)}</button>`;
+  }).join("");
+}
+function _renderGoalPreferences(){
+  _renderGoalPrefChips("goalPrefGoal", FM_PREF_GOALS, "goal", false);
+  _renderGoalPrefChips("goalPrefConcerns", FM_PREF_CONCERNS, "concerns", true);
+  _renderGoalPrefChips("goalPrefRoutine", FM_PREF_ROUTINES, "routine", false);
+  _renderGoalPrefChips("goalPrefCommitment", FM_PREF_COMMITMENT, "commitment", false);
+}
+window.setGoalPreference = function(key, value, multi){
+  if (!_goalPrefsDraft) _goalPrefsDraft = _fmLoadQuizAnswers();
+  if (multi) {
+    const arr = Array.isArray(_goalPrefsDraft[key]) ? _goalPrefsDraft[key].slice() : [];
+    const i = arr.indexOf(value);
+    if (i >= 0) arr.splice(i,1); else arr.push(value);
+    _goalPrefsDraft[key] = arr;
+  } else _goalPrefsDraft[key] = value;
+  _renderGoalPreferences();
+};
+window.openGoalPreferences = function(){
+  _goalPrefsDraft = _fmLoadQuizAnswers();
+  _renderGoalPreferences();
+  el("goalPrefsModal")?.classList.remove("hidden");
+};
+window.closeGoalPreferences = function(){ el("goalPrefsModal")?.classList.add("hidden"); };
+window.saveGoalPreferences = function(){
+  const next = _goalPrefsDraft || _fmLoadQuizAnswers();
+  try {
+    const raw = localStorage.getItem(FM_QUIZ_STORAGE_KEY);
+    const state = raw ? JSON.parse(raw) : { step:0, answers:{} };
+    state.answers = { ...(state.answers || {}), ...next };
+    localStorage.setItem(FM_QUIZ_STORAGE_KEY, JSON.stringify(state));
+    try { if (window.quizState) window.quizState.answers = { ...(window.quizState.answers || {}), ...next }; } catch {}
+  } catch {}
+  // Changing goals should create a fresh plan rather than keeping today's old
+  // AI tasks/checkmarks mapped to a different preference profile.
+  try {
+    for (let i=localStorage.length-1;i>=0;i--) {
+      const k=localStorage.key(i);
+      if (k && (k.startsWith("fm_glowplan_") || k.startsWith("gu_plan_total_"))) localStorage.removeItem(k);
+    }
+    const progressKey = _guScanKey();
+    if (progressKey) localStorage.removeItem(progressKey);
+    _guCurrentTotal = _fmPlanTargetSteps(next);
+    _guAiPlanCache = {};
+  } catch {}
+  refreshGoalPreferencesSummary();
+  try { renderGlowUpPlan(); } catch {}
+  try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch {}
+  closeGoalPreferences();
+  showToast("Preferences saved");
+};
+
+
+/* =========================== NOTIFICATION INBOX ============================
+ * Persistent, local-only inbox for FaceMax notifications. iOS banners are
+ * mirrored here when Capacitor reports them as delivered/acted-on. The inbox
+ * does not control notification permission; Smart Reminders in Profile does.
+ */
+const FM_INBOX_KEY = "facemax_notification_inbox_v1";
+const FM_INBOX_LIMIT = 80;
+function fmInboxLoad(){
+  try { const v = JSON.parse(localStorage.getItem(FM_INBOX_KEY) || "[]"); return Array.isArray(v) ? v : []; }
+  catch { return []; }
+}
+function fmInboxSave(items){
+  try { localStorage.setItem(FM_INBOX_KEY, JSON.stringify((items || []).slice(0, FM_INBOX_LIMIT))); } catch {}
+}
+function _fmInboxDayKey(ts){
+  const d = new Date(Number(ts) || Date.now());
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function _fmInboxMetaForId(id, extra){
+  const ids = window.facemax && window.facemax.notif && window.facemax.notif.ids || {};
+  const n = Number(id);
+  if (extra && extra.route) return { route:String(extra.route), type:String(extra.inboxType || "plan") };
+  if (n === ids.RESCAN_7D || n === ids.WINBACK_7D || n === ids.WINBACK_14D) return { route:"upload", type:"scan" };
+  if (n === ids.STREAK || n === ids.EVENING || n === ids.WINBACK_3D) return { route:"glowupHub", type:"streak" };
+  if (n === ids.DAILY) return { route:"glowupHub", type:"plan" };
+  return { route:"home", type:"plan" };
+}
+function fmInboxAdd(item){
+  if (!item || !item.title) return null;
+  const ts = Number(item.ts) || Date.now();
+  const meta = _fmInboxMetaForId(item.notifId, item.extra || {});
+  const title = String(item.title || "FaceMax AI");
+  const body = String(item.body || "");
+  const key = String(item.key || `os:${Number(item.notifId)||0}:${_fmInboxDayKey(ts)}:${title}:${body}`);
+  const items = fmInboxLoad();
+  const existing = items.find(x => x && x.key === key);
+  if (existing) {
+    existing.title = title; existing.body = body; existing.ts = Math.max(Number(existing.ts)||0, ts);
+    existing.route = item.route || existing.route || meta.route;
+    existing.type = item.type || existing.type || meta.type;
+    if (item.read === true) existing.read = true;
+  } else {
+    items.unshift({
+      key, notifId:Number(item.notifId)||0, title, body, ts,
+      route:item.route || meta.route, type:item.type || meta.type,
+      read:item.read === true
+    });
+  }
+  items.sort((a,b)=>(Number(b.ts)||0)-(Number(a.ts)||0));
+  fmInboxSave(items);
+  updateNotificationBadges();
+  if (document.getElementById("notifications")?.classList.contains("active")) renderNotificationInbox();
+  return key;
+}
+function _fmInboxIcon(type){
+  if (type === "streak") return '<svg viewBox="0 0 24 24"><path d="M13 3s1 3-2 5c-2 1-4 3-4 6a5 5 0 0 0 10 0c0-2-1-4-4-6 1 3-1 4-1 4s0-3-3-5"/></svg>';
+  if (type === "scan") return '<svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><circle cx="12" cy="11" r="3"/><path d="M7.5 17c1.1-2 2.6-3 4.5-3s3.4 1 4.5 3"/></svg>';
+  if (type === "progress") return '<svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>';
+  return '<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>';
+}
+function _fmInboxTimeLabel(ts){
+  const d = new Date(Number(ts)||Date.now());
+  const delta = Date.now()-d.getTime();
+  if (delta < 60000) return "Now";
+  if (delta < 3600000) return `${Math.max(1,Math.floor(delta/60000))}m ago`;
+  if (_fmInboxDayKey(d.getTime()) === _fmInboxDayKey(Date.now())) return d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  const yd = new Date(); yd.setDate(yd.getDate()-1);
+  if (_fmInboxDayKey(d.getTime()) === _fmInboxDayKey(yd.getTime())) return "Yesterday";
+  return d.toLocaleDateString([], {month:"short",day:"numeric"});
+}
+function updateNotificationBadges(){
+  const items = fmInboxLoad();
+  const unread = items.filter(x => x && !x.read).length;
+  ["homeNotifBadge","profileNotifBadge"].forEach(id => {
+    const b = el(id); if (!b) return;
+    b.textContent = unread > 99 ? "99+" : String(unread);
+    b.classList.toggle("show", unread > 0);
+  });
+}
+function renderNotificationInbox(){
+  const host = el("notificationInboxList"); if (!host) return;
+  const items = fmInboxLoad();
+  const unread = items.filter(x => x && !x.read).length;
+  const sub = el("notificationInboxSub"); if (sub) sub.textContent = unread ? `${unread} unread · reminders and progress updates` : "Your FaceMax reminders and progress updates";
+  const mark = el("notificationMarkAll"); if (mark) mark.style.visibility = unread ? "visible" : "hidden";
+  if (!items.length) {
+    host.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">${_fmInboxIcon("plan")}</div><b>No updates yet</b><span>Your streak reminders, re-scan nudges and important FaceMax updates will appear here.</span></div>`;
+    updateNotificationBadges(); return;
+  }
+  host.innerHTML = items.map((it,idx) => `<button type="button" class="notif-item${it.read?'':' unread'}" onclick="openNotificationItem(${idx})">`
+    + `${it.read?'':'<span class="notif-unread-dot"></span>'}`
+    + `<span class="notif-item-icon ${escapeHtml(it.type||'plan')}">${_fmInboxIcon(it.type)}</span>`
+    + `<span class="notif-item-copy"><span class="notif-item-title">${escapeHtml(it.title||'FaceMax AI')}</span><span class="notif-item-body">${escapeHtml(it.body||'')}</span><span class="notif-item-time">${escapeHtml(_fmInboxTimeLabel(it.ts))}</span></span>`
+    + `<svg class="notif-item-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>`).join("");
+  updateNotificationBadges();
+}
+function fmInboxMarkAllRead(){
+  const items = fmInboxLoad(); items.forEach(x=>{ if(x) x.read=true; }); fmInboxSave(items); renderNotificationInbox(); updateNotificationBadges();
+}
+window.fmInboxMarkAllRead = fmInboxMarkAllRead;
+function _fmInboxNavigate(route){
+  const r = String(route || "home");
+  if (r === "glowupHub") { if (typeof window.openGlowUpHub === "function") return window.openGlowUpHub(); return openScreen("home"); }
+  if (r === "upload") return openScreen("upload");
+  if (r === "profile") return openScreen("profile");
+  return openScreen("home");
+}
+function openNotificationItem(index){
+  const items = fmInboxLoad(); const it = items[Number(index)]; if (!it) return;
+  it.read = true; fmInboxSave(items); updateNotificationBadges(); _fmInboxNavigate(it.route);
+}
+window.openNotificationItem = openNotificationItem;
+async function fmInboxSyncDelivered(){
+  try {
+    if (!window.facemax || !window.facemax.notif || !window.facemax.notif.isAvailable() || typeof window.facemax.notif.getDelivered !== "function") return;
+    const delivered = await window.facemax.notif.getDelivered();
+    (Array.isArray(delivered) ? delivered : []).forEach(n => {
+      const id = Number(n && n.id);
+      if (!(id >= 1000 && id < 2000)) return;
+      const meta = _fmInboxMetaForId(id, n.extra || {});
+      fmInboxAdd({ notifId:id, title:n.title || "FaceMax AI", body:n.body || "", extra:n.extra || {}, route:meta.route, type:meta.type, ts:Date.now() });
+    });
+  } catch {}
+}
+window.fmInboxSyncDelivered = fmInboxSyncDelivered;
+function openNotificationInbox(){
+  openScreen("notifications");
+}
+window.openNotificationInbox = openNotificationInbox;
+window.addEventListener("facemax:local-notification", function(evt){
+  try {
+    const detail = evt && evt.detail || {};
+    const payload = detail.notification || (detail.action && detail.action.notification) || detail.action || {};
+    if (!payload || !payload.title) return;
+    const meta = _fmInboxMetaForId(payload.id, payload.extra || {});
+    const key = fmInboxAdd({ notifId:payload.id, title:payload.title, body:payload.body || "", extra:payload.extra || {}, route:meta.route, type:meta.type, ts:Date.now(), read:detail.kind === "action" });
+    if (detail.kind === "action") {
+      const items = fmInboxLoad(); const hit = items.find(x=>x && x.key===key); if (hit) { hit.read=true; fmInboxSave(items); }
+      updateNotificationBadges();
+      setTimeout(()=>_fmInboxNavigate(meta.route), 120);
+    }
+  } catch {}
+});
+(function _fmInboxBoot(){
+  const run=()=>{ updateNotificationBadges(); setTimeout(fmInboxSyncDelivered,1200); };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, {once:true}); else run();
+})();
 
 /* ============================== NOTIFICATIONS ==============================
  * Local-only retention pushes via Capacitor LocalNotifications. Web build
@@ -6535,7 +7129,7 @@ async function refreshNotifSettings(){
       toggle.checked = false;
       if (hint) hint.textContent = "Notifications are off in iOS Settings. Turn the switch on to request access again.";
     } else if (hint) {
-      hint.textContent = "Morning, evening and re-scan reminders are enabled on this iPhone.";
+      hint.textContent = "Smart plan, streak, re-scan and return reminders are enabled on this iPhone.";
     }
   } catch {}
 }
@@ -6552,12 +7146,12 @@ async function toggleDailyReminder(on){
     prefs.dailyOn = true;
     notifSavePrefs(prefs);
     await scheduleRetentionPack();
-    showToast("Reminders on — morning, evening & re-scan 🔥");
+    showToast("Smart reminders on 🔥");
   } else {
     prefs.dailyOn = false;
     notifSavePrefs(prefs);
     await cancelRetentionPack();
-    showToast("Daily reminders off");
+    showToast("Smart reminders off");
   }
 }
 
@@ -6581,15 +7175,18 @@ function _fmDaysSince(dateStr){
 }
 
 function _fmBuildNotifContext(){
-  const streak = (typeof _guGetStreak === "function") ? _guGetStreak().count : 0;
-  let progressDone = 0;
-  let progressTotal = 6;
+  const momentum = (typeof _guBuildMomentumState === "function") ? _guBuildMomentumState() : null;
+  const streak = momentum ? momentum.streak : ((typeof _guGetStreak === "function") ? _guGetStreak().count : 0);
+  let progressDone = momentum ? momentum.done : 0;
+  let progressTotal = momentum ? momentum.total : 6;
   try {
-    progressDone = (typeof _guGetProgress === "function") ? _guGetProgress().length : 0;
-    progressTotal = Number(_guCurrentTotal) > 0 ? Number(_guCurrentTotal) : 6;
+    if (!momentum) {
+      progressDone = (typeof _guGetProgress === "function") ? _guGetProgress().length : 0;
+      progressTotal = (typeof _guGetPlanTotal === "function") ? _guGetPlanTotal() : 6;
+    }
   } catch {}
   const startedToday = progressDone > 0;
-  const completedToday = progressTotal > 0 && progressDone >= progressTotal;
+  const completedToday = momentum ? momentum.completedToday : (progressTotal > 0 && progressDone >= progressTotal);
   const lastScanTs = (scanHistory && scanHistory.length) ? scanHistory[0].date : null;
   const daysSinceScan = lastScanTs ? _fmDaysSince(new Date(lastScanTs).toISOString()) : Infinity;
   const hasEverScanned = !!(scanHistory && scanHistory.length);
@@ -6598,48 +7195,73 @@ function _fmBuildNotifContext(){
     const fr = localStorage.getItem("fm_last_food_scan");
     if (fr) { const r = JSON.parse(fr); if (r && r.ts) daysSinceFood = _fmDaysSince(new Date(r.ts).toISOString()); }
   } catch {}
-  return { streak, startedToday, completedToday, progressDone, progressTotal, daysSinceScan, hasEverScanned, daysSinceFood };
+  const reminderFocus = _fmReminderFocus();
+  return {
+    streak, startedToday, completedToday, progressDone, progressTotal,
+    daysSinceScan, hasEverScanned, daysSinceFood, reminderFocus,
+    atRisk: momentum ? momentum.atRisk : false,
+    left: momentum ? momentum.left : Math.max(0, progressTotal - progressDone),
+    minsLeft: momentum ? momentum.minsLeft : 5,
+    commitmentMinutes: momentum ? _guGetCommitmentMinutes() : 5,
+    brokenCount: momentum ? momentum.brokenCount : 0,
+  };
 }
 
 function _fmPickMorningMessage(ctx){
-  if (ctx.streak >= 3 && !ctx.completedToday) {
-    return { title: `Day ${ctx.streak + 1} loading 🔥`, body: `Don't break a ${ctx.streak}-day streak before breakfast.` };
-  }
+  // DAILY is a repeating notification, so its copy must stay truthful even if
+  // the user does not open the app for several days. Exact streak-risk copy is
+  // handled by same-day one-shot EVENING/STREAK notifications below.
   if (!ctx.hasEverScanned) {
     return { title: "Your glow-up starts here ✨", body: "Take your first face scan — takes 30 seconds." };
   }
-  if (ctx.daysSinceScan >= 6) {
-    return { title: "It's been a week 👀", body: "Re-scan and see how your score moved." };
-  }
-  if (ctx.daysSinceFood >= 3 && ctx.hasEverScanned) {
-    return { title: "Haven't logged a meal in a bit", body: "Scan your next meal — see its health score." };
-  }
   const generic = [
-    { title: "Rise and glow 🌅", body: "4 minutes before the world starts." },
-    { title: "Good morning ✨", body: "Quick session. You'll feel better." },
-    { title: "Jaw goals 💎", body: "One session closer." },
-    { title: "No excuses 💪", body: "Before coffee. You got this." },
+    { title: "Today's plan is ready ✨", body: `A focused ${Math.max(1, Number(ctx.commitmentMinutes) || 5)}-minute ${ctx.reminderFocus} session is waiting.` },
+    { title: "Keep the momentum going", body: `Open today's ${ctx.reminderFocus} plan and close the day.` },
+    { title: "One day at a time ✨", body: `Today's ${ctx.reminderFocus} plan is ready when you are.` },
   ];
   return generic[new Date().getDay() % generic.length];
 }
 
 function _fmPickEveningMessage(ctx){
-  if (ctx.startedToday && !ctx.completedToday) {
-    const left = Math.max(1, ctx.progressTotal - ctx.progressDone);
-    return { title: "Finish today's plan 💪", body: `${left} ${left === 1 ? "step" : "steps"} left before the day resets.` };
+  const left = Math.max(1, ctx.left || (ctx.progressTotal - ctx.progressDone));
+  if (ctx.atRisk && ctx.startedToday) {
+    return {
+      title: `${left} ${left === 1 ? "step" : "steps"} to save your streak 🔥`,
+      body: `Finish before midnight to lock in Day ${ctx.streak + 1}.`
+    };
   }
-  if (ctx.streak >= 1) {
-    return { title: "Keep the streak alive 🔥", body: `Your ${ctx.streak}-day streak is waiting for today's first step.` };
+  if (ctx.atRisk && ctx.streak >= 1) {
+    return {
+      title: `Your ${ctx.streak}-day streak ends tonight 🔥`,
+      body: `${Math.max(1, ctx.minsLeft)} min is enough to keep the run alive.`
+    };
+  }
+  if (ctx.startedToday && !ctx.completedToday) {
+    return {
+      title: "Finish today's plan 💪",
+      body: `${left} ${left === 1 ? "step" : "steps"} left in today's ${ctx.reminderFocus} plan.`
+    };
+  }
+  if (ctx.brokenCount >= 2 && ctx.streak === 0) {
+    return {
+      title: "The comeback can start tonight",
+      body: `One completed plan restarts your streak from Day 1.`
+    };
   }
   if (ctx.daysSinceScan >= 10) {
-    return { title: "Long time no scan 👀", body: "Quick re-scan before bed — 30 seconds." };
+    return { title: "Long time no scan 👀", body: "Quick re-scan when you're ready — your plan will update from it." };
   }
-  const generic = [
-    { title: "Still time 👀", body: "Day's not over. Start today's plan." },
-    { title: "Evening check-in ⏰", body: "Open your plan and complete one useful step." },
-    { title: "Finish strong 💪", body: "A few focused minutes still count." },
-  ];
-  return generic[new Date().getDay() % generic.length];
+  return { title: "Still time today", body: `Open your ${ctx.reminderFocus} plan and finish one useful session.` };
+}
+
+function _fmPickLastChanceMessage(ctx){
+  const left = Math.max(1, ctx.left || (ctx.progressTotal - ctx.progressDone));
+  return {
+    title: `${ctx.streak}-day streak: last call 🔥`,
+    body: ctx.startedToday
+      ? `${left} ${left === 1 ? "step" : "steps"} left. Finish before midnight to secure Day ${ctx.streak + 1}.`
+      : `Your streak is still alive for tonight. Open the plan before midnight.`
+  };
 }
 
 /* Schedules the full retention pack (daily + 7-day re-scan + streak nudge).
@@ -6655,27 +7277,52 @@ async function scheduleRetentionPack(){
   const morning = _fmPickMorningMessage(ctx);
   const evening = _fmPickEveningMessage(ctx);
 
-  // Morning reminder — repeats every day at 8:00 AM.
+  // Morning reminder — repeats at the stored reminder time (08:00 by default).
+  const prefs = notifLoadPrefs();
+  const timeMatch = /^(\d{1,2}):(\d{2})$/.exec(String(prefs.dailyTime || "08:00"));
+  const reminderHour = timeMatch ? Math.max(0, Math.min(23, Number(timeMatch[1]))) : 8;
+  const reminderMinute = timeMatch ? Math.max(0, Math.min(59, Number(timeMatch[2]))) : 0;
   await window.facemax.notif.scheduleDaily({
     id: window.facemax.notif.ids.DAILY,
-    hour: 8, minute: 0,
+    hour: reminderHour, minute: reminderMinute,
     title: morning.title,
     body: morning.body,
+    extra: { route:"glowupHub", inboxType:"plan" },
   });
 
-  // Evening reminder — one-shot at 8:00 PM and only while today's plan is
-  // incomplete. Re-running this after task completion cancels the pending nudge.
+  // Evening reminder — one-shot for TODAY only. Never carry today's stale
+  // "2 steps left" copy into tomorrow.
   await window.facemax.notif.cancel(window.facemax.notif.ids.EVENING);
+  await window.facemax.notif.cancel(window.facemax.notif.ids.STREAK);
   if (!ctx.completedToday) {
     const eveningAt = new Date();
     eveningAt.setHours(20, 0, 0, 0);
-    if (eveningAt.getTime() <= Date.now() + 5000) eveningAt.setDate(eveningAt.getDate() + 1);
-    await window.facemax.notif.scheduleAt({
-      id: window.facemax.notif.ids.EVENING,
-      at: eveningAt,
-      title: evening.title,
-      body: evening.body,
-    });
+    if (eveningAt.getTime() > Date.now() + 5000) {
+      await window.facemax.notif.scheduleAt({
+        id: window.facemax.notif.ids.EVENING,
+        at: eveningAt,
+        title: evening.title,
+        body: evening.body,
+        extra: { route:"glowupHub", inboxType:"streak" },
+      });
+    }
+
+    // Duolingo-style last chance, but only for a meaningful existing streak.
+    // This is cancelled immediately when the user finishes the plan.
+    if (ctx.atRisk && ctx.streak >= 3) {
+      const lateAt = new Date();
+      lateAt.setHours(21, 45, 0, 0);
+      if (lateAt.getTime() > Date.now() + 5000) {
+        const late = _fmPickLastChanceMessage(ctx);
+        await window.facemax.notif.scheduleAt({
+          id: window.facemax.notif.ids.STREAK,
+          at: lateAt,
+          title: late.title,
+          body: late.body,
+          extra: { route:"glowupHub", inboxType:"streak" },
+        });
+      }
+    }
   }
 
   // Re-scan reminder is anchored to the actual last scan, not the latest app
@@ -6696,6 +7343,7 @@ async function scheduleRetentionPack(){
       at: rescan,
       title: "Time to re-scan",
       body: "See how your score moved this week.",
+      extra: { route:"upload", inboxType:"scan" },
     });
   }
 
@@ -6715,10 +7363,11 @@ async function scheduleRetentionPack(){
   await window.facemax.notif.scheduleAt({
     id: window.facemax.notif.ids.WINBACK_3D,
     at: winback3,
-    title: "We miss your face 👋",
+    title: "Ready for a comeback?",
     body: ctx2.streak >= 2
-      ? `Your ${ctx2.streak}-day streak is waiting. Come finish it.`
-      : "It's been 3 days. 4 minutes gets you right back on track.",
+      ? `That ${ctx2.streak}-day run will have ended — one completed plan starts the comeback.`
+      : `It's been 3 days. Your ${Math.max(1, Number(ctx2.commitmentMinutes) || 5)}-minute plan gets you moving again.`,
+    extra: { route:"glowupHub", inboxType:"streak" },
   });
 
   await window.facemax.notif.scheduleAt({
@@ -6728,6 +7377,7 @@ async function scheduleRetentionPack(){
     body: ctx2.hasEverScanned
       ? "Your last scan is getting old — see what's changed (or hasn't)."
       : "Still haven't taken your first scan. Takes 30 seconds.",
+    extra: { route:"upload", inboxType:"scan" },
   });
 
   await window.facemax.notif.scheduleAt({
@@ -6735,6 +7385,7 @@ async function scheduleRetentionPack(){
     at: winback14,
     title: "Don't give up on the glow-up 💔",
     body: "Two weeks off. Restart with a fresh scan — no pressure, just progress.",
+    extra: { route:"upload", inboxType:"scan" },
   });
 }
 
@@ -7701,7 +8352,14 @@ window.startScan = async function(_premiumChecked){
 
   // Save to history with a small thumbnail + detected face shape.
   const thumb = await makeThumbnail(selectedImageData, 240).catch(() => null);
+  const _fmPrevScanScore = (scanHistory && scanHistory.length) ? Number(scanHistory[0].score) : null;
   saveToHistory(lastScanScore, thumb, { shape: detectedShape, metrics: finalMetrics, report: aiReport || null, archetype: archetypeFor(lastScanScore) });
+  try {
+    if (Number.isFinite(_fmPrevScanScore) && Number(lastScanScore) > _fmPrevScanScore) {
+      const delta = Math.max(1, Math.round(Number(lastScanScore) - _fmPrevScanScore));
+      fmInboxAdd({ key:`scan-improved:${scanHistory[0] && scanHistory[0].date || Date.now()}`, title:"Your Face Score improved ✨", body:`+${delta} since your previous scan. Open your latest result to see what moved.`, route:"home", type:"progress", ts:Date.now() });
+    }
+  } catch {}
   renderHomeHistory();
   renderHomeStats();
 
@@ -13281,6 +13939,7 @@ window.centerFaceInAvatar = centerFaceInAvatar;
 // ---------- BOOTSTRAP ----------
 loadHistory();
 try { loadHistory(); } catch {}
+try { _guGetStreak(); _guEnsureCompletionState(); } catch {}
 renderHomeHistory();
 renderHomeStats();
 renderGlowUpPlan();
@@ -13300,6 +13959,22 @@ try {
     }, 1500);
   }
 } catch {}
+
+// Keep the Home risk/secured state truthful while the app stays open across
+// the evening threshold or returns from background. UI-only; no network work.
+setInterval(() => {
+  try {
+    if (el("home")?.classList.contains("active")) {
+      renderHomeStats();
+      renderGlowUpPlan();
+    }
+  } catch {}
+}, 60000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    try { _guGetStreak(); renderHomeStats(); renderGlowUpPlan(); } catch {}
+  }
+});
 
 
 // Kick off MediaPipe detector download in the background so the user's first
