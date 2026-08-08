@@ -268,9 +268,6 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .hs-streak-risk{background:linear-gradient(180deg,rgba(251,146,60,.28),rgba(127,29,29,.10));border-color:rgba(251,146,60,.68);box-shadow:0 4px 18px rgba(251,146,60,.26)}
 .hs-streak-risk .hs-num{color:#fb923c}
 .hs-streak-risk .hs-lbl{color:#fdba74}
-.hs-streak-secured{background:linear-gradient(180deg,rgba(34,197,94,.22),rgba(16,185,129,.06));border-color:rgba(74,222,128,.48);box-shadow:0 4px 16px rgba(34,197,94,.18)}
-.hs-streak-secured .hs-num{color:#4ade80}
-.hs-streak-secured .hs-lbl{color:rgba(134,239,172,.92)}
 .hs-streak-broken{background:linear-gradient(180deg,rgba(148,163,184,.10),rgba(71,85,105,.04));border-color:rgba(148,163,184,.18)}
 .hs-streak-broken .hs-num{color:#cbd5e1}
 .hs-streak-broken .hs-lbl{color:#94a3b8}
@@ -4846,15 +4843,14 @@ function renderHomeStats(){
   const streakTile = el("homeStreakTile");
   const streakLabel = el("homeStreakLabel");
   if (streakTile) {
-    streakTile.classList.remove("hs-streak-active","hs-streak-risk","hs-streak-secured","hs-streak-broken");
-    if (momentum.completedToday && streak >= 1) streakTile.classList.add("hs-streak-secured");
-    else if (momentum.atRisk && momentum.isEvening) streakTile.classList.add("hs-streak-risk");
+    streakTile.classList.remove("hs-streak-active","hs-streak-risk","hs-streak-broken");
+    // A live streak has one stable visual state on Home: the normal yellow streak tile.
+    if (momentum.atRisk && momentum.isEvening) streakTile.classList.add("hs-streak-risk");
     else if (streak >= 1) streakTile.classList.add("hs-streak-active");
     else if (momentum.brokenCount >= 2) streakTile.classList.add("hs-streak-broken");
   }
   if (streakLabel) {
-    if (momentum.completedToday && streak >= 1) streakLabel.textContent = "streak secured";
-    else if (momentum.atRisk && momentum.isEvening) streakLabel.textContent = "at risk";
+    if (momentum.atRisk && momentum.isEvening) streakLabel.textContent = "at risk";
     else if (!streak && momentum.brokenCount >= 2) streakLabel.textContent = "restart today";
     else streakLabel.textContent = "day streak";
   }
@@ -5317,7 +5313,7 @@ function _guCompleteToday(animate) {
   const today = _guDateKey();
   const s = _guGetStreak();
   if (s.lastDate === today) {
-    // The streak may already be secured by a previous render/migration, but an
+    // The streak may already be recorded by a previous render/migration, but an
     // explicit 6/6 tap should still give the user the completion celebration.
     if (animate) _guShowCompletionCelebration(Math.max(1, Number(s.count) || 1));
     try { renderHomeStats(); renderGlowUpPlan(); } catch {}
@@ -5628,8 +5624,7 @@ function renderGlowUpPlan(){
   const streakCount = momentum.streak;
   if (streakRow && streakTxt) {
     if (streakCount >= 1) {
-      if (momentum.completedToday) streakTxt.textContent = "🔥 " + streakCount + " day streak secured";
-      else if (momentum.atRisk && momentum.isEvening) streakTxt.textContent = "🔥 " + streakCount + " day streak · ends tonight";
+      if (momentum.atRisk && momentum.isEvening) streakTxt.textContent = "🔥 " + streakCount + " day streak · ends tonight";
       else streakTxt.textContent = "🔥 " + streakCount + " day streak";
       streakRow.style.display = "block";
     } else {
@@ -13602,7 +13597,7 @@ function quizPick(key, value, mode){
     const i = cur.indexOf(value);
     if (i >= 0) cur.splice(i, 1);
     else {
-      const step = quizSteps[quizState.step];
+      const step = QUIZ_STEPS[quizState.step];
       const maxSelect = Number(step && step.maxSelect) || Infinity;
       if (cur.length >= maxSelect) { showToast(`Choose up to ${maxSelect} goals`); return; }
       cur.push(value);
@@ -14176,7 +14171,7 @@ try {
   }
 } catch {}
 
-// Keep the Home risk/secured state truthful while the app stays open across
+// Keep the Home streak/risk state truthful while the app stays open across
 // the evening threshold or returns from background. UI-only; no network work.
 setInterval(() => {
   try {
