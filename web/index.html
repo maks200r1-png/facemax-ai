@@ -329,6 +329,16 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .gu-header-streak-row span{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:900;letter-spacing:-.01em;color:#fff;background:rgba(0,0,0,.16);border-radius:999px;padding:3px 10px 3px 8px}
 .gu-header-title{font-size:17px;font-weight:800;letter-spacing:-.02em;color:#fff;line-height:1}
 
+.gu-complete-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;visibility:hidden;background:rgba(8,5,12,.38);backdrop-filter:blur(4px);transition:opacity .18s ease,visibility .18s ease}
+.gu-complete-overlay.show{opacity:1;visibility:visible}
+.gu-complete-pop{min-width:210px;padding:24px 28px 22px;border-radius:32px;text-align:center;background:linear-gradient(160deg,#3b1d67,#6d28d9 55%,#8b5cf6);border:1px solid rgba(255,255,255,.20);box-shadow:0 24px 70px rgba(76,29,149,.48);transform:scale(.82) translateY(14px);opacity:0}
+.gu-complete-overlay.show .gu-complete-pop{transform:scale(1) translateY(0);opacity:1;transition:transform .42s cubic-bezier(.2,1.25,.35,1),opacity .2s ease}
+.gu-complete-fire{font-size:48px;line-height:1;margin-bottom:7px;filter:drop-shadow(0 8px 14px rgba(251,146,60,.35))}
+.gu-complete-count{font-size:48px;font-weight:950;letter-spacing:-.055em;color:#fff;line-height:1}
+.gu-complete-label{margin-top:3px;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fde68a}
+.gu-complete-sub{margin-top:10px;font-size:13px;font-weight:700;color:rgba(255,255,255,.78)}
+@media (prefers-reduced-motion:reduce){.gu-complete-overlay,.gu-complete-pop{transition:none!important}}
+
 .gu-week-row{display:flex;flex-direction:column;gap:4px;margin-top:0}
 .gu-dots{display:flex;align-items:center;gap:3px;width:100%}
 .gu-dot{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.10);border:none;transition:background .2s}
@@ -3876,6 +3886,15 @@ html.cam-active .app { background:transparent !important; }
 
 </section>
 
+<div class="gu-complete-overlay" id="guCompletionOverlay" aria-hidden="true">
+  <div class="gu-complete-pop">
+    <div class="gu-complete-fire">🔥</div>
+    <div class="gu-complete-count" id="guCompletionCount">1</div>
+    <div class="gu-complete-label">Day streak</div>
+    <div class="gu-complete-sub">Today's plan complete</div>
+  </div>
+</div>
+
 <!-- =============================== FOOD SCAN =============================== -->
 <section id="foodScan" class="screen">
   <div class="screen-topbar">
@@ -4918,7 +4937,7 @@ async function _fetchAiGlowPlan(last, _premiumRetried) {
   // Cache key includes the local calendar date — a new plan is requested after
   // local midnight or after a new scan, never during the same day.
   const today = new Date().toLocaleDateString('en-CA'); // local TZ, not UTC
-  const PLAN_VER = "v9"; // classic 6-task layout + 8 AI metric coaching cards
+  const PLAN_VER = "v10"; // 6-task layout + 8 AI metric cards + Worker schema handshake
   const dailyKey = cacheKey + "_" + today + "_" + PLAN_VER + "_" + _fmPreferenceSignature();
 
   // 1) check in-memory first
@@ -4993,6 +5012,7 @@ async function _fetchAiGlowPlan(last, _premiumRetried) {
       score_delta: scoreDelta,               // overall score change since last scan day
       tasks_completed_yesterday: prevDonePct,// % of yesterday's tasks completed (0-100 or null)
       time_of_day: timeOfDay,               // morning / afternoon / evening for routine-aware tasks
+      glow_plan_schema_version: 10,
       profile: {
         age: quizState?.answers?.age || null,
         goal: quizState?.answers?.goal || null,
@@ -5040,6 +5060,14 @@ async function _fetchAiGlowPlan(last, _premiumRetried) {
       _guAiPlanCache[dailyKey] = entry;
       try { localStorage.setItem(dailyKey, JSON.stringify(entry)); } catch {}
       return json.data;
+    }
+    if (json && json.ok && json.source === "openrouter" && json.data) {
+      const chipCount = Array.isArray(json.data.chips) ? json.data.chips.length : 0;
+      const stepCount = Array.isArray(json.data.steps) ? json.data.steps.length : 0;
+      if (chipCount !== 8 || stepCount !== 6) {
+        _guLastAiError = "Glow Up backend is updating. Try again in a moment.";
+        return null;
+      }
     }
     _guLastAiError = aiFailureMessage(res.status, json && json.error);
   } catch (err) {
@@ -5261,7 +5289,13 @@ function _guCompleteToday(animate) {
   if (!state.completedToday) return false;
   const today = _guDateKey();
   const s = _guGetStreak();
-  if (s.lastDate === today) return false; // already secured
+  if (s.lastDate === today) {
+    // The streak may already be secured by a previous render/migration, but an
+    // explicit 6/6 tap should still give the user the completion celebration.
+    if (animate) _guShowCompletionCelebration(Math.max(1, Number(s.count) || 1));
+    try { renderHomeStats(); renderGlowUpPlan(); } catch {}
+    return false;
+  }
   const count = _guUpdateStreak();
   _guMarkWeekToday();
   try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch {}

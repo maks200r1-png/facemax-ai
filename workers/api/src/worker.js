@@ -2096,6 +2096,9 @@ async function foodScan(request, env) {
 //         overall_score, face_shape, archetype, gender, weakest_area }
 
 
+const GLOW_PLAN_SCHEMA_VERSION = 10;
+const GLOW_PLAN_BUILD = "glow-plan-v10-six-steps-eight-metrics";
+
 const GLOW_PLAN_RESPONSE_FORMAT = {
   type: "json_schema",
   json_schema: {
@@ -2497,10 +2500,16 @@ ${Array.from({ length: targetSteps }, () => '    { "e": "single emoji", "label":
       return [label.toLowerCase(), { label, note }];
     }));
     const chips = chipDefs.map(([label, sourceScore], index) => {
-      const ai = chipByLabel.get(label.toLowerCase());
-      if (!ai || !ai.note) throw new Error(`Missing glow coaching card: ${label}`);
+      // Prefer exact label matching, but fall back to the AI card at the
+      // required position. The prompt/schema already require exactly 8 cards
+      // in this order; a harmless label variation such as "Eye Area" must
+      // not make the entire Glow Up Plan fail with a 502. Canonical labels
+      // are always restored before the response reaches the app.
+      const ai = chipByLabel.get(label.toLowerCase()) || parsedChips[index];
+      const note = String(ai?.note || "").trim();
+      if (!note) throw new Error(`Missing glow coaching card note: ${label}`);
       const score = Number.isFinite(sourceScore) ? sourceScore : overall;
-      return { label, score: Math.max(0, Math.min(100, Math.round(score))), note: ai.note };
+      return { label, score: Math.max(0, Math.min(100, Math.round(score))), note };
     });
 
     const focus = String(parsed.focus || "").trim();
@@ -2512,6 +2521,8 @@ ${Array.from({ length: targetSteps }, () => '    { "e": "single emoji", "label":
     return json({
       ok: true,
       source: "openrouter",
+      build: GLOW_PLAN_BUILD,
+      glow_plan_schema_version: GLOW_PLAN_SCHEMA_VERSION,
       data: {
         focus,
         steps,
@@ -2523,7 +2534,13 @@ ${Array.from({ length: targetSteps }, () => '    { "e": "single emoji", "label":
       },
     });
   } catch (e) {
-    return json({ ok: false, error: "invalid_ai_response", reason: e?.message || String(e) }, 502);
+    return json({
+      ok: false,
+      error: "invalid_ai_response",
+      reason: e?.message || String(e),
+      build: GLOW_PLAN_BUILD,
+      glow_plan_schema_version: GLOW_PLAN_SCHEMA_VERSION
+    }, 502);
   }
 }
 
@@ -2984,6 +3001,8 @@ export default {
         ok: true, app: "FaceMax AI API", message: "Worker backend is running",
         build: MEAL_PLAN_BUILD,
         meal_plan_schema_version: MEAL_PLAN_SCHEMA_VERSION,
+        glow_plan_build: GLOW_PLAN_BUILD,
+        glow_plan_schema_version: GLOW_PLAN_SCHEMA_VERSION,
         frontend_url_clean: cleanUrl(env.FRONTEND_URL || ""),
         endpoints: [
           "/api/auth/apple (POST)",
@@ -3055,6 +3074,8 @@ export default {
           request_timeout_ms: 42000,
           meal_plan_build: MEAL_PLAN_BUILD,
           meal_plan_schema_version: MEAL_PLAN_SCHEMA_VERSION,
+          glow_plan_build: GLOW_PLAN_BUILD,
+          glow_plan_schema_version: GLOW_PLAN_SCHEMA_VERSION,
           note: openrouterPresent
             ? "OpenRouter key present — all AI calls are restricted to Google Vertex AI EU"
             : "OPENROUTER_API_KEY missing — AI flows fail closed with an explicit error"

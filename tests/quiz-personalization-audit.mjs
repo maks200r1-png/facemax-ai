@@ -5,7 +5,7 @@ const must = (cond, msg) => { if (!cond) throw new Error(msg); };
 must(html.includes("Smart reminders"), "Smart reminders label missing");
 must(html.includes("Goals &amp; preferences"), "Goals & preferences UI missing");
 must(html.includes("_fmPlanTargetSteps"), "plan target-step helper missing");
-must(html.includes('PLAN_VER = "v9"'), "new Glow plan cache version missing");
+must(html.includes('PLAN_VER = "v10"'), "new Glow plan cache version missing");
 must(html.includes('data.steps.length !== 6'), "frontend fixed six-step validation missing");
 must(worker.includes("const targetSteps = 6"), "worker must preserve classic six-card plan length");
 must(html.includes("data.chips.length === 8"), "frontend must require all eight AI metric coaching cards");
