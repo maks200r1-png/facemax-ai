@@ -13602,7 +13602,7 @@ function quizPick(key, value, mode){
     const i = cur.indexOf(value);
     if (i >= 0) cur.splice(i, 1);
     else {
-      const step = quizSteps[quizState.step];
+      const step = QUIZ_STEPS[quizState.step];
       const maxSelect = Number(step && step.maxSelect) || Infinity;
       if (cur.length >= maxSelect) { showToast(`Choose up to ${maxSelect} goals`); return; }
       cur.push(value);
