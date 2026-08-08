@@ -5,8 +5,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build-version" content="v-1786115166269">
-  <!-- BUILD: v-1786115166269 -->
+  <meta name="build-version" content="v-1786170000000-quizroutefix">
+  <!-- BUILD: v-1786170000000-quizroutefix -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#100A14">
@@ -19,8 +19,32 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+// First-paint onboarding guard: determine synchronously whether this install has
+// actually completed its first scan. Never let the default active Home screen
+// paint while an unfinished onboarding is waiting on async subscription checks.
+(function(){
+  var done=false;
+  try {
+    done = localStorage.getItem("facemax_onboarding_complete_v1") === "1";
+    if (!done && localStorage.getItem("facemax_quiz_done_v2") === "1") {
+      var hist = JSON.parse(localStorage.getItem("facemax_history") || "[]");
+      if (Array.isArray(hist) && hist.length > 0) {
+        done = true;
+        localStorage.setItem("facemax_onboarding_complete_v1", "1");
+      }
+    }
+  } catch (_) {}
+  if (!done) document.documentElement.classList.add("fm-first-launch-lock");
+})();
+</script>
 <style>
 :root{--bg:#100A14;--bg-2:#16101F;--surface:rgba(255,255,255,.035);--surface-2:rgba(255,255,255,.06);--surface-3:rgba(255,255,255,.10);--line:rgba(255,255,255,.06);--line-2:rgba(255,255,255,.10);--line-3:rgba(255,255,255,.16);--text:#fafafa;--muted:rgba(255,255,255,.56);--dim:rgba(255,255,255,.36);--p:#A78BFA;--p-2:#C4B5FD;--p-3:#8B5CF6;--p-dim:rgba(167,139,250,.14);--ok:#4ade80;--warn:#fbbf24;--danger:#f87171;}
+/* On an unfinished first launch, Home is only a parser default. Keep it
+   completely invisible until the quiz screen has been activated synchronously. */
+html.fm-first-launch-lock #home.screen.active,
+html.fm-first-launch-lock .topbar,
+html.fm-first-launch-lock .bottom{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-feature-settings:'ss01','cv11';-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;letter-spacing:-0.012em;line-height:1.5;overflow-x:hidden;overscroll-behavior:none}
 /* Hard-stop the iOS WKWebView rubber-band everywhere. `none` (not `contain`)
@@ -2482,7 +2506,6 @@ html.cam-active .app { background:transparent !important; }
 .notif-empty-icon{width:52px;height:52px;border-radius:18px;margin:0 auto 12px;background:rgba(167,139,250,.11);display:grid;place-items:center;color:#c4b5fd}
 .notif-empty-icon svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:1.8}
 .notif-empty b{display:block;font-size:14px;margin-bottom:4px}.notif-empty span{font-size:11.5px;line-height:1.45;color:var(--muted)}
-.notif-inbox-note{font-size:10.5px;color:rgba(255,255,255,.35);text-align:center;margin:14px 14px 0;line-height:1.45}
 </style>
 
 </head>
@@ -3503,7 +3526,6 @@ html.cam-active .app { background:transparent !important; }
     <button type="button" class="notif-mark-read" id="notificationMarkAll" onclick="fmInboxMarkAllRead()">Mark all read</button>
   </div>
   <div class="notif-inbox-list" id="notificationInboxList"></div>
-  <div class="notif-inbox-note">Push settings stay in Profile → Smart Reminders. This inbox keeps FaceMax updates after the iOS banner is gone.</div>
 </section>
 
 <!-- =============================== PROFILE =============================== -->
@@ -3618,7 +3640,7 @@ html.cam-active .app { background:transparent !important; }
       <div><h3 id="goalPrefsTitle">Goals &amp; preferences</h3><p>These personalize your plan and reminders. They never change your Face Scan score.</p></div>
       <button class="goal-prefs-close" type="button" onclick="closeGoalPreferences()" aria-label="Close">×</button>
     </div>
-    <div class="goal-prefs-label">Main goal</div>
+    <div class="goal-prefs-label">Goals · choose up to 3</div>
     <div class="goal-prefs-options" id="goalPrefGoal"></div>
     <div class="goal-prefs-label">Concerns</div>
     <div class="goal-prefs-options" id="goalPrefConcerns"></div>
@@ -5013,13 +5035,18 @@ async function _fetchAiGlowPlan(last, _premiumRetried) {
       tasks_completed_yesterday: prevDonePct,// % of yesterday's tasks completed (0-100 or null)
       time_of_day: timeOfDay,               // morning / afternoon / evening for routine-aware tasks
       glow_plan_schema_version: 10,
-      profile: {
-        age: quizState?.answers?.age || null,
-        goal: quizState?.answers?.goal || null,
-        concerns: Array.isArray(quizState?.answers?.concerns) ? quizState.answers.concerns : [],
-        routine: quizState?.answers?.routine || null,
-        commitment_minutes: quizState?.answers?.commitment || null,
-      },
+      profile: (() => {
+        const qa = _fmLoadQuizAnswers();
+        const goals = _fmGoals(qa);
+        return {
+          age: qa.age || null,
+          goals,
+          goal: goals[0] || null,
+          concerns: Array.isArray(qa.concerns) ? qa.concerns : [],
+          routine: qa.routine || null,
+          commitment_minutes: qa.commitment || null,
+        };
+      })(),
     });
     _guLastAiError = null;
     const res = await fetchWithTimeout(API_BASE + "/api/glow-plan", {
@@ -5601,7 +5628,7 @@ function renderGlowUpPlan(){
   const streakCount = momentum.streak;
   if (streakRow && streakTxt) {
     if (streakCount >= 1) {
-      if (momentum.completedToday) streakTxt.textContent = "🔥 " + streakCount + " day streak · secured";
+      if (momentum.completedToday) streakTxt.textContent = "🔥 " + streakCount + " day streak secured";
       else if (momentum.atRisk && momentum.isEvening) streakTxt.textContent = "🔥 " + streakCount + " day streak · ends tonight";
       else streakTxt.textContent = "🔥 " + streakCount + " day streak";
       streakRow.style.display = "block";
@@ -6407,6 +6434,9 @@ window.openScreen = function(id){
   document.documentElement.classList.toggle("fm-fixed-screen", id === "genderSelect" || id === "capture" || id === "quiz");
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   el(id)?.classList.add("active");
+  if (isQuizScreen || (typeof quizIsDone === "function" && quizIsDone())) {
+    document.documentElement.classList.remove("fm-first-launch-lock");
+  }
   const tabId = NAV_TAB_FOR_SCREEN[id];
   if (tabId) setActiveNavTab(tabId);
   window.scrollTo(0, 0);
@@ -6457,6 +6487,22 @@ window.closePremiumGate = function(){
 };
 
 window.showGate = function(title, text, resumeAction){
+  // A generic in-app paywall must never replace the first-run quiz funnel.
+  // If something tries to open it while onboarding is still unfinished, keep
+  // the user in the quiz. Once a first scan is actually pending, route to the
+  // dedicated quiz pre-pay/paywall instead.
+  if (typeof fmFirstRunFunnelActive === "function" && fmFirstRunFunnelActive()) {
+    const sid = (typeof fmActiveScreenId === "function") ? fmActiveScreenId() : "";
+    const scanPending = !!(onbState && onbState.pendingScan);
+    if (scanPending || sid === "prePay" || sid === "capture" || sid === "loading" || sid === "quizPaywall") {
+      try { onbState.flow = "onboarding"; onbState.pendingScan = true; } catch {}
+      if (typeof showPrePay === "function") showPrePay();
+      else if (typeof quizShowPaywall === "function") quizShowPaywall();
+    } else {
+      console.warn("[facemax] suppressed generic premium gate during onboarding", { sid, title });
+    }
+    return;
+  }
   _pendingPremiumAction = typeof resumeAction === "function" ? resumeAction : null;
   el("gateTitle").textContent = title || "Premium feature";
   el("gateText").textContent = text || "Choose a plan to continue.";
@@ -6818,8 +6864,20 @@ function renderGenderSetting(){
 const FM_QUIZ_STORAGE_KEY = "facemax_quiz_v2";
 const FM_PREF_GOALS = [
   ["jawline","Sharper jawline"],["skin","Glowing skin"],["eyes","Eye area"],
-  ["harmony","Overall harmony"],["confidence","Confidence"]
+  ["harmony","Overall harmony"],["glowup","Overall glow-up"]
 ];
+const FM_PREF_GOAL_VALUES = new Set(FM_PREF_GOALS.map(x => x[0]));
+function _fmNormalizeGoalAnswers(input){
+  const a = { ...(input || {}) };
+  let goals = Array.isArray(a.goals) ? a.goals.slice() : (a.goal ? [a.goal] : []);
+  goals = goals.map(v => v === "confidence" ? "glowup" : String(v || ""))
+    .filter(v => FM_PREF_GOAL_VALUES.has(v));
+  goals = [...new Set(goals)].slice(0,3);
+  a.goals = goals;
+  a.goal = goals[0] || null; // legacy compatibility: first selected goal remains primary
+  return a;
+}
+function _fmGoals(answers){ return _fmNormalizeGoalAnswers(answers).goals; }
 const FM_PREF_CONCERNS = [
   ["acne","Acne"],["dull","Dull skin"],["bloating","Bloating"],["round","Round face"],
   ["asymmetry","Asymmetry"],["eyebags","Eye bags"],["hair","Hair / hairline"],["other","General improvement"]
@@ -6829,13 +6887,13 @@ const FM_PREF_COMMITMENT = [["5","5 min"],["10","10 min"],["20","20 min"],["30",
 
 function _fmLoadQuizAnswers(){
   try {
-    if (window.quizState && window.quizState.answers) return { ...window.quizState.answers };
+    if (window.quizState && window.quizState.answers) return _fmNormalizeGoalAnswers(window.quizState.answers);
   } catch {}
   try {
     const raw = localStorage.getItem(FM_QUIZ_STORAGE_KEY);
     const parsed = raw ? JSON.parse(raw) : null;
-    return (parsed && parsed.answers && typeof parsed.answers === "object") ? { ...parsed.answers } : {};
-  } catch { return {}; }
+    return _fmNormalizeGoalAnswers((parsed && parsed.answers && typeof parsed.answers === "object") ? parsed.answers : {});
+  } catch { return _fmNormalizeGoalAnswers({}); }
 }
 function _fmQuizLabel(list, value){
   const hit = list.find(x => x[0] === value);
@@ -6847,8 +6905,8 @@ function _fmPlanTargetSteps(answers){
 function _fmPersonalFocusSummary(answers){
   const a = answers || _fmLoadQuizAnswers();
   const parts = [];
-  const goal = _fmQuizLabel(FM_PREF_GOALS, a.goal);
-  if (goal) parts.push(goal);
+  const goals = _fmGoals(a).map(v => _fmQuizLabel(FM_PREF_GOALS, v)).filter(Boolean);
+  if (goals.length) parts.push(goals.join(" + "));
   const cs = Array.isArray(a.concerns) ? a.concerns : [];
   if (cs.length) {
     const c = _fmQuizLabel(FM_PREF_CONCERNS, cs[0]);
@@ -6860,13 +6918,14 @@ function _fmPersonalFocusSummary(answers){
 }
 function _fmReminderFocus(answers){
   const a = answers || _fmLoadQuizAnswers();
-  const goalMap = { jawline:"jawline", skin:"skin", eyes:"eye-area", harmony:"face-balance", confidence:"glow-up" };
-  return goalMap[a.goal] || "glow-up";
+  const goalMap = { jawline:"jawline", skin:"skin", eyes:"eye-area", harmony:"face-balance", glowup:"glow-up" };
+  return goalMap[_fmGoals(a)[0]] || "glow-up";
 }
 function _fmPreferenceSignature(){
   const a = _fmLoadQuizAnswers();
   const concerns = Array.isArray(a.concerns) ? a.concerns.slice().sort().join("-") : "";
-  return [a.age||"",a.goal||"",concerns,a.routine||"",a.commitment||""].join("_").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,100) || "default";
+  const goals = _fmGoals(a).join("-");
+  return [a.age||"",goals,concerns,a.routine||"",a.commitment||""].join("_").replace(/[^a-zA-Z0-9_-]/g,"").slice(0,100) || "default";
 }
 function refreshGoalPreferencesSummary(){
   const node = el("goalPrefsSummary");
@@ -6879,11 +6938,13 @@ function _renderGoalPrefChips(hostId, list, key, multi){
   const selected = multi ? (Array.isArray(_goalPrefsDraft[key]) ? _goalPrefsDraft[key] : []) : _goalPrefsDraft[key];
   host.innerHTML = list.map(([v,label]) => {
     const active = multi ? selected.includes(v) : selected === v;
-    return `<button type="button" class="goal-pref-chip${active?' active':''}" onclick="setGoalPreference('${key}','${v}',${multi?'true':'false'})">${escapeHtml(label)}</button>`;
+    const mainTag = key === "goals" && active && selected[0] === v ? " · Main" : "";
+    return `<button type="button" class="goal-pref-chip${active?' active':''}" onclick="setGoalPreference('${key}','${v}',${multi?'true':'false'})">${escapeHtml(label + mainTag)}</button>`;
   }).join("");
 }
 function _renderGoalPreferences(){
-  _renderGoalPrefChips("goalPrefGoal", FM_PREF_GOALS, "goal", false);
+  _goalPrefsDraft = _fmNormalizeGoalAnswers(_goalPrefsDraft || {});
+  _renderGoalPrefChips("goalPrefGoal", FM_PREF_GOALS, "goals", true);
   _renderGoalPrefChips("goalPrefConcerns", FM_PREF_CONCERNS, "concerns", true);
   _renderGoalPrefChips("goalPrefRoutine", FM_PREF_ROUTINES, "routine", false);
   _renderGoalPrefChips("goalPrefCommitment", FM_PREF_COMMITMENT, "commitment", false);
@@ -6893,8 +6954,13 @@ window.setGoalPreference = function(key, value, multi){
   if (multi) {
     const arr = Array.isArray(_goalPrefsDraft[key]) ? _goalPrefsDraft[key].slice() : [];
     const i = arr.indexOf(value);
-    if (i >= 0) arr.splice(i,1); else arr.push(value);
+    if (i >= 0) arr.splice(i,1);
+    else {
+      if (key === "goals" && arr.length >= 3) { showToast("Choose up to 3 goals"); return; }
+      arr.push(value);
+    }
     _goalPrefsDraft[key] = arr;
+    if (key === "goals") _goalPrefsDraft.goal = arr[0] || null;
   } else _goalPrefsDraft[key] = value;
   _renderGoalPreferences();
 };
@@ -6905,7 +6971,7 @@ window.openGoalPreferences = function(){
 };
 window.closeGoalPreferences = function(){ el("goalPrefsModal")?.classList.add("hidden"); };
 window.saveGoalPreferences = function(){
-  const next = _goalPrefsDraft || _fmLoadQuizAnswers();
+  const next = _fmNormalizeGoalAnswers(_goalPrefsDraft || _fmLoadQuizAnswers());
   try {
     const raw = localStorage.getItem(FM_QUIZ_STORAGE_KEY);
     const state = raw ? JSON.parse(raw) : { step:0, answers:{} };
@@ -6941,7 +7007,12 @@ window.saveGoalPreferences = function(){
 const FM_INBOX_KEY = "facemax_notification_inbox_v1";
 const FM_INBOX_LIMIT = 80;
 function fmInboxLoad(){
-  try { const v = JSON.parse(localStorage.getItem(FM_INBOX_KEY) || "[]"); return Array.isArray(v) ? v : []; }
+  try {
+    const v = JSON.parse(localStorage.getItem(FM_INBOX_KEY) || "[]");
+    if (!Array.isArray(v)) return [];
+    // Inbox is always newest-first, including legacy entries already stored on device.
+    return v.sort((a,b)=>(Number(b && b.ts)||0)-(Number(a && a.ts)||0));
+  }
   catch { return []; }
 }
 function fmInboxSave(items){
@@ -8263,7 +8334,11 @@ window.startScan = async function(_premiumChecked){
   // Every later scan uses the separate in-app three-plan paywall and resumes the
   // capture automatically after purchase.
   if (!_premiumChecked) {
-    if (onbState && onbState.flow === "onboarding") {
+    const firstRunOnboarding = (typeof fmFirstRunFunnelActive === "function")
+      ? fmFirstRunFunnelActive()
+      : !!(onbState && onbState.flow === "onboarding");
+    if (firstRunOnboarding) {
+      onbState.flow = "onboarding";
       document.documentElement.classList.add("fm-quiz-active");
       const active = await checkPremium(false).catch(() => hasUnlockedAccess());
       if (!active && !hasUnlockedAccess()) {
@@ -8370,9 +8445,14 @@ window.startScan = async function(_premiumChecked){
   // Lock the loading bars onto the real per-metric scores, then reveal the
   // result screen so the numbers carry straight over.
   finishScanBars(Object.assign({ overall: finalScore }, finalMetrics || {}), () => {
+    const completedFirstRun = (typeof fmFirstRunFunnelActive === "function")
+      ? fmFirstRunFunnelActive()
+      : !!(onbState && onbState.flow === "onboarding");
+    if (completedFirstRun) quizSetDone();
     onbState.viaCapture = false;
     onbState.pendingScan = false;
     document.documentElement.classList.remove("fm-quiz-active");
+    document.documentElement.classList.remove("fm-first-launch-lock");
     stopMeshAnim();
     openScreen("result");
     applyPremiumToResult();
@@ -8527,10 +8607,14 @@ async function fetchGeminiScan(imageDataUrl, _mpScore, _mpMetrics){
           // user. Surface the generic retry dialog instead so they can try again.
           return { overall: null, metrics: null, report: null, hardFail: true, reason: "server_sync_pending" };
         }
-        // Genuinely unpaid. Keep onboarding on its original paywall; later scans
-        // use the separate in-app three-plan paywall and resume this scan.
+        // Genuinely unpaid. Keep first-run onboarding on its dedicated quiz
+        // paywall; only scans from an already-onboarded Home use the generic gate.
         onbState.pendingScan = true;
-        if (onbState && onbState.flow === "onboarding") {
+        const firstRunOnboarding = (typeof fmFirstRunFunnelActive === "function")
+          ? fmFirstRunFunnelActive()
+          : !!(onbState && onbState.flow === "onboarding");
+        if (firstRunOnboarding) {
+          onbState.flow = "onboarding";
           showPrePay();
         } else {
           showGate(
@@ -12397,6 +12481,7 @@ function renderMealPlanRoot(){
 
 const QUIZ_KEY = "facemax_quiz_v2";
 const QUIZ_DONE_KEY = "facemax_quiz_done_v2";
+const ONBOARDING_DONE_KEY = "facemax_onboarding_complete_v1";
 
 const QUIZ_STEPS = [
   // 0 — Welcome
@@ -12426,20 +12511,22 @@ const QUIZ_STEPS = [
       { v: "40+",   t: "40+"   },
     ],
   },
-  // 3 — Main goal
+  // 3 — Goals (multi-select, first choice is primary)
   {
-    type: "single",
-    key: "goal",
+    type: "multi",
+    key: "goals",
     eyebrow: "Step 2 of 9",
     title: "What matters most to you?",
-    sub: "Pick the area where you want to see the <b>biggest</b> change.",
+    sub: "Choose up to <b>3 goals</b>. Your first choice is treated as the main priority.",
     options: [
-      { e: "💎", v: "jawline",     t: "Sharper jawline",   d: "Definition, chiseled lower face" },
-      { e: "🌟", v: "skin",        t: "Glowing skin",      d: "Clearer pores, brighter tone" },
-      { e: "👁️", v: "eyes",       t: "Eye area",          d: "Reduce puffiness, brighter look" },
-      { e: "🧬", v: "harmony",     t: "Overall harmony",   d: "Symmetry, proportions, balance" },
-      { e: "🔥", v: "confidence",  t: "Confidence",        d: "Look better in photos and IRL" },
+      { e: "💎", v: "jawline", t: "Sharper jawline", d: "Definition, chiseled lower face" },
+      { e: "🌟", v: "skin",    t: "Glowing skin",    d: "Clearer pores, brighter tone" },
+      { e: "👁️", v: "eyes",   t: "Eye area",        d: "Reduce puffiness, brighter look" },
+      { e: "🧬", v: "harmony", t: "Overall harmony", d: "Symmetry, proportions, balance" },
+      { e: "🔥", v: "glowup",  t: "Overall glow-up", d: "Improve your overall look and presentation" },
     ],
+    minSelect: 1,
+    maxSelect: 3,
   },
   // 4 — Concerns (multi-select)
   {
@@ -12569,10 +12656,46 @@ const QUIZ_STEPS = [
 
 let quizState = { step: 0, answers: {} };
 try { const _raw = localStorage.getItem(QUIZ_KEY); if (_raw) quizState = Object.assign(quizState, JSON.parse(_raw)); } catch {}
+quizState.answers = _fmNormalizeGoalAnswers(quizState.answers || {});
 
-function quizSave(){ try { localStorage.setItem(QUIZ_KEY, JSON.stringify(quizState)); } catch {} }
-function quizSetDone(){ try { localStorage.setItem(QUIZ_DONE_KEY, "1"); } catch {} }
-function quizIsDone(){ try { return localStorage.getItem(QUIZ_DONE_KEY) === "1"; } catch { return false; } }
+function quizSave(){
+  try {
+    quizState.answers = _fmNormalizeGoalAnswers(quizState.answers || {});
+    localStorage.setItem(QUIZ_KEY, JSON.stringify(quizState));
+  } catch {}
+}
+function quizSetDone(){
+  try {
+    localStorage.setItem(QUIZ_DONE_KEY, "1");
+    localStorage.setItem(ONBOARDING_DONE_KEY, "1");
+  } catch {}
+}
+function quizIsDone(){
+  try {
+    if (localStorage.getItem(ONBOARDING_DONE_KEY) === "1") return true;
+    // Migration for users from builds where quiz_done was written before the
+    // first scan. Only treat that legacy flag as truly complete when a scan
+    // history entry proves onboarding actually reached a result.
+    if (localStorage.getItem(QUIZ_DONE_KEY) === "1") {
+      const hist = JSON.parse(localStorage.getItem("facemax_history") || "[]");
+      if (Array.isArray(hist) && hist.length > 0) {
+        localStorage.setItem(ONBOARDING_DONE_KEY, "1");
+        return true;
+      }
+    }
+  } catch {}
+  return false;
+}
+function fmFirstRunFunnelActive(){
+  try {
+    if (!quizIsDone()) return true;
+    return !!(onbState && onbState.flow === "onboarding" && !localStorage.getItem(ONBOARDING_DONE_KEY));
+  } catch { return !quizIsDone(); }
+}
+function fmActiveScreenId(){
+  const n = document.querySelector(".screen.active");
+  return n && n.id || "";
+}
 function quizHaptic(){ try { if (window.facemax && window.facemax.haptic) window.facemax.haptic("light"); } catch {} }
 
 function quizEsc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
@@ -13475,10 +13598,17 @@ function quizRender(){
 function quizPick(key, value, mode){
   quizHaptic();
   if (mode === "multi") {
-    const cur = quizState.answers[key] || [];
+    const cur = Array.isArray(quizState.answers[key]) ? quizState.answers[key].slice() : [];
     const i = cur.indexOf(value);
-    if (i >= 0) cur.splice(i, 1); else cur.push(value);
+    if (i >= 0) cur.splice(i, 1);
+    else {
+      const step = quizSteps[quizState.step];
+      const maxSelect = Number(step && step.maxSelect) || Infinity;
+      if (cur.length >= maxSelect) { showToast(`Choose up to ${maxSelect} goals`); return; }
+      cur.push(value);
+    }
     quizState.answers[key] = cur;
+    if (key === "goals") quizState.answers.goal = cur[0] || null;
     quizSave();
     // Multi-select stays on the step (re-render to refresh the Continue state).
     quizRender();
@@ -13495,8 +13625,9 @@ function quizContinue(){ quizHaptic(); quizGoTo(quizState.step + 1); }
 
 function quizFinishToAnalyze(){
   quizHaptic();
-  // Set done flag now so a refresh mid-flow doesn't re-start the quiz.
-  quizSetDone();
+  // Do NOT mark onboarding complete here. The user has only answered the quiz;
+  // first-run onboarding is complete only after the first Face Scan succeeds.
+  // This keeps launch routing and paywall routing inside the quiz funnel.
   // After the test, show the test result first. The big "Scan my face" button
   // on that screen continues to the gender picker → dual-photo capture.
   quizShowResult();
@@ -13506,21 +13637,23 @@ function quizGoalsLabel(){
   const map = {
     jawline: "sharper <b>jawline</b>", skin: "<b>clearer, glowing skin</b>",
     eyes: "<b>brighter eye area</b>", harmony: "<b>better facial harmony</b>",
-    confidence: "<b>more confidence</b>",
+    glowup: "an <b>overall glow-up</b>",
   };
-  return map[quizState.answers.goal] || "<b>your goals</b>";
+  const labels = _fmGoals(quizState.answers).map(g => map[g]).filter(Boolean);
+  return labels.length ? labels.join(", ") : "<b>your goals</b>";
 }
 
 function quizPersonalInsights(){
   const a = quizState.answers || {};
   const out = [];
-  if (a.goal === "jawline" || (a.concerns || []).includes("round")) {
+  const goals = _fmGoals(a);
+  if (goals.includes("jawline") || (a.concerns || []).includes("round")) {
     out.push({ e: "💎", t: "Jawline focus", d: "Mewing posture + facial exercises tailored to your face shape" });
   }
-  if (a.goal === "skin" || (a.concerns || []).includes("acne") || (a.concerns || []).includes("dull")) {
+  if (goals.includes("skin") || (a.concerns || []).includes("acne") || (a.concerns || []).includes("dull")) {
     out.push({ e: "🌟", t: "Skin glow routine", d: "Personalized AM/PM routine + product picks for your skin type" });
   }
-  if ((a.concerns || []).includes("bloating") || a.goal === "harmony") {
+  if ((a.concerns || []).includes("bloating") || goals.includes("harmony")) {
     out.push({ e: "💧", t: "Daily debloat plan", d: "Food scanner, water tracker, lymphatic-drain face press" });
   }
   if ((a.concerns || []).includes("eyebags")) {
@@ -14141,41 +14274,19 @@ colorAllMetricBars(document);
 // We await checkPremium() here so `premiumUntil` is populated before we
 // decide routing — otherwise the 50 ms window races the server response and
 // an expired subscriber could be mis-routed to the quiz on a slow connection.
+// Route first launch synchronously. Subscription verification must never be
+// allowed to hold the quiz behind the default active Home screen. Returning
+// users still get the async RevenueCat/backend refresh in the background.
+const _fmNeedsFirstRunOnboarding = !quizIsDone();
+if (_fmNeedsFirstRunOnboarding) {
+  onbStart();
+} else {
+  document.documentElement.classList.remove("fm-first-launch-lock");
+}
 checkPremium(false).then(() => {
   applyPremiumToResult();
-
-  // Quiz done + paid            → returning user, go straight to home.
-  // Quiz done + unpaid + NEVER  → user completed quiz steps but never subscribed
-  //                               (closed app at paywall, or skipped). Send back to
-  //                               the start of the quiz so they can't bypass the
-  //                               pay-first gate by just re-launching.
-  // Quiz done + expired sub     → user previously paid, sub lapsed but did NOT
-  //                               uninstall. Stay in the app — paywall shows on
-  //                               feature tap. Do NOT re-run the quiz.
-  // Quiz not done               → fresh install or quiz was never finished.
-  const quizDone = quizIsDone();
-  const hasAccess = hasUnlockedAccess();
-
-  // Only users who have NEVER finished the quiz should be routed into it.
-  // Do NOT re-send a returning user back to the quiz just because their
-  // subscription lapsed or premiumUntil didn't arrive from the server in
-  // time. Any quizDone user without access simply stays in the app and
-  // hits the paywall on the next feature tap via ensurePremiumForAction().
-  const isFirstLaunch = !quizDone;
-  if (isFirstLaunch) {
-    onbStart();
-    // Notification permission is offered after the quiz result is displayed.
-  }
 }).catch(() => {
-  // Network failure — fall back to local state only. Same rule as above:
-  // only route into the quiz if it was never completed, never just because
-  // access is currently missing (offline or lapsed subscribers stay in the
-  // app and hit the paywall on their next feature tap instead).
   applyPremiumToResult();
-  const quizDone = quizIsDone();
-  if (!quizDone) {
-    onbStart();
-  }
 });
 
 // Hide pure-web payment polling toast on native (StoreKit is synchronous from

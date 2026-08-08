@@ -85,33 +85,40 @@ function reportKey(userId) { return "report:" + String(userId); }
 function scanCountKey(userId) { return "scancount:" + String(userId); }
 
 const FREE_SCAN_LIMIT = 3;
-const DAILY_SCAN_LIMIT = 50;
+// Premium AI budgets are intentionally separate so using one feature never
+// consumes another feature's daily allowance.
+const DAILY_FACE_SCAN_LIMIT = 15;
+const DAILY_FOOD_SCAN_LIMIT = 15;
+const DAILY_GLOW_PLAN_LIMIT = 15;
+const DAILY_MEAL_PLAN_LIMIT = 10;
 
-function dailyScanKey(userId, localDate) {
-  // Use client-supplied local date (YYYY-MM-DD) so the day resets at local midnight.
-  // Fall back to UTC only if client didn't send it.
+function dailyUsageKey(userId, localDate, bucket) {
+  // Use client-supplied local date (YYYY-MM-DD) when available so the day
+  // resets at local midnight. Glow/Meal callers that do not send local_date
+  // safely fall back to UTC.
   const d = (localDate && /^\d{4}-\d{2}-\d{2}$/.test(localDate))
     ? localDate
     : new Date().toISOString().slice(0, 10);
-  return "dailyscans:" + String(userId) + ":" + d;
+  return "dailyusage:" + String(bucket) + ":" + String(userId) + ":" + d;
 }
 
-async function checkAndIncrementDailyLimit(env, userId, localDate) {
-  if (!env.PREMIUM_KV || !userId) return { allowed: true };
-  const key = dailyScanKey(userId, localDate);
+async function checkAndIncrementDailyLimit(env, userId, localDate, bucket, limit) {
+  if (!env.PREMIUM_KV || !userId) return { allowed: true, used: 0, limit };
+  const safeLimit = Math.max(1, Number(limit) || 1);
+  const key = dailyUsageKey(userId, localDate, bucket);
   let used = 0;
   try {
     const raw = await env.PREMIUM_KV.get(key);
     if (raw) used = Math.max(0, parseInt(raw, 10) || 0);
   } catch {}
-  if (used >= DAILY_SCAN_LIMIT) {
-    return { allowed: false, used, limit: DAILY_SCAN_LIMIT };
+  if (used >= safeLimit) {
+    return { allowed: false, used, limit: safeLimit };
   }
-  // Increment, TTL = 26 hours (covers timezone drift)
+  // Increment, TTL = 26 hours (covers timezone drift).
   try {
     await env.PREMIUM_KV.put(key, String(used + 1), { expirationTtl: 60 * 60 * 26 });
   } catch {}
-  return { allowed: true, used: used + 1, limit: DAILY_SCAN_LIMIT };
+  return { allowed: true, used: used + 1, limit: safeLimit };
 }
 
 function nowPlusPremium() { return Date.now() + PREMIUM_MS_FULL; }
@@ -1732,8 +1739,8 @@ async function fullReport(request, env) {
   if (!userId) return json({ ok: false, error: "user_id required" }, 400);
   const p = await readPremium(env, userId);
   if (!p.active) return json({ ok: false, error: "premium_required", premium: false }, 402);
-  const daily = await checkAndIncrementDailyLimit(env, userId, body.local_date);
-  if (!daily.allowed) return json({ ok: false, error: "daily_limit_reached", limit: DAILY_SCAN_LIMIT, message: "You've reached your 50 scans/day limit. Try again tomorrow." }, 429);
+  const daily = await checkAndIncrementDailyLimit(env, userId, body.local_date, "face", DAILY_FACE_SCAN_LIMIT);
+  if (!daily.allowed) return json({ ok: false, error: "daily_limit_reached", feature: "face_scan", limit: DAILY_FACE_SCAN_LIMIT, message: "You've reached your 15 Face Scans/day limit. Try again tomorrow." }, 429);
   // Build a fresh allow-listed input for the analysis. Even if an outdated
   // client submits history fields, extra photos, old metrics or a prior result,
   // they are discarded here and never reach the vision prompt.
@@ -2071,8 +2078,8 @@ async function foodScan(request, env) {
   if (userId) {
     const p = await readPremium(env, userId);
     if (!p.active) return json({ ok: false, error: "premium_required", premium: false }, 402);
-    const daily = await checkAndIncrementDailyLimit(env, userId, body.local_date);
-    if (!daily.allowed) return json({ ok: false, error: "daily_limit_reached", limit: DAILY_SCAN_LIMIT, message: "You've reached your 50 scans/day limit. Try again tomorrow." }, 429);
+    const daily = await checkAndIncrementDailyLimit(env, userId, body.local_date, "food", DAILY_FOOD_SCAN_LIMIT);
+    if (!daily.allowed) return json({ ok: false, error: "daily_limit_reached", feature: "food_scan", limit: DAILY_FOOD_SCAN_LIMIT, message: "You've reached your 15 Food Scans/day limit. Try again tomorrow." }, 429);
   } else {
     return json({ ok: false, error: "user_id required" }, 400);
   }
@@ -2087,7 +2094,7 @@ async function foodScan(request, env) {
 // ==================== GLOW UP PLAN (AI-generated, per-scan) ====================
 //
 // Generates a truly personalised daily Glow Up plan from the user's scan metrics.
-// Uses the same OpenRouter → Gemini 2.5 Flash Lite pipeline as fullReport.
+// Uses the same OpenRouter → Gemini 2.5 Flash-Lite pipeline as fullReport.
 // Returns a JSON object the front-end renders directly in the Glow Up Hub.
 //
 // POST /api/glow-plan
@@ -2097,7 +2104,7 @@ async function foodScan(request, env) {
 
 
 const GLOW_PLAN_SCHEMA_VERSION = 10;
-const GLOW_PLAN_BUILD = "glow-plan-v10-six-steps-eight-metrics";
+const GLOW_PLAN_BUILD = "glow-plan-v10-six-steps-eight-metrics-rich-notes";
 
 const GLOW_PLAN_RESPONSE_FORMAT = {
   type: "json_schema",
@@ -2139,7 +2146,7 @@ const GLOW_PLAN_RESPONSE_FORMAT = {
             properties: {
               label: { type: "string", minLength: 1 },
               score: { type: "number", minimum: 0, maximum: 100 },
-              note: { type: "string", minLength: 1 }
+              note: { type: "string", minLength: 120, maxLength: 320 }
             },
             required: ["label", "score", "note"]
           }
@@ -2293,6 +2300,8 @@ async function glowPlan(request, env) {
   if (!userId) return json({ ok: false, error: "user_id required" }, 400);
   const p = await readPremium(env, userId);
   if (!p.active) return json({ ok: false, error: "premium_required", premium: false }, 402);
+  const glowDaily = await checkAndIncrementDailyLimit(env, userId, body.local_date, "glow", DAILY_GLOW_PLAN_LIMIT);
+  if (!glowDaily.allowed) return json({ ok: false, error: "daily_limit_reached", feature: "glow_plan", limit: DAILY_GLOW_PLAN_LIMIT, message: "You've reached your 15 Glow Up Plan generations/day limit. Try again tomorrow." }, 429);
 
   const m = (body.metrics && typeof body.metrics === "object") ? body.metrics : {};
   const overall = Math.max(0, Math.min(100, Math.round(Number(body.overall_score || body.score) || 0)));
@@ -2308,9 +2317,17 @@ async function glowPlan(request, env) {
   const tasksDoneYesterday = isFinite(Number(body.tasks_completed_yesterday)) ? Math.round(Number(body.tasks_completed_yesterday)) : null;
   const timeOfDay = ["morning","afternoon","evening"].includes(body.time_of_day) ? body.time_of_day : "morning";
   const rawProfile = (body.profile && typeof body.profile === "object") ? body.profile : {};
+  const rawGoals = Array.isArray(rawProfile.goals)
+    ? rawProfile.goals
+    : (rawProfile.goal ? [rawProfile.goal] : []);
+  const goals = [...new Set(rawGoals
+    .map(v => String(v || "").slice(0, 40))
+    .map(v => v === "confidence" ? "glowup" : v)
+    .filter(Boolean))].slice(0, 3);
   const profile = {
     age: rawProfile.age ? String(rawProfile.age).slice(0, 20) : null,
-    goal: rawProfile.goal ? String(rawProfile.goal).slice(0, 40) : null,
+    goals,
+    goal: goals[0] || null, // backwards-compatible primary goal
     concerns: Array.isArray(rawProfile.concerns) ? rawProfile.concerns.map(v => String(v).slice(0, 40)).slice(0, 8) : [],
     routine: rawProfile.routine ? String(rawProfile.routine).slice(0, 40) : null,
     commitment_minutes: rawProfile.commitment_minutes ? String(rawProfile.commitment_minutes).slice(0, 10) : null,
@@ -2370,7 +2387,7 @@ ${scoreDelta !== null ? `\nOverall score change since last scan: ${scoreDelta > 
 ${streak > 0 ? `Streak: ${streak} day${streak === 1 ? "" : "s"} in a row` : ""}
 ${tasksDoneYesterday !== null ? `Yesterday's plan completion: ${tasksDoneYesterday}%` : ""}
 ${profile.age ? `Age range: ${profile.age}` : ""}
-${profile.goal ? `User's stated primary goal: ${profile.goal}` : ""}
+${profile.goals.length ? `User's stated goals in priority order: ${profile.goals.join(", ")}` : ""}
 ${profile.concerns.length ? `User's stated concerns: ${profile.concerns.join(", ")}` : ""}
 ${profile.routine ? `Current self-care routine level: ${profile.routine}` : ""}
 ${profile.commitment_minutes ? `Available daily time: ${profile.commitment_minutes} minutes` : ""}
@@ -2383,7 +2400,7 @@ VARIETY DIRECTIVE:
 
 QUESTIONNAIRE BOUNDARY:
 - Questionnaire answers are preference/context signals ONLY. Never alter, reinterpret, inflate or reduce any Face Scan score because of a stated goal, concern, routine or available time.
-- If a questionnaire goal conflicts with the scan metrics, keep the metrics factual and use the goal only to choose among safe actions that are relevant to the measured/visible data.
+- If questionnaire goals conflict with the scan metrics, keep the metrics factual and use the goals only to choose among safe actions that are relevant to the measured/visible data.
 - Mood, compliment frequency and self-image answers are intentionally not supplied here.
 
 DIAGNOSTIC GUIDANCE:
@@ -2423,8 +2440,26 @@ Output rules:
   - area: root issue — one of: depuff | water_retention | face_fat | skin | jawline | eyes | cheekbones | symmetry | harmony | nutrition | sleep | overall
 - chips: exactly 8 coaching cards, in this exact order and with these exact labels: Jawline, Potential, Cheekbones, Eyes, Nose, Skin, Symmetry, Harmony.
   - score: use the supplied metric score; Potential is the displayed glow-up potential derived from overall score.
-  - note: 1 ultra-short specific AI-generated action for that metric, justified by the metric plus the rest of the user context.
-  - Never omit a card just because its score is already good; for strong metrics give a maintenance/protection action rather than a generic compliment.
+  - note: write exactly 2 concise personalised sentences, normally 26–42 words total. Do NOT make the cards long; the goal is dense useful information, not filler.
+  - Sentence 1 MUST be grounded in this user's actual scan. Interpret the metric using at least one real signal available above: its relative rank vs the other metrics, whether it is a current strength/weakness, an actual change since the previous scan, or a relevant stated goal/concern. Mention the exact numeric score only when it adds useful context; never repeat it just to fill space.
+  - Sentence 2 MUST give exactly one specific, realistic action or maintenance step that genuinely fits this metric and the user's context. Prefer an actionable behavior over vague encouragement.
+  - Each of the 8 notes must add distinct value. Do not recycle hydration, sleep, SPF, posture, massage or grooming across several cards unless the user's data independently justifies it for each one.
+  - For strong metrics, explain what is working and give a maintenance/protection step. For weaker metrics, explain the clearest modifiable opportunity without insulting the user or implying a medical diagnosis.
+
+METRIC-CARD QUALITY GUARDRAILS:
+- Never claim that the Face Scan can diagnose dehydration, inflammation, body-fat level, hormonal issues, disease or other medical causes. If a visible factor such as temporary puffiness is only a possibility, use cautious wording such as "may" or "can".
+- Never recommend mewing, resistance chewing, excessive gum chewing, jaw trainers, "balanced facial exercises", sleeping-position hacks, or facial exercises as a way to reshape bone structure or correct facial symmetry.
+- Never promise that natural routines can reshape the nose, cheekbones, jaw bones or other fixed skeletal structure.
+- Do not use vague filler such as "focus on your weaker areas", "improve your internal health", "work on facial harmony", "maintain a healthy lifestyle", "stay consistent", or "stay hydrated" unless the sentence also names a concrete reason and action specific to this user.
+- Jawline: discuss visible definition/balance and only modifiable presentation factors supported by the scan/context. No chewing or jaw-training claims.
+- Potential: synthesize the 1–2 highest-impact modifiable opportunities from the current scan and the user's priority goals. This card must not be a generic motivational statement.
+- Cheekbones: discuss visible prominence/balance. Do not tell the user to reduce body fat because FaceMax does not measure body-fat percentage.
+- Eyes: discuss the eye-area metric/visible presentation without diagnosing fatigue or health conditions. Use sleep consistency, gentle cooling, grooming or skincare only when relevant.
+- Nose: treat nose shape as largely structural. Do not imply exercises can reshape it; if it already fits the face well, give a realistic maintenance/presentation observation instead.
+- Skin: give a concrete low-risk skincare action such as cleanser, moisturizer, SPF or routine consistency when relevant. Do not use "internal health" as an explanation.
+- Symmetry: do not claim sleeping position or facial exercises will correct structural asymmetry. If useful, mention consistent camera angle/lighting, grooming balance, or focus on a genuinely modifiable neighboring metric.
+- Harmony: explain how the metrics work together and point to the single most useful modifiable imbalance; do not tell the user merely to "focus on harmony".
+- Never omit a card just because its score is already good.
 - food_tip: 1 sentence tied directly to the weakest area. Start with emoji. Be specific (name the food/ingredient, not just "eat healthy").
 - face_tip: 1 sentence technique for today's specific issue. Start with emoji. Choose and name the exact technique independently; do not draw from a fixed list.
 - skin_tip: 1 sentence skincare step — only include if skin score < 75, otherwise null. Start with emoji.
@@ -2459,7 +2494,7 @@ ${Array.from({ length: targetSteps }, () => '    { "e": "single emoji", "label":
     // Include thumbnail if available — the vision model sees the actual face
     // alongside the numeric metrics, improving plan accuracy and personalisation.
     const images = thumb ? [thumb] : [];
-    const result = await callOpenRouter(env, prompt, images, { tries: 2, timeoutMs: 32000, maxTokens: 2200, temperature: 0.35, responseFormat: GLOW_PLAN_RESPONSE_FORMAT });
+    const result = await callOpenRouter(env, prompt, images, { tries: 2, timeoutMs: 32000, maxTokens: 3200, temperature: 0.35, responseFormat: GLOW_PLAN_RESPONSE_FORMAT });
     if (!result.ok || !result.text) {
       return json({ ok: false, error: "ai_unavailable", reason: result.reason || "OpenRouter error", status: result.status || 0 }, 503);
     }
@@ -2721,6 +2756,8 @@ async function mealPlanGenerate(request, env) {
 
   if (!String(env.OPENROUTER_API_KEY || "").trim()) return json({ ok: false, error: "ai_unavailable", reason: "OPENROUTER_API_KEY missing" }, 503);
   if (!env.PREMIUM_KV) return json({ ok: false, error: "PREMIUM_KV missing" }, 500);
+  const mealDaily = await checkAndIncrementDailyLimit(env, userId, body.local_date, "meal", DAILY_MEAL_PLAN_LIMIT);
+  if (!mealDaily.allowed) return json({ ok: false, error: "daily_limit_reached", feature: "meal_plan", limit: DAILY_MEAL_PLAN_LIMIT, message: "You've reached your 10 Meal Plan generations/day limit. Try again tomorrow." }, 429);
 
   let previousPlan = null;
   try {
