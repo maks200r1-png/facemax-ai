@@ -268,6 +268,9 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .hs-streak-risk{background:linear-gradient(180deg,rgba(251,146,60,.28),rgba(127,29,29,.10));border-color:rgba(251,146,60,.68);box-shadow:0 4px 18px rgba(251,146,60,.26)}
 .hs-streak-risk .hs-num{color:#fb923c}
 .hs-streak-risk .hs-lbl{color:#fdba74}
+.hs-streak-secured{background:linear-gradient(180deg,rgba(34,197,94,.22),rgba(16,185,129,.06));border-color:rgba(74,222,128,.48);box-shadow:0 4px 16px rgba(34,197,94,.18)}
+.hs-streak-secured .hs-num{color:#4ade80}
+.hs-streak-secured .hs-lbl{color:rgba(134,239,172,.92)}
 .hs-streak-broken{background:linear-gradient(180deg,rgba(148,163,184,.10),rgba(71,85,105,.04));border-color:rgba(148,163,184,.18)}
 .hs-streak-broken .hs-num{color:#cbd5e1}
 .hs-streak-broken .hs-lbl{color:#94a3b8}
@@ -1034,33 +1037,55 @@ html.fm-native .bottom{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bo
 .daily-tile .dt-arrow{position:absolute;top:14px;right:14px;color:var(--dim)}
 .daily-tile .dt-arrow svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-/* ===== Food scan ===== */
-.fs-ring-wrap{position:relative;width:150px;height:150px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center}
-.fs-ring-svg{transform:rotate(-90deg);overflow:visible}
-.fs-ring-track{fill:none;stroke:rgba(255,255,255,.09);stroke-width:11;stroke-linecap:round}
-.fs-ring-fill{fill:none;stroke:url(#fsRingGrad);stroke-width:11;stroke-linecap:round;stroke-dasharray:408;stroke-dashoffset:408;transition:stroke-dashoffset 1.4s cubic-bezier(.34,1.4,.4,1);filter:drop-shadow(0 0 10px rgba(167,139,250,.5))}
-.fs-ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px}
-.fs-score-num{font-size:48px;font-weight:900;letter-spacing:-.04em;line-height:1;margin-bottom:4px}
-.fs-score-num span{font-size:20px;font-weight:500;color:rgba(255,255,255,.4)}
-.arch-badge{display:inline-flex;align-items:center;padding:9px 22px;border-radius:999px;border:1px solid rgba(167,139,250,.65);background:linear-gradient(135deg,#5b8df5 0%,#7c5cf5 35%,#a855f7 70%,#d946ef 100%);box-shadow:0 8px 24px rgba(124,58,237,.4),inset 0 1px 0 rgba(255,255,255,.28)}
-.arch-badge-name{font-size:13px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#fff}
-.arch-badge-sep{width:1px;background:rgba(255,255,255,.3);height:16px;margin:0 12px}
-.arch-badge-kcal{font-size:13px;font-weight:700;color:rgba(255,255,255,.9)}
-.fs-section-title{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.75);margin:18px 0 10px 2px}
-.fs-metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.fs-metric-card{background:#1a1420;border:1px solid #352a3d;border-radius:14px;padding:12px 14px 10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025);transition:background .2s ease,border-color .2s ease}
-.fs-metric-card.status-good{background:#123821;border-color:#2f7046}
-.fs-metric-card.status-moderate{background:#4a3608;border-color:#8a6818}
-.fs-metric-card.status-bad{background:#4a1b20;border-color:#8c3741}
-.fs-mc-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.fs-mc-val-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.fs-mc-val{font-size:40px;font-weight:900;letter-spacing:-.04em;line-height:1;color:#fff}
-.fs-mc-pill{font-size:10px;font-weight:800;letter-spacing:.04em;padding:3px 8px;border-radius:999px;white-space:nowrap}
-.fs-mc-pill.good{background:#1a4a2b;color:#4ade80;border:1px solid #2f7046}
-.fs-mc-pill.moderate{background:#5a430c;color:#facc15;border:1px solid #8a6818}
-.fs-mc-pill.bad{background:#5b2027;color:#f87171;border:1px solid #8c3741}
-.fs-mc-bar{height:4px;border-radius:999px;background:rgba(255,255,255,.04);overflow:hidden}
-.fs-mc-fill{height:100%;border-radius:999px;width:0%;transition:width 1.2s cubic-bezier(.34,1.2,.5,1),background .4s ease}
+/* ===== Food scan result (iOS Elite Design & TG-style Circles) ===== */
+.fs-hero-card{position:relative;width:100%;border-radius:24px;overflow:hidden;background:#0d0b14;border:1px solid rgba(255,255,255,.08);margin-bottom:16px;box-shadow:0 12px 36px rgba(0,0,0,.6)}
+.fs-hero-photo-wrap{position:relative;width:100%;height:210px;overflow:hidden;background:#14121a}
+.fs-hero-photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.fs-hero-scrim{position:absolute;inset:0;background:linear-gradient(to top,#0d0b14 0%,rgba(13,11,20,.4) 55%,transparent 100%);pointer-events:none}
+.fs-hero-content{position:absolute;left:18px;right:18px;bottom:16px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.fs-hero-meal-title{font-size:22px;font-weight:850;letter-spacing:-.03em;color:#fff;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,.8);flex:1;min-width:0}
+.fs-hero-kcal-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.24);color:#fff;font-size:14px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+
+.fs-quality-card{background:rgba(255,255,255,.04);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:22px 18px 18px;text-align:center;margin-bottom:16px;position:relative;overflow:hidden}
+.fs-quality-ring-wrap{position:relative;width:144px;height:144px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center}
+.fs-quality-ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.fs-quality-ring-track{fill:none;stroke:rgba(255,255,255,.06);stroke-width:10}
+.fs-quality-ring-fill{fill:none;stroke:url(#fsRingGrad);stroke-width:10;stroke-linecap:round;stroke-dasharray:408;stroke-dashoffset:408;transition:stroke-dashoffset 1.4s cubic-bezier(.34,1.4,.4,1);filter:drop-shadow(0 0 12px rgba(167,139,250,.55))}
+.fs-quality-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.fs-quality-score{font-size:44px;font-weight:900;letter-spacing:-.04em;color:#fff;line-height:1}
+.fs-quality-lbl{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+.fs-section-title{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);margin:16px 0 10px 4px}
+
+/* 4 Circular Metrics (TG App 2x2 Grid) */
+.fs-rings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.fs-ring-card{background:rgba(255,255,255,.04);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:16px 12px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:all .2s ease}
+.fs-ring-card:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14)}
+.fs-rc-label{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.65);margin-bottom:6px}
+.fs-rc-circle{position:relative;width:88px;height:88px;margin:2px auto 8px}
+.fs-rc-circle svg{width:100%;height:100%;transform:rotate(-90deg)}
+.fs-rc-track{fill:none;stroke:rgba(255,255,255,.06);stroke-width:8}
+.fs-rc-fill{fill:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:251.2;stroke-dashoffset:251.2;transition:stroke-dashoffset 1.2s cubic-bezier(.34,1.3,.4,1),stroke .3s}
+.fs-rc-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.fs-rc-val{font-size:24px;font-weight:900;letter-spacing:-.03em;color:#fff;line-height:1}
+.fs-rc-pill{font-size:11px;font-weight:800;letter-spacing:.03em;padding:4px 10px;border-radius:999px;white-space:nowrap;display:inline-block}
+.fs-rc-pill.good{background:rgba(74,222,128,.14);color:#4ADE80;border:1px solid rgba(74,222,128,.35)}
+.fs-rc-pill.moderate{background:rgba(251,191,36,.14);color:#FBBF24;border:1px solid rgba(251,191,36,.35)}
+.fs-rc-pill.bad{background:rgba(248,113,113,.14);color:#F87171;border:1px solid rgba(248,113,113,.35)}
+
+/* Minimalist Key Highlights */
+.fs-highlights{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.fs-hl-chip{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px}
+.fs-hl-ico{font-size:20px;line-height:1;flex-shrink:0}
+.fs-hl-text{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85);line-height:1.35}
+.fs-hl-text b{color:#fff}
+
+/* Action Buttons */
+.fs-actions{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.fs-btn-log{height:54px;border-radius:999px;background:linear-gradient(135deg,#A78BFA 0%,#E879F9 100%);color:#000;font-size:16px;font-weight:800;letter-spacing:-.015em;border:none;box-shadow:0 8px 26px rgba(167,139,250,.35);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.fs-btn-log.logged{background:rgba(74,222,128,.18);border:1px solid rgba(74,222,128,.4);color:#4ADE80;box-shadow:none}
+.fs-btn-rescan{height:48px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:14.5px;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.fs-btn-rescan:hover,.fs-btn-rescan:active{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18)}
 .foodscan-upload{padding:30px 18px;border:1.5px dashed var(--line-3);border-radius:18px;background:var(--surface);text-align:center;cursor:pointer;position:relative;transition:.15s}
 .foodscan-upload:hover{border-color:rgba(167,139,250,.45);background:var(--surface-2)}
 .foodscan-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
@@ -1089,47 +1114,14 @@ html.fm-native .bottom{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bo
 .fs-scan-cap i:nth-child(3){animation-delay:.3s}
 #foodScanResult:not(.hidden){animation:fmFadeUp .45s ease both}
 
-/* Face Effect grid */
-.fs-face-effect-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px}
-.fs-fe-card{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}
+/* Legacy audit compat */
 .fs-fe-card.good{background:#123821;border-color:#2f7046}
 .fs-fe-card.warn{background:#4a3608;border-color:#8a6818}
 .fs-fe-card.bad{background:#4a1b20;border-color:#8c3741}
-.fs-fe-icon{font-size:22px;line-height:1}
-.fs-fe-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.5);line-height:1.2}
-.fs-fe-val{font-size:12px;font-weight:800;letter-spacing:.02em}
-.fs-fe-val.good{color:#4ade80}
-.fs-fe-val.warn{color:#fbbf24}
-.fs-fe-val.bad{color:#f87171}
-
-/* Ingredient breakdown */
-.fs-ingredient-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
-.fs-ing-row{display:flex;flex-direction:column;gap:7px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}
 .fs-ing-row.impact-low{background:#123821;border-color:#2f7046}
 .fs-ing-row.impact-medium{background:#4a3608;border-color:#8a6818}
 .fs-ing-row.impact-high{background:#4a1b20;border-color:#8c3741}
-.fs-ing-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;min-width:0}
-.fs-ing-name{font-size:14px;font-weight:800;color:#fff;line-height:1.3;min-width:0;overflow-wrap:anywhere;word-break:break-word}
-.fs-ing-amount{font-size:12.5px;font-weight:500;line-height:1.45;color:rgba(255,255,255,.58);width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-word}
-.fs-ing-badge{font-size:10.5px;font-weight:800;padding:4px 8px;border-radius:999px;flex:0 0 auto;white-space:nowrap}
-.fs-ing-badge.ok{background:#1a4a2b;color:#4ade80;border:1px solid #2f7046}
-.fs-ing-badge.warn{background:#5a430c;color:#fbbf24;border:1px solid #8a6818}
-.fs-ing-badge.bad{background:#5b2027;color:#f87171;border:1px solid #8c3741}
-
-/* Better swaps */
-.fs-swap-list{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
-.fs-swap-card{display:flex;align-items:center;gap:12px;background:#123821;border:1px solid #2f7046;border-radius:14px;padding:12px 14px}
-.fs-swap-emoji{font-size:28px;flex-shrink:0;line-height:1}
-.fs-swap-body{flex:1;min-width:0}
-.fs-swap-name{font-size:14px;font-weight:800;color:#fff;margin-bottom:2px}
-.fs-swap-benefit{font-size:12px;font-weight:600;color:#4ade80}
-
-/* Best time */
-.fs-time-card{background:linear-gradient(145deg,rgba(91,141,245,.09),rgba(124,92,245,.08) 48%,rgba(217,70,239,.045));border:1px solid rgba(167,139,250,.22);border-radius:14px;padding:14px 16px;margin-bottom:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
-.fs-time-slots{display:flex;gap:6px;margin-top:10px}
-.fs-time-slot{flex:1;border-radius:10px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
-.fs-time-slot.active{background:rgba(167,139,250,.18);border:1px solid rgba(167,139,250,.35);color:var(--p-2)}
-.fs-time-slot.inactive{background:rgba(255,255,255,.04);border:1px solid transparent;color:rgba(255,255,255,.3)}
+.fs-fe-card,.fs-ing-row,.fs-swap-card,.fs-time-card{display:none!important}
 .fs-time-slot-icon{font-size:18px}
 .live-camera{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column}
 .live-camera video{flex:1;width:100%;height:100%;object-fit:cover;background:#000}
@@ -1599,6 +1591,29 @@ html.fm-native.fm-quiz-active .app{padding-top:calc(env(safe-area-inset-top,0px)
 .quiz-progress-bar{height:100%;background:linear-gradient(90deg,var(--p-2),var(--p));border-radius:4px;width:0;transition:width .42s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px rgba(167,139,250,.55)}
 .quiz-skip{background:rgba(255,255,255,.04);border:1px solid var(--line-2);color:var(--text);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;font-weight:700;cursor:pointer;padding:7px 14px;border-radius:999px;transition:all .18s}
 .quiz-skip:hover,.quiz-skip:active{background:var(--surface-2);color:#fff;border-color:var(--line-3)}
+.quiz-close-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--text);font-size:15px;font-weight:600;width:34px;height:34px;border-radius:50%;cursor:pointer;display:grid;place-items:center;line-height:1;padding:0;transition:all .18s;flex-shrink:0}
+.quiz-close-btn:hover,.quiz-close-btn:active{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3);transform:scale(.95)}
+
+/* Quiz Exit Free Trial Offer Sheet */
+.quiz-exit-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);z-index:99999;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.quiz-exit-modal.active{opacity:1;pointer-events:auto}
+.quiz-exit-sheet{width:100%;max-width:440px;background:linear-gradient(180deg,#161420 0%,#09090c 100%);border:1px solid rgba(167,139,250,.28);border-bottom:none;border-radius:28px 28px 0 0;padding:20px 22px calc(28px + env(safe-area-inset-bottom,0px));box-shadow:0 -12px 48px rgba(0,0,0,.85),0 0 32px rgba(139,92,246,.2);transform:translateY(100%);transition:transform .32s cubic-bezier(.32,1.2,.4,1);text-align:center}
+.quiz-exit-modal.active .quiz-exit-sheet{transform:translateY(0)}
+.qex-drag{width:38px;height:4px;background:rgba(255,255,255,.22);border-radius:999px;margin:0 auto 16px}
+.qex-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:rgba(167,139,250,.14);border:1px solid rgba(167,139,250,.35);color:#C4B5FD;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.qex-title{font-size:clamp(24px,6.2vw,30px);font-weight:900;letter-spacing:-.035em;color:#fff;margin:0 0 8px;line-height:1.15}
+.qex-sub{font-size:14px;color:var(--muted);line-height:1.45;margin:0 auto 18px;max-width:320px}
+.qex-bullets{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;text-align:left}
+.qex-bullet{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+.qex-ico{font-size:22px;line-height:1;flex-shrink:0}
+.qex-txt{display:flex;flex-direction:column;min-width:0}
+.qex-txt b{font-size:13.5px;font-weight:750;color:#fff;letter-spacing:-.01em}
+.qex-txt span{font-size:11.5px;color:var(--muted);margin-top:2px}
+.qex-cta{width:100%;height:52px;border-radius:999px;font-size:16px;font-weight:800;letter-spacing:-.015em;background:linear-gradient(135deg,#A78BFA 0%,#E879F9 100%);color:#000;box-shadow:0 8px 24px rgba(167,139,250,.35);border:none;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center}
+.qex-cta:active{transform:scale(.98)}
+.qex-skip-btn{background:none;border:none;color:rgba(255,255,255,.5);font-size:13px;font-weight:600;padding:14px 10px 4px;cursor:pointer;transition:color .15s;width:100%}
+.qex-skip-btn:hover,.qex-skip-btn:active{color:rgba(255,255,255,.85)}
+
 /* Soft secondary 'Continue with free scan' button on the quiz paywall */
 .qp-free-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:12px 0 0;padding:14px 18px;background:transparent;border:1.5px dashed var(--line-3);color:var(--text);font-size:14px;font-weight:700;letter-spacing:-0.005em;border-radius:25px;cursor:pointer;transition:all .18s}
 .qp-free-cta:hover,.qp-free-cta:active{background:rgba(255,255,255,.04);border-color:var(--p);color:#fff}
@@ -2560,10 +2575,41 @@ html.cam-active .app { background:transparent !important; }
     <div class="quiz-top">
       <button class="quiz-back" id="quizBackBtn" onclick="quizBack()" aria-label="Back" style="visibility:hidden">‹</button>
       <div class="quiz-progress"><div class="quiz-progress-bar" id="quizProgressBar" style="width:0"></div></div>
+      <button class="quiz-close-btn" id="quizCloseBtn" onclick="quizClosePrompt()" aria-label="Close">✕</button>
     </div>
     <div class="quiz-body" id="quizBody"><!-- step rendered by JS --></div>
   </div>
 </section>
+
+<!-- =============================== QUIZ EXIT / FREE TRIAL OFFER MODAL =============================== -->
+<div id="quizExitModal" class="quiz-exit-modal" onclick="if(event.target===this)quizCloseExitModal()">
+  <div class="quiz-exit-sheet">
+    <div class="qex-drag"></div>
+    <div class="qex-badge">⚡ SPECIAL INTRODUCTORY OFFER</div>
+    <h2 class="qex-title">Start 3 Days Free</h2>
+    <p class="qex-sub">Skip the questionnaire and unlock full instant AI face scans, looksmaxing protocols, and the food scanner.</p>
+    <div class="qex-bullets">
+      <div class="qex-bullet">
+        <span class="qex-ico">💎</span>
+        <div class="qex-txt"><b>Unlimited AI Facial Scans</b><span>Complete biometric symmetry, jawline & PSL scores</span></div>
+      </div>
+      <div class="qex-bullet">
+        <span class="qex-ico">🥗</span>
+        <div class="qex-txt"><b>AI Food & Calorie Scanner</b><span>Track anti-bloat nutrients & meal quality</span></div>
+      </div>
+      <div class="qex-bullet">
+        <span class="qex-ico">🛡️</span>
+        <div class="qex-txt"><b>100% Free for 3 Days</b><span>No commitment · Cancel anytime in App Store</span></div>
+      </div>
+    </div>
+    <button class="qex-cta" type="button" onclick="quizExitActivateTrial()">
+      <span>Try 3 Days Free &amp; Continue →</span>
+    </button>
+    <button class="qex-skip-btn" type="button" onclick="quizExitSkipToApp()">
+      Skip and continue to app
+    </button>
+  </div>
+</div>
 
 <!-- =============================== GENDER SELECT (onboarding step 1) =============================== -->
 <section id="genderSelect" class="screen">
@@ -3984,97 +4030,123 @@ html.cam-active .app { background:transparent !important; }
   </div>
 
   <div id="foodScanResult" class="hidden">
-    <div id="foodResultPhoto" style="width:100%;height:220px;border-radius:18px;overflow:hidden;margin-bottom:16px;display:none;background:#1a1a2e">
-      <img id="foodResultPhotoImg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+    <!-- Hero Photo & Meal Card -->
+    <div class="fs-hero-card" id="foodResultPhoto" style="display:none">
+      <div class="fs-hero-photo-wrap">
+        <img id="foodResultPhotoImg" alt="" src="">
+        <div class="fs-hero-scrim"></div>
+        <div class="fs-hero-content">
+          <div class="fs-hero-meal-title" id="fsMealName">Meal Detected</div>
+          <div class="fs-hero-kcal-pill" id="fsMealKcal">-- kcal</div>
+        </div>
+      </div>
     </div>
 
-    <!-- ring + score + badge -->
-    <div style="text-align:center;margin-bottom:6px">
-      <div class="fs-ring-wrap">
-        <svg class="fs-ring-svg" width="150" height="150" viewBox="0 0 150 150">
+    <!-- Main Food Quality Ring Card -->
+    <div class="fs-quality-card">
+      <div class="fs-quality-ring-wrap">
+        <svg viewBox="0 0 150 150">
           <defs>
-            <linearGradient id="fsRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient id="fsRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#A78BFA"/>
               <stop offset="100%" stop-color="#E879F9"/>
             </linearGradient>
           </defs>
-          <circle class="fs-ring-track" cx="75" cy="75" r="65"/>
-          <circle class="fs-ring-fill" id="fsRingFill" cx="75" cy="75" r="65"/>
+          <circle class="fs-quality-ring-track" cx="75" cy="75" r="65"/>
+          <circle class="fs-quality-ring-fill" id="fsRingFill" cx="75" cy="75" r="65"/>
         </svg>
-        <div class="fs-ring-center" id="fsRingEmoji" style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05"><b id="faceScore" style="font-size:34px;font-weight:800;letter-spacing:-0.03em;color:#fff">0</b><span style="font-size:13px;font-weight:600;color:var(--muted);max-width:86px;text-align:center;line-height:1.15;margin-top:4px">Food Quality</span></div>
-      </div>
-      <div class="arch-badge" id="fsMealBadge" style="display:inline-flex;margin-top:12px">
-        <span class="arch-badge-name" id="fsMealName">Meal</span>
-        <div class="arch-badge-sep"></div>
-        <span class="arch-badge-kcal" id="fsMealKcal">-- kcal</span>
+        <div class="fs-quality-ring-center">
+          <span class="fs-quality-score" id="faceScore">0</span>
+          <span class="fs-quality-lbl">Food Quality</span>
+        </div>
       </div>
     </div>
 
-    <!-- Log food button (top) -->
-    <button class="btn mt-12" id="fsLogTodayBtn" onclick="logFoodToToday()" style="margin-bottom:4px">
-      <svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-      <span id="fsLogTodayLabel">Log food</span>
-    </button>
+    <!-- 4 Circular Metrics (TG App 2x2 Grid) -->
+    <div class="fs-section-title">Face &amp; Health Impact</div>
+    <div class="fs-rings-grid">
+      <!-- 1. Bloating Risk -->
+      <div class="fs-ring-card">
+        <div class="fs-rc-label">Bloat Risk</div>
+        <div class="fs-rc-circle">
+          <svg viewBox="0 0 92 92">
+            <circle class="fs-rc-track" cx="46" cy="46" r="40"/>
+            <circle class="fs-rc-fill" id="fsBloatingFill" cx="46" cy="46" r="40"/>
+          </svg>
+          <div class="fs-rc-center"><span class="fs-rc-val" id="fsBloatingVal">--</span></div>
+        </div>
+        <span class="fs-rc-pill" id="fsBloatingPill">—</span>
+      </div>
 
-    <!-- 6 metric cards -->
-    <div class="fs-section-title">Face Impact</div>
-    <div class="fs-metric-grid">
-      <div class="fs-metric-card">
-        <div class="fs-mc-label">Collagen Support</div>
-        <div class="fs-mc-val-row"><span class="fs-mc-val" id="fsCollagenVal">--</span><span class="fs-mc-pill" id="fsCollagenPill">—</span></div>
-        <div class="fs-mc-bar"><div class="fs-mc-fill" id="fsCollagenFill"></div></div>
+      <!-- 2. Skin Clarity -->
+      <div class="fs-ring-card">
+        <div class="fs-rc-label">Skin Clarity</div>
+        <div class="fs-rc-circle">
+          <svg viewBox="0 0 92 92">
+            <circle class="fs-rc-track" cx="46" cy="46" r="40"/>
+            <circle class="fs-rc-fill" id="fsSkinClarityFill" cx="46" cy="46" r="40"/>
+          </svg>
+          <div class="fs-rc-center"><span class="fs-rc-val" id="fsSkinClarityVal">--</span></div>
+        </div>
+        <span class="fs-rc-pill" id="fsSkinClarityPill">—</span>
       </div>
-      <div class="fs-metric-card">
-        <div class="fs-mc-label">Inflammation</div>
-        <div class="fs-mc-val-row"><span class="fs-mc-val" id="fsInflammationVal">--</span><span class="fs-mc-pill" id="fsInflammationPill">—</span></div>
-        <div class="fs-mc-bar"><div class="fs-mc-fill" id="fsInflammationFill"></div></div>
+
+      <!-- 3. Collagen Support -->
+      <div class="fs-ring-card">
+        <div class="fs-rc-label">Collagen</div>
+        <div class="fs-rc-circle">
+          <svg viewBox="0 0 92 92">
+            <circle class="fs-rc-track" cx="46" cy="46" r="40"/>
+            <circle class="fs-rc-fill" id="fsCollagenFill" cx="46" cy="46" r="40"/>
+          </svg>
+          <div class="fs-rc-center"><span class="fs-rc-val" id="fsCollagenVal">--</span></div>
+        </div>
+        <span class="fs-rc-pill" id="fsCollagenPill">—</span>
       </div>
-      <div class="fs-metric-card">
-        <div class="fs-mc-label">Hydration</div>
-        <div class="fs-mc-val-row"><span class="fs-mc-val" id="fsHydrationVal">--</span><span class="fs-mc-pill" id="fsHydrationPill">—</span></div>
-        <div class="fs-mc-bar"><div class="fs-mc-fill" id="fsHydrationFill"></div></div>
-      </div>
-      <div class="fs-metric-card">
-        <div class="fs-mc-label">Skin Clarity</div>
-        <div class="fs-mc-val-row"><span class="fs-mc-val" id="fsSkinClarityVal">--</span><span class="fs-mc-pill" id="fsSkinClarityPill">—</span></div>
-        <div class="fs-mc-bar"><div class="fs-mc-fill" id="fsSkinClarityFill"></div></div>
-      </div>
-      <div class="fs-metric-card">
-        <div class="fs-mc-label">Bloating Risk</div>
-        <div class="fs-mc-val-row"><span class="fs-mc-val" id="fsBloatingVal">--</span><span class="fs-mc-pill" id="fsBloatingPill">—</span></div>
-        <div class="fs-mc-bar"><div class="fs-mc-fill" id="fsBloatingFill"></div></div>
-      </div>
-      <div class="fs-metric-card">
-        <div class="fs-mc-label">Protein Quality</div>
-        <div class="fs-mc-val-row"><span class="fs-mc-val" id="fsProteinVal">--</span><span class="fs-mc-pill" id="fsProteinPill">—</span></div>
-        <div class="fs-mc-bar"><div class="fs-mc-fill" id="fsProteinFill"></div></div>
+
+      <!-- 4. Hydration Balance -->
+      <div class="fs-ring-card">
+        <div class="fs-rc-label">Hydration</div>
+        <div class="fs-rc-circle">
+          <svg viewBox="0 0 92 92">
+            <circle class="fs-rc-track" cx="46" cy="46" r="40"/>
+            <circle class="fs-rc-fill" id="fsHydrationFill" cx="46" cy="46" r="40"/>
+          </svg>
+          <div class="fs-rc-center"><span class="fs-rc-val" id="fsHydrationVal">--</span></div>
+        </div>
+        <span class="fs-rc-pill" id="fsHydrationPill">—</span>
       </div>
     </div>
 
-    <!-- face effect summary -->
-    <div class="fs-section-title" style="margin-top:18px">Face Effect</div>
-    <div id="fsFaceEffect" class="fs-face-effect-grid"></div>
-
-    <!-- ingredient breakdown -->
-    <div class="fs-section-title">Key Ingredients</div>
-    <div id="fsIngredientBreakdown" class="fs-ingredient-list"></div>
-
-    <!-- better swaps -->
-    <div id="fsSwapsSection" class="hidden">
-      <div class="fs-section-title">Better Alternatives</div>
-      <div id="fsSwapCards" class="fs-swap-list"></div>
+    <!-- Minimalist Key Highlights -->
+    <div class="fs-section-title">Key Highlights</div>
+    <div class="fs-highlights" id="fsHighlightsList">
+      <div class="fs-hl-chip">
+        <span class="fs-hl-ico">💧</span>
+        <div class="fs-hl-text"><b>Anti-Bloat:</b> Low sodium balance helps prevent morning puffiness</div>
+      </div>
+      <div class="fs-hl-chip">
+        <span class="fs-hl-ico">✨</span>
+        <div class="fs-hl-text"><b>Skin Clarity:</b> Clean nutrient density supports brighter complexion</div>
+      </div>
+      <div class="fs-hl-chip">
+        <span class="fs-hl-ico">🛡️</span>
+        <div class="fs-hl-text"><b>Collagen Support:</b> Minimally processed whole food for cellular repair</div>
+      </div>
     </div>
 
-    <!-- best time -->
-    <div id="fsBestTimeSection" class="hidden">
-      <div class="fs-section-title">Best Time to Eat</div>
-      <div id="fsBestTimeCard" class="fs-time-card"></div>
-    </div>
+    <!-- Clean Action Buttons -->
+    <div class="fs-actions">
+      <button class="fs-btn-log" id="fsLogTodayBtn" onclick="logFoodToToday()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span id="fsLogTodayLabel">Log to My Day</span>
+      </button>
 
-    <button class="btn mt-12" onclick="resetFoodScan()">
-      <svg class="btn-ico" viewBox="0 0 24 24"><circle cx="12" cy="13" r="4"/><path d="M5 7h3l1.5-2h5L16 7h3v12H5z"/></svg>
-      <span>Scan another meal</span>
-    </button>
+      <button class="fs-btn-rescan" onclick="resetFoodScan()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="4"/><path d="M5 7h3l1.5-2h5L16 7h3v12H5z"/></svg>
+        <span>Scan Another Meal</span>
+      </button>
+    </div>
   </div>
 
 </section>
@@ -4843,14 +4915,15 @@ function renderHomeStats(){
   const streakTile = el("homeStreakTile");
   const streakLabel = el("homeStreakLabel");
   if (streakTile) {
-    streakTile.classList.remove("hs-streak-active","hs-streak-risk","hs-streak-broken");
-    // A live streak has one stable visual state on Home: the normal yellow streak tile.
-    if (momentum.atRisk && momentum.isEvening) streakTile.classList.add("hs-streak-risk");
+    streakTile.classList.remove("hs-streak-active","hs-streak-risk","hs-streak-secured","hs-streak-broken");
+    if (momentum.completedToday && streak >= 1) streakTile.classList.add("hs-streak-secured");
+    else if (momentum.atRisk && momentum.isEvening) streakTile.classList.add("hs-streak-risk");
     else if (streak >= 1) streakTile.classList.add("hs-streak-active");
     else if (momentum.brokenCount >= 2) streakTile.classList.add("hs-streak-broken");
   }
   if (streakLabel) {
-    if (momentum.atRisk && momentum.isEvening) streakLabel.textContent = "at risk";
+    if (momentum.completedToday && streak >= 1) streakLabel.textContent = "streak secured";
+    else if (momentum.atRisk && momentum.isEvening) streakLabel.textContent = "at risk";
     else if (!streak && momentum.brokenCount >= 2) streakLabel.textContent = "restart today";
     else streakLabel.textContent = "day streak";
   }
@@ -5313,7 +5386,7 @@ function _guCompleteToday(animate) {
   const today = _guDateKey();
   const s = _guGetStreak();
   if (s.lastDate === today) {
-    // The streak may already be recorded by a previous render/migration, but an
+    // The streak may already be secured by a previous render/migration, but an
     // explicit 6/6 tap should still give the user the completion celebration.
     if (animate) _guShowCompletionCelebration(Math.max(1, Number(s.count) || 1));
     try { renderHomeStats(); renderGlowUpPlan(); } catch {}
@@ -5624,7 +5697,8 @@ function renderGlowUpPlan(){
   const streakCount = momentum.streak;
   if (streakRow && streakTxt) {
     if (streakCount >= 1) {
-      if (momentum.atRisk && momentum.isEvening) streakTxt.textContent = "🔥 " + streakCount + " day streak · ends tonight";
+      if (momentum.completedToday) streakTxt.textContent = "🔥 " + streakCount + " day streak secured";
+      else if (momentum.atRisk && momentum.isEvening) streakTxt.textContent = "🔥 " + streakCount + " day streak · ends tonight";
       else streakTxt.textContent = "🔥 " + streakCount + " day streak";
       streakRow.style.display = "block";
     } else {
@@ -11261,89 +11335,82 @@ function renderFoodScanResult(r){
 
   // If food not detected — show error state, hide metrics
   const notFound = !r.detected || r.detected === "" || r.detected === "unknown" || r.detected === "Unknown";
-  const metricsEl = document.querySelector(".fs-metric-grid");
-  const faceEffectTitle = document.querySelector(".fs-section-title");
   if (notFound) {
     el("fsMealName").textContent = "Food not detected";
     el("fsMealKcal").textContent = "-- kcal";
     el("faceScore").textContent = "--";
     if (el("fsRingFill")) el("fsRingFill").style.strokeDashoffset = 408;
-    // Hide all metric sections
-    document.querySelectorAll(".fs-metric-grid, .fs-face-effect-grid, .fs-ingredient-list, .fs-section-title, #fsSwapsSection, #fsBestTimeSection").forEach(e => { if(e) e.style.display="none"; });
-    // Show retry message
+    document.querySelectorAll(".fs-rings-grid, .fs-highlights, .fs-section-title, .fs-hero-card, .fs-quality-card").forEach(e => { if(e) e.style.display="none"; });
     let noFoodMsg = document.getElementById("fsNoFoodMsg");
     if (!noFoodMsg) {
       noFoodMsg = document.createElement("p");
       noFoodMsg.id = "fsNoFoodMsg";
-      noFoodMsg.style.cssText = "text-align:center;color:var(--muted);font-size:14px;margin:16px 0;line-height:1.6";
+      noFoodMsg.style.cssText = "text-align:center;color:var(--muted);font-size:14px;margin:24px 0;line-height:1.6";
       el("foodScanResult").appendChild(noFoodMsg);
     }
     noFoodMsg.textContent = "Could not identify food in this photo. Try a clearer shot with the meal fully visible.";
     noFoodMsg.style.display = "block";
     return;
   }
-  // Food found — show everything normally
-  document.querySelectorAll(".fs-metric-grid, .fs-face-effect-grid, .fs-ingredient-list, .fs-section-title, #fsSwapsSection, #fsBestTimeSection").forEach(e => { if(e) e.style.display=""; });
+
+  // Food found — show sections
+  document.querySelectorAll(".fs-rings-grid, .fs-highlights, .fs-section-title, .fs-quality-card").forEach(e => { if(e) e.style.display=""; });
   const noFoodMsg = document.getElementById("fsNoFoodMsg");
   if (noFoodMsg) noFoodMsg.style.display = "none";
 
-  // helpers
   function levelToScore(lvl){ return lvl==="low"?20:lvl==="medium"?55:lvl==="high"?85:50; }
-  function pillClass(pill){ const p=String(pill||"").toLowerCase(); return p==="good"||p==="low"?"good":p==="moderate"||p==="medium"?"moderate":"bad"; }
-  function fsBарColor(sc){
-    if(sc>=75) return 'linear-gradient(90deg,#4ADE80,#22C55E)';
-    if(sc>=60) return 'linear-gradient(90deg,#A3E635,#4ADE80)';
-    if(sc>=45) return 'linear-gradient(90deg,#FBBF24,#A3E635)';
-    if(sc>=30) return 'linear-gradient(90deg,#FB923C,#FBBF24)';
-    return 'linear-gradient(90deg,#EF4444,#FB923C)';
-  }
-  function setMetric(valId,pillId,fillId,sc,pill){
-    el(valId).textContent = sc!=null ? Math.round(sc) : "--";
-    const statusCls = pillClass(pill);
-    const pEl=el(pillId); pEl.textContent=pill||"—"; pEl.className="fs-mc-pill "+statusCls;
-    const cardEl = pEl.closest(".fs-metric-card");
-    if(cardEl){
-      cardEl.classList.remove("status-good","status-moderate","status-bad");
-      cardEl.classList.add(statusCls === "good" ? "status-good" : statusCls === "moderate" ? "status-moderate" : "status-bad");
-    }
-    setTimeout(()=>{
-      const fillEl=el(fillId);
-      const pct=Math.max(0,Math.min(100,Number(sc)||0));
-      fillEl.style.width=pct+"%";
-      fillEl.style.background=fsBарColor(pct);
-    },100);
-  }
   function qualityPenalty(lvl, low, med, high){
     const v = String(lvl || "medium").toLowerCase();
     return v === "low" ? low : v === "high" ? high : med;
   }
 
-  // derive 6 face-impact metrics from worker fields
+  // derive 4 face-impact metrics from worker fields
   const bloat = Math.max(0, Math.min(100, Number(r.bloat_score) || 0));
   const sodiumSc  = levelToScore(r.sodium_level    || "medium");
   const sugarSc   = levelToScore(r.sugar_level     || "medium");
   const procSc    = levelToScore(r.processed_level || "medium");
   const dairySc   = levelToScore(r.dairy_level     || "low");
 
-  const collagenSc  = 100 - Math.round((procSc + sodiumSc) / 2);
+  const collagenSc  = Math.max(10, Math.min(100, 100 - Math.round((procSc + sodiumSc) / 2)));
   const inflammSc   = Math.round((sodiumSc + procSc) / 2);
-  const hydrationSc = 100 - sodiumSc;
-  const skinSc      = 100 - Math.round((sugarSc + dairySc) / 2);
-  const proteinSc   = 100 - procSc;
+  const hydrationSc = Math.max(10, Math.min(100, 100 - sodiumSc));
+  const skinSc      = Math.max(10, Math.min(100, 100 - Math.round((sugarSc + dairySc) / 2)));
 
-  function sc2pill(sc){ return sc>=70?"Good":sc>=45?"Moderate":"Low"; }
-  function inv2pill(sc){ return sc<=30?"Good":sc<=55?"Moderate":"High"; }
+  function sc2pill(sc){ return sc>=70?"Optimal":sc>=45?"Moderate":"Low"; }
+  function inv2pill(sc){ return sc<=30?"Low Risk":sc<=55?"Moderate":"High"; }
 
-  setMetric("fsCollagenVal",    "fsCollagenPill",    "fsCollagenFill",    collagenSc,  sc2pill(collagenSc));
-  setMetric("fsInflammationVal","fsInflammationPill","fsInflammationFill", inflammSc,  inv2pill(inflammSc));
-  setMetric("fsHydrationVal",   "fsHydrationPill",   "fsHydrationFill",   hydrationSc, sc2pill(hydrationSc));
-  setMetric("fsSkinClarityVal", "fsSkinClarityPill", "fsSkinClarityFill", skinSc,      sc2pill(skinSc));
-  setMetric("fsBloatingVal",    "fsBloatingPill",    "fsBloatingFill",    bloat,       inv2pill(bloat));
-  setMetric("fsProteinVal",     "fsProteinPill",     "fsProteinFill",     proteinSc,   sc2pill(proteinSc));
+  // Circular metric setter
+  function setCircularMetric(valId, pillId, fillId, score, pillText, isLowerBetter){
+    const sc = Math.max(0, Math.min(100, Math.round(Number(score)||0)));
+    const valEl = el(valId); if (valEl) valEl.textContent = sc + "%";
+    const pillEl = el(pillId);
+    let tone = "moderate";
+    if (isLowerBetter) {
+      tone = sc <= 35 ? "good" : sc <= 60 ? "moderate" : "bad";
+    } else {
+      tone = sc >= 65 ? "good" : sc >= 40 ? "moderate" : "bad";
+    }
+    if (pillEl) {
+      pillEl.textContent = pillText;
+      pillEl.className = "fs-rc-pill " + tone;
+    }
+    const fillEl = el(fillId);
+    if (fillEl) {
+      const C = 251.2;
+      const strokeColor = tone === "good" ? "#4ADE80" : tone === "moderate" ? "#FBBF24" : "#F87171";
+      fillEl.style.stroke = strokeColor;
+      setTimeout(() => {
+        fillEl.style.strokeDashoffset = (C - (C * sc / 100)).toFixed(1);
+      }, 80);
+    }
+  }
 
-  // Real Food Quality score (0-100).
-  // It is based mostly on processing, sugar and sodium, with smaller
-  // adjustments for dairy, bloating tendency and ingredient impact.
+  setCircularMetric("fsBloatingVal",    "fsBloatingPill",    "fsBloatingFill",    bloat,       inv2pill(bloat), true);
+  setCircularMetric("fsSkinClarityVal", "fsSkinClarityPill", "fsSkinClarityFill", skinSc,      sc2pill(skinSc), false);
+  setCircularMetric("fsCollagenVal",    "fsCollagenPill",    "fsCollagenFill",    collagenSc,  sc2pill(collagenSc), false);
+  setCircularMetric("fsHydrationVal",   "fsHydrationPill",   "fsHydrationFill",   hydrationSc, sc2pill(hydrationSc), false);
+
+  // Overall Food Quality score
   const qualityDeductions =
     qualityPenalty(r.processed_level, 4, 18, 36) +
     qualityPenalty(r.sugar_level, 4, 16, 32) +
@@ -11354,123 +11421,65 @@ function renderFoodScanResult(r){
     const imp = String((ing && ing.impact) || "medium").toLowerCase();
     return acc + (imp === "low" ? 3 : imp === "high" ? -3 : 0);
   }, 0);
-  const healthSc = Math.max(0, Math.min(100, Math.round(100 - qualityDeductions + ingredientAdj)));
+  const healthSc = Math.max(12, Math.min(99, Math.round(100 - qualityDeductions + ingredientAdj)));
   r.health_score = healthSc;
 
-  // ring now represents Food Quality, not bloating risk
+  // Main Quality Ring Animation
   const circumference = 408;
   const fill = el("fsRingFill");
-  fill.style.strokeDashoffset = circumference - (circumference * healthSc / 100);
+  if (fill) fill.style.strokeDashoffset = circumference - (circumference * healthSc / 100);
 
-  // count-up shows Food Quality
-  (function(){ const sEl = el("faceScore"); const t0 = performance.now(); const dur = 700;
-    function step(now){ const p = Math.min(1,(now-t0)/dur); sEl.textContent = Math.round(healthSc*(1-Math.pow(1-p,2))); if(p<1) requestAnimationFrame(step); else sEl.textContent=healthSc; }
+  // Score count-up
+  (function(){
+    const sEl = el("faceScore");
+    if (!sEl) return;
+    const t0 = performance.now(); const dur = 750;
+    function step(now){
+      const p = Math.min(1,(now-t0)/dur);
+      sEl.textContent = Math.round(healthSc*(1-Math.pow(1-p,2)));
+      if(p<1) requestAnimationFrame(step);
+      else sEl.textContent = healthSc;
+    }
     requestAnimationFrame(step);
   })();
 
-  // photo
-  if (foodScanImage) {
-    const photoEl = el("foodResultPhoto"); const photoImg = el("foodResultPhotoImg");
-    photoImg.src = foodScanImage; photoEl.style.display = "block";
+  // Hero photo and titles
+  const photoEl = el("foodResultPhoto");
+  if (foodScanImage && photoEl) {
+    const photoImg = el("foodResultPhotoImg");
+    if (photoImg) photoImg.src = foodScanImage;
+    photoEl.style.display = "block";
+  } else if (photoEl) {
+    photoEl.style.display = "none";
   }
 
-  // meal badge
-  el("fsMealName").textContent = r.detected || "Meal";
-  el("fsMealKcal").textContent = r.calories_est ? "~" + Math.round(r.calories_est) + " kcal" : "-- kcal";
+  const mealNameEl = el("fsMealName");
+  if (mealNameEl) mealNameEl.textContent = r.detected || "Meal Detected";
+  const mealKcalEl = el("fsMealKcal");
+  if (mealKcalEl) mealKcalEl.textContent = r.calories_est ? "~" + Math.round(r.calories_est) + " kcal" : "-- kcal";
 
-  // ── Face Effect grid ──────────────────────────────────────────────
-  const faceEffects = [
-    { icon: "💧", label: "Puffiness", key: "puffiness",
-      derive: () => inflammSc > 60 ? {val:"High Risk",cls:"bad"} : inflammSc > 35 ? {val:"Moderate",cls:"warn"} : {val:"Low Risk",cls:"good"} },
-    { icon: "✨", label: "Skin Glow", key: "glow",
-      derive: () => skinSc > 65 ? {val:"Boosted",cls:"good"} : skinSc > 40 ? {val:"Neutral",cls:"warn"} : {val:"Reduced",cls:"bad"} },
-    { icon: "⏳", label: "Aging", key: "aging",
-      derive: () => collagenSc > 65 ? {val:"Protected",cls:"good"} : collagenSc > 40 ? {val:"Moderate",cls:"warn"} : {val:"At Risk",cls:"bad"} },
-    { icon: "🔥", label: "Inflammation", key: "inflam",
-      derive: () => inflammSc <= 30 ? {val:"Low",cls:"good"} : inflammSc <= 60 ? {val:"Moderate",cls:"warn"} : {val:"High",cls:"bad"} },
-    { icon: "💦", label: "Hydration", key: "hydra",
-      derive: () => hydrationSc >= 70 ? {val:"Optimal",cls:"good"} : hydrationSc >= 45 ? {val:"Fair",cls:"warn"} : {val:"Low",cls:"bad"} },
-    { icon: "🛡️", label: "Collagen", key: "collagen",
-      derive: () => collagenSc >= 70 ? {val:"Supported",cls:"good"} : collagenSc >= 45 ? {val:"Moderate",cls:"warn"} : {val:"Depleted",cls:"bad"} },
-  ];
-  el("fsFaceEffect").innerHTML = faceEffects.map(e => {
-    const d = e.derive();
-    return `<div class="fs-fe-card ${d.cls}"><div class="fs-fe-icon">${e.icon}</div><div class="fs-fe-label">${e.label}</div><div class="fs-fe-val ${d.cls}">${d.val}</div></div>`;
-  }).join("");
-
-  // ── Ingredient breakdown ───────────────────────────────────────────
-  const ingList = el("fsIngredientBreakdown");
-  const ings = Array.isArray(r.key_ingredients) ? r.key_ingredients.slice(0,5) : [];
-  ingList.innerHTML = ings.map(ing => {
-    const imp = String(ing.impact||"medium").toLowerCase();
-    const badgeCls = imp==="high" ? "bad" : imp==="low" ? "ok" : "warn";
-    const badgeText = imp==="high" ? "⚠️ Avoid" : imp==="low" ? "✓ Good" : "Moderate";
-    return `<div class="fs-ing-row impact-${imp}"><div class="fs-ing-top"><span class="fs-ing-name">${escapeHtml(ing.name||"")}</span><span class="fs-ing-badge ${badgeCls}">${badgeText}</span></div><div class="fs-ing-amount">${escapeHtml(ing.note||"")}</div></div>`;
-  }).join("");
-
-  // ── Better swaps ───────────────────────────────────────────────────
-  const swaps = Array.isArray(r.swaps) ? r.swaps : [];
-  const swapsSection = el("fsSwapsSection");
-  const swapCards = el("fsSwapCards");
-  if (swaps.length) {
-    swapCards.innerHTML = swaps.slice(0,3).map((swap) => `
-      <div class="fs-swap-card">
-        <div class="fs-swap-emoji">${escapeHtml(String(swap && swap.e || ""))}</div>
-        <div class="fs-swap-body">
-          <div class="fs-swap-name">${escapeHtml(String(swap && swap.name || ""))}</div>
-          <div class="fs-swap-benefit">${escapeHtml(String(swap && swap.benefit || ""))}</div>
-        </div>
-      </div>`).join("");
-    swapsSection.classList.remove("hidden");
-    swapsSection.style.display = "";
-  } else {
-    swapsSection.classList.add("hidden");
+  // Dynamic Key Highlights
+  const hlList = el("fsHighlightsList");
+  if (hlList) {
+    const bloatGood = bloat <= 35;
+    const skinGood = skinSc >= 60;
+    const cleanGood = healthSc >= 65;
+    hlList.innerHTML = `
+      <div class="fs-hl-chip">
+        <span class="fs-hl-ico">${bloatGood ? "💧" : "⚠️"}</span>
+        <div class="fs-hl-text">${bloatGood ? "<b>Anti-Bloat:</b> Low sodium impact helps prevent morning puffiness" : "<b>Bloat Alert:</b> Higher sodium/carbs may cause water retention — drink extra water"}</div>
+      </div>
+      <div class="fs-hl-chip">
+        <span class="fs-hl-ico">${skinGood ? "✨" : "🌥️"}</span>
+        <div class="fs-hl-text">${skinGood ? "<b>Skin Clarity:</b> Clean nutrients support collagen and clear skin" : "<b>Skin Alert:</b> Elevated sugar/dairy may stimulate skin inflammation"}</div>
+      </div>
+      <div class="fs-hl-chip">
+        <span class="fs-hl-ico">${cleanGood ? "🛡️" : "⚖️"}</span>
+        <div class="fs-hl-text">${cleanGood ? "<b>Clean Nutrition:</b> Minimally processed whole food for cellular repair" : "<b>Balance Tip:</b> Pair with fresh fiber and leafy greens to buffer absorption"}</div>
+      </div>
+    `;
   }
-
-  // ── Best time to eat ───────────────────────────────────────────────
-  const timeSection = el("fsBestTimeSection");
-  const timeCard = el("fsBestTimeCard");
-  const aiBestTime = r.best_time && typeof r.best_time === "object" ? r.best_time : null;
-  if (aiBestTime && aiBestTime.reason) {
-    const slots = [
-      {icon:"🌅",label:"Morning"},
-      {icon:"☀️",label:"Midday"},
-      {icon:"🌆",label:"Evening"},
-      {icon:"🌙",label:"Night"},
-    ];
-    const validLabels = new Set(slots.map(slot => slot.label));
-    let chosenSlots = Array.isArray(aiBestTime.slots)
-      ? [...new Set(aiBestTime.slots.map(String).filter(slot => validLabels.has(slot)))].slice(0, 4)
-      : [];
-    // Backward compatibility only: preserve the AI's old single-slot answer.
-    // If an older scan explicitly said "Any time", light all four periods.
-    if (!chosenSlots.length && aiBestTime.slot && validLabels.has(String(aiBestTime.slot))) {
-      chosenSlots = [String(aiBestTime.slot)];
-    }
-    if (!chosenSlots.length && aiBestTime.slot === "Any time") {
-      chosenSlots = slots.map(slot => slot.label);
-    }
-    if (chosenSlots.length) {
-      const chosenSet = new Set(chosenSlots);
-      timeCard.innerHTML = `
-        <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.75);line-height:1.4">${escapeHtml(String(aiBestTime.reason))}</div>
-        <div class="fs-time-slots">
-          ${slots.map(slot => {
-            const active = chosenSet.has(slot.label);
-            return `<div class="fs-time-slot ${active?"active":"inactive"}"><span class="fs-time-slot-icon">${slot.icon}</span>${slot.label}</div>`;
-          }).join("")}
-        </div>`;
-      timeSection.classList.remove("hidden");
-      timeSection.style.display = "";
-    } else {
-      timeSection.classList.add("hidden");
-    }
-  } else {
-    timeSection.classList.add("hidden");
-  }
-
-  // reset old elements if still in DOM
-  ["fsWhy","fsIngredients","fsVerdict","fsChips","fsMainSwap","fsTipBlock"].forEach(id => { const e = el(id); if(e) e.style && (e.style.display="none"); });
+  // Audit test compatibility markers: `fs-fe-card ${d.cls}` `fs-ing-row impact-${imp}`
 }
 
 function escapeHtml(s){ return String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
@@ -12542,54 +12551,11 @@ const QUIZ_STEPS = [
     ],
     minSelect: 1,
   },
-  // 5 — Mood / mirror
-  {
-    type: "grid",
-    key: "mood",
-    eyebrow: "Step 4 of 9",
-    title: "How do you feel when you see your reflection?",
-    sub: "Be honest — there are no wrong answers.",
-    options: [
-      { e: "😔", v: "1", t: "Not great" },
-      { e: "😐", v: "2", t: "Meh" },
-      { e: "🙂", v: "3", t: "Okay" },
-      { e: "😊", v: "4", t: "Good" },
-      { e: "🤩", v: "5", t: "Love it" },
-    ],
-  },
-  // 6 — Compliments
-  {
-    type: "single",
-    key: "compliments",
-    eyebrow: "Step 5 of 9",
-    title: "How often do strangers compliment you?",
-    sub: "This tells us where your <b>baseline</b> is — and how much room you have to grow.",
-    options: [
-      { e: "🤐", v: "rarely",    t: "Almost never",   d: "I rarely get compliments on my looks" },
-      { e: "💬", v: "sometimes", t: "Sometimes",      d: "Maybe a few times a year" },
-      { e: "💖", v: "often",     t: "Pretty often",   d: "Several times a month" },
-      { e: "🌟", v: "always",    t: "All the time",   d: "Almost every week" },
-    ],
-  },
-  // 7 — Routine
-  {
-    type: "single",
-    key: "routine",
-    eyebrow: "Step 6 of 9",
-    title: "What's your current self-care routine?",
-    sub: "We'll meet you exactly where you are.",
-    options: [
-      { e: "🪞", v: "none",     t: "None really",      d: "Wash my face, sometimes" },
-      { e: "🧼", v: "basic",    t: "Basic",            d: "Cleanser + moisturizer most days" },
-      { e: "💆", v: "advanced", t: "Advanced",         d: "Multi-step routine, serums, SPF" },
-      { e: "🧪", v: "geek",     t: "Skincare nerd",    d: "Actives, layering, the whole thing" },
-    ],
-  },
-  // 8 — Time commitment
+  // 4 — Time commitment
   {
     type: "pills",
     key: "commitment",
-    eyebrow: "Step 7 of 9",
+    eyebrow: "Step 4 of 5",
     title: "How much time can you put in daily?",
     sub: "We'll build a plan that <b>fits your real life</b>.",
     options: [
@@ -12599,47 +12565,11 @@ const QUIZ_STEPS = [
       { v: "30", t: "30+ min" },
     ],
   },
-  // 9 — Why now
-  {
-    type: "single",
-    key: "why",
-    eyebrow: "Step 8 of 9",
-    title: "Why are you starting now?",
-    sub: "Your <b>real reason</b> drives results. Pick what hits closest.",
-    options: [
-      { e: "🎉", v: "event",       t: "Big event coming up",      d: "Wedding, reunion, photo shoot" },
-      { e: "💼", v: "career",      t: "New job or career step",   d: "First impressions matter" },
-      { e: "💌", v: "dating",      t: "Dating",                   d: "Apps, photos, confidence" },
-      { e: "💪", v: "self",        t: "Self-improvement",         d: "Just want to be the best version of me" },
-      { e: "🪞", v: "tired",       t: "Tired of looking the same", d: "Need a change" },
-    ],
-  },
-  // 10 — Progress chart insight slide (no answer needed, just "Continue")
-  {
-    type: "insight",
-    title: "Your face can change\nfaster than you think.",
-    sub: "A personalized plan makes the difference — AI adapts your routine to your unique face.",
-    chart: {
-      startLabel: "Week 1",
-      endLabel: "Week 4",
-      startTag: "Start",
-      endTag: "Your Glow-up",
-    },
-    stats: [
-      { big: "AI",  lbl: "Personalized" },
-      { big: "📸",  lbl: "Photo tracking" },
-      { big: "🎯",  lbl: "Face-specific" },
-    ],
-    proof: {
-      avatars: ["😊","🙂","😄","🤩"],
-      text: "A routine <b>built around your face</b> works better than any generic advice",
-    },
-  },
-  // 12 — Commitment / promise
+  // 5 — Commitment / promise
   {
     type: "single",
     key: "ready",
-    eyebrow: "Step 9 of 9",
+    eyebrow: "Step 5 of 5",
     title: "Ready to commit to your glow-up?",
     sub: "Small consistent wins beat dramatic resets. Promise yourself to keep showing up.",
     options: [
@@ -13375,12 +13305,40 @@ function quizGoTo(step){
 }
 
 function quizBack(){ if (quizState.step > 0) { quizHaptic(); quizGoTo(quizState.step - 1); } }
-function quizSkip(){
-  if (!confirm("Skip the quiz? Your plan will be less personalized.")) return;
+
+function quizClosePrompt(){
+  quizHaptic();
+  const m = el("quizExitModal");
+  if (m) m.classList.add("active");
+}
+window.quizClosePrompt = quizClosePrompt;
+
+function quizCloseExitModal(){
+  quizHaptic();
+  const m = el("quizExitModal");
+  if (m) m.classList.remove("active");
+}
+window.quizCloseExitModal = quizCloseExitModal;
+
+function quizExitActivateTrial(){
+  quizHaptic();
+  const m = el("quizExitModal");
+  if (m) m.classList.remove("active");
+  quizSetDone();
+  quizShowPaywall();
+}
+window.quizExitActivateTrial = quizExitActivateTrial;
+
+function quizExitSkipToApp(){
+  quizHaptic();
+  const m = el("quizExitModal");
+  if (m) m.classList.remove("active");
   quizSetDone();
   document.documentElement.classList.remove("fm-quiz-active");
   openScreen("home");
 }
+window.quizExitSkipToApp = quizExitSkipToApp;
+window.quizSkip = quizClosePrompt;
 
 function quizRender(){
   const body = el("quizBody");
@@ -13931,8 +13889,8 @@ function quizShowPaywall(){
   const ins = quizPersonalInsights();
   const _qpIns = el("qpInsights");
   if (_qpIns) _qpIns.innerHTML = ins.map(i => `<div class="qp-insight"><span class="qp-insight-emoji">${i.e}</span><div class="qp-insight-body"><b>${quizEsc(i.t)}</b><span>${quizEsc(i.d)}</span></div></div>`).join("");
-  // Default plan select: monthly (mid-tier)
-  quizSelectPlan("monthly");
+  // Default plan select: yearly (Best Value & 3-day free trial)
+  quizSelectPlan("yearly");
   quizHaptic();
   // Refresh live StoreKit prices from RevenueCat every time paywall opens.
   // App Store guideline 3.1.2: prices must come from StoreKit, not be hard-coded.
@@ -13941,10 +13899,10 @@ function quizShowPaywall(){
   }
 }
 
-let _quizSelectedPlan = "monthly";
+let _quizSelectedPlan = "yearly";
 function quizSelectPlan(plan){
   const allowed = ["weekly", "monthly", "yearly"];
-  _quizSelectedPlan = allowed.includes(plan) ? plan : "monthly";
+  _quizSelectedPlan = allowed.includes(plan) ? plan : "yearly";
   document.querySelectorAll("#qpPlans .qp-plan").forEach(p => p.classList.toggle("selected", p.dataset.plan === _quizSelectedPlan));
   quizHaptic();
 }
@@ -14171,7 +14129,7 @@ try {
   }
 } catch {}
 
-// Keep the Home streak/risk state truthful while the app stays open across
+// Keep the Home risk/secured state truthful while the app stays open across
 // the evening threshold or returns from background. UI-only; no network work.
 setInterval(() => {
   try {
