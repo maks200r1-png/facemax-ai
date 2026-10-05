@@ -1,6 +1,6 @@
 {
   "name": "facemax-ai",
-  "version": "0.1.0",
+  "version": "2.4.0",
   "description": "FaceMax AI: Glow Up Lab — AI face analysis, native iOS app + web frontend + Cloudflare Worker API",
   "private": true,
   "scripts": {

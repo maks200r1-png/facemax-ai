@@ -56,7 +56,7 @@ platform :ios do
     )
 
     # Keep the CI/TestFlight marketing version explicit and in sync with the workflow.
-    marketing_version = ENV.fetch("APP_MARKETING_VERSION", "1.8")
+    marketing_version = ENV.fetch("APP_MARKETING_VERSION", "2.4")
     UI.message("Marketing version: #{marketing_version}")
 
     increment_version_number(
