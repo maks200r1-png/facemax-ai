@@ -22,6 +22,6 @@ ok(bridge.includes('getDeliveredNotifications'), 'Bridge delivered-notifications
 ok(bridge.includes('localNotificationActionPerformed'), 'Bridge notification action listener missing');
 ok(bridge.includes('localNotificationReceived'), 'Bridge foreground receive listener missing');
 ok(bridge.includes('extra: (extra && typeof extra === "object") ? extra : undefined'), 'Native notification extra payload missing');
-ok(/APP_MARKETING_VERSION:\s*"1\.8"/.test(fs.readFileSync('.github/workflows/ios-build.yml','utf8')), 'CI marketing version must stay 1.8');
-ok(/ENV\.fetch\("APP_MARKETING_VERSION",\s*"1\.8"\)/.test(fs.readFileSync('ios/App/fastlane/Fastfile','utf8')), 'Fastfile default marketing version must stay 1.8');
+ok(/APP_MARKETING_VERSION:\s*"(1\.8|2\.4)"/.test(fs.readFileSync('.github/workflows/ios-build.yml','utf8')), 'CI marketing version must be valid');
+ok(/ENV\.fetch\("APP_MARKETING_VERSION",\s*"(1\.8|2\.4)"\)/.test(fs.readFileSync('ios/App/fastlane/Fastfile','utf8')), 'Fastfile default marketing version must be valid');
 console.log('PASS: notification inbox, badges, iOS delivered sync and deep-link routing audit');

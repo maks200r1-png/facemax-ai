@@ -1593,27 +1593,6 @@ html.fm-native.fm-quiz-active .app{padding-top:calc(env(safe-area-inset-top,0px)
 .quiz-skip:hover,.quiz-skip:active{background:var(--surface-2);color:#fff;border-color:var(--line-3)}
 .quiz-close-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--text);font-size:15px;font-weight:600;width:34px;height:34px;border-radius:50%;cursor:pointer;display:grid;place-items:center;line-height:1;padding:0;transition:all .18s;flex-shrink:0}
 .quiz-close-btn:hover,.quiz-close-btn:active{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3);transform:scale(.95)}
-
-/* Quiz Exit Free Trial Offer Sheet */
-.quiz-exit-modal{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);z-index:99999;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease}
-.quiz-exit-modal.active{opacity:1;pointer-events:auto}
-.quiz-exit-sheet{width:100%;max-width:440px;background:linear-gradient(180deg,#161420 0%,#09090c 100%);border:1px solid rgba(167,139,250,.28);border-bottom:none;border-radius:28px 28px 0 0;padding:20px 22px calc(28px + env(safe-area-inset-bottom,0px));box-shadow:0 -12px 48px rgba(0,0,0,.85),0 0 32px rgba(139,92,246,.2);transform:translateY(100%);transition:transform .32s cubic-bezier(.32,1.2,.4,1);text-align:center}
-.quiz-exit-modal.active .quiz-exit-sheet{transform:translateY(0)}
-.qex-drag{width:38px;height:4px;background:rgba(255,255,255,.22);border-radius:999px;margin:0 auto 16px}
-.qex-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:rgba(167,139,250,.14);border:1px solid rgba(167,139,250,.35);color:#C4B5FD;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
-.qex-title{font-size:clamp(24px,6.2vw,30px);font-weight:900;letter-spacing:-.035em;color:#fff;margin:0 0 8px;line-height:1.15}
-.qex-sub{font-size:14px;color:var(--muted);line-height:1.45;margin:0 auto 18px;max-width:320px}
-.qex-bullets{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;text-align:left}
-.qex-bullet{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
-.qex-ico{font-size:22px;line-height:1;flex-shrink:0}
-.qex-txt{display:flex;flex-direction:column;min-width:0}
-.qex-txt b{font-size:13.5px;font-weight:750;color:#fff;letter-spacing:-.01em}
-.qex-txt span{font-size:11.5px;color:var(--muted);margin-top:2px}
-.qex-cta{width:100%;height:52px;border-radius:999px;font-size:16px;font-weight:800;letter-spacing:-.015em;background:linear-gradient(135deg,#A78BFA 0%,#E879F9 100%);color:#000;box-shadow:0 8px 24px rgba(167,139,250,.35);border:none;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center}
-.qex-cta:active{transform:scale(.98)}
-.qex-skip-btn{background:none;border:none;color:rgba(255,255,255,.5);font-size:13px;font-weight:600;padding:14px 10px 4px;cursor:pointer;transition:color .15s;width:100%}
-.qex-skip-btn:hover,.qex-skip-btn:active{color:rgba(255,255,255,.85)}
-
 /* Soft secondary 'Continue with free scan' button on the quiz paywall */
 .qp-free-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:12px 0 0;padding:14px 18px;background:transparent;border:1.5px dashed var(--line-3);color:var(--text);font-size:14px;font-weight:700;letter-spacing:-0.005em;border-radius:25px;cursor:pointer;transition:all .18s}
 .qp-free-cta:hover,.qp-free-cta:active{background:rgba(255,255,255,.04);border-color:var(--p);color:#fff}
@@ -2575,41 +2554,11 @@ html.cam-active .app { background:transparent !important; }
     <div class="quiz-top">
       <button class="quiz-back" id="quizBackBtn" onclick="quizBack()" aria-label="Back" style="visibility:hidden">‹</button>
       <div class="quiz-progress"><div class="quiz-progress-bar" id="quizProgressBar" style="width:0"></div></div>
-      <button class="quiz-close-btn" id="quizCloseBtn" onclick="quizClosePrompt()" aria-label="Close">✕</button>
+      <button class="quiz-close-btn" id="quizCloseBtn" onclick="quizClose()" aria-label="Close">✕</button>
     </div>
     <div class="quiz-body" id="quizBody"><!-- step rendered by JS --></div>
   </div>
 </section>
-
-<!-- =============================== QUIZ EXIT / FREE TRIAL OFFER MODAL =============================== -->
-<div id="quizExitModal" class="quiz-exit-modal" onclick="if(event.target===this)quizCloseExitModal()">
-  <div class="quiz-exit-sheet">
-    <div class="qex-drag"></div>
-    <div class="qex-badge">⚡ SPECIAL INTRODUCTORY OFFER</div>
-    <h2 class="qex-title">Start 3 Days Free</h2>
-    <p class="qex-sub">Skip the questionnaire and unlock full instant AI face scans, looksmaxing protocols, and the food scanner.</p>
-    <div class="qex-bullets">
-      <div class="qex-bullet">
-        <span class="qex-ico">💎</span>
-        <div class="qex-txt"><b>Unlimited AI Facial Scans</b><span>Complete biometric symmetry, jawline & PSL scores</span></div>
-      </div>
-      <div class="qex-bullet">
-        <span class="qex-ico">🥗</span>
-        <div class="qex-txt"><b>AI Food & Calorie Scanner</b><span>Track anti-bloat nutrients & meal quality</span></div>
-      </div>
-      <div class="qex-bullet">
-        <span class="qex-ico">🛡️</span>
-        <div class="qex-txt"><b>100% Free for 3 Days</b><span>No commitment · Cancel anytime in App Store</span></div>
-      </div>
-    </div>
-    <button class="qex-cta" type="button" onclick="quizExitActivateTrial()">
-      <span>Try 3 Days Free &amp; Continue →</span>
-    </button>
-    <button class="qex-skip-btn" type="button" onclick="quizExitSkipToApp()">
-      Skip and continue to app
-    </button>
-  </div>
-</div>
 
 <!-- =============================== GENDER SELECT (onboarding step 1) =============================== -->
 <section id="genderSelect" class="screen">
@@ -4143,7 +4092,7 @@ html.cam-active .app { background:transparent !important; }
       </button>
 
       <button class="fs-btn-rescan" onclick="resetFoodScan()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="4"/><path d="M5 7h3l1.5-2h5L16 7h3v12H5z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="4"/><path d="M5 7h3l1.5-2h5L16 7h3v12H5z"/></svg>
         <span>Scan Another Meal</span>
       </button>
     </div>
@@ -4886,7 +4835,10 @@ window.openHistoryScan = function(idx) {
 };
 window.openLatestScanFromHome = function(){
   if (!scanHistory.length) { try { loadHistory(); } catch {} }
-  if (!scanHistory.length) return;
+  if (!scanHistory.length) {
+    startGenderScan();
+    return;
+  }
   openHistoryScan(0);
 };
 function renderHomeHistory(){
@@ -11323,14 +11275,11 @@ function renderFoodScanResult(r){
   el("foodScanLoading").classList.add("hidden");
   el("foodScanResult").classList.remove("hidden");
 
-  // Set the log button state for THIS specific scan. A scan that hasn't
-  // been logged yet (new, or reopened from history) is always loggable —
-  // it only locks once Log Food has actually been tapped for it.
+  // Set the log button state for THIS specific scan
   const logBtn = el("fsLogTodayBtn"); const logLbl = el("fsLogTodayLabel");
   const alreadyLogged = isFoodScanLogged(foodScanCurrentTs);
   if (logBtn) { logBtn.classList.toggle("logged", alreadyLogged); logBtn.disabled = alreadyLogged; }
-  if (logLbl) logLbl.textContent = alreadyLogged ? "Already logged ✓" : "Log food";
-  // Refresh daily calorie widget
+  if (logLbl) logLbl.textContent = alreadyLogged ? "Already logged ✓" : "Log to My Day";
   updateDailyCalWidget();
 
   // If food not detected — show error state, hide metrics
@@ -11345,16 +11294,14 @@ function renderFoodScanResult(r){
     if (!noFoodMsg) {
       noFoodMsg = document.createElement("p");
       noFoodMsg.id = "fsNoFoodMsg";
-      noFoodMsg.style.cssText = "text-align:center;color:var(--muted);font-size:14px;margin:24px 0;line-height:1.6";
+      noFoodMsg.style.cssText = "text-align:center;color:var(--muted);font-size:14px;margin:16px 0;line-height:1.6";
       el("foodScanResult").appendChild(noFoodMsg);
     }
     noFoodMsg.textContent = "Could not identify food in this photo. Try a clearer shot with the meal fully visible.";
     noFoodMsg.style.display = "block";
     return;
   }
-
-  // Food found — show sections
-  document.querySelectorAll(".fs-rings-grid, .fs-highlights, .fs-section-title, .fs-quality-card").forEach(e => { if(e) e.style.display=""; });
+  document.querySelectorAll(".fs-rings-grid, .fs-highlights, .fs-section-title, .fs-hero-card, .fs-quality-card").forEach(e => { if(e) e.style.display=""; });
   const noFoodMsg = document.getElementById("fsNoFoodMsg");
   if (noFoodMsg) noFoodMsg.style.display = "none";
 
@@ -11379,7 +11326,7 @@ function renderFoodScanResult(r){
   function sc2pill(sc){ return sc>=70?"Optimal":sc>=45?"Moderate":"Low"; }
   function inv2pill(sc){ return sc<=30?"Low Risk":sc<=55?"Moderate":"High"; }
 
-  // Circular metric setter
+  // Circular metric setter (Telegram-style circular rings)
   function setCircularMetric(valId, pillId, fillId, score, pillText, isLowerBetter){
     const sc = Math.max(0, Math.min(100, Math.round(Number(score)||0)));
     const valEl = el(valId); if (valEl) valEl.textContent = sc + "%";
@@ -11467,11 +11414,11 @@ function renderFoodScanResult(r){
     hlList.innerHTML = `
       <div class="fs-hl-chip">
         <span class="fs-hl-ico">${bloatGood ? "💧" : "⚠️"}</span>
-        <div class="fs-hl-text">${bloatGood ? "<b>Anti-Bloat:</b> Low sodium impact helps prevent morning puffiness" : "<b>Bloat Alert:</b> Higher sodium/carbs may cause water retention — drink extra water"}</div>
+        <div class="fs-hl-text">${bloatGood ? "<b>Anti-Bloat:</b> Low sodium balance helps prevent morning puffiness" : "<b>Bloat Alert:</b> Higher sodium/carbs may cause water retention — drink extra water"}</div>
       </div>
       <div class="fs-hl-chip">
         <span class="fs-hl-ico">${skinGood ? "✨" : "🌥️"}</span>
-        <div class="fs-hl-text">${skinGood ? "<b>Skin Clarity:</b> Clean nutrients support collagen and clear skin" : "<b>Skin Alert:</b> Elevated sugar/dairy may stimulate skin inflammation"}</div>
+        <div class="fs-hl-text">${skinGood ? "<b>Skin Clarity:</b> Clean nutrient density supports brighter complexion" : "<b>Skin Alert:</b> Elevated sugar/dairy may stimulate skin inflammation"}</div>
       </div>
       <div class="fs-hl-chip">
         <span class="fs-hl-ico">${cleanGood ? "🛡️" : "⚖️"}</span>
@@ -12551,11 +12498,54 @@ const QUIZ_STEPS = [
     ],
     minSelect: 1,
   },
-  // 4 — Time commitment
+  // 5 — Mood / mirror
+  {
+    type: "grid",
+    key: "mood",
+    eyebrow: "Step 4 of 9",
+    title: "How do you feel when you see your reflection?",
+    sub: "Be honest — there are no wrong answers.",
+    options: [
+      { e: "😔", v: "1", t: "Not great" },
+      { e: "😐", v: "2", t: "Meh" },
+      { e: "🙂", v: "3", t: "Okay" },
+      { e: "😊", v: "4", t: "Good" },
+      { e: "🤩", v: "5", t: "Love it" },
+    ],
+  },
+  // 6 — Compliments
+  {
+    type: "single",
+    key: "compliments",
+    eyebrow: "Step 5 of 9",
+    title: "How often do strangers compliment you?",
+    sub: "This tells us where your <b>baseline</b> is — and how much room you have to grow.",
+    options: [
+      { e: "🤐", v: "rarely",    t: "Almost never",   d: "I rarely get compliments on my looks" },
+      { e: "💬", v: "sometimes", t: "Sometimes",      d: "Maybe a few times a year" },
+      { e: "💖", v: "often",     t: "Pretty often",   d: "Several times a month" },
+      { e: "🌟", v: "always",    t: "All the time",   d: "Almost every week" },
+    ],
+  },
+  // 7 — Routine
+  {
+    type: "single",
+    key: "routine",
+    eyebrow: "Step 6 of 9",
+    title: "What's your current self-care routine?",
+    sub: "We'll meet you exactly where you are.",
+    options: [
+      { e: "🪞", v: "none",     t: "None really",      d: "Wash my face, sometimes" },
+      { e: "🧼", v: "basic",    t: "Basic",            d: "Cleanser + moisturizer most days" },
+      { e: "💆", v: "advanced", t: "Advanced",         d: "Multi-step routine, serums, SPF" },
+      { e: "🧪", v: "geek",     t: "Skincare nerd",    d: "Actives, layering, the whole thing" },
+    ],
+  },
+  // 8 — Time commitment
   {
     type: "pills",
     key: "commitment",
-    eyebrow: "Step 4 of 5",
+    eyebrow: "Step 7 of 9",
     title: "How much time can you put in daily?",
     sub: "We'll build a plan that <b>fits your real life</b>.",
     options: [
@@ -12565,11 +12555,47 @@ const QUIZ_STEPS = [
       { v: "30", t: "30+ min" },
     ],
   },
-  // 5 — Commitment / promise
+  // 9 — Why now
+  {
+    type: "single",
+    key: "why",
+    eyebrow: "Step 8 of 9",
+    title: "Why are you starting now?",
+    sub: "Your <b>real reason</b> drives results. Pick what hits closest.",
+    options: [
+      { e: "🎉", v: "event",       t: "Big event coming up",      d: "Wedding, reunion, photo shoot" },
+      { e: "💼", v: "career",      t: "New job or career step",   d: "First impressions matter" },
+      { e: "💌", v: "dating",      t: "Dating",                   d: "Apps, photos, confidence" },
+      { e: "💪", v: "self",        t: "Self-improvement",         d: "Just want to be the best version of me" },
+      { e: "🪞", v: "tired",       t: "Tired of looking the same", d: "Need a change" },
+    ],
+  },
+  // 10 — Progress chart insight slide (no answer needed, just "Continue")
+  {
+    type: "insight",
+    title: "Your face can change\nfaster than you think.",
+    sub: "A personalized plan makes the difference — AI adapts your routine to your unique face.",
+    chart: {
+      startLabel: "Week 1",
+      endLabel: "Week 4",
+      startTag: "Start",
+      endTag: "Your Glow-up",
+    },
+    stats: [
+      { big: "AI",  lbl: "Personalized" },
+      { big: "📸",  lbl: "Photo tracking" },
+      { big: "🎯",  lbl: "Face-specific" },
+    ],
+    proof: {
+      avatars: ["😊","🙂","😄","🤩"],
+      text: "A routine <b>built around your face</b> works better than any generic advice",
+    },
+  },
+  // 12 — Commitment / promise
   {
     type: "single",
     key: "ready",
-    eyebrow: "Step 5 of 5",
+    eyebrow: "Step 9 of 9",
     title: "Ready to commit to your glow-up?",
     sub: "Small consistent wins beat dramatic resets. Promise yourself to keep showing up.",
     options: [
@@ -13305,40 +13331,18 @@ function quizGoTo(step){
 }
 
 function quizBack(){ if (quizState.step > 0) { quizHaptic(); quizGoTo(quizState.step - 1); } }
-
-function quizClosePrompt(){
+function quizClose(){
   quizHaptic();
-  const m = el("quizExitModal");
-  if (m) m.classList.add("active");
-}
-window.quizClosePrompt = quizClosePrompt;
-
-function quizCloseExitModal(){
-  quizHaptic();
-  const m = el("quizExitModal");
-  if (m) m.classList.remove("active");
-}
-window.quizCloseExitModal = quizCloseExitModal;
-
-function quizExitActivateTrial(){
-  quizHaptic();
-  const m = el("quizExitModal");
-  if (m) m.classList.remove("active");
   quizSetDone();
-  quizShowPaywall();
-}
-window.quizExitActivateTrial = quizExitActivateTrial;
-
-function quizExitSkipToApp(){
-  quizHaptic();
-  const m = el("quizExitModal");
-  if (m) m.classList.remove("active");
-  quizSetDone();
-  document.documentElement.classList.remove("fm-quiz-active");
+  try {
+    localStorage.setItem("facemax_quiz_done_v2", "1");
+    localStorage.setItem("facemax_onboarding_complete_v1", "1");
+  } catch {}
+  document.documentElement.classList.remove("fm-quiz-active", "fm-first-launch-lock", "fm-fixed-screen");
   openScreen("home");
 }
-window.quizExitSkipToApp = quizExitSkipToApp;
-window.quizSkip = quizClosePrompt;
+window.quizClose = quizClose;
+window.quizSkip = quizClose;
 
 function quizRender(){
   const body = el("quizBody");
@@ -13889,8 +13893,8 @@ function quizShowPaywall(){
   const ins = quizPersonalInsights();
   const _qpIns = el("qpInsights");
   if (_qpIns) _qpIns.innerHTML = ins.map(i => `<div class="qp-insight"><span class="qp-insight-emoji">${i.e}</span><div class="qp-insight-body"><b>${quizEsc(i.t)}</b><span>${quizEsc(i.d)}</span></div></div>`).join("");
-  // Default plan select: yearly (Best Value & 3-day free trial)
-  quizSelectPlan("yearly");
+  // Default plan select: monthly (mid-tier)
+  quizSelectPlan("monthly");
   quizHaptic();
   // Refresh live StoreKit prices from RevenueCat every time paywall opens.
   // App Store guideline 3.1.2: prices must come from StoreKit, not be hard-coded.
@@ -13899,10 +13903,10 @@ function quizShowPaywall(){
   }
 }
 
-let _quizSelectedPlan = "yearly";
+let _quizSelectedPlan = "monthly";
 function quizSelectPlan(plan){
   const allowed = ["weekly", "monthly", "yearly"];
-  _quizSelectedPlan = allowed.includes(plan) ? plan : "yearly";
+  _quizSelectedPlan = allowed.includes(plan) ? plan : "monthly";
   document.querySelectorAll("#qpPlans .qp-plan").forEach(p => p.classList.toggle("selected", p.dataset.plan === _quizSelectedPlan));
   quizHaptic();
 }
