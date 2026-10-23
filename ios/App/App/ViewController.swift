@@ -33,6 +33,11 @@ class ViewController: CAPBridgeViewController {
             if #available(iOS 13.0, *) {
                 webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = false
             }
+
+            // Strictly disable all WKWebView rubber-band bouncing and overscroll app-wide
+            webView.scrollView.bounces = false
+            webView.scrollView.alwaysBounceVertical = false
+            webView.scrollView.alwaysBounceHorizontal = false
         }
     }
 }
