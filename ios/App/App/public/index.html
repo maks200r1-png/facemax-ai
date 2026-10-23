@@ -113,10 +113,10 @@ html.fm-native a[target="_blank"]{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.screen.active{animation:fadeIn .15s linear}}
 .topbar{display:none}
 /* Unified screen top bar */
-.screen-topbar{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;padding-top:4px;position:relative}
-.screen-topbar .stb-logo{width:22px;height:22px;border-radius:6px;overflow:hidden;flex-shrink:0}
+.screen-topbar{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;padding-top:calc(env(safe-area-inset-top,0px) + 6px);position:relative;min-height:44px}
+.screen-topbar .stb-logo{width:24px;height:24px;border-radius:7px;overflow:hidden;flex-shrink:0;box-shadow:0 2px 10px rgba(0,122,255,.35)}
 .screen-topbar .stb-logo img{width:100%;height:100%;object-fit:cover;display:block}
-.screen-topbar .stb-title{font-size:16px;font-weight:700;letter-spacing:-.01em;color:#fff;white-space:nowrap}
+.screen-topbar .stb-title{font-size:19px;font-weight:800;letter-spacing:-.015em;color:#fff;white-space:nowrap;line-height:1}
 .screen-topbar .stb-back{position:absolute;left:0;display:flex;align-items:center;justify-content:center;background:transparent;border:0;border-radius:10px;width:44px;height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 .screen-topbar .stb-back:active{opacity:.5}
 .screen-topbar .stb-back svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
@@ -2840,16 +2840,16 @@ nav.bottom.bottom-v2 { display: none !important; }
   bottom: calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
   width: min(calc(100vw - 32px), 340px) !important;
   height: 60px !important;
-  background: rgba(14, 18, 28, 0.65) !important;
-  backdrop-filter: blur(36px) saturate(210%) !important;
-  -webkit-backdrop-filter: blur(36px) saturate(210%) !important;
+  background: linear-gradient(180deg, rgba(22, 30, 48, 0.68) 0%, rgba(10, 14, 24, 0.85) 100%) !important;
+  backdrop-filter: blur(40px) saturate(220%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(220%) !important;
   border-radius: 999px !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   padding: 4px !important;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.35), 0 0 24px rgba(0, 114, 255, 0.18) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.9), inset 0 1px 1.5px rgba(255, 255, 255, 0.4), 0 0 24px rgba(0, 122, 255, 0.20) !important;
   z-index: 50 !important;
   box-sizing: border-box !important;
 }
@@ -2940,10 +2940,10 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
 .mogly-orb-fab-btn {
   position: relative;
-  width: 60px !important;
-  height: 60px !important;
-  min-width: 60px !important;
-  min-height: 60px !important;
+  width: 62px !important;
+  height: 62px !important;
+  min-width: 62px !important;
+  min-height: 62px !important;
   flex-shrink: 0 !important;
   border-radius: 50% !important;
   border: 0;
@@ -2963,33 +2963,42 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
 .mogly-orb-fab-aura {
   position: absolute;
-  inset: -6px;
+  inset: -10px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 122, 255, 0.45) 0%, rgba(0, 194, 255, 0.18) 50%, transparent 70%);
-  filter: blur(10px);
-  animation: moglyAuraPulse 3s infinite ease-in-out;
+  background: radial-gradient(circle, rgba(0, 140, 255, 0.60) 0%, rgba(0, 194, 255, 0.25) 45%, transparent 72%);
+  filter: blur(12px);
+  animation: moglyAuraPulse 3.2s infinite ease-in-out;
   pointer-events: none;
   transition: all 0.4s ease;
 }
 
 @keyframes moglyAuraPulse {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.22); opacity: 1; }
+  0%, 100% { transform: scale(1); opacity: 0.75; }
+  50% { transform: scale(1.26); opacity: 1; }
 }
 
-/* iOS 27 Liquid Transparent Glass */
+/* 3D Physical Optical Liquid Glass Orb */
 .mogly-orb-fab-glass {
   position: relative;
-  width: 60px !important;
-  height: 60px !important;
-  min-width: 60px !important;
-  min-height: 60px !important;
+  width: 62px !important;
+  height: 62px !important;
+  min-width: 62px !important;
+  min-height: 62px !important;
   border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), inset 0 1.5px 3px rgba(255, 255, 255, 0.65), inset 0 -3px 8px rgba(0, 122, 255, 0.25) !important;
-  backdrop-filter: blur(28px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  background: radial-gradient(135% 135% at 30% 20%, 
+    rgba(255, 255, 255, 0.42) 0%, 
+    rgba(255, 255, 255, 0.12) 32%, 
+    rgba(0, 122, 255, 0.22) 68%, 
+    rgba(0, 80, 230, 0.38) 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 
+    0 16px 42px rgba(0, 0, 0, 0.85),
+    0 8px 24px rgba(0, 122, 255, 0.45),
+    inset 0 2px 1.5px rgba(255, 255, 255, 0.95),
+    inset 0 -4px 10px rgba(0, 194, 255, 0.45),
+    inset 0 0 16px rgba(0, 122, 255, 0.30) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3009,7 +3018,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   height: 8px;
   background: #FFFFFF;
   border-radius: 999px;
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 10px rgba(0, 194, 255, 0.6);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.95), 0 0 14px rgba(0, 194, 255, 0.8);
   animation: moglyMiniWave 1.4s infinite ease-in-out;
 }
 
@@ -3026,30 +3035,39 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
 .mogly-orb-fab-specular {
   position: absolute;
-  top: 3px;
-  left: 12px;
-  width: 24px;
-  height: 11px;
+  top: 4px;
+  left: 14px;
+  right: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent);
+  background: radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 50%, transparent 85%);
   pointer-events: none;
 }
 
-/* Listening State: Smooth Expansion in-place + "Слушаю..." */
+/* Listening State: Smooth Expansion in-place + "Listening..." */
 .mogly-assistant-fab-container.is-listening .mogly-orb-fab-btn {
   transform: translateY(-38px) scale(1.72);
 }
 
 .mogly-assistant-fab-container.is-listening .mogly-orb-fab-glass {
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(255, 255, 255, 0.7) !important;
-  box-shadow: 0 20px 52px rgba(0, 122, 255, 0.58), inset 0 2px 5px rgba(255, 255, 255, 0.9), inset 0 -4px 12px rgba(0, 194, 255, 0.55) !important;
+  background: radial-gradient(135% 135% at 30% 20%, 
+    rgba(255, 255, 255, 0.55) 0%, 
+    rgba(255, 255, 255, 0.18) 32%, 
+    rgba(0, 140, 255, 0.35) 68%, 
+    rgba(0, 90, 255, 0.50) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 
+    0 24px 64px rgba(0, 122, 255, 0.75),
+    0 10px 30px rgba(0, 194, 255, 0.55),
+    inset 0 2.5px 2px rgba(255, 255, 255, 1.0),
+    inset 0 -6px 16px rgba(0, 210, 255, 0.65),
+    inset 0 0 24px rgba(0, 140, 255, 0.45) !important;
 }
 
 .mogly-assistant-fab-container.is-listening .mogly-orb-fab-aura {
-  inset: -14px;
-  background: radial-gradient(circle, rgba(0, 122, 255, 0.75) 0%, rgba(0, 194, 255, 0.35) 50%, transparent 70%);
-  filter: blur(14px);
+  inset: -16px;
+  background: radial-gradient(circle, rgba(0, 140, 255, 0.85) 0%, rgba(0, 210, 255, 0.45) 50%, transparent 72%);
+  filter: blur(16px);
 }
 
 .mogly-assistant-fab-container.is-listening .mogly-orb-fab-wave span {
@@ -4547,10 +4565,15 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
   <div class="mogly-home-container">
 
-    <!-- Mogly Header Bar (Strict: only white text "Mogly", zero gradients/subtitles) -->
-    <header class="mogly-top-header">
-      <h1 class="mogly-header-title">Mogly</h1>
-    </header>
+    <!-- Mogly Topbar (Strict unified format: Squircle Logo on left, Centered Title, Notif Bell on right) -->
+    <div class="screen-topbar mogly-screen-topbar">
+      <div class="stb-logo"><img src="assets/app_icon.png" alt="Mogly"></div>
+      <span class="stb-title">Mogly</span>
+      <button type="button" class="fm-notif-bell compact" onclick="openNotificationInbox()" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a5 5 0 0 0-5 5v2.7c0 2.65-.85 4.63-2.43 6.31A1.15 1.15 0 0 0 5.41 18h13.18a1.15 1.15 0 0 0 .84-1.99C17.85 14.33 17 12.35 17 9.7V7a5 5 0 0 0-5-5Zm-2.48 18a2.65 2.65 0 0 0 4.96 0H9.52Z"/></svg>
+        <span class="fm-notif-badge" id="homeNotifBadge">0</span>
+      </button>
+    </div>
 
     <!-- Central Square Card (In-Place Camera Viewfinder & Model Display) -->
     <div class="mogly-square-card" id="moglySquareCard">
@@ -5099,9 +5122,9 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
 <!-- =============================== PROFILE =============================== -->
 <section id="profile" class="screen design-profile-screen">
-  <div class="screen-topbar">
-    <div class="stb-logo"><img src="assets/logo.png" alt=""></div>
-    <span class="stb-title">Profile</span>
+  <div class="screen-topbar mogly-screen-topbar">
+    <div class="stb-logo"><img src="assets/app_icon.png" alt="Mogly"></div>
+    <span class="stb-title" data-i18n="nav_profile">Profile</span>
     <button type="button" class="fm-notif-bell compact" onclick="openNotificationInbox()" aria-label="Notifications">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a5 5 0 0 0-5 5v2.7c0 2.65-.85 4.63-2.43 6.31A1.15 1.15 0 0 0 5.41 18h13.18a1.15 1.15 0 0 0 .84-1.99C17.85 14.33 17 12.35 17 9.7V7a5 5 0 0 0-5-5Zm-2.48 18a2.65 2.65 0 0 0 4.96 0H9.52Z"/></svg>
       <span class="fm-notif-badge" id="profileNotifBadge">0</span>
@@ -5925,7 +5948,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
       <div class="mogly-orb-fab-specular"></div>
     </div>
   </button>
-  <div class="mogly-listening-label" id="moglyListeningLabel">Слушаю...</div>
+  <div class="mogly-listening-label" id="moglyListeningLabel" data-i18n="assistant_listening">Listening...</div>
 </div>
 
 <!-- =============================== MOGLY 2-BUTTON GLASS BOTTOM NAV =============================== -->
@@ -14306,7 +14329,89 @@ const QUIZ_KEY = "facemax_quiz_v2";
 const QUIZ_DONE_KEY = "facemax_quiz_done_v2";
 const ONBOARDING_DONE_KEY = "facemax_onboarding_complete_v1";
 
-const QUIZ_STEPS = [
+const QUIZ_STEPS_EN = [
+  // 0 — Welcome / Intro
+  {
+    type: "intro",
+    emoji: "🗿",
+    eyebrow: "MOGLY AI",
+    title: "Your custom AI aesthetic protocol.",
+    sub: "Answer <b>5 quick questions</b> to calculate your personalized plan for debloating, jawline sharpening, and hunter eyes.",
+    cta: "Start Protocol",
+    next: () => quizGoTo(1),
+  },
+  // 1 — Age & Category
+  {
+    type: "single",
+    key: "age",
+    eyebrow: "Step 1 of 5",
+    title: "Your age and category?",
+    sub: "Each age bracket requires a different balance of androgens, nutrition, and jawline mechanics.",
+    options: [
+      { e: "⚡", v: "13-17", t: "13–17 years", d: "Base jaw growth, posture, and symmetry protection" },
+      { e: "🔥", v: "18-24", t: "18–24 years", d: "Peak testosterone, rapid cheekbone & jaw definition" },
+      { e: "💼", v: "25-34", t: "25–34 years", d: "Male status, compact facial contour, de-puffing" },
+      { e: "🗿", v: "35+",   t: "35+ years",   d: "Skin elasticity, lymphatic drainage & debloat" },
+    ],
+  },
+  // 2 — Main Goal
+  {
+    type: "single",
+    key: "goals",
+    eyebrow: "Step 2 of 5",
+    title: "Main focus for next 30 days?",
+    sub: "Select the primary biometric target for your daily AI routine.",
+    options: [
+      { e: "🗿", v: "jawline", t: "Sharp Jawline & Cheekbones", d: "Gonial angle, mewing, chin fat reduction" },
+      { e: "💧", v: "debloat", t: "Debloat & Fluid Flush", d: "Sodium flush, lymphatic flow, chiseled contour" },
+      { e: "⚡", v: "eyes",    t: "Hunter Eyes & Symmetry", d: "Canthal tilt, dark circle removal, brow ridge" },
+      { e: "🔥", v: "glowup",  t: "Full Mogly Glow-Up", d: "Complete aesthetic protocol across all 478 face points" },
+    ],
+  },
+  // 3 — Main Concern
+  {
+    type: "single",
+    key: "concerns",
+    eyebrow: "Step 3 of 5",
+    title: "What holds your face back the most?",
+    sub: "An honest answer targets the root cause in your first 7 days.",
+    options: [
+      { e: "⭕", v: "round",     t: "Soft, blurred jaw contour", d: "No clear separation between neck and jaw" },
+      { e: "💧", v: "bloating",  t: "Morning facial puffiness", d: "Water retention after sleep or salty meals" },
+      { e: "👀", v: "eyebags",   t: "Bags & dark under-eye circles", d: "Tired appearance, hollow lower eyelids" },
+      { e: "🐢", v: "posture",   t: "Forward head & mouth breathing", d: "Tech neck cuts jawline definition by 20%" },
+    ],
+  },
+  // 4 — Habits & Nutrition
+  {
+    type: "single",
+    key: "routine",
+    eyebrow: "Step 4 of 5",
+    title: "Your current nutrition & habits?",
+    sub: "80% of facial puffiness is governed by sodium and water-electrolyte balance.",
+    options: [
+      { e: "🧂", v: "junk",     t: "High sodium / fast food", d: "Frequent water and sodium retention" },
+      { e: "💧", v: "low_water",t: "Drink little pure water", d: "Body retains water in facial soft tissue" },
+      { e: "💻", v: "sedentary",t: "Sedentary / screen desk work", d: "Neck stiffness and lymphatic stagnation" },
+      { e: "🥗", v: "balanced", t: "Generally balanced", d: "Need a precise, structured AI routine" },
+    ],
+  },
+  // 5 — Commitment
+  {
+    type: "single",
+    key: "commitment",
+    eyebrow: "Step 5 of 5",
+    title: "How much time can you commit?",
+    sub: "Consistency beats intensity. We calibrate the routine to your schedule.",
+    options: [
+      { e: "⏱️", v: "5",  t: "5 min / day · Express Start", d: "Core debloat massage & sodium control" },
+      { e: "⚡", v: "15", t: "15 min / day · Optimal Growth", d: "Mewing + jaw resistance + clean nutrition" },
+      { e: "🏆", v: "25", t: "25 min / day · Hardcore Mogly", d: "Complete transformation & advanced protocol" },
+    ],
+  },
+];
+
+const QUIZ_STEPS_RU = [
   // 0 — Welcome / Intro
   {
     type: "intro",
@@ -14387,6 +14492,8 @@ const QUIZ_STEPS = [
     ],
   },
 ];
+
+let QUIZ_STEPS = (localStorage.getItem("mogly_lang") === "ru") ? QUIZ_STEPS_RU : QUIZ_STEPS_EN;
 
 let quizState = { step: 0, answers: {} };
 try { const _raw = localStorage.getItem(QUIZ_KEY); if (_raw) quizState = Object.assign(quizState, JSON.parse(_raw)); } catch {}
@@ -15142,7 +15249,7 @@ function quizRender(){
   const totalQ = countableSteps.length;
   if (step.type !== "intro" && step.type !== "signin") {
     const stepNumber = QUIZ_STEPS.slice(0, quizState.step + 1).filter(s => s.type !== "intro" && s.type !== "signin").length;
-    step.eyebrow = "Step " + stepNumber + " of " + totalQ;
+    step.eyebrow = (window._currentLang === "ru") ? ("Шаг " + stepNumber + " из " + totalQ) : ("Step " + stepNumber + " of " + totalQ);
   }
 
   if (step.type === "intro") {
@@ -15160,7 +15267,7 @@ function quizRender(){
       </div>
       <div class="quiz-cta">
         <button class="btn btn-welcome-cta" onclick="quizHaptic();quizGoTo(1)">${quizEsc(step.cta)} →</button>
-        <div class="quiz-cta-note">No signup. No photo upload yet.</div>
+        <div class="quiz-cta-note">${(window._currentLang === "ru") ? "Без регистрации. Фото пока не требуется." : "No signup. No photo upload yet."}</div>
         <p class="quiz-legal-note">By continuing, you agree to our <a href="https://facemaxaiapp.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms of Use</a>.</p>
       </div>`;
     // Typewriter effect on the title
@@ -15211,7 +15318,7 @@ function quizRender(){
       <p class="quiz-sub">${step.sub}</p>
       <div class="quiz-options">${optionsHtml}</div>
       <div class="quiz-cta">
-        <button class="btn" id="quizContBtn" ${canContinue ? "" : "disabled"} onclick="quizContinue()">Continue →</button>
+        <button class="btn" id="quizContBtn" ${canContinue ? "" : "disabled"} onclick="quizContinue()">${(window._currentLang === "ru") ? "Продолжить" : "Continue"} →</button>
       </div>`;
     return;
   }
@@ -16839,6 +16946,7 @@ window.syncTDEEChoiceUI = function() {
       prof_voice_sub: "AI Mentor",
       assistant_speaking: "Mogly speaks...",
       assistant_ready: "Ready for questions",
+      assistant_listening: "Listening...",
       transcript_tag: "BIOMETRIC DEBRIEF",
       btn_replay: "Replay Voice",
       qa_chips_label: "Ask your AI aesthetic mentor:",
@@ -16878,6 +16986,7 @@ window.syncTDEEChoiceUI = function() {
       prof_voice_sub: "ИИ Ментор",
       assistant_speaking: "Mogly говорит...",
       assistant_ready: "Готов ответить на вопросы",
+      assistant_listening: "Слушаю...",
       transcript_tag: "БИОМЕТРИЧЕСКИЙ РАЗБОР",
       btn_replay: "Повторить голос",
       qa_chips_label: "Быстрые вопросы ментору по внешности:",
@@ -16892,7 +17001,8 @@ window.syncTDEEChoiceUI = function() {
     }
   };
 
-  let _currentLang = localStorage.getItem("mogly_lang") || (navigator.language && navigator.language.startsWith("ru") ? "ru" : "en");
+  let _currentLang = localStorage.getItem("mogly_lang") || "en";
+  window._currentLang = _currentLang;
   let _voiceGender = localStorage.getItem("mogly_voice_gender") || "male";
   let _heroGender = "male";
   let _cameraStream = null;
@@ -16904,6 +17014,7 @@ window.syncTDEEChoiceUI = function() {
   // Apply Language to UI
   window.setMoglyLanguage = function(lang) {
     _currentLang = (lang === "ru" || lang === "en") ? lang : "en";
+    window._currentLang = _currentLang;
     try { localStorage.setItem("mogly_lang", _currentLang); } catch(e) {}
 
     const btnEn = document.getElementById("moglyLangBtnEn");
@@ -16924,6 +17035,21 @@ window.syncTDEEChoiceUI = function() {
     const transcriptEl = document.getElementById("moglyTranscriptText");
     if (transcriptEl) {
       transcriptEl.textContent = _heroGender === "female" ? dict.debrief_female : dict.debrief_male;
+    }
+
+    // Update listening label
+    const listeningLabel = document.getElementById("moglyListeningLabel");
+    if (listeningLabel && dict.assistant_listening) {
+      listeningLabel.textContent = dict.assistant_listening;
+    }
+
+    // Update QUIZ_STEPS dynamically
+    if (typeof QUIZ_STEPS_RU !== "undefined" && typeof QUIZ_STEPS_EN !== "undefined") {
+      QUIZ_STEPS = (_currentLang === "ru") ? QUIZ_STEPS_RU : QUIZ_STEPS_EN;
+      const quizScreen = document.getElementById("quiz");
+      if (typeof quizRender === "function" && quizScreen && quizScreen.classList.contains("active")) {
+        quizRender();
+      }
     }
   };
 
