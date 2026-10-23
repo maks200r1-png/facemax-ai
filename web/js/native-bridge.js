@@ -43,10 +43,32 @@
     } catch (e) { /* ignore */ }
   };
 
+  let _lastOrbHapticTime = 0;
+  facemax.orbHaptic = function () {
+    const now = Date.now();
+    if (now - _lastOrbHapticTime < 400) return; // Debounce touchstart + click double-fire
+    _lastOrbHapticTime = now;
+    facemax.haptic("heavy");
+    setTimeout(function () {
+      try { facemax.haptic("medium"); } catch (e) {}
+    }, 75);
+  };
+
   function bindHaptics() {
+    document.addEventListener("touchstart", function (e) {
+      const orb = e.target.closest(".mogly-orb-fab-btn, #moglyOrbFabBtn");
+      if (orb) {
+        facemax.orbHaptic();
+      }
+    }, { passive: true });
+
     document.addEventListener("click", function (e) {
-      const btn = e.target.closest("button, .btn, .nav, .tool, .meal-tab");
+      const btn = e.target.closest("button, .btn, .nav, .tool, .meal-tab, .mogly-orb-fab-btn");
       if (!btn) return;
+      if (btn.classList.contains("mogly-orb-fab-btn") || btn.id === "moglyOrbFabBtn") {
+        facemax.orbHaptic();
+        return;
+      }
       const style = btn.classList.contains("btn-pay") || btn.classList.contains("btn-pay-starter")
         ? "medium"
         : btn.classList.contains("nav") ? "light" : "light";
