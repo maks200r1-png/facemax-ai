@@ -113,10 +113,10 @@ html.fm-native a[target="_blank"]{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.screen.active{animation:fadeIn .15s linear}}
 .topbar{display:none}
 /* Unified screen top bar */
-.screen-topbar{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;padding-top:calc(env(safe-area-inset-top,0px) + 6px);position:relative;min-height:44px}
-.screen-topbar .stb-logo{width:24px;height:24px;border-radius:7px;overflow:hidden;flex-shrink:0;box-shadow:0 2px 10px rgba(0,122,255,.35)}
+.screen-topbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;padding-top:calc(env(safe-area-inset-top,0px) + 6px);position:relative;min-height:48px}
+.screen-topbar .stb-logo{width:28px;height:28px;border-radius:8px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 14px rgba(0,122,255,.45)}
 .screen-topbar .stb-logo img{width:100%;height:100%;object-fit:cover;display:block}
-.screen-topbar .stb-title{font-size:19px;font-weight:800;letter-spacing:-.015em;color:#fff;white-space:nowrap;line-height:1}
+.screen-topbar .stb-title{font-size:26px;font-weight:900;letter-spacing:-.03em;color:#fff;white-space:nowrap;line-height:1}
 .screen-topbar .stb-back{position:absolute;left:0;display:flex;align-items:center;justify-content:center;background:transparent;border:0;border-radius:10px;width:44px;height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
 .screen-topbar .stb-back:active{opacity:.5}
 .screen-topbar .stb-back svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
@@ -178,7 +178,7 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 
 /* ---------- Launch splash (animated logo intro) ---------- */
 #fmSplash{position:fixed;inset:0;background:radial-gradient(120% 80% at 50% 38%,rgba(167,139,250,.26),transparent 55%),radial-gradient(100% 60% at 50% 50%,rgba(232,121,249,.20),transparent 65%),radial-gradient(90% 70% at 50% 62%,rgba(196,181,253,.12),#100A14 70%) #100A14;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;opacity:1;pointer-events:auto;transition:opacity .42s ease;will-change:opacity}
-#fmSplash.fm-splash-out{opacity:0;pointer-events:none}
+#fmSplash.fm-splash-out{opacity:0;pointer-events:none;display:none!important}
 .fm-splash-logo{width:104px;height:104px;border-radius:28px;overflow:hidden;background:#100A14;box-shadow:0 24px 70px rgba(232,121,249,.32),inset 0 1px 0 rgba(255,255,255,.06);transform:scale(.6);opacity:0;animation:fm-splash-logo-in 1.1s cubic-bezier(.34,1.46,.4,1) .05s forwards}
 .fm-splash-logo img{width:100%;height:100%;object-fit:cover;display:block}
 .fm-splash-glow{position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.42),rgba(167,139,250,0) 65%);opacity:0;animation:fm-splash-glow-in 1.4s ease-out .1s forwards;pointer-events:none;filter:blur(8px)}
@@ -2795,11 +2795,9 @@ html.cam-active .app { background:transparent !important; }
 <style id="facemax-notification-inbox-v1">
 /* In-app Notification Center. Keeps retention messages accessible after the
    iOS banner disappears, without mixing notification settings into the inbox. */
-.home-inbox-row{position:fixed;right:18px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:72;width:40px;height:40px;margin:0;padding:0;pointer-events:none}
-.fm-notif-bell{position:relative;width:40px;height:40px;border:0;background:transparent;color:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:none;transition:transform .12s ease,opacity .12s ease;pointer-events:auto}
-.fm-notif-bell:active{transform:scale(.92);opacity:.72;background:transparent}
-.fm-notif-bell svg{width:21px;height:21px;display:block;fill:currentColor;stroke:none}
-.fm-notif-bell.compact{position:fixed;right:18px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:72;width:40px;height:40px;box-shadow:none}
+.home-inbox-row{display:none !important;}
+.fm-notif-bell{display:none !important;}
+.fm-notif-bell.compact{display:none !important;}
 .fm-notif-badge{position:absolute;right:-5px;top:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid #100A14;font-size:10px;font-weight:850;line-height:14px;display:none;align-items:center;justify-content:center;letter-spacing:-.02em}
 .fm-notif-badge.show{display:flex}
 .notifications-screen{padding-bottom:8px}
@@ -3192,7 +3190,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top, 0px) + 8px) 16px calc(env(safe-area-inset-bottom, 0px) + 160px);
+  padding: calc(env(safe-area-inset-top, 0px) + 6px) 16px calc(env(safe-area-inset-bottom, 0px) + 170px);
   box-sizing: border-box;
 }
 
@@ -3251,33 +3249,17 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 /* Central Square Card (1:1 Hero Viewfinder) */
 .mogly-square-card {
   position: relative;
-  width: min(calc(100vw - 32px), 360px);
-  height: min(calc(100vw - 32px), 360px);
+  width: min(calc(100vw - 36px), calc(38vh - 8px), 320px);
+  height: min(calc(100vw - 36px), calc(38vh - 8px), 320px);
   aspect-ratio: 1 / 1;
-  border-radius: 26px;
+  border-radius: 28px;
   background: #03060C;
-  border: 1.5px solid rgba(0, 194, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 32px rgba(0, 102, 255, 0.25);
-  margin-bottom: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), inset 0 1px 1.5px rgba(255, 255, 255, 0.35), 0 0 28px rgba(0, 102, 255, 0.22);
+  margin-bottom: 14px;
 }
-
-/* Electric Neon Corner Brackets */
-.mogly-corner-bracket {
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  pointer-events: none;
-  z-index: 8;
-  border-color: #00C2FF;
-  border-style: solid;
-  filter: drop-shadow(0 0 8px #00C2FF);
-}
-
-.mogly-corner-bracket.tl { top: 12px; left: 12px; border-width: 3.5px 0 0 3.5px; border-top-left-radius: 8px; }
-.mogly-corner-bracket.tr { top: 12px; right: 12px; border-width: 3.5px 3.5px 0 0; border-top-right-radius: 8px; }
-.mogly-corner-bracket.bl { bottom: 12px; left: 12px; border-width: 0 0 3.5px 3.5px; border-bottom-left-radius: 8px; }
-.mogly-corner-bracket.br { bottom: 12px; right: 12px; border-width: 0 3.5px 3.5px 0; border-bottom-right-radius: 8px; }
 
 /* Laser Beam Sweep */
 .mogly-laser-beam {
@@ -3442,21 +3424,21 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
 /* Primary and Secondary Action Buttons */
 .mogly-actions-container {
-  width: min(calc(100vw - 32px), 360px);
+  width: min(calc(100vw - 36px), calc(38vh - 8px), 320px);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 9px;
+  margin-bottom: 14px;
 }
 
 .mogly-btn-primary {
   width: 100%;
-  height: 54px;
+  height: 50px;
   border: 0;
   border-radius: 999px;
   background: linear-gradient(135deg, #0055FF 0%, #007AFF 50%, #00C2FF 100%);
   color: #FFFFFF;
-  font-size: 15.5px;
+  font-size: 15px;
   font-weight: 850;
   letter-spacing: 0.04em;
   display: flex;
@@ -3464,7 +3446,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   justify-content: center;
   gap: 9px;
   cursor: pointer;
-  box-shadow: 0 12px 32px rgba(0, 102, 255, 0.48), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 28px rgba(0, 102, 255, 0.45), inset 0 1px 1.5px rgba(255, 255, 255, 0.45);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }
@@ -3481,13 +3463,14 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
 .mogly-btn-secondary {
   width: 100%;
-  height: 44px;
+  height: 42px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: rgba(255, 255, 255, 0.88);
   font-size: 13.5px;
   font-weight: 700;
   display: flex;
@@ -3495,7 +3478,8 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  transition: background 0.2s ease, transform 0.12s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -4042,7 +4026,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
    MOGLY PROFILE SCREEN
    ========================================================================== */
 #profile.screen {
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 160px) !important;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 180px) !important;
 }
 
 .mogly-profile-section {
@@ -4053,16 +4037,104 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 }
 
 .mogly-big-card {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(28px) !important;
-  -webkit-backdrop-filter: blur(28px) !important;
+  background: linear-gradient(145deg, rgba(22, 30, 48, 0.72) 0%, rgba(10, 14, 24, 0.88) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.28) !important;
+  backdrop-filter: blur(32px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(210%) !important;
   border-radius: 24px !important;
-  padding: 18px !important;
+  padding: 16px 18px !important;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.35), 0 0 20px rgba(0, 122, 255, 0.12) !important;
+}
+
+.mogly-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 0;
+  background: transparent;
+  border: 0;
+  color: #FFFFFF;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s ease;
+}
+
+.mogly-settings-row:active {
+  opacity: 0.7;
+}
+
+.mogly-settings-row .sr-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(0, 122, 255, 0.18);
+  border: 1px solid rgba(0, 194, 255, 0.35);
+  color: #00C2FF;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.mogly-settings-row.danger .sr-icon {
+  background: rgba(255, 69, 58, 0.15);
+  border: 1px solid rgba(255, 69, 58, 0.35);
+  color: #FF453A;
+}
+
+.mogly-settings-row .sr-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mogly-settings-row .sr-copy {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mogly-settings-row .sr-copy b {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.mogly-settings-row.danger .sr-copy b {
+  color: #FF453A;
+}
+
+.mogly-settings-row .sr-copy span {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.mogly-settings-row .sr-chevron {
+  width: 18px;
+  height: 18px;
+  stroke: rgba(255, 255, 255, 0.35);
+  fill: none;
+  stroke-width: 2.4;
+  flex-shrink: 0;
+}
+
+.mogly-settings-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0;
 }
 
 .mogly-card-head {
@@ -4565,24 +4637,14 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
   <div class="mogly-home-container">
 
-    <!-- Mogly Topbar (Strict unified format: Squircle Logo on left, Centered Title, Notif Bell on right) -->
+    <!-- Mogly Topbar (Strict unified format: Squircle Logo on left, Centered Title) -->
     <div class="screen-topbar mogly-screen-topbar">
       <div class="stb-logo"><img src="assets/app_icon.png" alt="Mogly"></div>
       <span class="stb-title">Mogly</span>
-      <button type="button" class="fm-notif-bell compact" onclick="openNotificationInbox()" aria-label="Notifications">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a5 5 0 0 0-5 5v2.7c0 2.65-.85 4.63-2.43 6.31A1.15 1.15 0 0 0 5.41 18h13.18a1.15 1.15 0 0 0 .84-1.99C17.85 14.33 17 12.35 17 9.7V7a5 5 0 0 0-5-5Zm-2.48 18a2.65 2.65 0 0 0 4.96 0H9.52Z"/></svg>
-        <span class="fm-notif-badge" id="homeNotifBadge">0</span>
-      </button>
     </div>
 
     <!-- Central Square Card (In-Place Camera Viewfinder & Model Display) -->
     <div class="mogly-square-card" id="moglySquareCard">
-      <!-- Neon Cyan Corner Brackets (iOS 27 HUD) -->
-      <div class="mogly-corner-bracket tl"></div>
-      <div class="mogly-corner-bracket tr"></div>
-      <div class="mogly-corner-bracket bl"></div>
-      <div class="mogly-corner-bracket br"></div>
-
       <!-- Live Sweeping Laser Line -->
       <div class="mogly-laser-beam" id="moglyLaserBeam"></div>
 
@@ -5125,10 +5187,6 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   <div class="screen-topbar mogly-screen-topbar">
     <div class="stb-logo"><img src="assets/app_icon.png" alt="Mogly"></div>
     <span class="stb-title" data-i18n="nav_profile">Profile</span>
-    <button type="button" class="fm-notif-bell compact" onclick="openNotificationInbox()" aria-label="Notifications">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a5 5 0 0 0-5 5v2.7c0 2.65-.85 4.63-2.43 6.31A1.15 1.15 0 0 0 5.41 18h13.18a1.15 1.15 0 0 0 .84-1.99C17.85 14.33 17 12.35 17 9.7V7a5 5 0 0 0-5-5Zm-2.48 18a2.65 2.65 0 0 0 4.96 0H9.52Z"/></svg>
-      <span class="fm-notif-badge" id="profileNotifBadge">0</span>
-    </button>
   </div>
 
   <div class="profile-hero-v4">
@@ -5190,74 +5248,85 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
         <button type="button" class="mogly-seg-btn" id="moglyVoiceBtnFemale" onclick="setMoglyVoiceGender('female')">Female</button>
       </div>
     </div>
-  </div>
 
-  <div class="settings-section-v4">
-    <div class="settings-title-v4">Preferences</div>
-    <div class="settings-card-v4">
-      <div class="settings-row-v4">
-        <div class="settings-icon-v4 purple"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></div>
-        <div class="settings-copy-v4"><b>Smart reminders</b><span>Plan, streak, re-scan and return nudges</span></div>
+    <!-- Preferences & Smart Reminders Card -->
+    <div class="mogly-big-card">
+      <div class="mogly-card-head">
+        <div class="mogly-card-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+        </div>
+        <div class="mogly-card-titles">
+          <span class="mogly-card-title" data-i18n="prof_pref_title">Preferences</span>
+          <span class="mogly-card-sub" data-i18n="prof_pref_sub">Notifications &amp; Routines</span>
+        </div>
+      </div>
+      <div class="mogly-settings-row">
+        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></div>
+        <div class="sr-copy"><b>Smart reminders</b><span>Plan, streak and re-scan nudges</span></div>
         <label class="notif-toggle" aria-label="Toggle smart reminders">
           <input type="checkbox" id="notifDailyToggle" onchange="toggleDailyReminder(this.checked)">
           <span class="notif-toggle-track"><span class="notif-toggle-dot"></span></span>
         </label>
       </div>
-      <div class="settings-divider-v4"></div>
-      <button class="settings-row-v4 settings-button-v4" type="button" onclick="openGoalPreferences()">
-        <div class="settings-icon-v4 purple"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="7"/></svg></div>
-        <div class="settings-copy-v4"><b>Goals &amp; preferences</b><span id="goalPrefsSummary">Personalize your daily plan</span></div>
-        <svg class="settings-chevron-v4" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      <div class="mogly-settings-divider"></div>
+      <button class="mogly-settings-row" type="button" onclick="openGoalPreferences()">
+        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="7"/></svg></div>
+        <div class="sr-copy"><b>Goals &amp; preferences</b><span id="goalPrefsSummary">Personalize your daily plan</span></div>
+        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
       </button>
-      <div class="settings-divider-v4"></div>
-      <div class="settings-row-v4 gender-row-v4" id="genderSettingCard">
-        <div class="settings-icon-v4 blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/></svg></div>
-        <div class="settings-copy-v4"><b>Scan calibration</b><span>Choose the profile used by AI</span></div>
-        <div class="gender-pills-v4" id="genderSettingBtns">
-          <button type="button" id="genderBtnMale" class="gender-pill-v4" onclick="changeGender('male')">Male</button>
-          <button type="button" id="genderBtnFemale" class="gender-pill-v4" onclick="changeGender('female')">Female</button>
+    </div>
+
+    <!-- Subscription & Legal Card -->
+    <div class="mogly-big-card">
+      <div class="mogly-card-head">
+        <div class="mogly-card-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+        </div>
+        <div class="mogly-card-titles">
+          <span class="mogly-card-title" data-i18n="prof_legal_title">Subscription &amp; Legal</span>
+          <span class="mogly-card-sub" data-i18n="prof_legal_sub">App Store &amp; Privacy</span>
         </div>
       </div>
-    </div>
-    <p id="notifDailyHint" class="settings-footnote-v4">Manage reminders in iOS Settings at any time.</p>
-  </div>
-
-  <div class="settings-section-v4">
-    <div class="settings-title-v4">Subscription &amp; privacy</div>
-    <div class="settings-card-v4">
-      <button class="settings-row-v4 settings-button-v4" onclick="restoreApplePurchases()">
-        <div class="settings-icon-v4 green"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></div>
-        <div class="settings-copy-v4"><b>Restore purchases</b><span>Sync an existing App Store plan</span></div>
-        <svg class="settings-chevron-v4" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      <button class="mogly-settings-row" type="button" onclick="restoreApplePurchases()">
+        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></div>
+        <div class="sr-copy"><b>Restore purchases</b><span>Sync an existing App Store plan</span></div>
+        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
       </button>
-      <div class="settings-divider-v4"></div>
-      <button class="settings-row-v4 settings-button-v4" onclick="window.open('https://facemaxaiapp.com/privacy','_blank','noopener')">
-        <div class="settings-icon-v4 gray"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg></div>
-        <div class="settings-copy-v4"><b>Privacy policy</b><span>How your data is handled</span></div>
-        <svg class="settings-chevron-v4" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      <div class="mogly-settings-divider"></div>
+      <button class="mogly-settings-row" type="button" onclick="window.open('https://facemaxaiapp.com/privacy','_blank','noopener')">
+        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg></div>
+        <div class="sr-copy"><b>Privacy policy</b><span>How your data is handled</span></div>
+        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
       </button>
-      <div class="settings-divider-v4"></div>
-      <button class="settings-row-v4 settings-button-v4" onclick="window.open('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/','_blank','noopener')">
-        <div class="settings-icon-v4 gray"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></div>
-        <div class="settings-copy-v4"><b>Terms of use</b><span>Subscription and service terms</span></div>
-        <svg class="settings-chevron-v4" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      <div class="mogly-settings-divider"></div>
+      <button class="mogly-settings-row" type="button" onclick="window.open('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/','_blank','noopener')">
+        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></div>
+        <div class="sr-copy"><b>Terms of use</b><span>Subscription and service terms</span></div>
+        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
       </button>
     </div>
-  </div>
 
-  <div class="settings-section-v4 danger-section-v4">
-    <div class="settings-title-v4">Your data</div>
-    <div class="settings-card-v4">
-      <button class="settings-row-v4 settings-button-v4 danger-row-v4" onclick="confirmClearScanHistory()">
-        <div class="settings-icon-v4 red"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg></div>
-        <div class="settings-copy-v4"><b>Clear scan history</b><span>Remove scores and progress data</span></div>
-        <svg class="settings-chevron-v4" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+    <!-- Your Data Card -->
+    <div class="mogly-big-card">
+      <div class="mogly-card-head">
+        <div class="mogly-card-icon" style="background: rgba(255, 69, 58, 0.16); border-color: rgba(255, 69, 58, 0.35); color: #FF453A;">
+          <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg>
+        </div>
+        <div class="mogly-card-titles">
+          <span class="mogly-card-title" data-i18n="prof_data_title">Your Data</span>
+          <span class="mogly-card-sub" data-i18n="prof_data_sub">Account &amp; History</span>
+        </div>
+      </div>
+      <button class="mogly-settings-row danger" type="button" onclick="confirmClearScanHistory()">
+        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg></div>
+        <div class="sr-copy"><b>Clear scan history</b><span>Remove scores and progress data</span></div>
+        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
       </button>
-      <div class="settings-divider-v4"></div>
-      <button class="settings-row-v4 settings-button-v4 danger-row-v4" onclick="confirmDeleteAccount()">
-        <div class="settings-icon-v4 red"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></div>
-        <div class="settings-copy-v4"><b>Delete account</b><span>Permanently remove all app data</span></div>
-        <svg class="settings-chevron-v4" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      <div class="mogly-settings-divider"></div>
+      <button class="mogly-settings-row danger" type="button" onclick="confirmDeleteAccount()">
+        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg></div>
+        <div class="sr-copy"><b>Delete account</b><span>Permanently remove all app data</span></div>
+        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
       </button>
     </div>
   </div>
@@ -16944,6 +17013,12 @@ window.syncTDEEChoiceUI = function() {
       prof_lang_sub: "Interface & Voice",
       prof_voice_title: "Voice",
       prof_voice_sub: "AI Mentor",
+      prof_pref_title: "Preferences",
+      prof_pref_sub: "Notifications & Routines",
+      prof_legal_title: "Subscription & Legal",
+      prof_legal_sub: "App Store & Privacy",
+      prof_data_title: "Your Data",
+      prof_data_sub: "Account & History",
       assistant_speaking: "Mogly speaks...",
       assistant_ready: "Ready for questions",
       assistant_listening: "Listening...",
@@ -16984,6 +17059,12 @@ window.syncTDEEChoiceUI = function() {
       prof_lang_sub: "Интерфейс и голос",
       prof_voice_title: "Голос",
       prof_voice_sub: "ИИ Ментор",
+      prof_pref_title: "Настройки",
+      prof_pref_sub: "Уведомления и цели",
+      prof_legal_title: "Подписка и данные",
+      prof_legal_sub: "App Store и конфиденциальность",
+      prof_data_title: "Управление данными",
+      prof_data_sub: "История и аккаунт",
       assistant_speaking: "Mogly говорит...",
       assistant_ready: "Готов ответить на вопросы",
       assistant_listening: "Слушаю...",
@@ -17057,6 +17138,7 @@ window.syncTDEEChoiceUI = function() {
   window.setMoglyVoiceGender = function(gender) {
     _voiceGender = (gender === "female") ? "female" : "male";
     try { localStorage.setItem("mogly_voice_gender", _voiceGender); } catch(e) {}
+    try { if (typeof window.changeGender === "function") window.changeGender(_voiceGender); } catch(e) {}
 
     const btnMale = document.getElementById("moglyVoiceBtnMale");
     const btnFemale = document.getElementById("moglyVoiceBtnFemale");
