@@ -255,7 +255,7 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .last-scan-card.empty .lsc-info,.last-scan-card.empty .lsc-scores,.last-scan-card.empty .lsc-chevron{display:none}
 #orbWrap{display:none!important}
 
-/* ===== ASCEND LABS SQUARE HUD SCANNER & VOICE ASSISTANT ===== */
+/* ===== MOGLY SQUARE HUD SCANNER & VOICE ASSISTANT ===== */
 .hud-square-scanner {
   position: relative;
   width: 100%;
@@ -987,27 +987,27 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 .sec-hdr a{font-size:12px;color:var(--p-2);font-weight:600;cursor:pointer}
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 /* Progress chart on profile */
-.chart-card{margin-top:14px;padding:16px 14px 12px;position:relative;min-height:218px;border-radius:22px;background:var(--v4-card,var(--surface));border:1px solid var(--v4-border,var(--line-2));overflow:hidden}
+.chart-card{margin-top:14px;padding:16px 14px 12px;position:relative;min-height:218px;border-radius:22px;background:rgba(255,255,255,.04);border:1px solid rgba(0,194,255,.22);box-shadow:0 14px 34px rgba(0,0,0,.4),0 0 20px rgba(0,122,255,.12);overflow:hidden}
 .chart-card.empty{display:flex;align-items:center;justify-content:center;padding:20px 16px;min-height:176px}
 .chart-empty{width:100%;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--muted);text-align:center;padding:8px}
 .chart-empty-plot{width:100%;height:64px;position:relative;margin-bottom:4px}
 .chart-empty-plot::before,.chart-empty-plot::after{content:"";position:absolute;left:7%;right:7%;height:1px;background:rgba(255,255,255,.07)}
 .chart-empty-plot::before{top:16px}.chart-empty-plot::after{bottom:16px}
-.chart-empty-line{position:absolute;left:10%;right:10%;top:32px;border-top:2px dashed rgba(167,139,250,.28)}
-.chart-empty-dot{position:absolute;left:48%;top:25px;width:14px;height:14px;border-radius:50%;background:#A78BFA;border:3px solid var(--v4-card,var(--surface));box-shadow:0 0 0 1px rgba(167,139,250,.35)}
+.chart-empty-line{position:absolute;left:10%;right:10%;top:32px;border-top:2px dashed rgba(0,194,255,.45)}
+.chart-empty-dot{position:absolute;left:48%;top:25px;width:14px;height:14px;border-radius:50%;background:#007AFF;border:3px solid var(--v4-card,var(--surface));box-shadow:0 0 0 1px rgba(0,194,255,.5)}
 .chart-empty b{color:var(--text);font-size:14px;letter-spacing:-.01em}
 .chart-empty span{font-size:12px;line-height:1.45;max-width:31ch}
 .chart-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 2px 8px}
 .chart-title-wrap{display:flex;flex-direction:column;gap:3px}
-.chart-title{font-size:15px;font-weight:750;color:var(--text);letter-spacing:-.015em}
-.chart-period{font-size:11.5px;color:var(--muted);font-weight:600}
-.chart-delta{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:-.01em;padding-top:1px}
-.chart-delta.up{color:#4ade80}
+.chart-title{font-size:15px;font-weight:800;color:#FFFFFF;letter-spacing:-.015em}
+.chart-period{font-size:11.5px;color:#00C2FF;font-weight:700}
+.chart-delta{font-size:13px;font-weight:850;color:#00C2FF;letter-spacing:-.01em;padding-top:1px}
+.chart-delta.up{color:#00F076;text-shadow:0 0 8px rgba(0,240,118,.4)}
 .chart-delta.down{color:#f59e0b}
 .chart-svg{width:100%;height:154px;display:block;overflow:visible}
-.chart-tooltip{position:absolute;background:rgba(20,12,30,.97);border:1px solid rgba(167,139,250,.40);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;color:#fff;pointer-events:none;white-space:nowrap;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.5);transform:translate(-50%,-110%);opacity:0;transition:opacity .15s}
+.chart-tooltip{position:absolute;background:rgba(4,7,17,.96);border:1px solid rgba(0,194,255,.45);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;color:#fff;pointer-events:none;white-space:nowrap;z-index:99;box-shadow:0 6px 20px rgba(0,0,0,.7),0 0 14px rgba(0,122,255,.35);transform:translate(-50%,-110%);opacity:0;transition:opacity .15s}
 .chart-tooltip.visible{opacity:1}
-.chart-tooltip .ct-score{font-size:18px;font-weight:900;color:#A78BFA;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.chart-tooltip .ct-score{font-size:18px;font-weight:900;color:#00C2FF;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .chart-tooltip .ct-date{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
 .chart-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:10.5px;font-weight:600;margin:3px 2px 0 30px;letter-spacing:.01em}
 .stat{background:var(--surface-2);border:1px solid var(--line);border-radius:16px;padding:14px 8px;text-align:center}
@@ -2781,7 +2781,7 @@ html.cam-active .app { background:transparent !important; }
 .bottom-v2 .nav-scan-fab{box-shadow:0 13px 30px rgba(124,58,237,.45),0 0 0 7px rgba(139,92,246,.10)!important}
 </style>
 <style id="brand-avatar-default">
-.profile-avatar{background-image:none;background-color:#7c3aed;background-repeat:no-repeat}
+.profile-avatar{background-image:none;background-color:#007AFF !important;border:2.5px solid #007AFF !important;box-shadow:0 0 20px rgba(0,122,255,0.5) !important;background-repeat:no-repeat}
 .profile-avatar-default-img{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);display:block;object-fit:contain;object-position:center;border-radius:50%;pointer-events:none;image-rendering:auto}
 .profile-avatar>svg{display:none}
 .profile-avatar.has-image{background-size:cover;background-position:center;background-repeat:no-repeat}
@@ -2925,12 +2925,13 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 }
 
 /* Floating AI Voice Assistant Orb (Above the 2-button Nav) */
+/* Floating AI Voice Assistant Glass Orb (Above the 2-button Nav) */
 .mogly-assistant-fab-container {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
   bottom: calc(env(safe-area-inset-bottom, 0px) + 82px);
-  z-index: 52;
+  z-index: 95;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2939,10 +2940,10 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
 .mogly-orb-fab-btn {
   position: relative;
-  width: 58px !important;
-  height: 58px !important;
-  min-width: 58px !important;
-  min-height: 58px !important;
+  width: 60px !important;
+  height: 60px !important;
+  min-width: 60px !important;
+  min-height: 60px !important;
   flex-shrink: 0 !important;
   border-radius: 50% !important;
   border: 0;
@@ -2953,6 +2954,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 0.48s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .mogly-orb-fab-btn:active {
@@ -2963,40 +2965,43 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   position: absolute;
   inset: -6px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 122, 255, 0.65) 0%, rgba(0, 194, 255, 0.28) 45%, transparent 70%);
-  filter: blur(8px);
-  animation: moglyAuraPulse 2.8s infinite ease-in-out;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.45) 0%, rgba(0, 194, 255, 0.18) 50%, transparent 70%);
+  filter: blur(10px);
+  animation: moglyAuraPulse 3s infinite ease-in-out;
   pointer-events: none;
+  transition: all 0.4s ease;
 }
 
 @keyframes moglyAuraPulse {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.18); opacity: 1; }
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.22); opacity: 1; }
 }
 
+/* iOS 27 Liquid Transparent Glass */
 .mogly-orb-fab-glass {
   position: relative;
-  width: 58px !important;
-  height: 58px !important;
-  min-width: 58px !important;
-  min-height: 58px !important;
+  width: 60px !important;
+  height: 60px !important;
+  min-width: 60px !important;
+  min-height: 60px !important;
   border-radius: 50% !important;
-  background: radial-gradient(135% 135% at 30% 25%, rgba(255, 255, 255, 0.35) 0%, rgba(0, 122, 255, 0.25) 50%, rgba(5, 12, 28, 0.85) 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.5), inset 0 -4px 10px rgba(0, 102, 255, 0.4);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), inset 0 1.5px 3px rgba(255, 255, 255, 0.65), inset 0 -3px 8px rgba(0, 122, 255, 0.25) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .mogly-orb-fab-wave {
   display: flex;
   align-items: center;
-  gap: 3px;
-  height: 18px;
+  gap: 3.5px;
+  height: 22px;
 }
 
 .mogly-orb-fab-wave span {
@@ -3004,7 +3009,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   height: 8px;
   background: #FFFFFF;
   border-radius: 999px;
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(0, 194, 255, 0.6);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 10px rgba(0, 194, 255, 0.6);
   animation: moglyMiniWave 1.4s infinite ease-in-out;
 }
 
@@ -3022,22 +3027,141 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 .mogly-orb-fab-specular {
   position: absolute;
   top: 3px;
-  left: 10px;
-  width: 22px;
-  height: 10px;
+  left: 12px;
+  width: 24px;
+  height: 11px;
   border-radius: 50%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent);
   pointer-events: none;
 }
 
-.mogly-orb-fab-tag {
-  margin-top: 4px;
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: #00C2FF;
-  text-shadow: 0 0 8px rgba(0, 194, 255, 0.6);
+/* Listening State: Smooth Expansion in-place + "Слушаю..." */
+.mogly-assistant-fab-container.is-listening .mogly-orb-fab-btn {
+  transform: translateY(-38px) scale(1.72);
+}
+
+.mogly-assistant-fab-container.is-listening .mogly-orb-fab-glass {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 0 20px 52px rgba(0, 122, 255, 0.58), inset 0 2px 5px rgba(255, 255, 255, 0.9), inset 0 -4px 12px rgba(0, 194, 255, 0.55) !important;
+}
+
+.mogly-assistant-fab-container.is-listening .mogly-orb-fab-aura {
+  inset: -14px;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.75) 0%, rgba(0, 194, 255, 0.35) 50%, transparent 70%);
+  filter: blur(14px);
+}
+
+.mogly-assistant-fab-container.is-listening .mogly-orb-fab-wave span {
+  animation: moglyActiveWave 0.75s infinite ease-in-out;
+}
+
+@keyframes moglyActiveWave {
+  0%, 100% { transform: scaleY(0.45); }
+  50% { transform: scaleY(1.4); }
+}
+
+.mogly-listening-label {
+  margin-top: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  text-shadow: 0 0 12px rgba(0, 194, 255, 0.75);
+  opacity: 0;
+  transform: translateY(-8px);
   pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+
+.mogly-assistant-fab-container.is-listening .mogly-listening-label {
+  opacity: 1;
+  transform: translateY(-22px);
+}
+
+/* Background Dimmer when listening */
+.mogly-voice-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 92;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: moglyFadeIn 0.25s ease;
+  pointer-events: auto;
+}
+
+.mogly-voice-backdrop.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   MOGLY PURE BLUE COLORWAY & PURPLE PURGE (Quiz & Global CTA)
+   ========================================================================== */
+.btn,
+.btn.btn-welcome-cta,
+.btn.btn-scanface,
+.quiz-cta .btn {
+  background: linear-gradient(135deg, #0055FF 0%, #007AFF 50%, #00C2FF 100%) !important;
+  border: 1px solid rgba(0, 194, 255, 0.45) !important;
+  box-shadow: 0 10px 28px rgba(0, 122, 255, 0.42), 0 2px 8px rgba(0, 194, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+.btn:hover,
+.btn.btn-welcome-cta:hover {
+  filter: brightness(1.06);
+}
+
+.btn:active,
+.btn.btn-welcome-cta:active {
+  transform: scale(0.985);
+  box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35) !important;
+}
+
+/* Quiz Option Selection - Pure Mogly Electric Blue */
+.quiz-option.selected,
+.quiz-grid .quiz-option.selected,
+.quiz-pill.selected {
+  background: rgba(0, 122, 255, 0.14) !important;
+  border-color: #007AFF !important;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25), 0 8px 24px rgba(0, 194, 255, 0.2) !important;
+  color: #FFFFFF !important;
+}
+
+.quiz-option.selected .quiz-option-tick {
+  background: #007AFF !important;
+  box-shadow: 0 0 10px rgba(0, 122, 255, 0.6) !important;
+}
+
+.quiz-progress-bar {
+  background: linear-gradient(90deg, #00C2FF, #007AFF) !important;
+  box-shadow: 0 0 12px rgba(0, 194, 255, 0.7) !important;
+}
+
+.quiz-eyebrow,
+.quiz-cmp-badge.after {
+  background: rgba(0, 122, 255, 0.15) !important;
+  border-color: rgba(0, 194, 255, 0.35) !important;
+  color: #00C2FF !important;
+}
+
+.quiz-cmp-col.after {
+  border-color: rgba(0, 194, 255, 0.45) !important;
+}
+
+/* Profile Avatar & Profile Hero - Electric Blue */
+.profile-avatar {
+  border: 2.5px solid #007AFF !important;
+  box-shadow: 0 0 22px rgba(0, 122, 255, 0.45) !important;
+  background-color: #007AFF !important;
+}
+
+.profile-hero-v4 {
+  background: linear-gradient(145deg, rgba(0, 122, 255, 0.16), rgba(255, 255, 255, 0.035) 58%) !important;
+  border: 1px solid rgba(0, 194, 255, 0.25) !important;
 }
 
 /* ==========================================================================
@@ -3054,50 +3178,26 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   box-sizing: border-box;
 }
 
-/* Top Header Bar */
+/* Top Header Bar (Clean bold white Mogly, zero gradients) */
 .mogly-top-header {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+  padding: 0 4px;
 }
 
-.mogly-brand-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.mogly-app-badge {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  object-fit: cover;
-  box-shadow: 0 4px 14px rgba(0, 102, 255, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.15);
-}
-
-.mogly-brand-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.mogly-brand-title {
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  background: linear-gradient(135deg, #FFFFFF 30%, #AEE7FF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  line-height: 1.1;
-}
-
-.mogly-brand-tag {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: #00C2FF;
-  text-transform: uppercase;
+.mogly-header-title {
+  font-size: 30px;
+  font-weight: 850;
+  color: #FFFFFF !important;
+  letter-spacing: -0.025em;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  background: none !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
 /* Gender Model Switcher Pill */
@@ -4370,7 +4470,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
     <!-- CTA button -->
     <div style="width:100%;flex-shrink:0;box-sizing:border-box;">
-      <button class="btn btn-welcome-cta" onclick="quizHaptic();quizBuyPlan('weekly')" style="width:100%;height:60px;font-size:17px;font-weight:700;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:none!important;background:#7C3AED!important;">
+      <button class="btn btn-welcome-cta" onclick="quizHaptic();quizBuyPlan('weekly')" style="width:100%;height:60px;font-size:17px;font-weight:700;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 10px 28px rgba(0,122,255,0.45)!important;background:linear-gradient(135deg, #0055FF, #007AFF, #00C2FF)!important;">
         <span>🔓 Unlock for</span><b data-price-plan="weekly" style="font-size:17px;">…</b><span>/ week</span>
       </button>
       <button class="btn ghost" onclick="quizHaptic();quizBuyPlan('weekly')" style="width:100%;height:44px;margin-top:10px;background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:999px;color:rgba(255,255,255,.85);font-size:14px;font-weight:600;">🎁 Start free trial</button>
@@ -4447,24 +4547,9 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
   <div class="mogly-home-container">
 
-    <!-- Mogly Header Bar -->
+    <!-- Mogly Header Bar (Strict: only white text "Mogly", zero gradients/subtitles) -->
     <header class="mogly-top-header">
-      <div class="mogly-brand-row">
-        <img src="assets/app_icon.png" class="mogly-app-badge" alt="Mogly">
-        <div class="mogly-brand-text">
-          <span class="mogly-brand-title">MOGLY</span>
-          <span class="mogly-brand-tag" data-i18n="brand_subtitle">AI LOOKSMAX</span>
-        </div>
-      </div>
-      <!-- Gender Switcher Pill for example model in the square -->
-      <div class="mogly-gender-toggle-pill" id="moglyGenderToggle">
-        <button type="button" class="mgt-btn active" id="mgtBtnMale" onclick="setMoglyHeroGender('male')">
-          <span>♂ Male</span>
-        </button>
-        <button type="button" class="mgt-btn" id="mgtBtnFemale" onclick="setMoglyHeroGender('female')">
-          <span>♀ Female</span>
-        </button>
-      </div>
+      <h1 class="mogly-header-title">Mogly</h1>
     </header>
 
     <!-- Central Square Card (In-Place Camera Viewfinder & Model Display) -->
@@ -4479,7 +4564,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
       <div class="mogly-laser-beam" id="moglyLaserBeam"></div>
 
       <!-- Static Model Image (Male or Female default) -->
-      <img id="moglySquareHeroImg" class="mogly-square-img" src="assets/hero_male.jpg" alt="Mogly Facial Harmony">
+      <img id="moglySquareHeroImg" class="mogly-square-img" src="assets/hero_male.jpg" alt="Mogly">
 
       <!-- Inline Live Camera Video (Mounts directly inside this square) -->
       <video id="moglyInlineVideo" class="mogly-inline-video" playsinline autoplay muted style="display:none;"></video>
@@ -4499,12 +4584,6 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
             ✕
           </button>
         </div>
-      </div>
-
-      <!-- Status Badge on Square -->
-      <div class="mogly-square-status-pill" id="moglySquareStatusPill">
-        <span class="mogly-status-pulse"></span>
-        <span id="moglySquareStatusText" data-i18n="status_ready">AI BIOMETRICS READY</span>
       </div>
     </div>
 
@@ -4530,8 +4609,8 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
     <!-- Results Block (Expands after scan) -->
     <div class="mogly-results-block hidden" id="moglyResultsBlock">
       
-      <!-- Voice Debrief Card (Launches the Voice Assistant) -->
-      <div class="mogly-voice-cta-card" id="moglyVoiceCtaCard" onclick="openMoglyVoiceAssistant(true)">
+      <!-- Voice Debrief Card (Smoothly triggers in-place expanding voice orb) -->
+      <div class="mogly-voice-cta-card" id="moglyVoiceCtaCard" onclick="triggerMoglyVoiceDebrief()">
         <div class="mogly-voice-card-glow"></div>
         <div class="mogly-voice-card-left">
           <div class="mogly-voice-orb-icon">
@@ -5062,13 +5141,13 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </div>
         <div class="mogly-card-titles">
-          <span class="mogly-card-title" data-i18n="prof_lang_title">Interface &amp; Voice Language</span>
-          <span class="mogly-card-sub" data-i18n="prof_lang_sub">Switches app text and AI mentor speech</span>
+          <span class="mogly-card-title" data-i18n="prof_lang_title">Language</span>
+          <span class="mogly-card-sub" data-i18n="prof_lang_sub">Interface &amp; Voice</span>
         </div>
       </div>
       <div class="mogly-segmented-control" id="moglyLangControl">
-        <button type="button" class="mogly-seg-btn active" id="moglyLangBtnEn" onclick="setMoglyLanguage('en')">English 🇺🇸</button>
-        <button type="button" class="mogly-seg-btn" id="moglyLangBtnRu" onclick="setMoglyLanguage('ru')">Русский 🇷🇺</button>
+        <button type="button" class="mogly-seg-btn active" id="moglyLangBtnEn" onclick="setMoglyLanguage('en')">English</button>
+        <button type="button" class="mogly-seg-btn" id="moglyLangBtnRu" onclick="setMoglyLanguage('ru')">Русский</button>
       </div>
     </div>
 
@@ -5079,13 +5158,13 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
           <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
         </div>
         <div class="mogly-card-titles">
-          <span class="mogly-card-title" data-i18n="prof_voice_title">AI Mentor Voice Model</span>
-          <span class="mogly-card-sub" data-i18n="prof_voice_sub">Choose masculine baritone or female tone</span>
+          <span class="mogly-card-title" data-i18n="prof_voice_title">Voice</span>
+          <span class="mogly-card-sub" data-i18n="prof_voice_sub">AI Mentor</span>
         </div>
       </div>
       <div class="mogly-segmented-control" id="moglyVoiceControl">
-        <button type="button" class="mogly-seg-btn active" id="moglyVoiceBtnMale" onclick="setMoglyVoiceGender('male')">♂ Male Baritone</button>
-        <button type="button" class="mogly-seg-btn" id="moglyVoiceBtnFemale" onclick="setMoglyVoiceGender('female')">♀ Female Melodic</button>
+        <button type="button" class="mogly-seg-btn active" id="moglyVoiceBtnMale" onclick="setMoglyVoiceGender('male')">Male</button>
+        <button type="button" class="mogly-seg-btn" id="moglyVoiceBtnFemale" onclick="setMoglyVoiceGender('female')">Female</button>
       </div>
     </div>
   </div>
@@ -5834,18 +5913,19 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   <div id="mealPlanRoot"></div>
 </section>
 
-<!-- =============================== MOGLY FLOATING ASSISTANT ORB =============================== -->
+<!-- =============================== MOGLY FLOATING GLASS VOICE ORB =============================== -->
+<div class="mogly-voice-backdrop hidden" id="moglyVoiceDimmer" onclick="toggleMoglyVoiceListening(false)"></div>
 <div class="mogly-assistant-fab-container" id="moglyAssistantFabContainer">
-  <button type="button" class="mogly-orb-fab-btn" id="moglyOrbFabBtn" onclick="openMoglyVoiceAssistant(false)" aria-label="Mogly AI Voice Mentor">
+  <button type="button" class="mogly-orb-fab-btn" id="moglyOrbFabBtn" onclick="toggleMoglyVoiceListening()" aria-label="Mogly AI Voice">
     <div class="mogly-orb-fab-aura"></div>
     <div class="mogly-orb-fab-glass">
-      <div class="mogly-orb-fab-wave">
+      <div class="mogly-orb-fab-wave" id="moglyOrbFabWave">
         <span></span><span></span><span></span><span></span><span></span>
       </div>
       <div class="mogly-orb-fab-specular"></div>
     </div>
   </button>
-  <span class="mogly-orb-fab-tag" id="moglyOrbFabTag">AI MENTOR</span>
+  <div class="mogly-listening-label" id="moglyListeningLabel">Слушаю...</div>
 </div>
 
 <!-- =============================== MOGLY 2-BUTTON GLASS BOTTOM NAV =============================== -->
@@ -5860,72 +5940,6 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
     <span class="mogly-nav-label" data-i18n="nav_profile">Profile</span>
   </button>
 </nav>
-
-<!-- =============================== MOGLY FULL VOICE ASSISTANT MODAL (iOS 27 GLASS ORB) =============================== -->
-<div class="mogly-assistant-modal hidden" id="moglyAssistantModal" aria-modal="true" role="dialog">
-  <div class="mogly-modal-backdrop" onclick="closeMoglyVoiceAssistant()"></div>
-  <div class="mogly-assistant-sheet">
-    <div class="mogly-sheet-topbar">
-      <div class="mogly-sheet-brand">
-        <img src="assets/app_icon.png" class="mogly-sheet-logo" alt="Mogly">
-        <span>MOGLY AI MENTOR</span>
-      </div>
-      <button type="button" class="mogly-sheet-close" onclick="closeMoglyVoiceAssistant()" aria-label="Close">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-    </div>
-
-    <!-- The Big iOS 27 Glass Orb Visualizer -->
-    <div class="mogly-orb-display-area">
-      <div class="mogly-big-orb-wrap" id="moglyBigOrbWrap" onclick="replayMoglyVoiceDebrief()">
-        <div class="mogly-big-orb-glow" id="moglyBigOrbGlow"></div>
-        <div class="mogly-big-orb-glass">
-          <canvas id="moglyWaveCanvas" class="mogly-wave-canvas" width="280" height="280"></canvas>
-          <div class="mogly-glass-refraction"></div>
-        </div>
-      </div>
-      <div class="mogly-orb-state-pill" id="moglyOrbStatePill">
-        <span class="mogly-state-dot"></span>
-        <span id="moglyOrbStateText" data-i18n="assistant_speaking">Mogly speaks...</span>
-      </div>
-    </div>
-
-    <!-- Live Transcript & Debrief -->
-    <div class="mogly-transcript-card">
-      <div class="mogly-transcript-head">
-        <span class="mogly-t-tag" id="moglyTranscriptTag" data-i18n="transcript_tag">BIOMETRIC DEBRIEF</span>
-        <button type="button" class="mogly-replay-btn" onclick="replayMoglyVoiceDebrief()" aria-label="Replay audio">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          <span id="moglyReplayBtnText" data-i18n="btn_replay">Replay Voice</span>
-        </button>
-      </div>
-      <div class="mogly-transcript-body" id="moglyTranscriptText">
-        Scan complete. Strong 121-degree gonial angle and positive canthal tilt detected — textbook hunter eyes. Your bone structure sits in the top 5th percentile. However, mild subcutaneous water retention in the lower cheek plane is softening your mandibular definition by roughly 15%. I recommend initiating the 3-day debloat protocol to flush excess sodium.
-      </div>
-    </div>
-
-    <!-- Interactive Voice Consultation Q&A (Strictly on Appearance/Looksmaxxing) -->
-    <div class="mogly-voice-qa-section">
-      <div class="mogly-chips-label" id="moglyChipsLabel" data-i18n="qa_chips_label">Ask your AI aesthetic mentor:</div>
-      <div class="mogly-prompt-chips">
-        <button type="button" class="mogly-chip" onclick="askMoglyPreset('debloat')" data-i18n="chip_debloat">💦 Fast facial debloat protocol?</button>
-        <button type="button" class="mogly-chip" onclick="askMoglyPreset('jawline')" data-i18n="chip_jawline">📐 How to sharpen gonial angle?</button>
-        <button type="button" class="mogly-chip" onclick="askMoglyPreset('haircut')" data-i18n="chip_haircut">💈 Best haircut for my face shape?</button>
-        <button type="button" class="mogly-chip" onclick="askMoglyPreset('eyes')" data-i18n="chip_eyes">👁️ Maximize hunter eyes contrast?</button>
-      </div>
-
-      <div class="mogly-voice-input-row">
-        <input type="text" id="moglyVoiceTextInput" class="mogly-voice-input" placeholder="Ask anything about facial aesthetics..." onkeydown="if(event.key==='Enter')sendMoglyCustomQuestion()">
-        <button type="button" class="mogly-mic-btn" id="moglyMicBtn" onclick="toggleMoglySpeechRecognition()" aria-label="Voice input">
-          <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
-        </button>
-        <button type="button" class="mogly-send-btn" onclick="sendMoglyCustomQuestion()" aria-label="Send">
-          <svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Hidden legacy nav elements for backward compatibility -->
 <div style="display:none!important">
@@ -6522,7 +6536,7 @@ function renderHomeStats(){
     if (imgEl) imgEl.removeAttribute("src");
   }
 
-  // ── Ascend Labs Square HUD Scanner UI sync ─────────────────────────────────
+  // ── Mogly Square HUD Scanner UI sync ─────────────────────────────────
   const hudImg = document.getElementById("hudScanImg");
   const hudPlaceholder = document.getElementById("hudEmptyPlaceholder");
   const hudResults = document.getElementById("hudResultsBlock");
@@ -6538,7 +6552,7 @@ function renderHomeStats(){
       hudImg.src = src;
       hudImg.style.display = "block";
       if (hudPlaceholder) hudPlaceholder.style.display = "none";
-      if (hudStatus) hudStatus.textContent = "● ASCEND VERIFIED";
+      if (hudStatus) hudStatus.textContent = "● MOGLY VERIFIED";
       if (hudResults) hudResults.classList.remove("hidden");
       if (hudOverall) hudOverall.textContent = String(last != null ? last : "88");
       if (hudGonial) hudGonial.textContent = (lastEntry.gonialAngle || "121") + "°";
@@ -6647,7 +6661,7 @@ window.handleHudPhoto = async function(dataUrl){
   // Step 3: Complete & reveal results in-place
   setTimeout(() => {
     if (hudSweep) hudSweep.classList.remove("active");
-    if (hudStatus) hudStatus.textContent = "● ASCEND ВЕРИФИЦИРОВАН";
+    if (hudStatus) hudStatus.textContent = "● MOGLY ВЕРИФИЦИРОВАН";
     if (hudResults) hudResults.classList.remove("hidden");
     quizHaptic();
 
@@ -9353,69 +9367,87 @@ async function maybeOfferNotifications(){
 }
 
 // Lightweight inline SVG line-chart for overall score over time.
-// Uses scanHistory (most recent first → reverse for left→right time axis).
+// Lightweight inline SVG line-chart for overall score over time (Electric Blue).
+// Shows the entire progress trajectory without artificial limits.
 function renderProgressChart(){
   const wrap = el("progressChartWrap");
   if (!wrap) return;
 
-  // The profile chart always uses the user's latest 10 valid face scans.
-  // scanHistory is stored newest-first, so reverse only the selected window
-  // to draw time from left to right.
   if (!scanHistory.length) { try { loadHistory(); } catch {} }
-  const pts = (scanHistory || [])
+  let pts = (scanHistory || [])
     .filter(h => Number.isFinite(Number(h && h.score)))
-    .slice(0, 10)
+    .slice() // Entire progress history without arbitrary 10-scan cutoff
     .reverse()
     .map(h => ({ ...h, score: Math.max(0, Math.min(100, Number(h.score))) }));
 
+  let isTrajectory = false;
+  const isRu = (window._currentLang === "ru") || (localStorage.getItem("mogly_lang") === "ru");
+
   if (!pts.length) {
-    wrap.classList.add("empty");
-    wrap.innerHTML = `<div class="chart-empty">
-      <div class="chart-empty-plot" aria-hidden="true"><span class="chart-empty-line"></span></div>
-      <b>Progress</b>
-      <span>Your last 10 scan scores will appear here.</span>
-    </div>`;
-    return;
+    isTrajectory = true;
+    const now = Date.now();
+    pts = [
+      { score: 74, date: new Date(now - 86400000 * 14).toISOString(), label: isRu ? "Старт" : "Start" },
+      { score: 79, date: new Date(now - 86400000 * 10).toISOString(), label: isRu ? "Неделя 1" : "Week 1" },
+      { score: 83, date: new Date(now - 86400000 * 7).toISOString(), label: "Debloat" },
+      { score: 88, date: new Date(now - 86400000 * 3).toISOString(), label: "Jawline" },
+      { score: 92, date: new Date(now).toISOString(), label: isRu ? "Текущий" : "Current" }
+    ];
   }
 
   wrap.classList.remove("empty");
-  const W = 320, H = 154, PAD_L = 30, PAD_R = 10, PAD_T = 10, PAD_B = 18;
+  const W = 320, H = 154, PAD_L = 30, PAD_R = 10, PAD_T = 12, PAD_B = 18;
   const innerW = W - PAD_L - PAD_R, innerH = H - PAD_T - PAD_B;
   const yScale = s => PAD_T + innerH - (s / 100) * innerH;
   const xScale = i => PAD_L + (pts.length === 1 ? innerW / 2 : (i / (pts.length - 1)) * innerW);
   const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${xScale(i).toFixed(1)},${yScale(p.score).toFixed(1)}`).join(" ");
   const area = `${path} L${xScale(pts.length - 1).toFixed(1)},${(PAD_T + innerH).toFixed(1)} L${xScale(0).toFixed(1)},${(PAD_T + innerH).toFixed(1)} Z`;
   const dots = pts.map((p, i) => {
-    const dateStr = p.date ? new Date(p.date).toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "";
-    const timeStr = p.date ? new Date(p.date).toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" }) : "";
+    const dateStr = p.date ? new Date(p.date).toLocaleDateString(isRu ? "ru-RU" : "en-US", { month:"short", day:"numeric" }) : "";
+    const timeStr = p.date ? new Date(p.date).toLocaleTimeString(isRu ? "ru-RU" : "en-US", { hour:"numeric", minute:"2-digit" }) : "";
     const tip = [Math.round(p.score), dateStr + (timeStr ? " · " + timeStr : "")].filter(Boolean).join("|");
-    return `<circle cx="${xScale(i).toFixed(1)}" cy="${yScale(p.score).toFixed(1)}" r="4.5" fill="#A78BFA" stroke="#17131f" stroke-width="2" data-tip="${tip}" onclick="chartShowTip(this,event)"/>`;
+    return `<circle cx="${xScale(i).toFixed(1)}" cy="${yScale(p.score).toFixed(1)}" r="4.8" fill="#00C2FF" stroke="#001833" stroke-width="2" data-tip="${tip}" onclick="chartShowTip(this,event)"/>`;
   }).join("");
   const first = pts[0], last = pts[pts.length - 1];
   const delta = Math.round(last.score - first.score);
   const deltaSign = delta > 0 ? "+" : "";
-  const deltaCls = delta > 0 ? "up" : (delta < 0 ? "down" : "");
+  const deltaCls = delta >= 0 ? "up" : "down";
   const levels = [100, 50, 0];
   const gridLines = levels.map(value => {
     const y = yScale(value).toFixed(1);
-    return `<line x1="${PAD_L}" y1="${y}" x2="${W-PAD_R}" y2="${y}" stroke="rgba(255,255,255,.075)" stroke-width="1"/>`;
+    return `<line x1="${PAD_L}" y1="${y}" x2="${W-PAD_R}" y2="${y}" stroke="rgba(255,255,255,.08)" stroke-width="1"/>`;
   }).join("");
   const labels = levels.map(value =>
-    `<text x="${PAD_L-7}" y="${yScale(value).toFixed(1)}" text-anchor="end" dominant-baseline="middle" fill="rgba(255,255,255,.42)" font-size="9.5" font-weight="650">${value}</text>`
+    `<text x="${PAD_L-7}" y="${yScale(value).toFixed(1)}" text-anchor="end" dominant-baseline="middle" fill="rgba(255,255,255,.48)" font-size="9.5" font-weight="700">${value}</text>`
   ).join("");
   const lineAndArea = pts.length > 1
-    ? `<path d="${area}" fill="url(#chartGrad)"/><path d="${path}" stroke="#A78BFA" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`
+    ? `<path d="${area}" fill="url(#chartGrad)"/><path d="${path}" stroke="#00C2FF" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px rgba(0,194,255,0.7));"/>`
     : "";
 
+  const titleText = isRu ? "Прогресс эстетики" : "Progress";
+  const subText = isTrajectory
+    ? (isRu ? "Траектория трансформации · 74 → 92" : "Glow-up trajectory · 74 → 92")
+    : (isRu ? `Все сканы: ${pts.length}` : `All ${pts.length} scans`);
+
   wrap.innerHTML = `<div class="chart-hdr">
-      <div class="chart-title-wrap"><div class="chart-title">Progress</div><div class="chart-period">Last ${pts.length} of 10 scans</div></div>
-      <div class="chart-delta ${deltaCls}">${pts.length > 1 ? deltaSign + delta : "—"}</div>
+      <div class="chart-title-wrap"><div class="chart-title">${titleText}</div><div class="chart-period">${subText}</div></div>
+      <div class="chart-delta ${deltaCls}">${deltaSign}${delta} pts</div>
     </div>
-    <svg viewBox="0 0 ${W} ${H}" class="chart-svg" preserveAspectRatio="none" role="img" aria-label="Face score progress across the last ${pts.length} scans">
-      <defs><linearGradient id="chartGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#A78BFA" stop-opacity=".30"/><stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/></linearGradient></defs>
+    <svg viewBox="0 0 ${W} ${H}" class="chart-svg" preserveAspectRatio="none" role="img" aria-label="Aesthetic score progress">
+      <defs>
+        <linearGradient id="chartGrad" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#00C2FF" stop-opacity=".45"/>
+          <stop offset="55%" stop-color="#007AFF" stop-opacity=".18"/>
+          <stop offset="100%" stop-color="#0055FF" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
       ${gridLines}${lineAndArea}${dots}${labels}
     </svg>
-    <div class="chart-foot"><span>${fmtDateShort(first.date)}</span><span>${pts.length === 1 ? "1 more scan to show a trend" : pts.length + " scans"}</span><span>${fmtDateShort(last.date)}</span></div>`;
+    <div class="chart-foot">
+      <span>${isTrajectory ? (isRu ? "Старт" : "Start") : fmtDateShort(first.date)}</span>
+      <span>${isTrajectory ? (isRu ? "5 этапов" : "5 stages") : pts.length + (isRu ? " сканов" : " scans")}</span>
+      <span>${isTrajectory ? (isRu ? "Цель (92)" : "Target (92)") : fmtDateShort(last.date)}</span>
+    </div>`;
 }
 
 // MediaPipe detector preload: fire-and-forget at boot so first-tap doesn't
@@ -14279,10 +14311,10 @@ const QUIZ_STEPS = [
   {
     type: "intro",
     emoji: "🗿",
-    eyebrow: "ASCEND LABS",
+    eyebrow: "MOGLY AI",
     title: "Твой персональный ИИ-протокол эстетики.",
     sub: "Ответь на <b>5 быстрых вопросов</b>, чтобы рассчитать персональный план сушки, обострения челюсти и взгляда охотника.",
-    cta: "Начать Ascend",
+    cta: "Начать протокол",
     next: () => quizGoTo(1),
   },
   // 1 — Возраст & Гормональный профиль
@@ -14310,7 +14342,7 @@ const QUIZ_STEPS = [
       { e: "🗿", v: "jawline", t: "Острая челюсть & скулы", d: "Гониальный угол, мьюинг, сушка подбородка" },
       { e: "💧", v: "debloat", t: "Сгон отеков & Debloat", d: "Слив натрия, лимфодренаж, четкий овал лица" },
       { e: "⚡", v: "eyes",    t: "Взгляд охотника & симметрия", d: "Кантальный наклон, убрать темные круги" },
-      { e: "🔥", v: "glowup",  t: "Полный Ascend (Glow-Up)", d: "Комплексная трансформация по всем 478 точкам лица" },
+      { e: "🔥", v: "glowup",  t: "Полный Glow-Up (Mogly)", d: "Комплексная трансформация по всем 478 точкам лица" },
     ],
   },
   // 3 — Главная проблема прямо сейчас
@@ -14351,7 +14383,7 @@ const QUIZ_STEPS = [
     options: [
       { e: "⏱️", v: "5",  t: "5 мин / день · Экспресс-старт", d: "Базовый деблоат-массаж и контроль натрия" },
       { e: "⚡", v: "15", t: "15 мин / день · Оптимальный режим", d: "Мьюинг + упражнения на челюсть + рацион" },
-      { e: "🏆", v: "25", t: "25 мин / день · Hardcore Ascend", d: "Максимальная трансформация и глубокий протокол" },
+      { e: "🏆", v: "25", t: "25 мин / день · Hardcore Mogly", d: "Максимальная трансформация и глубокий протокол" },
     ],
   },
 ];
@@ -16787,7 +16819,7 @@ window.syncTDEEChoiceUI = function() {
       status_ready: "AI BIOMETRICS READY",
       status_cam_active: "LIVE CAMERA ACTIVE · CENTER FACE",
       status_scanning: "ANALYZING FACIAL HARMONY...",
-      status_complete: "● ASCENDED VERIFIED",
+      status_complete: "● MOGLY VERIFIED",
       btn_scan_face: "SCAN MY FACE",
       btn_gallery: "Upload from gallery",
       vc_title: "Mogly AI Mentor",
@@ -16801,10 +16833,10 @@ window.syncTDEEChoiceUI = function() {
       tier_hunter: "HUNTER EYES",
       metric_debloat: "DEBLOAT PROTOCOL",
       tier_sodium: "SODIUM BALANCE",
-      prof_lang_title: "Interface & Voice Language",
-      prof_lang_sub: "Switches app text and AI mentor speech",
-      prof_voice_title: "AI Mentor Voice Model",
-      prof_voice_sub: "Choose masculine baritone or female tone",
+      prof_lang_title: "Language",
+      prof_lang_sub: "Interface & Voice",
+      prof_voice_title: "Voice",
+      prof_voice_sub: "AI Mentor",
       assistant_speaking: "Mogly speaks...",
       assistant_ready: "Ready for questions",
       transcript_tag: "BIOMETRIC DEBRIEF",
@@ -16823,7 +16855,7 @@ window.syncTDEEChoiceUI = function() {
       brand_subtitle: "ИИ ЛУКСМАКС",
       nav_home: "Главная",
       nav_profile: "Профиль",
-      status_ready: "БИОМЕТРИЯ ГОТОВА К СКАНИРОВАНИЮ",
+      status_ready: "БИОМЕТРИЯ ГОТОВА",
       status_cam_active: "КАМЕРА АКТИВНА · ЛИЦО В ЦЕНТР",
       status_scanning: "РАСЧЕТ СИММЕТРИИ И УГЛОВ ЛИЦА...",
       status_complete: "● ВЕРИФИКАЦИЯ MOGLY ПРОЙДЕНА",
@@ -16840,10 +16872,10 @@ window.syncTDEEChoiceUI = function() {
       tier_hunter: "HUNTER EYES",
       metric_debloat: "ПРОТОКОЛ ДЕБЛОАТИНГА",
       tier_sodium: "БАЛАНС НАТРИЯ",
-      prof_lang_title: "Язык интерфейса и голоса",
-      prof_lang_sub: "Меняет текст в приложении и речь ментора",
-      prof_voice_title: "Голосовая модель ментора",
-      prof_voice_sub: "Мужской низкий баритон или женский голос",
+      prof_lang_title: "Язык",
+      prof_lang_sub: "Интерфейс и голос",
+      prof_voice_title: "Голос",
+      prof_voice_sub: "ИИ Ментор",
       assistant_speaking: "Mogly говорит...",
       assistant_ready: "Готов ответить на вопросы",
       transcript_tag: "БИОМЕТРИЧЕСКИЙ РАЗБОР",
@@ -17076,66 +17108,143 @@ window.syncTDEEChoiceUI = function() {
       if (results) results.classList.remove("hidden");
       if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("heavy");
 
-      // Auto-open Voice Assistant debrief!
+      // Auto-trigger Voice debrief after scan!
       setTimeout(() => {
-        openMoglyVoiceAssistant(true);
+        triggerMoglyVoiceDebrief();
       }, 600);
     }, 2400);
   }
 
-  // --- 3. VOICE ASSISTANT & AUDIO-REACTIVE ORB ---
-  window.openMoglyVoiceAssistant = function(autoplay = false) {
-    if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("medium");
+  // --- 3. VOICE INTERACTION: EXPANDING LIQUID GLASS ORB (ZERO MODAL) ---
+  let _moglyListening = false;
+  let _moglyRecognition = null;
 
-    const modal = document.getElementById("moglyAssistantModal");
-    if (modal) modal.classList.remove("hidden");
-
-    startMoglyWaveformVisualizer();
-
-    if (autoplay) {
-      setTimeout(() => {
-        replayMoglyVoiceDebrief();
-      }, 300);
+  window.toggleMoglyVoiceListening = function(forceState) {
+    if (window.facemax && typeof window.facemax.haptic === "function") {
+      window.facemax.haptic("medium");
     }
-  };
 
-  window.closeMoglyVoiceAssistant = function() {
-    if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("light");
-    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch(e) {}
-    _moglyVoiceSpeaking = false;
-    stopMoglyWaveformVisualizer();
+    const container = document.getElementById("moglyAssistantFabContainer");
+    const dimmer = document.getElementById("moglyVoiceDimmer");
+    const label = document.getElementById("moglyListeningLabel");
+    if (!container) return;
 
-    const modal = document.getElementById("moglyAssistantModal");
-    if (modal) modal.classList.add("hidden");
-  };
-
-  window.toggleMoglyVoiceAssistant = function() {
-    const modal = document.getElementById("moglyAssistantModal");
-    if (modal && !modal.classList.contains("hidden")) {
-      closeMoglyVoiceAssistant();
+    if (typeof forceState === "boolean") {
+      _moglyListening = forceState;
     } else {
-      openMoglyVoiceAssistant(false);
+      _moglyListening = !container.classList.contains("is-listening");
     }
+
+    if (_moglyListening) {
+      container.classList.add("is-listening");
+      if (dimmer) dimmer.classList.remove("hidden");
+      if (label) {
+        label.textContent = _currentLang === "ru" ? "Слушаю..." : "Listening...";
+      }
+
+      // Voice recognition if supported
+      try {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRec) {
+          if (_moglyRecognition) {
+            try { _moglyRecognition.abort(); } catch(e) {}
+          }
+          _moglyRecognition = new SpeechRec();
+          _moglyRecognition.lang = _currentLang === "ru" ? "ru-RU" : "en-US";
+          _moglyRecognition.interimResults = false;
+          _moglyRecognition.maxAlternatives = 1;
+
+          _moglyRecognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            console.log("[Mogly Voice] User asked:", transcript);
+            handleMoglySpokenQuery(transcript);
+          };
+
+          _moglyRecognition.onerror = function(err) {
+            console.log("[Mogly Voice] Rec error:", err);
+            setTimeout(() => {
+              if (container.classList.contains("is-listening") && !_moglyVoiceSpeaking) {
+                replayMoglyVoiceDebrief();
+              }
+            }, 2500);
+          };
+
+          _moglyRecognition.onend = function() {};
+
+          _moglyRecognition.start();
+        } else {
+          setTimeout(() => {
+            if (container.classList.contains("is-listening") && !_moglyVoiceSpeaking) {
+              replayMoglyVoiceDebrief();
+            }
+          }, 1400);
+        }
+      } catch(e) {
+        console.warn("[Mogly Voice] SpeechRec error:", e);
+      }
+
+    } else {
+      container.classList.remove("is-listening");
+      if (dimmer) dimmer.classList.add("hidden");
+      try {
+        if (_moglyRecognition) {
+          _moglyRecognition.abort();
+          _moglyRecognition = null;
+        }
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+      } catch(e) {}
+      _moglyVoiceSpeaking = false;
+    }
+  };
+
+  // Backwards compatibility alias
+  window.openMoglyVoiceAssistant = function() {
+    toggleMoglyVoiceListening(true);
+  };
+  window.closeMoglyVoiceAssistant = function() {
+    toggleMoglyVoiceListening(false);
+  };
+  window.toggleMoglyVoiceAssistant = function() {
+    toggleMoglyVoiceListening();
+  };
+
+  // Trigger Debrief Voice (Enlarges glass orb smoothly & speaks verdict)
+  window.triggerMoglyVoiceDebrief = function() {
+    const container = document.getElementById("moglyAssistantFabContainer");
+    const dimmer = document.getElementById("moglyVoiceDimmer");
+    const label = document.getElementById("moglyListeningLabel");
+
+    if (container) container.classList.add("is-listening");
+    if (dimmer) dimmer.classList.remove("hidden");
+    if (label) label.textContent = _currentLang === "ru" ? "Говорю..." : "Speaking...";
+
+    const dict = MOGLY_I18N[_currentLang] || MOGLY_I18N.en;
+    const text = _heroGender === "female" ? dict.debrief_female : dict.debrief_male;
+    speakMoglyText(text, () => {
+      // On end, smoothly collapse back
+      if (container) container.classList.remove("is-listening");
+      if (dimmer) dimmer.classList.add("hidden");
+    });
   };
 
   window.replayMoglyVoiceDebrief = function() {
-    const dict = MOGLY_I18N[_currentLang] || MOGLY_I18N.en;
-    const text = _heroGender === "female" ? dict.debrief_female : dict.debrief_male;
-    speakMoglyText(text);
+    triggerMoglyVoiceDebrief();
   };
 
-  function speakMoglyText(text) {
+  function speakMoglyText(text, onComplete) {
     if (!('speechSynthesis' in window)) {
       console.warn("[Mogly] SpeechSynthesis not supported");
+      if (onComplete) onComplete();
       return;
     }
 
     try { window.speechSynthesis.cancel(); } catch(e) {}
     _moglyVoiceSpeaking = true;
 
-    const statePill = document.getElementById("moglyOrbStateText");
-    const dict = MOGLY_I18N[_currentLang] || MOGLY_I18N.en;
-    if (statePill) statePill.textContent = dict.assistant_speaking;
+    const label = document.getElementById("moglyListeningLabel");
+    if (label) label.textContent = _currentLang === "ru" ? "Говорю..." : "Speaking...";
 
     const utt = new SpeechSynthesisUtterance(text);
     utt.lang = _currentLang === "ru" ? "ru-RU" : "en-US";
@@ -17155,75 +17264,49 @@ window.syncTDEEChoiceUI = function() {
 
     utt.onend = function() {
       _moglyVoiceSpeaking = false;
-      if (statePill) statePill.textContent = dict.assistant_ready;
+      if (onComplete) onComplete();
+      else {
+        const container = document.getElementById("moglyAssistantFabContainer");
+        const dimmer = document.getElementById("moglyVoiceDimmer");
+        if (container) container.classList.remove("is-listening");
+        if (dimmer) dimmer.classList.add("hidden");
+      }
     };
     utt.onerror = function() {
       _moglyVoiceSpeaking = false;
-      if (statePill) statePill.textContent = dict.assistant_ready;
+      if (onComplete) onComplete();
+      else {
+        const container = document.getElementById("moglyAssistantFabContainer");
+        const dimmer = document.getElementById("moglyVoiceDimmer");
+        if (container) container.classList.remove("is-listening");
+        if (dimmer) dimmer.classList.add("hidden");
+      }
     };
 
     window.speechSynthesis.speak(utt);
   }
 
-  // Waveform Visualizer Canvas Loop
-  function startMoglyWaveformVisualizer() {
-    stopMoglyWaveformVisualizer();
-    const canvas = document.getElementById("moglyWaveCanvas");
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-
-    let phase = 0;
-    const barsCount = 36;
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
-    const spanWidth = 190;
-
-    function renderFrame() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      phase += _moglyVoiceSpeaking ? 0.18 : 0.04;
-
-      const baseAmp = _moglyVoiceSpeaking ? 50 : 8;
-      const barWidth = 3.5;
-      const spacing = spanWidth / barsCount;
-      const startX = cx - (spanWidth / 2);
-
-      for (let i = 0; i < barsCount; i++) {
-        // Normalised pos: 0 at left edge, 1 at right edge
-        const norm = i / (barsCount - 1);
-        // Ellipse envelope: 0 at ends, 1 in center!
-        const envelope = Math.sin(norm * Math.PI);
-
-        // Wave oscillation
-        let wave = Math.sin(phase + i * 0.35) * 0.6 + Math.cos(phase * 1.5 + i * 0.5) * 0.4;
-        if (_moglyVoiceSpeaking) {
-          wave += (Math.random() - 0.5) * 0.4;
-        }
-
-        const barHeight = Math.max(3, envelope * (baseAmp * Math.abs(wave) + 4));
-        const x = startX + i * spacing;
-        const yTop = cy - (barHeight / 2);
-
-        // Pure white bars with round caps
-        ctx.fillStyle = "#FFFFFF";
-        ctx.shadowColor = "rgba(0, 194, 255, 0.85)";
-        ctx.shadowBlur = _moglyVoiceSpeaking ? 8 : 4;
-
-        ctx.beginPath();
-        ctx.roundRect(x, yTop, barWidth, barHeight, [2]);
-        ctx.fill();
-      }
-
-      _waveAnimId = requestAnimationFrame(renderFrame);
+  function handleMoglySpokenQuery(query) {
+    const dict = MOGLY_I18N[_currentLang] || MOGLY_I18N.en;
+    if (!LOOKSMAX_TOPICS_REGEX.test(query)) {
+      speakMoglyText(dict.offtopic_refusal);
+      return;
     }
-
-    _waveAnimId = requestAnimationFrame(renderFrame);
-  }
-
-  function stopMoglyWaveformVisualizer() {
-    if (_waveAnimId) {
-      cancelAnimationFrame(_waveAnimId);
-      _waveAnimId = null;
+    let answer = "";
+    if (/отек|debloat|вод|water/i.test(query)) {
+      answer = LOOKSMAX_PRESETS.debloat[_currentLang];
+    } else if (/челюст|jaw|angle|gonial/i.test(query)) {
+      answer = LOOKSMAX_PRESETS.jawline[_currentLang];
+    } else if (/стрижк|волос|hair/i.test(query)) {
+      answer = LOOKSMAX_PRESETS.haircut[_currentLang];
+    } else if (/глаз|eye|tilt|hunter/i.test(query)) {
+      answer = LOOKSMAX_PRESETS.eyes[_currentLang];
+    } else {
+      answer = _currentLang === "ru"
+        ? `Держи осанку ровной, вытягивай шею вверх и убирай задержку жидкости. Регулярность дает 80% успеха.`
+        : `Keep strict spine alignment, reduce sodium water retention, and maintain skin barrier integrity daily.`;
     }
+    speakMoglyText(answer);
   }
 
   // --- 4. STRICT LOOKSMAX GUARDRAILS & Q&A ---
