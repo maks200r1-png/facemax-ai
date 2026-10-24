@@ -1850,6 +1850,54 @@ Rules:
   }
 }
 
+// Native ChatGPT Voice Generation via OpenRouter (openai/gpt-audio-mini)
+async function callOpenRouterAudio(env, prompt, opts = {}) {
+  const key = String(env.OPENROUTER_API_KEY || "").trim();
+  if (!key) return { ok: false, error: "OPENROUTER_API_KEY missing" };
+
+  const endpointBase = String(env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1").replace(/\/+$/, "");
+  const endpoint = endpointBase + "/chat/completions";
+
+  const voice = opts.voice || "ash"; // "ash" / "onyx" - elite masculine mentor voice
+  const payload = {
+    model: "openai/gpt-audio-mini",
+    modalities: ["text", "audio"],
+    audio: {
+      voice: voice,
+      format: "mp3"
+    },
+    messages: [
+      { role: "user", content: prompt }
+    ]
+  };
+
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + key,
+        "HTTP-Referer": "https://facemaxaiapp.com",
+        "X-Title": "FaceMax AI Mogly Voice",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    const message = data?.choices?.[0]?.message;
+    if (message && message.audio && message.audio.data) {
+      return {
+        ok: true,
+        audio_base64: message.audio.data,
+        transcript: message.audio.transcript || message.content || ""
+      };
+    }
+    return { ok: false, error: data?.error?.message || "No audio returned from gpt-audio-mini" };
+  } catch(e) {
+    return { ok: false, error: e?.message || String(e) };
+  }
+}
+
 // AI Voice Mentor consultation. Evaluates user question against their actual face data.
 async function voiceConsult(request, env) {
   if (!String(env.OPENROUTER_API_KEY || "").trim()) {
@@ -1898,7 +1946,7 @@ ${faceContext || "Данные скана: средний балл лица 72/1
 
 ПРАВИЛА ОТВЕТА (ОЧЕНЬ СТРОГО):
 1. Отвечай прямо на русском языке от первого лица ("Глядя на твое фото...", "По твоему скану...").
-2. Твой ответ предназначен ДЛЯ ОЗВУЧИВАНИЯ ГОЛОСОМ. Пиши живой разговорной речью, строго 2–4 коротких, мощных, емких предложения. Без списков, без звездочек, без нумерации.
+2. Твой ответ предназначен ДЛЯ ОЗВУЧИВАНИЯ ГОЛОСОМ. Пиши живой разговорной речью, строго 2–3 коротких, мощных, емких предложения. Без списков, без звездочек, без нумерации.
 3. Обязательно конкретно упомяни точные детали из анализа его лица (его балл, челюсть, глаза, скулы, симметрию или кожу).
 4. Дай 1–2 конкретных действия (деблоатинг, натрий/калий, техника мьюинга, стрижка под его форму лица).
 5. Никакой воды, дисклеймеров и роботизированных фраз. Говори как опытный харизматичный наставник.
@@ -1913,13 +1961,26 @@ User request:
 
 RULES (STRICT):
 1. Speak in first person ("Looking at your scan...", "Based on your facial biometrics...").
-2. This text WILL BE READ ALOUD VIA VOICE. Keep it strictly 2-4 punchy, conversational sentences. NO markdown lists, NO bullet points.
+2. This text WILL BE READ ALOUD VIA VOICE. Keep it strictly 2-3 punchy, conversational sentences. NO markdown lists, NO bullet points.
 3. Explicitly reference their real face numbers and features (jawline, gonial angle, canthal tilt, cheekbones, skin).
 4. Give 1-2 concrete actionable fixes (debloat, sodium flush, tongue posture, haircut).
 5. Zero fluff or robot disclaimers. Speak like a confident, elite personal mentor.
 `;
 
   try {
+    // 1. Attempt native audio generation via OpenAI GPT Audio Mini
+    const audioRes = await callOpenRouterAudio(env, systemInstructions, { voice: "ash" });
+    if (audioRes.ok && audioRes.audio_base64) {
+      return json({
+        ok: true,
+        answer: audioRes.transcript,
+        audio_base64: audioRes.audio_base64,
+        voice: "ash",
+        format: "mp3"
+      });
+    }
+
+    // 2. Fallback to OpenRouter text if audio modality unavailable
     const result = await callOpenRouter(env, systemInstructions, [], { tries: 2, temperature: 0.35, maxTokens: 400 });
     if (!result.ok || !result.text) {
       return json({ ok: false, error: "ai_error", reason: result.reason || "OpenRouter error" }, 502);

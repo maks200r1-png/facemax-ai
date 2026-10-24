@@ -17945,7 +17945,7 @@ window.syncTDEEChoiceUI = function() {
     startMoglyVoiceInPlace();
   };
 
-  function startMoglyVoiceInPlace() {
+  async function startMoglyVoiceInPlace() {
     _isMoglyVoiceActive = true;
     const orbBtn = document.getElementById("moglyOrbFabBtn");
     const container = document.getElementById("moglyAssistantFabContainer");
@@ -17975,17 +17975,73 @@ window.syncTDEEChoiceUI = function() {
       return;
     }
 
-    // Case 2: The user HAS a scanned face
+    // Case 2: The user HAS a scanned face - Ask Live Smart Voice (OpenAI gpt-audio-mini via OpenRouter)
+    await askMoglySmartVoice();
+  }
+
+  async function askMoglySmartVoice(userQuery) {
+    const label = document.getElementById("moglyListeningLabel");
+    const isRu = (_currentLang === "ru");
+    const ctx = getUserFaceContext();
+
     const score = ctx.score || 84;
     const jaw = (ctx.scores && ctx.scores.jawline) ? Math.round(ctx.scores.jawline) : 88;
     const symm = (ctx.scores && ctx.scores.symmetry) ? Math.round(ctx.scores.symmetry) : 82;
 
     if (label) {
+      label.textContent = isRu ? "● Mogly AI думает..." : "● Mogly AI analyzing...";
+    }
+
+    try {
+      const payload = {
+        message: userQuery || (isRu 
+          ? "Сделай краткий персональный вердикт по моему лицу и главным зонам роста." 
+          : "Give me a concise personal debrief of my face and upgrade priorities."),
+        lang: _currentLang,
+        score: ctx.score,
+        metrics: ctx.scores,
+        report: ctx.report
+      };
+
+      const res = await fetch("https://facemax-api.voou96329.workers.dev/api/voice-consult", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || "Mogly voice consult failed");
+
+      if (label && data.answer) {
+        label.textContent = `● Mogly: ${data.answer.slice(0, 50)}...`;
+      }
+
+      if (data.audio_base64) {
+        // Native OpenAI GPT Audio Mini streaming audio
+        const audioSrc = "data:audio/mp3;base64," + data.audio_base64;
+        playMoglyClonedAudio(audioSrc, data.answer, () => {
+          stopMoglyAudio();
+        });
+        return;
+      }
+
+      if (data.answer) {
+        speakMoglyNaturalTTS(data.answer, () => {
+          stopMoglyAudio();
+        });
+        return;
+      }
+    } catch(err) {
+      console.warn("[Mogly] Smart voice server fallback:", err);
+    }
+
+    // Graceful offline fallback
+    if (label) {
       label.textContent = isRu 
         ? `● Озвучиваю: ${score}/100 · Челюсть ${jaw} · Симметрия ${symm}`
         : `● Speaking: ${score}/100 · Jawline ${jaw} · Symmetry ${symm}`;
     }
-
     const audioFile = isRu ? "assets/audio/mogly_result_male_ru.mp3" : "assets/audio/mogly_result_male_en.mp3";
     const fallbackText = isRu
       ? `Скан завершён! Сильный гониальный угол и выразительный canthal tilt — отличная база. Твой балл — ${score} из 100, челюсть — ${jaw}, симметрия — ${symm}. Однако лёгкая отёчность сглаживает угол челюсти. Рекомендую 3-дневный протокол деблогинга.`
