@@ -1850,6 +1850,87 @@ Rules:
   }
 }
 
+// AI Voice Mentor consultation. Evaluates user question against their actual face data.
+async function voiceConsult(request, env) {
+  if (!String(env.OPENROUTER_API_KEY || "").trim()) {
+    return json({ ok: false, error: "ai_unavailable", reason: "OPENROUTER_API_KEY missing" }, 503);
+  }
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ ok: false, error: "invalid_json" }, 400);
+  }
+
+  const query = String(body.message || body.query || "").trim();
+  const lang = body.lang === "ru" || body.language === "ru" ? "ru" : "en";
+  const gender = String(body.gender || "").toLowerCase().startsWith("f") ? "female" : "male";
+  const report = body.report || null;
+  const metrics = body.metrics || (report && report.scores) || null;
+  const overallScore = body.score || (report && report.overall_score) || null;
+
+  let faceContext = "";
+  if (overallScore) faceContext += `Overall Face Score: ${overallScore}/100\n`;
+  if (metrics && typeof metrics === "object") {
+    faceContext += "Biometric Sub-Scores:\n" + Object.entries(metrics)
+      .filter(([, v]) => Number.isFinite(Number(v)))
+      .map(([k, v]) => `- ${k}: ${Math.round(Number(v))}/100`)
+      .join("\n") + "\n";
+  }
+  if (report) {
+    if (report.summary) faceContext += `AI Summary: ${report.summary}\n`;
+    if (report.fastest_upgrade) faceContext += `Fastest Upgrade: ${JSON.stringify(report.fastest_upgrade)}\n`;
+    if (report.jawline) faceContext += `Jawline Analysis: ${report.jawline}\n`;
+    if (report.skin) faceContext += `Skin Analysis: ${report.skin}\n`;
+    if (report.haircut) faceContext += `Haircut Recommendation: ${report.haircut}\n`;
+    if (report.weak_points) faceContext += `Weak Points: ${JSON.stringify(report.weak_points)}\n`;
+    if (report.strengths) faceContext += `Strengths: ${JSON.stringify(report.strengths)}\n`;
+  }
+
+  const systemInstructions = lang === "ru" ? `
+Ты — Mogly AI, персональный эксперт и ментор по луксмаксингу и эстетике лица.
+Ты смотришь на реальные данные сканирования лица пользователя и его биометрию.
+Данные анализа лица пользователя:
+${faceContext || "Данные скана: средний балл лица 72/100, челюсть 75/100, кожа 70/100, глаза 78/100, легкая задержка воды."}
+
+Пользователь спрашивает:
+"${query || "Сделай краткий персональный вердикт по моему лицу и главным зонам роста."}"
+
+ПРАВИЛА ОТВЕТА (ОЧЕНЬ СТРОГО):
+1. Отвечай прямо на русском языке от первого лица ("Глядя на твое фото...", "По твоему скану...").
+2. Твой ответ предназначен ДЛЯ ОЗВУЧИВАНИЯ ГОЛОСОМ. Пиши живой разговорной речью, строго 2–4 коротких, мощных, емких предложения. Без списков, без звездочек, без нумерации.
+3. Обязательно конкретно упомяни точные детали из анализа его лица (его балл, челюсть, глаза, скулы, симметрию или кожу).
+4. Дай 1–2 конкретных действия (деблоатинг, натрий/калий, техника мьюинга, стрижка под его форму лица).
+5. Никакой воды, дисклеймеров и роботизированных фраз. Говори как опытный харизматичный наставник.
+` : `
+You are Mogly AI, an elite personal facial aesthetics and looksmaxxing mentor.
+You are evaluating the user's actual facial scan data and biometrics.
+User's Face Data:
+${faceContext || "Default face metrics: overall 72/100, jawline 75/100, skin 70/100, eyes 78/100, mild water retention."}
+
+User request:
+"${query || "Give me a concise personal debrief of my face and my primary upgrade priorities."}"
+
+RULES (STRICT):
+1. Speak in first person ("Looking at your scan...", "Based on your facial biometrics...").
+2. This text WILL BE READ ALOUD VIA VOICE. Keep it strictly 2-4 punchy, conversational sentences. NO markdown lists, NO bullet points.
+3. Explicitly reference their real face numbers and features (jawline, gonial angle, canthal tilt, cheekbones, skin).
+4. Give 1-2 concrete actionable fixes (debloat, sodium flush, tongue posture, haircut).
+5. Zero fluff or robot disclaimers. Speak like a confident, elite personal mentor.
+`;
+
+  try {
+    const result = await callOpenRouter(env, systemInstructions, [], { tries: 2, temperature: 0.35, maxTokens: 400 });
+    if (!result.ok || !result.text) {
+      return json({ ok: false, error: "ai_error", reason: result.reason || "OpenRouter error" }, 502);
+    }
+    const cleanText = result.text.replace(/[\*\#\_\[\]]/g, "").trim();
+    return json({ ok: true, answer: cleanText });
+  } catch(e) {
+    return json({ ok: false, error: "ai_exception", reason: e?.message || String(e) }, 502);
+  }
+}
+
 // ==================== FOOD SCAN (DePuff-style) ====================
 //
 // Snap-a-meal endpoint. Sends the image to the configured OpenRouter model
@@ -3129,6 +3210,7 @@ export default {
       if (path === "/api/haircut-guide" && request.method === "POST") return await simpleTool(request, env, "haircut-guide");
       if (path === "/api/skin-plan" && request.method === "POST") return await simpleTool(request, env, "skin-plan");
       if (path === "/api/jawline-plan" && request.method === "POST") return await simpleTool(request, env, "jawline-plan");
+      if (path === "/api/voice-consult" && request.method === "POST") return await voiceConsult(request, env);
 
       if (path === "/api/apple-receipt-verify" && request.method === "POST") return await verifyAppleReceipt(request, env);
       if (path === "/api/apple-server-notification" && request.method === "POST") return await appleServerNotification(request, env);
