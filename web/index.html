@@ -3682,7 +3682,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   height: 54px !important;
   border: 0 !important;
   border-radius: 999px !important;
-  background: linear-gradient(135deg, #0055FF 0%, #007AFF 50%, #00C2FF 100%) !important;
+  background: linear-gradient(135deg, #007AFF 0%, #00C2FF 60%, #38E1FF 100%) !important;
   color: #FFFFFF !important;
   font-size: 16px !important;
   font-weight: 850 !important;
@@ -3692,14 +3692,14 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   justify-content: center !important;
   gap: 10px !important;
   cursor: pointer !important;
-  box-shadow: 0 10px 28px rgba(0, 102, 255, 0.45), inset 0 1px 1.5px rgba(255, 255, 255, 0.5) !important;
-  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  box-shadow: 0 10px 32px rgba(0, 194, 255, 0.55), 0 2px 8px rgba(0, 122, 255, 0.4), inset 0 1.5px 2px rgba(255, 255, 255, 0.75) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease !important;
   -webkit-tap-highlight-color: transparent !important;
 }
 
 .mogly-btn-primary:active {
   transform: scale(0.97) !important;
-  box-shadow: 0 6px 20px rgba(0, 102, 255, 0.35) !important;
+  box-shadow: 0 6px 20px rgba(0, 194, 255, 0.45) !important;
 }
 
 .mogly-btn-icon {
@@ -3711,12 +3711,12 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   width: 100% !important;
   height: 48px !important;
   border-radius: 999px !important;
-  background: rgba(255, 255, 255, 0.07) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.28) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.40) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
-  color: rgba(255, 255, 255, 0.92) !important;
+  color: #FFFFFF !important;
   font-size: 14.5px !important;
   font-weight: 700 !important;
   display: flex !important;
@@ -3724,14 +3724,14 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   justify-content: center !important;
   gap: 8px !important;
   cursor: pointer !important;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
   transition: background 0.2s ease, transform 0.12s ease !important;
   -webkit-tap-highlight-color: transparent !important;
 }
 
 .mogly-btn-secondary:active {
   transform: scale(0.97) !important;
-  background: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* Results Block */
@@ -4934,11 +4934,13 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
       <button type="button" class="mogly-btn-secondary" id="moglySecondaryBtn" onclick="handleMoglySecondaryClick()">
         <span id="moglySecondaryBtnIconWrap">
-          <svg viewBox="0 0 24 24" width="17" height="17" id="moglySecondaryBtnIcon" fill="none" stroke="currentColor" stroke-width="2.1">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          <svg viewBox="0 0 24 24" width="18" height="18" id="moglySecondaryBtnIcon" fill="none" stroke="currentColor" stroke-width="2.1">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
           </svg>
         </span>
-        <span id="moglySecondaryBtnText" data-i18n="btn_scan_history">История сканов</span>
+        <span id="moglySecondaryBtnText" data-i18n="btn_gallery">Загрузить из галереи</span>
       </button>
       <input type="file" id="moglyGalleryInput" accept="image/*" style="display:none" onchange="handleMoglyGalleryFile(this.files && this.files[0])">
     </div>
@@ -17605,11 +17607,13 @@ window.syncTDEEChoiceUI = function() {
           </svg>
         `;
       }
-      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "История сканов" : "Scan history";
+      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "Загрузить из галереи" : "Upload from gallery";
       if (secondaryBtnIconWrap) {
         secondaryBtnIconWrap.innerHTML = `
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.1">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
           </svg>
         `;
       }
@@ -17659,13 +17663,22 @@ window.syncTDEEChoiceUI = function() {
     // 1. Native iOS Capacitor: direct camera
     if (typeof fmIsNative === "function" && fmIsNative() && window.facemax && typeof window.facemax.pickPhoto === "function") {
       try {
-        const dataUrl = await window.facemax.pickPhoto({ fromCamera: true, direction: "FRONT" });
+        const dataUrl = await window.facemax.pickPhoto({ fromCamera: true, direction: "FRONT", useSystemCamera: true });
         if (dataUrl && dataUrl !== "__error__") {
           await processMoglyScanPhoto(dataUrl);
+          return;
         }
       } catch (err) {
         console.warn("[Mogly] Native camera error:", err);
       }
+      // If camera failed or user rejected permission, offer gallery prompt
+      try {
+        const fallbackUrl = await window.facemax.pickPhoto({ fromLibrary: true });
+        if (fallbackUrl && fallbackUrl !== "__error__") {
+          await processMoglyScanPhoto(fallbackUrl);
+          return;
+        }
+      } catch (_) {}
       return;
     }
 
@@ -17688,29 +17701,39 @@ window.syncTDEEChoiceUI = function() {
     }
 
     // If camera cannot be started (no webcam, denied or unsupported in browser),
-    // immediately analyze the model or current photo without hanging or freezing!
+    // open file picker so the user can upload their real face photo!
     if (!cameraStarted) {
-      const heroImg = document.getElementById("moglySquareHeroImg");
-      const src = heroImg ? heroImg.src : "assets/hero_male.jpg";
-      const base64Url = await urlToDataUrl(src);
-      await processMoglyScanPhoto(base64Url);
+      const inp = document.getElementById("moglyGalleryInput");
+      if (inp) inp.click();
     }
   };
 
-  window.handleMoglySecondaryClick = function() {
+  window.handleMoglySecondaryClick = async function() {
     if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("light");
     const video = document.getElementById("moglyInlineVideo");
     const isCameraActive = video && video.style.display !== "none" && video.srcObject;
     if (isCameraActive) {
       window.stopMoglyInlineCamera(true);
-    } else {
-      if (typeof window.openHistoryScreen === "function") {
-        window.openHistoryScreen();
-      } else {
-        openScreen("history");
-        if (typeof renderHistoryFull === "function") renderHistoryFull();
-      }
+      return;
     }
+
+    // Native iOS: pick from photo library
+    if (typeof fmIsNative === "function" && fmIsNative() && window.facemax && typeof window.facemax.pickPhoto === "function") {
+      try {
+        const dataUrl = await window.facemax.pickPhoto({ fromLibrary: true });
+        if (dataUrl && dataUrl !== "__error__") {
+          await processMoglyScanPhoto(dataUrl);
+          return;
+        }
+      } catch (e) {
+        console.warn("[Mogly] Native gallery error:", e);
+      }
+      return;
+    }
+
+    // Web fallback: click hidden gallery input
+    const inp = document.getElementById("moglyGalleryInput");
+    if (inp) inp.click();
   };
 
   window.startMoglyFaceScan = async function() {
@@ -17864,9 +17887,10 @@ window.syncTDEEChoiceUI = function() {
     processMoglyScanPhoto(src);
   }
 
-  // --- 3. MOGLY MULTIMODAL AI LOOKSMAX VOICE MENTOR (IN-PLACE, ZERO MODAL POPUPS) ---
+  // --- 3. MOGLY MULTIMODAL AI LOOKSMAX VOICE MENTOR (IN-PLACE, ZERO MODAL POPUPS, CLONED HUMAN VOICE) ---
   let _isMoglyVoiceActive = false;
   let _isMoglyAudioPlaying = false;
+  let _currentMoglyAudio = null;
 
   function getUserFaceContext() {
     let report = null;
@@ -17885,7 +17909,7 @@ window.syncTDEEChoiceUI = function() {
       if (Array.isArray(h) && h.length > 0) historyItem = h[0];
     } catch(e) {}
 
-    const hasScan = Boolean(report || historyItem);
+    const hasScan = Boolean(report || historyItem || window._userScannedThisSession);
     const rawScore = (report && (report.overall_score || report.score)) || (historyItem && historyItem.score) || null;
     const score = rawScore ? Math.round(Number(rawScore)) : null;
     const scores = (report && report.scores) || (historyItem && historyItem.metrics) || {};
@@ -17926,12 +17950,32 @@ window.syncTDEEChoiceUI = function() {
     const orbBtn = document.getElementById("moglyOrbFabBtn");
     const container = document.getElementById("moglyAssistantFabContainer");
     const label = document.getElementById("moglyListeningLabel");
-    const isRu = _currentLang === "ru";
+    const isRu = (_currentLang === "ru");
     const ctx = getUserFaceContext();
 
     if (container) container.classList.add("is-listening");
     if (orbBtn) orbBtn.classList.add("is-speaking");
 
+    // Case 1: The user HAS NOT scanned their face yet
+    // Do NOT recite fake scores! Mentor introduces himself and guides to scan.
+    if (!ctx.hasScan) {
+      if (label) {
+        label.textContent = isRu 
+          ? `● Mogly AI: «Отсканируй лицо или загрузи фото»`
+          : `● Mogly AI: «Scan your face or upload a photo»`;
+      }
+      const audioFile = isRu ? "assets/audio/mogly_welcome_ru.mp3" : "assets/audio/mogly_welcome_en.mp3";
+      const fallbackText = isRu
+        ? "Привет, брат! Я твой ИИ ментор Mogly. Чтобы я сделал полный разбор твоих пропорций, челюсти и симметрии лица — нажми кнопку «Сканировать лицо» ниже или загрузи своё фото."
+        : "Hey man! I'm Mogly, your AI aesthetics mentor. To get a complete breakdown of your jawline, facial symmetry, and bone structure, tap 'Scan My Face' below or upload your photo.";
+
+      playMoglyClonedAudio(audioFile, fallbackText, () => {
+        stopMoglyAudio();
+      });
+      return;
+    }
+
+    // Case 2: The user HAS a scanned face
     const score = ctx.score || 84;
     const jaw = (ctx.scores && ctx.scores.jawline) ? Math.round(ctx.scores.jawline) : 88;
     const symm = (ctx.scores && ctx.scores.symmetry) ? Math.round(ctx.scores.symmetry) : 82;
@@ -17942,30 +17986,80 @@ window.syncTDEEChoiceUI = function() {
         : `● Speaking: ${score}/100 · Jawline ${jaw} · Symmetry ${symm}`;
     }
 
-    const mentorSpeech = isRu
-      ? `Привет! Я твой персональный AI наставник по внешности. Я оценил биометрию твоего лица. Твой эстетический потенциал — ${score} из 100. Сильная мужская линия челюсти — ${jaw} баллов, и отличная симметрия — ${symm} балла. Чтобы пробить планку 90 баллов, сделай упор на снятие утренней отечности скул контрастным душем и делай лимфодренаж по контуру подбородка. Нажми «Сканировать лицо», чтобы обновить метрики!`
-      : `Hey! I'm your personal looksmax AI mentor. I've evaluated your facial biometrics. Your overall aesthetic score is ${score} out of 100. Strong jawline definition at ${jaw}, and balanced facial symmetry at ${symm}. To reach the 90+ tier, focus on morning cheek debloating with cold plunges and lymphatic drainage along your jaw. Tap Scan My Face to refresh your metrics!`;
+    const audioFile = isRu ? "assets/audio/mogly_result_male_ru.mp3" : "assets/audio/mogly_result_male_en.mp3";
+    const fallbackText = isRu
+      ? `Скан завершён! Сильный гониальный угол и выразительный canthal tilt — отличная база. Твой балл — ${score} из 100, челюсть — ${jaw}, симметрия — ${symm}. Однако лёгкая отёчность сглаживает угол челюсти. Рекомендую 3-дневный протокол деблогинга.`
+      : `Scan complete! Strong gonial angle and positive canthal tilt detected. Your score is ${score} out of 100, jawline ${jaw}, symmetry ${symm}. Mild water retention is softening your mandibular definition. I recommend the 3-day debloat protocol.`;
 
-    speakMoglyNaturalTTS(mentorSpeech, () => {
+    playMoglyClonedAudio(audioFile, fallbackText, () => {
       stopMoglyAudio();
     });
   }
 
-  function stopMoglyAudio() {
+  function playMoglyClonedAudio(audioSrc, fallbackText, onComplete) {
+    stopMoglyAudioInternal();
+
+    const orbBtn = document.getElementById("moglyOrbFabBtn");
+    const container = document.getElementById("moglyAssistantFabContainer");
+
+    try {
+      const audio = new Audio(audioSrc);
+      _currentMoglyAudio = audio;
+      _isMoglyAudioPlaying = true;
+
+      audio.onplay = function() {
+        if (orbBtn) orbBtn.classList.add("is-speaking");
+        if (container) container.classList.add("is-listening");
+      };
+
+      audio.onended = function() {
+        _isMoglyAudioPlaying = false;
+        _currentMoglyAudio = null;
+        if (onComplete) onComplete();
+      };
+
+      audio.onerror = function(err) {
+        console.warn("[Mogly] Audio file playback failed, falling back to TTS:", err);
+        _currentMoglyAudio = null;
+        speakMoglyNaturalTTS(fallbackText, onComplete);
+      };
+
+      audio.play().catch(function(err) {
+        console.warn("[Mogly] Audio play promise rejected:", err);
+        _currentMoglyAudio = null;
+        speakMoglyNaturalTTS(fallbackText, onComplete);
+      });
+    } catch(e) {
+      speakMoglyNaturalTTS(fallbackText, onComplete);
+    }
+  }
+
+  function stopMoglyAudioInternal() {
+    if (_currentMoglyAudio) {
+      try {
+        _currentMoglyAudio.pause();
+        _currentMoglyAudio.currentTime = 0;
+      } catch(e) {}
+      _currentMoglyAudio = null;
+    }
     if (window.speechSynthesis) {
       try { window.speechSynthesis.cancel(); } catch(e) {}
     }
-    _isMoglyVoiceActive = false;
     _isMoglyAudioPlaying = false;
+  }
+
+  function stopMoglyAudio() {
+    stopMoglyAudioInternal();
+    _isMoglyVoiceActive = false;
 
     const orbBtn = document.getElementById("moglyOrbFabBtn");
     const container = document.getElementById("moglyAssistantFabContainer");
     const label = document.getElementById("moglyListeningLabel");
-    const dict = MOGLY_I18N[_currentLang] || MOGLY_I18N.en;
+    const isRu = (_currentLang === "ru");
 
     if (orbBtn) orbBtn.classList.remove("is-speaking");
     if (container) container.classList.remove("is-listening");
-    if (label) label.textContent = dict.assistant_listening || "AI Ментор по лицу";
+    if (label) label.textContent = isRu ? "AI Ментор по лицу" : "AI Facial Aesthetics Mentor";
   }
 
   function speakMoglyNaturalTTS(text, onComplete) {

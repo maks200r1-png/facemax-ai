@@ -121,8 +121,8 @@
     }
 
     // fromCamera with BACK direction: use system camera (Capacitor Camera plugin).
-    // fromCamera with FRONT direction and no CameraOval: return error (should use embeddedCamera instead).
-    if (opts.fromCamera && facemax.native && opts.direction !== "BACK") {
+    // fromCamera with FRONT direction and no CameraOval: return error (should use embeddedCamera instead, unless useSystemCamera is true).
+    if (opts.fromCamera && facemax.native && opts.direction !== "BACK" && !opts.useSystemCamera) {
       if (typeof window.fmLog === "function") window.fmLog("error", "pickPhoto: fromCamera=true on native but no embedded camera path taken", { direction: opts.direction, hasCameraOval: !!CameraOval });
       return "__error__";
     }
