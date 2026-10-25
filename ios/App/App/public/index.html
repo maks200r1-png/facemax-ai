@@ -3088,170 +3088,444 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   letter-spacing: -0.2px !important;
 }
 
-/* AI Voice Assistant Glass Orb (At bottom of Home screen below lifted buttons) */
+/* ==================== APPLE LIQUID FROSTED GLASS: CHATGPT AESTHETICS HUB ==================== */
 .mogly-assistant-fab-container {
   position: relative !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  margin-top: auto !important;
-  margin-bottom: 2px !important;
+  width: calc(100% - 32px) !important;
+  max-width: 360px !important;
+  margin: 10px auto 2px auto !important;
   z-index: 60 !important;
   flex-shrink: 0 !important;
 }
 
-.mogly-assistant-fab-container.is-listening {
-  z-index: 96 !important;
+.mogly-liquid-glass-hub {
+  width: 100% !important;
+  height: 58px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.26) !important;
+  border-radius: 999px !important;
+  padding: 6px 14px 6px 10px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease !important;
 }
 
-.mogly-orb-fab-btn {
-  position: relative;
-  width: 66px !important;
-  height: 66px !important;
-  min-width: 66px !important;
-  min-height: 66px !important;
-  flex-shrink: 0 !important;
-  border-radius: 50% !important;
-  border: 0;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
+.mogly-liquid-glass-hub:active {
+  transform: scale(0.975) !important;
+  background: rgba(255, 255, 255, 0.09) !important;
+}
+
+.mlg-hub-left {
   display: flex;
   align-items: center;
-  justify-content: center;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  gap: 10px;
+  min-width: 0;
 }
 
-.mogly-orb-fab-btn:active {
-  transform: scale(0.92);
-}
-
-.mogly-orb-fab-aura {
-  position: absolute;
-  inset: -8px;
+.mlg-hub-icon-box {
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 122, 255, 0.35) 0%, rgba(0, 194, 255, 0.15) 50%, transparent 72%);
-  filter: blur(14px);
-  animation: moglyAuraPulse 3.2s infinite ease-in-out;
-  pointer-events: none;
-  transition: all 0.4s ease;
-}
-
-@keyframes moglyAuraPulse {
-  0%, 100% { transform: scale(1); opacity: 0.75; }
-  50% { transform: scale(1.22); opacity: 1; }
-}
-
-/* Pure Liquid Glass Voice Orb (Transparent Frosted Glass) */
-.mogly-orb-fab-glass {
-  position: relative;
-  width: 66px !important;
-  height: 66px !important;
-  min-width: 66px !important;
-  min-height: 66px !important;
-  border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.10) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 
-    0 14px 32px rgba(0, 0, 0, 0.55),
-    0 4px 16px rgba(0, 122, 255, 0.30),
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.65),
-    inset 0 -2px 8px rgba(0, 122, 255, 0.20) !important;
-  backdrop-filter: blur(35px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(35px) saturate(190%) !important;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
 }
 
-.mogly-orb-fab-wave {
+.mlg-sound-wave {
   display: flex;
   align-items: center;
-  gap: 4px;
-  height: 28px;
+  gap: 2.5px;
+  height: 16px;
 }
 
-.mogly-orb-fab-wave span {
-  width: 4px;
-  height: 10px;
+.mlg-sound-wave span {
+  width: 2.5px;
   background: #FFFFFF;
   border-radius: 999px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.95), 0 0 16px rgba(0, 194, 255, 0.75);
-  animation: moglyMiniWave 1.4s infinite ease-in-out;
+  animation: moglyMiniWave 1.3s infinite ease-in-out;
 }
 
-.mogly-orb-fab-wave span:nth-child(1) { height: 8px; animation-delay: 0.0s; }
-.mogly-orb-fab-wave span:nth-child(2) { height: 18px; animation-delay: 0.15s; }
-.mogly-orb-fab-wave span:nth-child(3) { height: 26px; animation-delay: 0.3s; }
-.mogly-orb-fab-wave span:nth-child(4) { height: 18px; animation-delay: 0.45s; }
-.mogly-orb-fab-wave span:nth-child(5) { height: 8px; animation-delay: 0.6s; }
+.mlg-sound-wave span:nth-child(1) { height: 6px; animation-delay: 0.0s; }
+.mlg-sound-wave span:nth-child(2) { height: 14px; animation-delay: 0.15s; }
+.mlg-sound-wave span:nth-child(3) { height: 16px; animation-delay: 0.3s; }
+.mlg-sound-wave span:nth-child(4) { height: 8px; animation-delay: 0.45s; }
 
-@keyframes moglyMiniWave {
-  0%, 100% { transform: scaleY(0.4); }
-  50% { transform: scaleY(1.15); }
+.mlg-hub-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5px;
+  min-width: 0;
+  text-align: left;
 }
 
-.mogly-orb-fab-specular {
-  position: absolute;
-  top: 4px;
-  left: 14px;
-  right: 14px;
-  height: 14px;
+.mlg-hub-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mlg-hub-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mlg-hub-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+/* ==================== APPLE LIQUID FROSTED GLASS: VOICE HUB SHEET ==================== */
+.mogly-voice-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 1200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mogly-voice-sheet-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mogly-voice-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  max-height: 88dvh;
+  background: rgba(16, 18, 22, 0.88) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.28) !important;
+  border-radius: 32px 32px 0 0 !important;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(40px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(190%) !important;
+  padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 20px)) 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mogly-voice-sheet-backdrop.active .mogly-voice-sheet {
+  transform: translateY(0);
+}
+
+.mogly-sheet-drag-handle {
+  width: 38px;
+  height: 4.5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.32);
+  margin: 0 auto 16px auto;
+  flex-shrink: 0;
+}
+
+.mogly-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.mogly-sheet-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #00F076;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.mogly-live-pulse-dot {
+  width: 6.5px;
+  height: 6.5px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 50%, transparent 85%);
-  pointer-events: none;
+  background: #00F076;
+  box-shadow: 0 0 8px #00F076;
+  animation: moglyPulseDot 1.8s infinite ease-in-out;
 }
 
-/* Listening State: Smooth In-Place Scaling */
-.mogly-assistant-fab-container.is-listening .mogly-orb-fab-btn {
-  transform: scale(1.22);
+@keyframes moglyPulseDot {
+  0%, 100% { opacity: 0.5; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
 }
 
-.mogly-assistant-fab-container.is-listening .mogly-orb-fab-glass {
-  background: rgba(255, 255, 255, 0.18) !important;
-  border-color: rgba(255, 255, 255, 0.70) !important;
-  box-shadow: 
-    0 20px 50px rgba(0, 122, 255, 0.60),
-    0 8px 24px rgba(0, 194, 255, 0.45),
-    inset 0 2px 2px rgba(255, 255, 255, 0.90),
-    inset 0 -4px 12px rgba(0, 194, 255, 0.40) !important;
+.mogly-sheet-title {
+  font-size: 24px;
+  font-weight: 850;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.1;
 }
 
-.mogly-assistant-fab-container.is-listening .mogly-orb-fab-aura {
-  inset: -14px;
-  background: radial-gradient(circle, rgba(0, 122, 255, 0.65) 0%, rgba(0, 194, 255, 0.35) 50%, transparent 72%);
-  filter: blur(16px);
+.mogly-sheet-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, background 0.15s ease;
 }
 
-.mogly-assistant-fab-container.is-listening .mogly-orb-fab-wave span {
-  animation: moglyActiveWave 0.75s infinite ease-in-out;
+.mogly-sheet-close-btn:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.20);
 }
 
-@keyframes moglyActiveWave {
-  0%, 100% { transform: scaleY(0.45); }
-  50% { transform: scaleY(1.4); }
+.mogly-sheet-lead {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 16px 0;
+  flex-shrink: 0;
 }
 
-.mogly-listening-label {
-  margin-top: 5px;
-  font-size: 11.5px;
+/* Feature Buttons List */
+.mogly-feature-buttons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mogly-feature-glass-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 20px !important;
+  padding: 14px 16px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.mogly-feature-glass-btn:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.30) !important;
+}
+
+.mogly-feature-glass-btn.is-active {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.40) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.45) !important;
+}
+
+.mfb-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mfb-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mfb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mfb-title {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.mfb-badge {
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 0 10px rgba(0, 194, 255, 0.65);
-  opacity: 0.92;
-  pointer-events: none;
-  transition: all 0.25s ease;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   white-space: nowrap;
 }
 
-.mogly-assistant-fab-container.is-listening .mogly-listening-label {
-  color: #00C2FF;
-  opacity: 1;
+.mfb-badge-accent {
+  background: rgba(0, 240, 118, 0.16);
+  color: #00F076;
+  border-color: rgba(0, 240, 118, 0.35);
+}
+
+.mfb-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.60);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mfb-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Active Audio Player Card inside Sheet */
+.mogly-voice-player-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 20px;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: moglyFadeIn 0.3s ease;
+}
+
+.mogly-voice-player-card.hidden {
+  display: none;
+}
+
+.mogly-vp-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mogly-vp-soundwave {
+  display: flex;
+  align-items: center;
+  gap: 3.5px;
+  height: 22px;
+}
+
+.mogly-vp-soundwave span {
+  width: 3px;
+  height: 8px;
+  background: #FFFFFF;
+  border-radius: 999px;
+  animation: moglyAppleWave 1.2s infinite ease-in-out;
+}
+
+.mogly-vp-soundwave span:nth-child(1) { height: 6px; animation-delay: 0.0s; }
+.mogly-vp-soundwave span:nth-child(2) { height: 16px; animation-delay: 0.15s; }
+.mogly-vp-soundwave span:nth-child(3) { height: 22px; animation-delay: 0.3s; }
+.mogly-vp-soundwave span:nth-child(4) { height: 12px; animation-delay: 0.45s; }
+.mogly-vp-soundwave span:nth-child(5) { height: 18px; animation-delay: 0.6s; }
+.mogly-vp-soundwave span:nth-child(6) { height: 10px; animation-delay: 0.75s; }
+.mogly-vp-soundwave span:nth-child(7) { height: 6px; animation-delay: 0.9s; }
+
+@keyframes moglyAppleWave {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.6; }
+  50% { transform: scaleY(1.1); opacity: 1; }
+}
+
+.mogly-vp-status-text {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #FFFFFF;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mogly-vp-pause-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mogly-vp-transcript {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* ==========================================================================
@@ -4887,7 +5161,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
     <div class="screen-topbar mogly-screen-topbar">
       <div class="stb-logo"><img src="assets/app_icon.png" alt="Mogly"></div>
       <span class="stb-title">Mogly</span>
-      <button type="button" class="mogly-topbar-mic-btn" onclick="toggleMoglyVoiceListening()" aria-label="AI Voice Mentor">
+      <button type="button" class="mogly-topbar-mic-btn" onclick="openMoglyVoiceSheet()" aria-label="AI Voice Mentor">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
           <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
@@ -4920,7 +5194,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
       </div>
     </div>
 
-    <!-- Actions Container: 2 Clean Buttons (SCAN MY FACE & SCAN HISTORY) -->
+    <!-- Actions Container: 2 Clean Buttons (SCAN MY FACE & UPLOAD FROM GALLERY) -->
     <div class="mogly-actions-container">
       <button type="button" class="mogly-btn-primary" id="moglyScanBtn" onclick="handleMoglyPrimaryScanClick()">
         <span id="moglyScanBtnIconWrap">
@@ -4929,7 +5203,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
             <path d="M5 8h2.5L9 6h6l1.5 2H19a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
           </svg>
         </span>
-        <span id="moglyScanBtnText" data-i18n="btn_scan_face">СКАНИРОВАТЬ ЛИЦО</span>
+        <span id="moglyScanBtnText" data-i18n="btn_scan_face">SCAN MY FACE</span>
       </button>
 
       <button type="button" class="mogly-btn-secondary" id="moglySecondaryBtn" onclick="handleMoglySecondaryClick()">
@@ -4940,23 +5214,30 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
             <polyline points="21 15 16 10 5 21"/>
           </svg>
         </span>
-        <span id="moglySecondaryBtnText" data-i18n="btn_gallery">Загрузить из галереи</span>
+        <span id="moglySecondaryBtnText" data-i18n="btn_gallery">UPLOAD FROM GALLERY</span>
       </button>
       <input type="file" id="moglyGalleryInput" accept="image/*" style="display:none" onchange="handleMoglyGalleryFile(this.files && this.files[0])">
     </div>
 
-    <!-- AI Voice Assistant Orb (Positioned at bottom of Home, fits below the 2 lifted buttons) -->
+    <!-- Apple Liquid Frosted Glass: ChatGPT Aesthetics Hub Trigger -->
     <div class="mogly-assistant-fab-container is-home" id="moglyAssistantFabContainer">
-      <button type="button" class="mogly-orb-fab-btn" id="moglyOrbFabBtn" onclick="toggleMoglyVoiceListening()" aria-label="Mogly AI Voice">
-        <div class="mogly-orb-fab-aura"></div>
-        <div class="mogly-orb-fab-glass">
-          <div class="mogly-orb-fab-wave" id="moglyOrbFabWave">
-            <span></span><span></span><span></span><span></span><span></span>
+      <button type="button" class="mogly-liquid-glass-hub" id="moglyOrbFabBtn" onclick="openMoglyVoiceSheet()" aria-label="ChatGPT Aesthetics Breakdown">
+        <div class="mlg-hub-left">
+          <div class="mlg-hub-icon-box">
+            <div class="mlg-sound-wave" id="moglyOrbFabWave">
+              <span></span><span></span><span></span><span></span>
+            </div>
           </div>
-          <div class="mogly-orb-fab-specular"></div>
+          <div class="mlg-hub-text">
+            <span class="mlg-hub-title">ChatGPT Aesthetics Mentor</span>
+            <span class="mlg-hub-sub">Tap for personal audio debrief</span>
+          </div>
+        </div>
+        <div class="mlg-hub-pill">
+          <span>DEBRIEF</span>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </button>
-      <div class="mogly-listening-label" id="moglyListeningLabel" data-i18n="assistant_listening">AI Ментор по лицу</div>
     </div>
 
     <!-- Results Block (Kept hidden on Home; full results presented on FaceScan screen) -->
@@ -6304,6 +6585,148 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   </nav>
 </div>
 
+<!-- ==================== APPLE LIQUID FROSTED GLASS: CHATGPT VOICE HUB SHEET ==================== -->
+<div class="mogly-voice-sheet-backdrop" id="moglyVoiceSheetBackdrop" onclick="closeMoglyVoiceSheet(event)">
+  <div class="mogly-voice-sheet" id="moglyVoiceSheet" onclick="event.stopPropagation()">
+    <!-- Top Drag Handle Pill -->
+    <div class="mogly-sheet-drag-handle"></div>
+
+    <!-- Header Bar -->
+    <div class="mogly-sheet-head">
+      <div class="mogly-sheet-title-group">
+        <div class="mogly-sheet-eyebrow">
+          <span class="mogly-live-pulse-dot"></span>
+          <span>OPENAI CHATGPT AUDIO</span>
+        </div>
+        <h2 class="mogly-sheet-title">Aesthetics Debrief</h2>
+      </div>
+      <button type="button" class="mogly-sheet-close-btn" onclick="closeMoglyVoiceSheet()" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <p class="mogly-sheet-lead">Tap a facial feature to get your personal breakdown from ChatGPT:</p>
+
+    <!-- Active Audio Player & Synchronized Takeaway Box -->
+    <div class="mogly-voice-player-card hidden" id="moglyVoicePlayerCard">
+      <div class="mogly-vp-status-row">
+        <div class="mogly-vp-soundwave" id="moglyVpSoundwave">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <span class="mogly-vp-status-text" id="moglyVpStatusText">ChatGPT is analyzing...</span>
+        <button type="button" class="mogly-vp-pause-btn" id="moglyVpPauseBtn" onclick="toggleMoglyAudioPlayback()">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="#FFFFFF"><rect x="5" y="4" width="4" height="16" rx="1"/><rect x="15" y="4" width="4" height="16" rx="1"/></svg>
+        </button>
+      </div>
+      <div class="mogly-vp-transcript" id="moglyVpTranscript"></div>
+    </div>
+
+    <!-- Large Tactile Feature Action Buttons (Apple Squircle Glass Cards) -->
+    <div class="mogly-feature-buttons-list">
+      
+      <!-- 1. JAWLINE & MEWING -->
+      <button type="button" class="mogly-feature-glass-btn" id="mfbBtnJawline" onclick="requestMoglyFeatureAudio('jawline')">
+        <div class="mfb-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFFFFF" stroke-width="2.2">
+            <path d="M4 6l4 12 4-4 4 4 4-12"/>
+          </svg>
+        </div>
+        <div class="mfb-info">
+          <div class="mfb-row">
+            <span class="mfb-title">Jawline & Definition</span>
+            <span class="mfb-badge" id="mfbBadgeJawline">88 / 100</span>
+          </div>
+          <span class="mfb-sub">Gonial angle · Masseters · Mewing posture</span>
+        </div>
+        <div class="mfb-arrow">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </button>
+
+      <!-- 2. DEBLOAT & PUFFINESS -->
+      <button type="button" class="mogly-feature-glass-btn" id="mfbBtnDebloat" onclick="requestMoglyFeatureAudio('debloat')">
+        <div class="mfb-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFFFFF" stroke-width="2.2">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+          </svg>
+        </div>
+        <div class="mfb-info">
+          <div class="mfb-row">
+            <span class="mfb-title">Debloat & Puffiness</span>
+            <span class="mfb-badge mfb-badge-accent" id="mfbBadgeDebloat">Low Retention</span>
+          </div>
+          <span class="mfb-sub">Sodium balance · Cheekbone carve · Water flush</span>
+        </div>
+        <div class="mfb-arrow">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </button>
+
+      <!-- 3. SKIN QUALITY & TONE -->
+      <button type="button" class="mogly-feature-glass-btn" id="mfbBtnSkin" onclick="requestMoglyFeatureAudio('skin')">
+        <div class="mfb-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFFFFF" stroke-width="2.2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+        <div class="mfb-info">
+          <div class="mfb-row">
+            <span class="mfb-title">Skin Clarity & Pores</span>
+            <span class="mfb-badge" id="mfbBadgeSkin">82 / 100</span>
+          </div>
+          <span class="mfb-sub">Texture · Sebum control · Active collagen routine</span>
+        </div>
+        <div class="mfb-arrow">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </button>
+
+      <!-- 4. EYES & CANTHAL TILT -->
+      <button type="button" class="mogly-feature-glass-btn" id="mfbBtnEyes" onclick="requestMoglyFeatureAudio('eyes')">
+        <div class="mfb-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFFFFF" stroke-width="2.2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div class="mfb-info">
+          <div class="mfb-row">
+            <span class="mfb-title">Eyes & Canthal Tilt</span>
+            <span class="mfb-badge" id="mfbBadgeEyes">Positive Tilt</span>
+          </div>
+          <span class="mfb-sub">Hunter eyes · Eye vector · Facial symmetry</span>
+        </div>
+        <div class="mfb-arrow">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </button>
+
+      <!-- 5. HAIRCUT & FACE SHAPE -->
+      <button type="button" class="mogly-feature-glass-btn" id="mfbBtnHaircut" onclick="requestMoglyFeatureAudio('haircut')">
+        <div class="mfb-icon-wrap">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFFFFF" stroke-width="2.2">
+            <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+            <line x1="20" y1="4" x2="8.12" y2="15.88"/>
+            <line x1="14.47" y1="14.48" x2="20" y2="20"/>
+            <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+          </svg>
+        </div>
+        <div class="mfb-info">
+          <div class="mfb-row">
+            <span class="mfb-title">Haircut & Face Shape</span>
+            <span class="mfb-badge" id="mfbBadgeHaircut">Square Oval</span>
+          </div>
+          <span class="mfb-sub">Taper fade · Texture fringe · Forehead balance</span>
+        </div>
+        <div class="mfb-arrow">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </button>
+
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 </div>
 <script>
@@ -6995,25 +7418,25 @@ window.handleHudPhoto = async function(dataUrl){
   }
   if (hudPlaceholder) hudPlaceholder.style.display = "none";
   if (hudSweep) hudSweep.classList.add("active");
-  if (hudStatus) hudStatus.textContent = "СКАНИРОВАНИЕ БИОМЕТРИИ...";
+  if (hudStatus) hudStatus.textContent = "SCANNING BIOMETRICS...";
   if (hudResults) hudResults.classList.add("hidden");
 
   // Step 1: Laser sweep and coordinate calculation
   setTimeout(() => {
-    if (hudStatus) hudStatus.textContent = "РАСЧЕТ ГОНИАЛЬНОГО УГЛА...";
+    if (hudStatus) hudStatus.textContent = "CALCULATING GONIAL ANGLE...";
     quizHaptic();
   }, 850);
 
   // Step 2: Debloat & Water retention analysis
   setTimeout(() => {
-    if (hudStatus) hudStatus.textContent = "ОЦЕНКА ЗАДЕРЖКИ ВОДЫ...";
+    if (hudStatus) hudStatus.textContent = "ANALYZING WATER RETENTION...";
     quizHaptic();
   }, 1650);
 
   // Step 3: Complete & reveal results in-place
   setTimeout(() => {
     if (hudSweep) hudSweep.classList.remove("active");
-    if (hudStatus) hudStatus.textContent = "● MOGLY ВЕРИФИЦИРОВАН";
+    if (hudStatus) hudStatus.textContent = "● MOGLY VERIFIED";
     if (hudResults) hudResults.classList.remove("hidden");
     quizHaptic();
 
@@ -7028,7 +7451,7 @@ window.handleHudPhoto = async function(dataUrl){
 
     if (overallEl) overallEl.textContent = String(overall);
     if (gonialEl) gonialEl.textContent = gonial + "°";
-    if (debloatEl) debloatEl.textContent = "HIGH";
+    if (debloatEl) debloatEl.textContent = "LOW";
     if (canthalEl) canthalEl.textContent = "+" + canthal + "°";
 
     try {
@@ -7039,7 +7462,7 @@ window.handleHudPhoto = async function(dataUrl){
         overall: overall,
         gonialAngle: gonial,
         canthalTilt: "+" + canthal,
-        debloat: "HIGH",
+        debloat: "LOW",
         thumb: dataUrl,
       });
       localStorage.setItem("facemax_history", JSON.stringify(hist.slice(0, 20)));
@@ -7064,7 +7487,7 @@ window.toggleCyberChadVoice = function(){
     if (playIcon) playIcon.classList.remove("hidden");
     if (pauseIcon) pauseIcon.classList.add("hidden");
     if (waveform) waveform.classList.remove("playing");
-    if (statusEl) statusEl.textContent = "Слушать вердикт анализа (0:24)";
+    if (statusEl) statusEl.textContent = "Listen to AI Verdict (0:24)";
     return;
   }
 
@@ -7072,21 +7495,21 @@ window.toggleCyberChadVoice = function(){
   if (playIcon) playIcon.classList.add("hidden");
   if (pauseIcon) pauseIcon.classList.remove("hidden");
   if (waveform) waveform.classList.add("playing");
-  if (statusEl) statusEl.textContent = "CyberChad говорит...";
+  if (statusEl) statusEl.textContent = "ChatGPT Voice speaking...";
 
-  const speechText = "Анализ завершен. Зафиксирован сильный гониальный угол 121 градус и положительный наклон глаз. Однако в нижней трети выявлена задержка жидкости, скрывающая рельеф челюсти на 15 процентов. Рекомендую снизить натрий и запустить протокол Debloat.";
+  const speechText = "Analysis complete. Detected strong gonial angle at 121 degrees and positive canthal tilt. Subcutaneous water retention is minimal. Follow your daily protocol to sharpen facial contours.";
 
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(speechText);
-    utt.lang = "ru-RU";
-    utt.rate = 0.96;
-    utt.pitch = 0.88;
+    utt.lang = "en-US";
+    utt.rate = 0.98;
+    utt.pitch = 0.92;
 
     try {
       const voices = window.speechSynthesis.getVoices();
-      const ruVoice = voices.find(v => v.lang.includes("ru") && (v.name.includes("Male") || v.name.includes("Dmitri") || v.name.includes("Yuri")));
-      if (ruVoice) utt.voice = ruVoice;
+      const enVoice = voices.find(v => v.lang.includes("en") && (v.name.includes("Natural") || v.name.includes("Daniel") || v.name.includes("Samantha") || v.name.includes("Alex")));
+      if (enVoice) utt.voice = enVoice;
     } catch (e) {}
 
     utt.onend = function(){
@@ -7094,14 +7517,14 @@ window.toggleCyberChadVoice = function(){
       if (playIcon) playIcon.classList.remove("hidden");
       if (pauseIcon) pauseIcon.classList.add("hidden");
       if (waveform) waveform.classList.remove("playing");
-      if (statusEl) statusEl.textContent = "Прослушано · Нажми для повтора";
+      if (statusEl) statusEl.textContent = "Played · Tap to replay";
     };
     utt.onerror = function(){
       _ccVoiceSpeaking = false;
       if (playIcon) playIcon.classList.remove("hidden");
       if (pauseIcon) pauseIcon.classList.add("hidden");
       if (waveform) waveform.classList.remove("playing");
-      if (statusEl) statusEl.textContent = "Слушать вердикт анализа (0:24)";
+      if (statusEl) statusEl.textContent = "Listen to AI Verdict (0:24)";
     };
     window.speechSynthesis.speak(utt);
   } else {
@@ -7110,7 +7533,7 @@ window.toggleCyberChadVoice = function(){
       if (playIcon) playIcon.classList.remove("hidden");
       if (pauseIcon) pauseIcon.classList.add("hidden");
       if (waveform) waveform.classList.remove("playing");
-      if (statusEl) statusEl.textContent = "Прослушано · Нажми для повтора";
+      if (statusEl) statusEl.textContent = "Played · Tap to replay";
     }, 7500);
   }
 };
@@ -17417,7 +17840,7 @@ window.syncTDEEChoiceUI = function() {
       btn_scan_face: "SCAN MY FACE",
       btn_scan_history: "Scan history",
       btn_take_photo: "TAKE PHOTO",
-      btn_gallery: "Upload from gallery",
+      btn_gallery: "UPLOAD FROM GALLERY",
       vc_title: "Mogly AI Mentor",
       vc_badge: "AUDIO VERDICT",
       vc_listen_hint: "Tap to hear your full facial analysis (0:28)",
@@ -17504,8 +17927,9 @@ window.syncTDEEChoiceUI = function() {
     }
   };
 
-  let _currentLang = localStorage.getItem("mogly_lang") || "ru";
-  window._currentLang = _currentLang;
+  let _currentLang = "en";
+  try { localStorage.setItem("mogly_lang", "en"); } catch(e) {}
+  window._currentLang = "en";
   let _voiceGender = localStorage.getItem("mogly_voice_gender") || "male";
   let _heroGender = "male";
   let _cameraStream = null;
@@ -17694,7 +18118,7 @@ window.syncTDEEChoiceUI = function() {
           </svg>
         `;
       }
-      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "Загрузить из галереи" : "Upload from gallery";
+      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "Загрузить из галереи" : "UPLOAD FROM GALLERY";
       if (secondaryBtnIconWrap) {
         secondaryBtnIconWrap.innerHTML = `
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1">
@@ -17983,12 +18407,6 @@ window.syncTDEEChoiceUI = function() {
     renderHomeHistory();
     renderHomeStats();
 
-    // Trigger Mogly Smart Voice Mentor live debrief
-    setTimeout(() => {
-      if (typeof window.startMoglyVoiceInPlace === "function") {
-        window.startMoglyVoiceInPlace();
-      }
-    }, 300);
 
     // Smoothly transition to results screen with detailed metric rings
     setTimeout(() => {
@@ -18053,11 +18471,7 @@ window.syncTDEEChoiceUI = function() {
     processMoglyScanPhoto(src);
   }
 
-  // --- 3. MOGLY MULTIMODAL AI LOOKSMAX VOICE MENTOR (IN-PLACE, ZERO MODAL POPUPS, CLONED HUMAN VOICE) ---
-  let _isMoglyVoiceActive = false;
-  let _isMoglyAudioPlaying = false;
-  let _currentMoglyAudio = null;
-
+  // --- 3. MOGLY MULTIMODAL AI LOOKSMAX VOICE MENTOR ---
   function getUserFaceContext() {
     let report = null;
     try {
@@ -18100,70 +18514,75 @@ window.syncTDEEChoiceUI = function() {
     };
   }
 
-  window.toggleMoglyVoiceListening = function(forceState) {
-    if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("medium");
+  // --- 3. APPLE LIQUID FROSTED GLASS: CHATGPT AESTHETICS VOICE HUB ---
+  let _isMoglyVoiceActive = false;
+  let _isMoglyAudioPlaying = false;
+  let _currentMoglyAudio = null;
+  let _activeFeatureTopic = null;
 
-    if (forceState === false || _isMoglyVoiceActive) {
-      stopMoglyAudio();
-      return;
-    }
+  window.openMoglyVoiceSheet = function() {
+    if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("light");
+    const backdrop = document.getElementById("moglyVoiceSheetBackdrop");
+    if (!backdrop) return;
 
-    startMoglyVoiceInPlace();
+    // Update dynamic badges from user scan data
+    const ctx = getUserFaceContext();
+    const sc = ctx.scores || {};
+    const bJaw = document.getElementById("mfbBadgeJawline");
+    const bDeb = document.getElementById("mfbBadgeDebloat");
+    const bSkin = document.getElementById("mfbBadgeSkin");
+    const bEyes = document.getElementById("mfbBadgeEyes");
+    const bHair = document.getElementById("mfbBadgeHaircut");
+
+    if (bJaw) bJaw.textContent = (sc.jawline ? Math.round(sc.jawline) + " / 100" : "88 / 100");
+    if (bDeb) bDeb.textContent = (ctx.score >= 85 ? "Optimal Balance" : "Low Retention");
+    if (bSkin) bSkin.textContent = (sc.skin ? Math.round(sc.skin) + " / 100" : "82 / 100");
+    if (bEyes) bEyes.textContent = (sc.symmetry >= 80 ? "Positive Tilt" : "Neutral Tilt");
+    if (bHair) bHair.textContent = (ctx.archetype || "Square Oval");
+
+    backdrop.classList.add("active");
   };
 
-  async function startMoglyVoiceInPlace() {
-    _isMoglyVoiceActive = true;
-    const orbBtn = document.getElementById("moglyOrbFabBtn");
-    const container = document.getElementById("moglyAssistantFabContainer");
-    const label = document.getElementById("moglyListeningLabel");
-    const isRu = (_currentLang === "ru");
+  window.closeMoglyVoiceSheet = function(event) {
+    if (event && event.target !== event.currentTarget) return;
+    const backdrop = document.getElementById("moglyVoiceSheetBackdrop");
+    if (backdrop) backdrop.classList.remove("active");
+    stopMoglyAudio();
+  };
+
+  window.requestMoglyFeatureAudio = async function(topic) {
+    if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("medium");
+    _activeFeatureTopic = topic;
+
+    // Highlight selected button
+    document.querySelectorAll(".mogly-feature-glass-btn").forEach(btn => btn.classList.remove("is-active"));
+    const activeBtn = document.getElementById("mfbBtn" + topic.charAt(0).toUpperCase() + topic.slice(1));
+    if (activeBtn) activeBtn.classList.add("is-active");
+
+    // Reveal player card inside sheet
+    const playerCard = document.getElementById("moglyVoicePlayerCard");
+    const statusText = document.getElementById("moglyVpStatusText");
+    const transcriptEl = document.getElementById("moglyVpTranscript");
+    if (playerCard) playerCard.classList.remove("hidden");
+
+    const topicTitles = {
+      jawline: "Jawline & Mewing",
+      debloat: "Debloat Protocol",
+      skin: "Skin Clarity & Pores",
+      eyes: "Eyes & Canthal Tilt",
+      haircut: "Haircut & Face Shape"
+    };
+    const title = topicTitles[topic] || "Facial Aesthetics";
+
+    if (statusText) statusText.textContent = `ChatGPT analyzing ${title}...`;
+    if (transcriptEl) transcriptEl.textContent = "Connecting to OpenAI ChatGPT Voice...";
+
     const ctx = getUserFaceContext();
-
-    if (container) container.classList.add("is-listening");
-    if (orbBtn) orbBtn.classList.add("is-speaking");
-
-    // Case 1: The user HAS NOT scanned their face yet
-    // Do NOT recite fake scores! Mentor introduces himself and guides to scan.
-    if (!ctx.hasScan) {
-      if (label) {
-        label.textContent = isRu 
-          ? `● Mogly AI: «Отсканируй лицо или загрузи фото»`
-          : `● Mogly AI: «Scan your face or upload a photo»`;
-      }
-      const audioFile = isRu ? "assets/audio/mogly_welcome_ru.mp3" : "assets/audio/mogly_welcome_en.mp3";
-      const fallbackText = isRu
-        ? "Привет, брат! Я твой ИИ ментор Mogly. Чтобы я сделал полный разбор твоих пропорций, челюсти и симметрии лица — нажми кнопку «Сканировать лицо» ниже или загрузи своё фото."
-        : "Hey man! I'm Mogly, your AI aesthetics mentor. To get a complete breakdown of your jawline, facial symmetry, and bone structure, tap 'Scan My Face' below or upload your photo.";
-
-      playMoglyClonedAudio(audioFile, fallbackText, () => {
-        stopMoglyAudio();
-      });
-      return;
-    }
-
-    // Case 2: The user HAS a scanned face - Ask Live Smart Voice (OpenAI gpt-audio-mini via OpenRouter)
-    await askMoglySmartVoice();
-  }
-
-  async function askMoglySmartVoice(userQuery) {
-    const label = document.getElementById("moglyListeningLabel");
-    const isRu = (_currentLang === "ru");
-    const ctx = getUserFaceContext();
-
-    const score = ctx.score || 84;
-    const jaw = (ctx.scores && ctx.scores.jawline) ? Math.round(ctx.scores.jawline) : 88;
-    const symm = (ctx.scores && ctx.scores.symmetry) ? Math.round(ctx.scores.symmetry) : 82;
-
-    if (label) {
-      label.textContent = isRu ? "● Mogly AI думает..." : "● Mogly AI analyzing...";
-    }
 
     try {
       const payload = {
-        message: userQuery || (isRu 
-          ? "Сделай краткий персональный вердикт по моему лицу и главным зонам роста." 
-          : "Give me a concise personal debrief of my face and upgrade priorities."),
-        lang: _currentLang,
+        topic: topic,
+        lang: "en",
         score: ctx.score,
         metrics: ctx.scores,
         report: ctx.report
@@ -18177,52 +18596,64 @@ window.syncTDEEChoiceUI = function() {
 
       if (!res.ok) throw new Error("HTTP " + res.status);
       const data = await res.json();
-      if (!data.ok) throw new Error(data.error || "Mogly voice consult failed");
+      if (!data.ok) throw new Error(data.error || "ChatGPT consultation failed");
 
-      if (label && data.answer) {
-        label.textContent = `● Mogly: ${data.answer.slice(0, 50)}...`;
-      }
+      if (statusText) statusText.textContent = `ChatGPT Voice · ${title}`;
+      if (transcriptEl && data.answer) transcriptEl.textContent = data.answer;
 
       if (data.audio_base64) {
         // Native OpenAI GPT Audio Mini streaming audio
         const audioSrc = "data:audio/mp3;base64," + data.audio_base64;
         playMoglyClonedAudio(audioSrc, data.answer, () => {
-          stopMoglyAudio();
+          if (statusText) statusText.textContent = `Finished: ${title}`;
         });
         return;
       }
 
       if (data.answer) {
         speakMoglyNaturalTTS(data.answer, () => {
-          stopMoglyAudio();
+          if (statusText) statusText.textContent = `Finished: ${title}`;
         });
         return;
       }
     } catch(err) {
-      console.warn("[Mogly] Smart voice server fallback:", err);
+      console.warn("[Mogly] ChatGPT Voice Consult error:", err);
     }
 
-    // Graceful offline fallback
-    if (label) {
-      label.textContent = isRu 
-        ? `● Озвучиваю: ${score}/100 · Челюсть ${jaw} · Симметрия ${symm}`
-        : `● Speaking: ${score}/100 · Jawline ${jaw} · Symmetry ${symm}`;
-    }
-    const audioFile = isRu ? "assets/audio/mogly_result_male_ru.mp3" : "assets/audio/mogly_result_male_en.mp3";
-    const fallbackText = isRu
-      ? `Скан завершён! Сильный гониальный угол и выразительный canthal tilt — отличная база. Твой балл — ${score} из 100, челюсть — ${jaw}, симметрия — ${symm}. Однако лёгкая отёчность сглаживает угол челюсти. Рекомендую 3-дневный протокол деблогинга.`
-      : `Scan complete! Strong gonial angle and positive canthal tilt detected. Your score is ${score} out of 100, jawline ${jaw}, symmetry ${symm}. Mild water retention is softening your mandibular definition. I recommend the 3-day debloat protocol.`;
+    // High quality on-device fallback if server audio unreachable
+    const fallbacks = {
+      jawline: `Your jawline definition is solid with an estimated 118-degree gonial angle. To maximize mandibular projection, focus on proper tongue posture against the hard palate and chewing firm mastic gum daily.`,
+      debloat: `Subcutaneous facial water retention is currently low to moderate. To sharpen your zygomatic cheekbone arches, maintain a 3-to-1 potassium to sodium ratio and apply a cold compress for 3 minutes every morning.`,
+      skin: `Your skin texture shows good baseline elasticity. To eliminate subtle T-zone congestion and refine pore visibility, incorporate 2% BHA salicylic acid twice weekly followed by a lightweight non-comedogenic ceramide barrier cream.`,
+      eyes: `Your eye vector exhibits a positive canthal tilt and well-supported orbital margins. Maintain adequate sleep cycles and perform gentle upper orbital bone tapping to preserve sharp hunter eye contrast.`,
+      haircut: `Your facial architecture leans towards a square-oval hybrid. A mid skin taper with textured length on top will lengthen your vertical proportions and accentuate your lower third jaw width.`
+    };
+    const fbText = fallbacks[topic] || `Scan complete. Your facial harmony is well above average. Follow your daily protocol to maximize bone structure.`;
 
-    playMoglyClonedAudio(audioFile, fallbackText, () => {
-      stopMoglyAudio();
+    if (statusText) statusText.textContent = `ChatGPT Voice · ${title}`;
+    if (transcriptEl) transcriptEl.textContent = fbText;
+    speakMoglyNaturalTTS(fbText, () => {
+      if (statusText) statusText.textContent = `Finished: ${title}`;
     });
-  }
+  };
+
+  window.toggleMoglyAudioPlayback = function() {
+    if (_currentMoglyAudio) {
+      const statusText = document.getElementById("moglyVpStatusText");
+      if (_currentMoglyAudio.paused) {
+        _currentMoglyAudio.play();
+        _isMoglyAudioPlaying = true;
+        if (statusText) statusText.textContent = "ChatGPT is speaking...";
+      } else {
+        _currentMoglyAudio.pause();
+        _isMoglyAudioPlaying = false;
+        if (statusText) statusText.textContent = "Paused";
+      }
+    }
+  };
 
   function playMoglyClonedAudio(audioSrc, fallbackText, onComplete) {
     stopMoglyAudioInternal();
-
-    const orbBtn = document.getElementById("moglyOrbFabBtn");
-    const container = document.getElementById("moglyAssistantFabContainer");
 
     try {
       const audio = new Audio(audioSrc);
@@ -18230,24 +18661,26 @@ window.syncTDEEChoiceUI = function() {
       _isMoglyAudioPlaying = true;
 
       audio.onplay = function() {
-        if (orbBtn) orbBtn.classList.add("is-speaking");
-        if (container) container.classList.add("is-listening");
+        const wave = document.getElementById("moglyVpSoundwave");
+        if (wave) wave.style.opacity = "1";
       };
 
       audio.onended = function() {
         _isMoglyAudioPlaying = false;
         _currentMoglyAudio = null;
+        const wave = document.getElementById("moglyVpSoundwave");
+        if (wave) wave.style.opacity = "0.4";
         if (onComplete) onComplete();
       };
 
       audio.onerror = function(err) {
-        console.warn("[Mogly] Audio file playback failed, falling back to TTS:", err);
+        console.warn("[Mogly] Audio element error, using TTS fallback:", err);
         _currentMoglyAudio = null;
         speakMoglyNaturalTTS(fallbackText, onComplete);
       };
 
       audio.play().catch(function(err) {
-        console.warn("[Mogly] Audio play promise rejected:", err);
+        console.warn("[Mogly] Audio play error:", err);
         _currentMoglyAudio = null;
         speakMoglyNaturalTTS(fallbackText, onComplete);
       });
@@ -18273,15 +18706,8 @@ window.syncTDEEChoiceUI = function() {
   function stopMoglyAudio() {
     stopMoglyAudioInternal();
     _isMoglyVoiceActive = false;
-
-    const orbBtn = document.getElementById("moglyOrbFabBtn");
-    const container = document.getElementById("moglyAssistantFabContainer");
-    const label = document.getElementById("moglyListeningLabel");
-    const isRu = (_currentLang === "ru");
-
-    if (orbBtn) orbBtn.classList.remove("is-speaking");
-    if (container) container.classList.remove("is-listening");
-    if (label) label.textContent = isRu ? "AI Ментор по лицу" : "AI Facial Aesthetics Mentor";
+    const wave = document.getElementById("moglyVpSoundwave");
+    if (wave) wave.style.opacity = "0.4";
   }
 
   function speakMoglyNaturalTTS(text, onComplete) {
@@ -18326,16 +18752,13 @@ window.syncTDEEChoiceUI = function() {
   }
 
   window.openMoglyVoiceAssistant = function() {
-    window.toggleMoglyVoiceListening(true);
-  };
-  window.closeMoglyVoiceSheet = function() {
-    window.toggleMoglyVoiceListening(false);
+    if (typeof window.openMoglyVoiceSheet === "function") window.openMoglyVoiceSheet();
   };
   window.triggerMoglyVoiceDebrief = function() {
-    window.toggleMoglyVoiceListening(true);
+    if (typeof window.openMoglyVoiceSheet === "function") window.openMoglyVoiceSheet();
   };
   window.replayMoglyVoiceDebrief = function() {
-    window.toggleMoglyVoiceListening(true);
+    if (typeof window.openMoglyVoiceSheet === "function") window.openMoglyVoiceSheet();
   };
 
   // --- 5. SYNC 3-BUTTON NAVIGATION & PAYWALL CAROUSEL ---

@@ -1938,36 +1938,47 @@ async function voiceConsult(request, env) {
     if (report.strengths) faceContext += `Strengths: ${JSON.stringify(report.strengths)}\n`;
   }
 
-  const systemInstructions = lang === "ru" ? `
-Ты — Mogly AI, персональный эксперт и ментор по луксмаксингу и эстетике лица.
-Ты смотришь на реальные данные сканирования лица пользователя и его биометрию.
-Данные анализа лица пользователя:
-${faceContext || "Данные скана: средний балл лица 72/100, челюсть 75/100, кожа 70/100, глаза 78/100, легкая задержка воды."}
+  const topic = String(body.topic || "").toLowerCase().trim();
 
-Пользователь спрашивает:
-"${query || "Сделай краткий персональный вердикт по моему лицу и главным зонам роста."}"
+  let topicSpecificGoal = "Give a concise 20-second personal debrief of their facial aesthetics and highest ROI upgrade priorities.";
+  if (topic === "jawline") {
+    topicSpecificGoal = "Give a 20-second clinical breakdown of their jawline definition, gonial angle, and mewing/chewing protocol to maximize mandibular projection.";
+  } else if (topic === "debloat") {
+    topicSpecificGoal = "Give a 20-second express debloat protocol: potassium flush, sodium reduction, and lymphatic facial drainage to sharpen cheekbone definition within 48 hours.";
+  } else if (topic === "skin") {
+    topicSpecificGoal = "Give a 20-second clinical skin health prescription: pore refinement, sebum regulation, and active collagen routines for clean, radiant skin.";
+  } else if (topic === "eyes") {
+    topicSpecificGoal = "Give a 20-second breakdown of their eye area: canthal tilt, infraorbital rim support, facial symmetry, and maximizing hunter eyes aesthetic.";
+  } else if (topic === "haircut") {
+    topicSpecificGoal = "Give a 20-second haircut and hairstyle recommendation precisely matched to their facial proportions, jaw structure, and skull shape.";
+  }
 
-ПРАВИЛА ОТВЕТА (ОЧЕНЬ СТРОГО):
-1. Отвечай прямо на русском языке от первого лица ("Глядя на твое фото...", "По твоему скану...").
-2. Твой ответ предназначен ДЛЯ ОЗВУЧИВАНИЯ ГОЛОСОМ. Пиши живой разговорной речью, строго 2–3 коротких, мощных, емких предложения. Без списков, без звездочек, без нумерации.
-3. Обязательно конкретно упомяни точные детали из анализа его лица (его балл, челюсть, глаза, скулы, симметрию или кожу).
-4. Дай 1–2 конкретных действия (деблоатинг, натрий/калий, техника мьюинга, стрижка под его форму лица).
-5. Никакой воды, дисклеймеров и роботизированных фраз. Говори как опытный харизматичный наставник.
+  const systemInstructions = (lang === "ru") ? `
+Ты — персональный эстетический AI-ментор по луксмаксингу. Твой голос синтезируется через OpenAI ChatGPT Audio.
+Данные лица пользователя:
+${faceContext || "Базовые метрики: общий балл 84/100, челюсть 88/100, симметрия 84/100, кожа 82/100."}
+
+Тема запроса: ${topic || "общий разбор"}
+Цель: ${topicSpecificGoal}
+
+ПРАВИЛА (СТРОГО):
+1. Говори от первого лица живым, уверенным, профессиональным тоном («Глядя на твои параметры...»).
+2. Длина строго 2–3 ёмких предложения (для 20-секундного аудио).
+3. Назови конкретные цифры и дай 1–2 реальных действия.
+4. Никакой воды, списков, звёздочек и дисклеймеров.
 ` : `
-You are Mogly AI, an elite personal facial aesthetics and looksmaxxing mentor.
-You are evaluating the user's actual facial scan data and biometrics.
-User's Face Data:
-${faceContext || "Default face metrics: overall 72/100, jawline 75/100, skin 70/100, eyes 78/100, mild water retention."}
+You are an elite personal facial aesthetics and looksmaxxing mentor powered by OpenAI ChatGPT.
+User's Real Biometrics & Face Data:
+${faceContext || "Default biometrics: overall 84/100, jawline 88/100, symmetry 84/100, skin 82/100."}
 
-User request:
-"${query || "Give me a concise personal debrief of my face and my primary upgrade priorities."}"
+Topic: ${topic || "general"}
+Objective: ${topicSpecificGoal}
 
-RULES (STRICT):
-1. Speak in first person ("Looking at your scan...", "Based on your facial biometrics...").
-2. This text WILL BE READ ALOUD VIA VOICE. Keep it strictly 2-3 punchy, conversational sentences. NO markdown lists, NO bullet points.
-3. Explicitly reference their real face numbers and features (jawline, gonial angle, canthal tilt, cheekbones, skin).
-4. Give 1-2 concrete actionable fixes (debloat, sodium flush, tongue posture, haircut).
-5. Zero fluff or robot disclaimers. Speak like a confident, elite personal mentor.
+RULES (STRICT FOR OPENAI AUDIO):
+1. Speak in first person with an authoritative, energetic, and highly knowledgeable tone ("Looking at your scan...", "Based on your mandibular angle...").
+2. Keep it strictly 2 to 3 punchy, conversational sentences (ideal for 20 seconds of spoken audio).
+3. Mention their actual numbers or structural traits, followed by 1 or 2 high-impact actionable steps.
+4. ZERO markdown, NO bullet points, NO asterisks, and NO generic disclaimers. Speak directly to the user.
 `;
 
   try {
