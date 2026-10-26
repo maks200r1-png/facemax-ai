@@ -81,6 +81,8 @@
 		<string>gstatic.com</string>
 		<string>cdn.jsdelivr.net</string>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Mogly uses the microphone only while you talk to your AI mentor. Audio is not stored.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to capture selfies and meal photos for AI-powered analysis.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
