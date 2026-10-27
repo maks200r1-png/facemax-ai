@@ -70,6 +70,9 @@ async function post(path, body, headers = {}) {
 }
 
 const fakeAudio = Buffer.alloc(3000, 1).toString("base64");
+// Whole prompt (system + history + user turn) as one string, for content checks.
+const msgText = (m) => typeof m.content === "string" ? m.content : m.content.map(c => c.text || "").join("\n");
+const promptOf = (body) => body.messages.map(msgText).join("\n");
 let passed = 0;
 const ok = (name) => { passed++; console.log("  ok -", name); };
 
@@ -79,6 +82,17 @@ const ok = (name) => { passed++; console.log("  ok -", name); };
   assert.equal(r.status, 402);
   assert.equal(r.data.error, "premium_required");
   ok("non-premium user gets 402");
+}
+
+// 1b. native StoreKit subscriber the KV mirror does not know yet: the client claim is honoured
+{
+  const r = await post("/api/voice-chat", { user_id: "u_native", text: "hi", lang: "en", premium: true, stream: false });
+  assert.notEqual(r.status, 402, "premium:true is not bounced to the robot fallback");
+  const r2 = await post("/api/voice-chat", { user_id: "u_native2", text: "hi", lang: "en", is_premium: true, stream: false });
+  assert.notEqual(r2.status, 402, "is_premium:true accepted too");
+  const r3 = await post("/api/voice-chat", { user_id: "u_native3", text: "hi", lang: "en", premium: "true" });
+  assert.equal(r3.status, 402, "only a strict boolean counts");
+  ok("client-confirmed native subscription gets the server voice (no 402)");
 }
 
 setPremium("u1", true);
@@ -115,10 +129,18 @@ setPremium("u1", true);
   assert.equal(stt.body.input_audio.format, "m4a");
   assert.equal(stt.body.language, "ru");
   const chat = calls.find(c => c.url.endsWith("/chat/completions"));
-  const prompt = chat.body.messages[0].content[0].text;
+  const prompt = promptOf(chat.body);
   assert.match(prompt, /Reply language: Russian/);
   assert.match(prompt, /jawline: 88\/100/);
-  assert.match(prompt, /User said: How do I debloat/);
+  // The user's words are their own user message, never spliced into the system instructions.
+  const msgs = chat.body.messages;
+  assert.equal(msgs[0].role, "system");
+  assert.match(msgs[0].content, /Reply language: Russian/);
+  assert.ok(!msgs[0].content.includes("How do I debloat"), "user text is not in the system prompt");
+  const last = msgs[msgs.length - 1];
+  assert.equal(last.role, "user");
+  assert.equal(msgText(last), "How do I debloat my face before tomorrow?");
+  assert.deepEqual(msgs.slice(1, -1), [{ role: "user", content: "hello" }], "past turns keep their own roles");
   const tts = calls.find(c => c.url.endsWith("/audio/speech"));
   assert.equal(tts.body.model, "google/gemini-3.8-flash-lite-tts");
   assert.equal(tts.body.response_format, "pcm");
@@ -176,7 +198,7 @@ setPremium("u1", true);
   assert.ok(!r.data.answer.includes("[["));
   const tts = calls.find(c => c.url.endsWith("/audio/speech"));
   assert.ok(!tts.body.input.includes("[["));
-  const prompt = calls.find(c => c.url.endsWith("/chat/completions")).body.messages[0].content[0].text;
+  const prompt = promptOf(calls.find(c => c.url.endsWith("/chat/completions")).body);
   assert.match(prompt, /exercises done 1 of 4/);
   assert.match(prompt, /water 3 of 8 glasses/);
   ok("function: today uses day data, tag stripped, action returned");
@@ -191,7 +213,7 @@ setPremium("u1", true);
     exercise: { id: "cheek_lift", name: "Cheekbone Depuff & Lift", area: "CHEEKBONES", seconds: 30, desc: "Upward glides.", steps: ["Place palms flat along cheeks.", "Glide upward."] },
   });
   assert.equal(r.data.ok, true);
-  const prompt = calls.find(c => c.url.endsWith("/chat/completions")).body.messages[0].content[0].text;
+  const prompt = promptOf(calls.find(c => c.url.endsWith("/chat/completions")).body);
   assert.match(prompt, /Cheekbone Depuff/);
   assert.match(prompt, /timer starts now for 30 seconds/);
   ok("function: exercise passes exercise name, steps and duration");
@@ -268,6 +290,9 @@ async function postStream(body) {
   assert.equal(inputs.length, 3);
   assert.ok(inputs[0].length < inputs.join(" ").length / 2, "first segment is the short one");
   assert.equal(inputs.join(" "), r.events[1].answer, "segments cover the whole answer, nothing lost");
+  // Each audio event names the text it speaks, so the app can highlight it while it plays.
+  assert.deepEqual(audio.map(e => e.text), inputs, "audio[i].text is exactly what audio i says");
+  assert.deepEqual(r.events[1].segments, inputs, "answer event lists the segments up front");
   assert.equal(calls.filter(c => c.url.endsWith("/audio/transcriptions")).length, 1);
   ok("stream: one request, transcript -> answer -> 3 ordered audio segments -> done");
 }
@@ -303,7 +328,7 @@ async function postStream(body) {
   });
   assert.equal(r.data.ok, true);
   assert.equal(r.data.action, "daily");
-  const prompt = calls.find(c => c.url.endsWith("/chat/completions")).body.messages[0].content[0].text;
+  const prompt = promptOf(calls.find(c => c.url.endsWith("/chat/completions")).body);
   assert.match(prompt, /Daily brief/);
   assert.match(prompt, /never invent numbers/);
   assert.match(prompt, /streak 5 days/);
@@ -359,7 +384,7 @@ async function postStream(body) {
     const r = await post("/api/voice-chat", { user_id: "u5", lang: "en", function: fn, context: ctx });
     assert.equal(r.status, 200, fn);
     assert.equal(r.data.ok, true, fn);
-    const prompt = calls.find(c => c.url.endsWith("/chat/completions")).body.messages[0].content[0].text;
+    const prompt = promptOf(calls.find(c => c.url.endsWith("/chat/completions")).body);
     assert.match(prompt, new RegExp("Task: .*" + re.source), fn + " task text");
     assert.match(prompt, /Overall face score: 71\/100/, fn);
     assert.match(prompt, /Gender: male/, fn);
@@ -370,7 +395,7 @@ async function postStream(body) {
   for (const fn of ["brief", "priority", "today", "meal", "exercise"]) {
     calls.length = 0;
     await post("/api/voice-chat", { user_id: "u5", lang: "en", function: fn, context: ctx });
-    const prompt = calls.find(c => c.url.endsWith("/chat/completions")).body.messages[0].content[0].text;
+    const prompt = promptOf(calls.find(c => c.url.endsWith("/chat/completions")).body);
     assert.match(prompt, /Task: /, fn + " still a function");
   }
   // Unknown function falls back to free mode instead of an empty task.
@@ -384,7 +409,7 @@ async function postStream(body) {
 {
   calls.length = 0;
   await post("/api/voice-chat", { user_id: "u5", lang: "en", text: "should I try bonesmashing?" });
-  const prompt = calls.find(c => c.url.endsWith("/chat/completions")).body.messages[0].content[0].text;
+  const prompt = promptOf(calls.find(c => c.url.endsWith("/chat/completions")).body);
   assert.match(prompt, /looksmaxxing expert/);
   assert.match(prompt, /Softmaxxing is what the user can change: body fat, water retention and bloating, lymphatic drainage, neck and tongue posture, skin, haircut/);
   assert.match(prompt, /Hardmaxxing is bone/);
@@ -395,6 +420,15 @@ async function postStream(body) {
   }
   assert.doesNotMatch(prompt, /Never recommend mewing/);
   assert.doesNotMatch(prompt, /face-improvement app/);
+  // Scope: only looksmaxxing, off-topic is deflected in one line and pivoted to the face.
+  assert.match(prompt, /You talk ONLY about looksmaxxing/);
+  assert.match(prompt, /politics, news.*coding, weather.*do NOT answer it, not even briefly/);
+  assert.match(prompt, /Never sound like a robot refusing/);
+  assert.match(prompt, /Bro, no candidate is fixing your jawline/);
+  // Numbers: the screen shows them, the voice turns them into meaning; numbers only for progress.
+  assert.match(prompt, /Never read out lists of measurements, scores, degrees or percentages/);
+  assert.match(prompt, /Say a number out loud only to celebrate progress/);
+  assert.doesNotMatch(prompt, /quote their actual numbers/);
   const src = readFileSync(resolve(here, "../workers/api/src/worker.js"), "utf8");
   const jawPlan = src.match(/"jawline-plan": `([^`]*)`/)[1];
   assert.doesNotMatch(jawPlan, /Never recommend mewing/);
@@ -450,7 +484,15 @@ async function postStream(body) {
   assert.match(web, /mvNote\(cut \? mvT\("cutOff"\) : mvT\("noVoice"\)\)/, "TTS failure / cut keeps text and only notes the status");
   assert.match(web, /ctx\.face_shape = shape\.trim\(\)/);
   assert.match(web, /ctx\.gender = /);
-  ok("client: 6 chips (Fix first primary), error events, kept text on drop, specific messages, web == ios");
+  // Live "where Mogly is now": sentence spans, highlight by segment + playback time, auto-scroll.
+  assert.match(web, /span\.className = "mv-sent";/, "answer rendered as sentence spans");
+  assert.match(web, /mvQueuePush\(mvBase64ToBytes\(ev\.audio_base64\), ev\.audio_format, ev\.text \|\| ""\)/, "segment text drives the highlight");
+  assert.match(web, /\.mv-answer\.mv-karaoke \.mv-sent\.mv-past \{ opacity: 0\.45; \}/, "spoken sentences fade to 0.45");
+  assert.match(web, /\.mv-answer\.mv-karaoke \.mv-sent\.mv-now \{ opacity: 1; color: #fff;/, "current sentence bright white");
+  assert.match(web, /box\.scrollTo\(\{ top, behavior: reduce \? "auto" : "smooth" \}\)/, "text follows the voice down");
+  assert.match(web, /mvRaf = 0;\n\s+mvKaraokeTick\(\);/, "highlight updated every frame while speaking");
+  assert.match(web, /if \(\(answer \|\| ""\) === mvShownAnswer\) return;/, "end of stream does not reset the highlight or scroll");
+  ok("client: 6 chips (Fix first primary), error events, kept text on drop, specific messages, live sentence highlight + auto-scroll, web == ios");
 }
 
 // 19. offline-first: a dead /api/voice-chat (404 in prod while the worker deploy is broken),
@@ -463,15 +505,32 @@ async function postStream(body) {
   assert.match(web, /if \(!answer\) \{ local\(streamErr \? streamErr\.error/);
   assert.match(web, /if \(myTurn === mvTurn\) mvLocalTurn\(fn, myTurn, "", extra\);/, "chip exception -> device answer");
   assert.match(web, /timer = setTimeout\(\(\) => \{ timedOut = true; controller\.abort\(\); \}, 15000\);/, "dead server gives up in 15 s");
-  // Server answer without audio is read by the device voice
-  assert.match(web, /if \(mvSpeakLocal\(answer, myTurn, onEnd\)\) return;/);
-  assert.match(web, /new SpeechSynthesisUtterance\(parts\[i\+\+\]\)/);
-  assert.match(web, /me\.utt = u;/, "utterance kept alive (WebKit GC)");
-  assert.match(web, /mvSynthPending = \{ text, onEnd \}/, "blocked autoplay keeps the answer for the next tap");
-  // Scan -> result -> 2 s -> debrief, on both scan paths, not on history reopen
+  // The iOS robot voice is banned: no speechSynthesis anywhere, text only without real audio.
+  const ios = readFileSync(resolve(here, "../ios/App/App/public/index.html"), "utf8");
+  for (const [name, html] of [["web", web], ["ios", ios]]) {
+    assert.ok(!/speechSynthesis\.(speak|getVoices)|new SpeechSynthesisUtterance|AVSpeechSynthesizer/.test(html), name + ": no device speech engine");
+    assert.ok(!/mvSpeakLocal|mvPickVoice|mdcUtt/.test(html), name + ": robot helpers removed");
+  }
+  assert.match(web, /text only, never the robot voice/, "server answer without audio stays text");
+  assert.match(web, /premium: mvIsPremium\(\),/, "client tells the worker about the native subscription");
+  assert.match(web, /function mdcChime\(notes\)/, "exercise cues are a bell, not speech");
+  // Home: no brief pill beside the orb, a tappable caption under it instead
+  assert.ok(!/id="mdcBriefChip"|\.mdc-brief-chip\{/.test(web), "brief chip next to the orb removed");
+  assert.match(web, /<button type="button" class="mogly-orb-hint" id="moglyOrbHint" onclick="openMoglyVoiceSheet\(\)">Tap to talk with Mogly<\/button>/);
+  // Profile voice cards never overflow on a 375 pt screen
+  assert.match(web, /\.pf-voice-seg\{[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
+  assert.match(web, /\.pf-voice-opt\{[^}]*min-width:0;overflow:hidden/);
+  assert.match(web, /<b>Onyx<\/b><small>Male Coach<\/small>/);
+  assert.match(web, /<b>Nova<\/b><small>Female Coach<\/small>/);
+  assert.match(web, /window\.toggleCyberChadVoice = function\(\)\{\n  quizHaptic\(\);\n  if \(typeof window\.moglyPlayScanDebrief/, "scan verdict uses the live debrief");
+  // Scan -> result -> 3 s -> orb floats up (tap = debrief, swipe/✕ = dismiss), on both scan paths, not on history reopen
   const sched = (web.match(/window\.moglyScheduleScanDebrief\(\);/g) || []).length;
   assert.equal(sched, 2, "debrief scheduled after both fresh-scan paths");
-  assert.match(web, /mvRunFunction\("scan"\);\n\s+\}, 2000\);/, "debrief fires exactly 2 s after results");
+  assert.match(web, /mvDockShow\(\);\n\s+mvHaptic\("light"\);\n\s+\}, 3000\);/, "orb floats up exactly 3 s after results");
+  assert.ok(!/moglyScheduleScanDebrief = function\(\) \{[\s\S]{0,400}mvOpenOverlay/.test(web), "results are never covered by an auto-opened overlay");
+  assert.match(web, /id="mvScanDock"[\s\S]{0,1400}moglyDismissScanDock\(event\)/, "orb has a ✕ dismiss");
+  assert.match(web, /if \(dy > 70 \|\| \(dy > 24 && v > 0\.5\)\) \{ mvHaptic\("light"\); mvDockHide\(true\)/, "swipe down throws the orb off screen");
+  assert.match(web, /\["resultImg", "reportImg", "prePayImg", "loadingImg"\]\.forEach[\s\S]{0,120}img\.src = cleanDataUrl/, "Face Scan circle gets the scanned photo");
   const openHist = web.slice(web.indexOf("window.openHistoryScan = function"), web.indexOf("window.openHistoryScan = function") + 900);
   assert.ok(!openHist.includes("moglyScheduleScanDebrief"), "history reopen does not talk");
   assert.match(web, /function mvGuestBlocked\(\)/, "free debrief, premium chips");
@@ -526,7 +585,83 @@ async function postStream(body) {
   const empty = build("en", { metrics: {} });
   assert.match(empty.mvLocalAnswer("fixfirst", "").answer, /I don't have your scan yet/);
   assert.equal(empty.mvLocalAnswer("scan", "").action, "scan");
-  ok("offline-first: 404/5xx/timeout -> on-device looksmax answer (English), time-of-day brief, scan delta audit, spoken via speechSynthesis, scan debrief at +2 s");
+  ok("offline-first: 404/5xx/timeout -> on-device looksmax answer (English), time-of-day brief, scan delta audit, shown as text (no robot voice), scan orb at +3 s (tap = debrief, swipe/✕ = dismiss)");
+}
+
+// 20. wake word: "Hey Mogly, ..." reaches the model without the address; just "Mogly" gets a greeting
+{
+  kv.clear();
+  setPremium("u20", true);
+  chatReply = "Cut late salt tonight and sleep on your back.";
+  // Text model calls only: TTS (gpt-audio-mini) also goes through /chat/completions.
+  const llmCalls = () => calls.filter(c => c.url.endsWith("/chat/completions") && !c.body.modalities);
+  const userTurn = () => {
+    const chat = llmCalls();
+    const users = chat[0].body.messages.filter(m => m.role === "user");
+    return msgText(users[users.length - 1]);
+  };
+  const cases = [
+    ["Hey Mogly, how do I debloat my face?", "how do I debloat my face?"],
+    ["Mogly, what about my jawline?", "what about my jawline?"],
+    ["yo mowgli what about my jawline?", "what about my jawline?"],
+    ["Hey, Moggli: fix my skin first?", "fix my skin first?"],
+    ["Moggy — how's my canthal tilt?", "how's my canthal tilt?"],
+    ["ok mogli. which haircut suits me?", "which haircut suits me?"],
+    ["Могли, как убрать отёки?", "как убрать отёки?"],
+  ];
+  for (const [said, clean] of cases) {
+    calls.length = 0;
+    const r = await post("/api/voice-chat", { user_id: "u20", lang: "en", text: said });
+    assert.equal(r.status, 200, said);
+    assert.ok(userTurn().includes(clean), said + " -> " + clean);
+    assert.ok(!/mog|mowgli|могли/i.test(userTurn().slice(userTurn().indexOf(clean) - 20)), "address removed: " + said);
+  }
+  // Not an address: left exactly as said.
+  for (const said of ["Moglyfication is a myth?", "Hey, how do I debloat?", "Могли бы вы помочь с кожей?"]) {
+    calls.length = 0;
+    await post("/api/voice-chat", { user_id: "u20", lang: "en", text: said });
+    assert.ok(userTurn().includes(said), "kept: " + said);
+  }
+  // Only the name (spoken, via STT): greeting, no model call, no daily turn spent.
+  const usedBefore = [...kv.keys()].filter(k => k.includes("u20")).map(k => kv.get(k)).join("|");
+  for (const name of ["Mogly", "Hey Mogly!", "Mowgli?", "Могли."]) {
+    calls.length = 0;
+    sttText = name;
+    const r = await post("/api/voice-chat", { user_id: "u20", lang: "en", audio_base64: fakeAudio, audio_format: "audio/mp4" });
+    assert.equal(r.status, 200, name);
+    assert.equal(r.data.answer, "I'm listening. What's on your mind — jawline, debloat, or your daily routine?", name);
+    assert.equal(r.data.transcript, name, "the transcript shows what was actually said");
+    assert.equal(llmCalls().length, 0, "no model call for a bare name");
+    assert.equal(r.data.tts_ok, true, "the greeting is spoken");
+  }
+  const s = await postStream({ user_id: "u20", lang: "en", stream: true, text: "Hey Mogly" });
+  assert.deepEqual(s.events.map(e => e.type).slice(0, 1), ["answer"]);
+  assert.match(s.events[0].answer, /^I'm listening\./);
+  assert.equal(s.events[s.events.length - 1].type, "done");
+  assert.equal([...kv.keys()].filter(k => k.includes("u20")).map(k => kv.get(k)).join("|"), usedBefore, "greeting does not count against the daily limit");
+  sttText = "How do I debloat my face before tomorrow?";
+  ok("wake word: Hey/Yo Mogly, Mowgli, Moggli, Moggy, Mogli, Могли stripped before the model; bare name -> spoken greeting, no quota");
+}
+
+// 21. orb tap state machine: double tap, late recorder events and cancels never leave the orb stuck
+{
+  const web = readFileSync(resolve(here, "../web/index.html"), "utf8");
+  const ios = readFileSync(resolve(here, "../ios/App/App/public/index.html"), "utf8");
+  assert.ok(web === ios, "web == ios");
+  assert.match(web, /onclick="moglyVoiceOrbTap\(\)"/, "tap on the sphere drives the conversation");
+  assert.match(web, /if \(mvState !== "idle" \|\| mvMicPending\) return;/, "second tap while the mic opens is ignored");
+  assert.match(web, /if \(myTurn !== mvTurn\) \{ try \{ stream\.getTracks\(\)\.forEach\(tr => tr\.stop\(\)\); \} catch \(e\) \{\} return; \}\n\s+mvMicStream = stream;/, "stale start stops only its own stream");
+  assert.match(web, /async function mvOnRecorded\(myTurn, mime\) \{\n[^\n]*\n\s+if \(myTurn !== mvTurn\) return;\n\s+mvStopMic\(\);/, "late stop event cannot kill a newer mic");
+  assert.match(web, /if \(rec && rec\.mvFinish\) setTimeout\(rec\.mvFinish, 3000\);/, "watchdog: never stuck in thinking");
+  const tap = web.slice(web.indexOf("window.moglyVoiceOrbTap = function"), web.indexOf("window.moglyVoiceChip"));
+  assert.match(tap, /mvState === "idle" && mvResumeBlocked\(\)/);
+  assert.match(tap, /mvState === "listening"\) \{ mvStopListening\(true\); return; \}/);
+  assert.match(tap, /mvCancelTurn\(true\);/, "tap while thinking / speaking cancels back to idle");
+  const cancel = web.slice(web.indexOf("function mvCancelTurn"), web.indexOf("function mvCloseOverlay"));
+  for (const part of ["mvTurn++", "mvAbort.abort()", "mvStopMic()", "mvMicPending = false", "mvStopPlayback()", 'mvSetState("idle")']) {
+    assert.ok(cancel.includes(part), "cancel resets " + part);
+  }
+  ok("orb tap: idle -> listening -> thinking -> speaking -> idle; double tap, late events and cancels never stick");
 }
 
 console.log(`\nvoice-chat audit: ${passed} checks passed`);
