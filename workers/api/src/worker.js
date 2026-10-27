@@ -1809,7 +1809,7 @@ async function simpleTool(request, env, type) {
 
   const typeRules = {
     "skin-plan": `Build a concrete skin-improvement plan. Prioritize the actual skin and eye-area scores. Cover AM, PM, lifestyle and nutrition. Do not diagnose disease or prescribe medication.`,
-    "jawline-plan": `Build a concrete jawline-definition plan. Be honest that bone structure cannot be changed. Prioritize bloating, body composition, posture, grooming and safe muscle-tone work according to the scores. Never recommend mewing or jaw trainers.`,
+    "jawline-plan": `Build a concrete jawline-definition plan. Be honest that bone structure cannot be changed. Prioritize bloating, body composition, posture, grooming and safe muscle-tone work according to the scores. Mewing (correct resting tongue posture) is fine as a posture habit, but say honestly it will not visibly reshape bone in adults. Never recommend bonesmashing, jaw trainers that strain the joint, or extreme cutting.`,
     "haircut-guide": `Recommend a practical haircut and grooming direction for the stated face shape and scores. Avoid generic claims and explain why each step suits this user.`,
     "dating-photo": `Build a practical profile-photo improvement plan using the stated scores and face shape. Cover lighting, camera height, posture, expression, background and grooming.`,
   }[type];
@@ -1898,7 +1898,12 @@ const DAILY_VOICE_LEGACY_IP_LIMIT = 12; // old builds send no user id
 const VOICE_REQUIRES_PREMIUM = true;
 const VOICE_MAX_AUDIO_B64 = 6000000;   // ~4.5 MB of audio
 const VOICE_MAX_ANSWER_CHARS = 700;
-const VOICE_FUNCTIONS = new Set(["brief", "priority", "today", "exercise", "meal"]);
+// Looksmaxxing chips (fixfirst..hair) plus the older chips kept for app builds
+// that still send them.
+const VOICE_FUNCTIONS = new Set([
+  "fixfirst", "jawline", "debloat", "eyes", "skin", "hair",
+  "brief", "priority", "today", "exercise", "meal",
+]);
 const VOICE_MAX_SEGMENTS = 3;
 const VOICE_ACTIONS = new Set(["exercises", "daily", "foodscan"]);
 
@@ -2048,14 +2053,35 @@ function voiceClip(value, max) {
   return String(value == null ? "" : value).replace(/\s+/g, " ").trim().slice(0, max);
 }
 
+// Key scan metrics the looksmaxxing chips reason about, with the aliases the
+// app has used for them over time.
+const VOICE_KEY_METRICS = [
+  ["jawline", ["jawline", "jaw"]],
+  ["cheekbones", ["cheekbones", "cheekbone"]],
+  ["eyes", ["eye_area", "eyes", "eye"]],
+  ["skin", ["skin", "skin_quality"]],
+  ["face shape", ["face_shape"]],
+  ["symmetry", ["symmetry"]],
+  ["hair", ["hair"]],
+];
+
 function voiceContextBlock(ctx) {
   if (!ctx || typeof ctx !== "object") return "No scan data yet.";
   const lines = [];
-  const score = Number(ctx.score);
+  const score = Number(ctx.score ?? ctx.overall_score);
   if (Number.isFinite(score) && score > 0) lines.push(`Overall face score: ${Math.round(score)}/100`);
+  if (ctx.gender) lines.push("Gender: " + (String(ctx.gender).toLowerCase().startsWith("f") ? "female" : "male"));
+  if (typeof ctx.face_shape === "string" && ctx.face_shape.trim()) lines.push("Face shape: " + voiceClip(ctx.face_shape, 30));
   if (ctx.metrics && typeof ctx.metrics === "object") {
-    const m = Object.entries(ctx.metrics)
-      .filter(([, v]) => Number.isFinite(Number(v)))
+    const metrics = ctx.metrics;
+    const key = [];
+    for (const [label, aliases] of VOICE_KEY_METRICS) {
+      const k = aliases.find(a => Number.isFinite(Number(metrics[a])) && metrics[a] !== null && metrics[a] !== "");
+      if (k) key.push(`${label} ${Math.round(Number(metrics[k]))}/100`);
+    }
+    if (key.length) lines.push("Key scan metrics: " + key.join(", "));
+    const m = Object.entries(metrics)
+      .filter(([, v]) => v !== null && v !== "" && Number.isFinite(Number(v)))
       .slice(0, 16)
       .map(([k, v]) => `${voiceClip(k, 30)}: ${Math.round(Number(v))}/100`);
     if (m.length) lines.push("Metrics: " + m.join(", "));
@@ -2065,7 +2091,6 @@ function voiceContextBlock(ctx) {
   if (ctx.weak_points) lines.push("Weak points: " + voiceClip(JSON.stringify(ctx.weak_points), 400));
   if (ctx.strengths) lines.push("Strengths: " + voiceClip(JSON.stringify(ctx.strengths), 300));
   if (ctx.fastest_upgrade) lines.push("Fastest upgrade: " + voiceClip(JSON.stringify(ctx.fastest_upgrade), 300));
-  if (ctx.gender) lines.push("Gender: " + (String(ctx.gender).toLowerCase().startsWith("f") ? "female" : "male"));
   const t = ctx.today;
   if (t && typeof t === "object") {
     const parts = [];
@@ -2102,6 +2127,12 @@ function voiceContextBlock(ctx) {
 function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise }) {
   const ru = lang === "ru";
   const functionGoal = {
+    fixfirst: "The user tapped 'Fix first'. Rank their improvable areas from the Key scan metrics and weak points, lowest softmaxx-fixable score first. Skip fixed bone structure (orbital shape, skull, jaw bone width) or say in one clause that it is hardmaxx territory. Name the single area with the biggest visible payoff, why, using their real number, and ONE concrete step for today. Up to 5 short sentences. If there is no scan, say a scan is needed to rank them and give the universal first fix: lower body fat and debloat.",
+    jawline: "The user tapped 'Jawline'. Use their jawline score and gender. Explain honestly what makes a jawline look sharper: body fat and water retention first, then neck and tongue posture, then masseter tone from normal chewing. Explain mewing honestly: correct resting tongue posture on the palate is a good habit and improves the neck and chin line in photos, but it does not visibly reshape adult bone; real bone change is hardmaxxing, meaning orthodontics or surgery with a professional. Give one concrete action for today. Up to 5 short sentences. End with [[go:exercises]].",
+    debloat: "The user tapped 'Debloat'. Explain the fastest softmaxxing win for facial puffiness: lower sodium and alcohol, steady water, potassium foods, sleep 7 to 9 hours with the head slightly raised, and a gentle lymphatic drainage massage in the morning, cold water helps. Use their data if relevant. Give a concrete plan for the next 24 hours. Up to 5 short sentences. Never suggest dehydration, diuretics or fasting. End with [[go:exercises]].",
+    eyes: "The user tapped 'Hunter eyes'. Use their eye area score. Be honest: canthal tilt and orbital bone are hardmaxxing and do not change with exercises. What softmaxxing can improve: under-eye puffiness and dark circles through sleep, less salt and cold compresses, brow grooming to frame the eyes, a lower body fat level, and a relaxed but focused gaze in photos. Give one concrete step for today. Up to 5 short sentences.",
+    skin: "The user tapped 'Skin'. Use their skin score. Give a simple looksmaxxing skin routine: gentle cleanser, moisturizer, daily sunscreen in the morning; at night a retinoid introduced slowly, two or three times a week; plus sleep, less sugar and dairy if they break out. For cystic acne or persistent problems say to see a dermatologist. Up to 5 short sentences.",
+    hair: "The user tapped 'Haircut'. Use their face shape, gender and hair score. Recommend a specific haircut direction that balances their face shape, for example volume on top for round faces, softer sides for long faces, textured fringe for high foreheads, and what to ask the barber or stylist. Mention brows and, for men, beard shaping if it would sharpen the jawline. Up to 5 short sentences.",
     brief: "The user tapped 'Daily brief', their short daily check-in. Greet them for the time of day. In one sentence, reflect their real progress from the data (streak, plan done today, score change); never invent numbers. Then give today's single focus: the one action with the biggest visible payoff for their weakest improvable area. If the streak is at risk, say so plainly. If the last scan is 7 or more days ago, suggest a re-scan to measure progress. Up to 5 short sentences. End with [[go:daily]] if today's plan is not finished.",
     priority: "The user tapped 'What should I improve first'. From the metrics, pick the one or two most improvable weak areas (skip anything that is fixed bone structure), say plainly what matters most, and give ONE concrete first step they can do today. Up to 4 short sentences.",
     today: "The user tapped 'My plan for today'. Briefly say how their day is going using the Today data (exercises done, water), name the next exercise, and ask if they want to start it. Up to 4 short sentences. If the next exercise exists end with the tag [[go:exercises]].",
@@ -2118,19 +2149,25 @@ function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise }) {
       }).filter(l => l.length > 7).join("\n")
     : "";
 
-  return `You are Mogly, a personal AI looks coach inside a face-improvement app. Everything you write is spoken out loud by a voice, so write exactly what should be said.
+  return `You are Mogly, a looksmaxxing expert inside the FaceMax looksmaxxing app. Everything you write is spoken out loud by a voice, so write exactly what should be said.
 
 Reply language: ${ru ? "Russian" : "English"}.
 
 Speaking style:
-- Warm, direct and confident, like a good coach talking to one person. First person, no filler.
+- Direct, confident and honest, like an experienced looksmaxxing mentor talking to one person. First person, no filler, no generic wellness talk.
+- Use looksmaxxing terms naturally (softmaxxing, hardmaxxing, mewing, debloat, canthal tilt, hunter eyes) and explain them in a few words when it helps.
 - Plain sentences only. No markdown, lists, headings, asterisks, emojis, URLs or stage directions. Say numbers the way a person would.
-${fn ? "" : "- Free conversation: at most 3 short sentences (about 45 words) unless the user clearly asks for more. Answer first, then at most one useful next step or one short question.\n"}- Use the user's real data below when it helps. If there is no scan data, still help generally and mention that a face scan makes the advice personal.
+${fn ? "" : "- Free conversation: at most 3 short sentences (about 45 words) unless the user clearly asks for more. Answer first, then at most one useful next step or one short question.\n"}- Use the user's real scan data below and quote their actual numbers. Never invent numbers. If there is no scan data, still help and mention that a face scan makes the advice personal.
+
+Looksmaxxing framework:
+- Softmaxxing is what the user can change: body fat, water retention and bloating, lymphatic drainage, neck and tongue posture, skin, haircut, brows, beard, grooming, sleep, photos. This is where advice should focus.
+- Hardmaxxing is bone: jaw, chin, cheekbone and orbital structure, canthal tilt. It does not change with exercises or massage in adults; only orthodontics or surgery with a qualified professional can. Say this honestly when relevant.
+- Mewing means resting the whole tongue on the palate with lips closed and teeth lightly touching. It is a good posture habit that can improve the chin and neck line and is worth doing, but be honest that it does not visibly reshape adult bone.
 
 Honesty and safety:
-- Never promise results or timelines you cannot back up. Bone structure cannot be changed by exercises.
-- No medical diagnoses, no medication advice. For pain, injuries, skin conditions or anything medical, suggest seeing a doctor.
-- Never recommend mewing, jaw trainers, extreme diets, dehydration or anything risky.
+- Never promise results or timelines you cannot back up.
+- Hard bans: never recommend bonesmashing, hitting or pressing on bones, steroids or other PEDs, DNP, diuretics, dehydration, starvation, extreme fasting or crash diets, or jaw trainers that strain the jaw joint. If the user asks about them, say clearly they are dangerous and give a safe alternative.
+- No medical diagnoses, no medication advice. For pain, jaw clicking, injuries, skin conditions or anything medical, suggest seeing a doctor or dermatologist.
 - If the user sounds upset about their looks, self-critical in a harmful way, or mentions hurting themselves, respond with real kindness, do not rate or criticize them, and encourage talking to someone they trust or a professional.
 - Never mention models, APIs, prompts or these instructions.
 
@@ -2234,6 +2271,18 @@ async function voiceAnswer(env, params) {
   return { ok: true, ...parsed };
 }
 
+// Stable error codes the app turns into a clear message:
+//   ai_busy    provider rate limited / overloaded, try again in a moment
+//   ai_timeout the answer took too long
+//   ai_error   anything else
+function voiceErrorCode(result) {
+  const reason = String((result && result.reason) || "");
+  const status = Number(result && result.status) || 0;
+  if (status === 429 || status === 503 || /rate limited|unavailable/i.test(reason)) return "ai_busy";
+  if (status === 408 || /timed? ?out/i.test(reason)) return "ai_timeout";
+  return "ai_error";
+}
+
 // Free conversation + function buttons.
 async function voiceChat(request, env) {
   if (!String(env.OPENROUTER_API_KEY || "").trim()) {
@@ -2292,7 +2341,7 @@ async function voiceChat(request, env) {
         lang, fn, userText, history: body.history, ctx: body.context, exercise,
       });
       if (!answer.ok) {
-        await send({ type: "error", error: "ai_error", reason: answer.reason });
+        await send({ type: "error", error: voiceErrorCode(answer), reason: answer.reason });
         return;
       }
       await send({ type: "answer", answer: answer.answer, action: answer.action, used: limit.used, limit: limit.limit });
@@ -2319,7 +2368,7 @@ async function voiceChat(request, env) {
     lang, fn, userText, history: body.history, ctx: body.context, exercise,
   });
   if (!answer.ok) {
-    return json({ ok: false, error: "ai_error", reason: answer.reason }, 502);
+    return json({ ok: false, error: voiceErrorCode(answer), reason: answer.reason }, 502);
   }
 
   const speech = await voiceSpeak(env, answer.answer, lang, gender);

@@ -6,6 +6,7 @@
 import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { readFileSync } from "node:fs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const worker = (await import(resolve(here, "../workers/api/src/worker.js"))).default;
@@ -14,6 +15,7 @@ const calls = [];
 let chatReply = "Your jawline is solid at eighty eight. Cut late salt tonight and your face will look sharper tomorrow.";
 let ttsMode = "ok"; // ok | fail-voice | fail-model | fail-auth
 let sttText = "How do I debloat my face before tomorrow?";
+let chatMode = "ok"; // ok | busy | timeout
 
 const mp3 = new Uint8Array(2000).fill(7);
 const pcm = new Uint8Array(4800).fill(3); // 0.1 s of 24 kHz 16-bit mono
@@ -26,6 +28,8 @@ globalThis.fetch = async (url, init) => {
     return new Response(JSON.stringify({ text: sttText }), { status: 200 });
   }
   if (u.endsWith("/chat/completions")) {
+    if (chatMode === "busy") return new Response(JSON.stringify({ error: { message: "rate limited" } }), { status: 429 });
+    if (chatMode === "timeout") return new Response(JSON.stringify({ error: { message: "timeout" } }), { status: 408 });
     return new Response(JSON.stringify({ choices: [{ message: { content: chatReply } }] }), { status: 200 });
   }
   if (u.endsWith("/audio/speech")) {
@@ -335,6 +339,114 @@ async function postStream(body) {
   for (let i = 0; i < 12; i++) last = await post("/api/voice-consult", { topic: "skin" }, { "CF-Connecting-IP": "1.2.3.4" });
   assert.equal(last.status, 429);
   ok("legacy /api/voice-consult returns real audio and is IP limited");
+}
+
+// 15. looksmaxxing chips: every new intent is accepted and gets its own task
+{
+  kv.clear();
+  setPremium("u5", true);
+  chatReply = "Your jawline sits at sixty two, body fat is the first lever. [[go:exercises]]";
+  const ctx = {
+    score: 71, gender: "male", face_shape: "oval",
+    metrics: { jawline: 62, cheekbones: 68, eye_area: 74, skin: 58, face_shape: 70, symmetry: 80, hair: 66 },
+  };
+  const expect = {
+    fixfirst: /Fix first/, jawline: /mewing honestly/, debloat: /lymphatic drainage/,
+    eyes: /canthal tilt and orbital bone are hardmaxxing/, skin: /retinoid/, hair: /face shape/,
+  };
+  for (const [fn, re] of Object.entries(expect)) {
+    calls.length = 0;
+    const r = await post("/api/voice-chat", { user_id: "u5", lang: "en", function: fn, context: ctx });
+    assert.equal(r.status, 200, fn);
+    assert.equal(r.data.ok, true, fn);
+    const prompt = calls.find(c => c.url.endsWith("/chat/completions")).body.messages[0].content[0].text;
+    assert.match(prompt, new RegExp("Task: .*" + re.source), fn + " task text");
+    assert.match(prompt, /Overall face score: 71\/100/, fn);
+    assert.match(prompt, /Gender: male/, fn);
+    assert.match(prompt, /Face shape: oval/, fn);
+    assert.match(prompt, /Key scan metrics: jawline 62\/100, cheekbones 68\/100, eyes 74\/100, skin 58\/100, face shape 70\/100/, fn);
+  }
+  // Old chips from earlier app builds still work.
+  for (const fn of ["brief", "priority", "today", "meal", "exercise"]) {
+    calls.length = 0;
+    await post("/api/voice-chat", { user_id: "u5", lang: "en", function: fn, context: ctx });
+    const prompt = calls.find(c => c.url.endsWith("/chat/completions")).body.messages[0].content[0].text;
+    assert.match(prompt, /Task: /, fn + " still a function");
+  }
+  // Unknown function falls back to free mode instead of an empty task.
+  const bad = await post("/api/voice-chat", { user_id: "u5", lang: "en", function: "bonesmash" });
+  assert.equal(bad.status, 400);
+  assert.equal(bad.data.error, "nothing_to_answer");
+  ok("6 looksmaxxing intents + 5 legacy intents, full scan metrics in context");
+}
+
+// 16. persona: looksmaxxing expert, honest mewing, hard bans, no blanket mewing ban
+{
+  calls.length = 0;
+  await post("/api/voice-chat", { user_id: "u5", lang: "en", text: "should I try bonesmashing?" });
+  const prompt = calls.find(c => c.url.endsWith("/chat/completions")).body.messages[0].content[0].text;
+  assert.match(prompt, /looksmaxxing expert/);
+  assert.match(prompt, /Softmaxxing is what the user can change: body fat, water retention and bloating, lymphatic drainage, neck and tongue posture, skin, haircut/);
+  assert.match(prompt, /Hardmaxxing is bone/);
+  assert.match(prompt, /Mewing means resting the whole tongue on the palate/);
+  assert.match(prompt, /does not visibly reshape adult bone/);
+  for (const banned of ["bonesmashing", "steroids", "DNP", "starvation", "extreme fasting"]) {
+    assert.match(prompt, new RegExp("Hard bans:.*" + banned), banned + " is banned");
+  }
+  assert.doesNotMatch(prompt, /Never recommend mewing/);
+  assert.doesNotMatch(prompt, /face-improvement app/);
+  const src = readFileSync(resolve(here, "../workers/api/src/worker.js"), "utf8");
+  const jawPlan = src.match(/"jawline-plan": `([^`]*)`/)[1];
+  assert.doesNotMatch(jawPlan, /Never recommend mewing/);
+  assert.match(jawPlan, /bonesmashing/);
+  ok("persona: softmaxx/hardmaxx split, honest mewing, bonesmashing/PEDs/DNP/starvation banned");
+}
+
+// 17. AI failures carry a specific error code, as JSON and as a stream event
+{
+  chatMode = "busy";
+  let r = await post("/api/voice-chat", { user_id: "u5", lang: "en", text: "hi" });
+  assert.equal(r.status, 502);
+  assert.equal(r.data.error, "ai_busy");
+  const s = await postStream({ user_id: "u5", lang: "en", stream: true, function: "jawline" });
+  const err = s.events.find(e => e.type === "error");
+  assert.ok(err, "stream sends an error event");
+  assert.equal(err.error, "ai_busy");
+  assert.match(err.reason, /rate limited/);
+  assert.ok(!s.events.some(e => e.type === "answer"));
+  chatMode = "timeout";
+  r = await post("/api/voice-chat", { user_id: "u5", lang: "en", text: "hi" });
+  assert.equal(r.data.error, "ai_timeout");
+  chatMode = "ok";
+  ok("LLM rate limit -> ai_busy, timeout -> ai_timeout, stream {type:error, reason}");
+}
+
+// 18. client: six looksmaxxing chips, error event handled, text never wiped, clear messages
+{
+  const web = readFileSync(resolve(here, "../web/index.html"), "utf8");
+  const ios = readFileSync(resolve(here, "../ios/App/App/public/index.html"), "utf8");
+  assert.ok(web === ios, "web/index.html and ios/App/App/public/index.html are identical");
+  const chips = web.slice(web.indexOf('<div class="mv-chips" id="mvChips">'));
+  const fns = [...chips.slice(0, chips.indexOf("</div>")).matchAll(/data-fn="([a-z]+)"/g)].map(m => m[1]);
+  assert.deepEqual(fns, ["fixfirst", "jawline", "debloat", "eyes", "skin", "hair"]);
+  assert.match(chips, /class="mv-chip mv-chip-primary" data-fn="fixfirst"/, "Fix first is the highlighted chip");
+  const mvTxt = web.slice(web.indexOf("const MV_TXT = {"), web.indexOf("const mvLang = "));
+  for (const k of ["fixfirst", "jawline", "debloat", "eyes", "skin", "hair"]) {
+    assert.equal((mvTxt.match(new RegExp("\\n\\s+" + k + ': "', "g")) || []).length, 2, k + " label in en + ru");
+  }
+  assert.ok(!web.includes("Something went wrong. Please try again."), "no single generic error");
+  assert.match(web, /ev\.type === "error"/, "stream error event handled");
+  assert.match(web, /streamErr \? streamErr\.error/, "error reason drives the message");
+  for (const k of ["errOffline", "errNetwork", "errTimeout", "errBusy", "errServer", "errStt", "errTooLong", "cutOff"]) {
+    assert.equal((mvTxt.match(new RegExp(k + ': "', "g")) || []).length, 2, k + " in en + ru");
+  }
+  assert.match(web, /case "ai_busy": return mvT\("errBusy"\)/);
+  assert.match(web, /if \(!answer\) \{ mvError\(mvErrorText\(e && e\.mvKind\)\); return; \}/, "network drop before the answer explains why");
+  assert.match(web, /The full answer text stays on screen whatever happens to the audio/);
+  assert.match(web, /mvNote\(cut \? mvT\("cutOff"\) : mvT\("noVoice"\)\)/, "TTS failure / cut keeps text and only notes the status");
+  assert.match(web, /ctx\.face_shape = shape\.trim\(\)/);
+  assert.match(web, /ctx\.gender = /);
+  ok("client: 6 chips (Fix first primary), error events, kept text on drop, specific messages, web == ios");
 }
 
 console.log(`\nvoice-chat audit: ${passed} checks passed`);
