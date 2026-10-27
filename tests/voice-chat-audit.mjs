@@ -659,9 +659,12 @@ async function postStream(body) {
   assert.match(canvas, /z-index: 1;/);
   const glass = rule(".mv-orb-glass");
   assert.match(glass, /z-index: 2;/);
-  assert.match(glass, /box-shadow: inset 0 -4px 14px rgba\(0, 162, 255, 0\.35\), inset 0 2px 8px rgba\(255, 255, 255, 0\.45\) !important;/);
-  assert.match(rule(".mv-orb-glass::before"), /border-radius: 50% 50% 45% 45% \/ 70% 70% 30% 30%;/, "curved specular reflection");
-  assert.match(rule(".mv-orb-glass::after"), /rgba\(255, 255, 255, 0\.85\)/, "specular hotspot");
+  assert.match(glass, /box-shadow: inset 0 1\.5px 3px rgba\(255, 255, 255, 0\.42\), inset 0 -3px 10px rgba\(0, 162, 255, 0\.25\) !important;/);
+  assert.ok(!/rgba\(255, 255, 255/.test(glass.replace(/box-shadow:[^;]*;/, "")), "no white fog over the plasma");
+  const sheen = rule(".mv-orb-glass::before");
+  assert.match(sheen, /radial-gradient\(ellipse at 50% 30%, rgba\(255, 255, 255, 0\.24\)/, "ultra-soft lens sheen");
+  assert.ok(!/linear-gradient/.test(sheen), "no opaque painted highlight patch");
+  assert.match(rule(".mv-orb-glass::after"), /rgba\(255, 255, 255, 0\.45\) 0%, rgba\(255, 255, 255, 0\) 75%/, "micro pinpoint highlight");
   assert.match(web, /bg\.addColorStop\(0, "rgba\(16, 41, 79, 0\.62\)"\);/, "translucent canvas backing");
   // Weekly charges from day 0: no trial promise anywhere.
   assert.ok(!/free trial|3-day trial|Start 3-Day/i.test(web), "no free trial copy");

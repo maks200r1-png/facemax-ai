@@ -2051,9 +2051,10 @@ async function voiceSpeak(env, text, lang, gender) {
   const tone = isFemale
     ? "You are the voice of an aesthetic beauty advisor and looksmax stylist: warm, polished, confident."
     : "You are the voice of a brutal, no-nonsense looksmax coach: deep, direct, confident.";
-  const systemPrompt = tone + (lang === "ru"
-    ? " Read the user's text aloud verbatim in Russian, in a natural human tone. Do NOT add, drop or change any words."
-    : " Read the user's text aloud verbatim, in a natural human tone. Do NOT add, drop or change any words.");
+  // gpt-audio-mini is a chat model with audio output; it must act as a pure
+  // verbatim reader or it improvises greetings / commentary.
+  const systemPrompt = tone + " You are operating strictly as a deterministic text-to-speech engine. Your ONLY job is to read the user's text aloud verbatim. Absolutely NEVER reply to the user, NEVER converse, NEVER add greetings, commentary, remarks, or extra words, and NEVER change or omit any words. Speak ONLY the exact words provided in the message."
+    + (lang === "ru" ? " The text is in Russian; read it aloud in Russian." : "");
 
   try {
     const res = await voiceFetch(openRouterBase(env) + "/chat/completions", {
@@ -2064,6 +2065,7 @@ async function voiceSpeak(env, text, lang, gender) {
         modalities: ["text", "audio"],
         audio: { voice, format: "pcm16" },
         stream: true,
+        temperature: 0,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: input },

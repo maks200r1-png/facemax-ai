@@ -3096,6 +3096,12 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   border-radius: 50%;
   overflow: hidden;
   isolation: isolate;
+  /* WebKit clips blurred/scaled GPU layers to a rectangle under overflow+radius;
+     an explicit circular clip + mask forces a true circular clip on iOS. */
+  -webkit-clip-path: circle(50% at 50% 50%);
+  clip-path: circle(50% at 50% 50%);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(circle, #fff 100%, transparent 100%);
 }
 .mv-orb::before {
   content: "";
@@ -3111,8 +3117,11 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   position: absolute;
   inset: -22%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(70, 170, 255, 0.5) 0%, rgba(90, 120, 255, 0.22) 45%, rgba(90, 120, 255, 0) 70%);
-  filter: blur(14px);
+  /* No filter: blur() here: on iOS it renders as a square GPU tile. The gradient
+     itself fades softly to transparent. */
+  background: radial-gradient(circle, rgba(70, 170, 255, 0.45) 0%, rgba(50, 140, 255, 0.22) 35%, rgba(90, 120, 255, 0.08) 55%, transparent 70%);
+  -webkit-clip-path: circle(50% at 50% 50%);
+  clip-path: circle(50% at 50% 50%);
   opacity: calc(0.45 + var(--lvl, 0) * 0.55);
   transform: scale(calc(0.94 + var(--lvl, 0) * 0.2));
   transition: opacity 0.2s ease;
@@ -3138,35 +3147,37 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   border-radius: 50%;
   pointer-events: none;
   z-index: 2;
+  /* Clear, deep glass: only a faint cyan caustic at the base so the plasma shines through unfogged. */
   background:
-    radial-gradient(circle at 50% 105%, rgba(0, 162, 255, 0.22) 0%, rgba(0, 80, 220, 0.08) 35%, transparent 70%),
-    radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.08) 35%, transparent 65%);
-  /* Inset rim light only (part of the glass material); !important beats the site-wide no-shadow rule. */
-  box-shadow: inset 0 -4px 14px rgba(0, 162, 255, 0.35), inset 0 2px 8px rgba(255, 255, 255, 0.45) !important;
+    radial-gradient(circle at 50% 108%, rgba(0, 162, 255, 0.18) 0%, rgba(0, 80, 220, 0.06) 35%, transparent 65%);
+  /* Delicate edge refraction (part of the glass material); !important beats the site-wide no-shadow rule. */
+  box-shadow: inset 0 1.5px 3px rgba(255, 255, 255, 0.42), inset 0 -3px 10px rgba(0, 162, 255, 0.25) !important;
 }
-/* Curved specular reflection across the top of the sphere. */
+/* Ultra-soft curved lens sheen across the upper curvature. */
 .mv-orb-glass::before {
   content: "";
   position: absolute;
-  top: 7%;
-  left: 16%;
-  width: 68%;
-  height: 38%;
-  border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 65%, transparent 100%);
-  filter: blur(0.5px);
+  top: 4%;
+  left: 18%;
+  width: 64%;
+  height: 28%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.06) 55%, transparent 80%);
+  filter: blur(2px);
+  pointer-events: none;
 }
-/* Specular light hotspot. */
+/* Micro pinpoint refraction highlight. */
 .mv-orb-glass::after {
   content: "";
   position: absolute;
-  top: 12%;
-  left: 32%;
-  width: 36%;
-  height: 14%;
+  top: 8%;
+  left: 38%;
+  width: 24%;
+  height: 8%;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.2) 60%, transparent 100%);
-  filter: blur(1px);
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 75%);
+  filter: blur(1.5px);
+  pointer-events: none;
 }
 
 /* Voice overlay */
@@ -3242,6 +3253,9 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   border: 0;
   background: transparent;
   border-radius: 50%;
+  overflow: hidden;
+  -webkit-clip-path: circle(50% at 50% 50%);
+  clip-path: circle(50% at 50% 50%);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transform: scale(calc(1 + var(--lvl, 0) * 0.06));
@@ -18584,54 +18598,76 @@ window.syncTDEEChoiceUI = function() {
     }, 700);
     const step2 = setTimeout(() => {
       if (statusText) statusText.textContent = "● Calculating canthal tilt & symmetry...";
-    }, 1400);
+    }, 1500);
     const step3 = setTimeout(() => {
       if (statusText) statusText.textContent = "● Detecting water retention index...";
-    }, 2100);
+    }, 2400);
+    const step4 = setTimeout(() => {
+      if (statusText) statusText.textContent = "● Mapping clinical facial matrix...";
+    }, 3600);
+    const step5 = setTimeout(() => {
+      if (statusText) statusText.textContent = "● Finalizing aesthetic breakdown...";
+    }, 5000);
 
-    // Run parallel resilient analysis
-    const analysisPromise = runResilientFaceAnalysis(cleanDataUrl);
-
-    // Keep laser sweeping smoothly for at least 2.6 seconds inside square card
-    const [aiResult] = await Promise.all([
-      analysisPromise,
-      new Promise(r => setTimeout(r, 2600))
-    ]);
-
-    clearTimeout(step1);
-    clearTimeout(step2);
-    clearTimeout(step3);
-
-    // Stop laser in square card
-    if (laser) laser.classList.remove("active");
-    window.setMoglyHomeButtonsState("idle");
-
-    if (window.facemax && typeof window.facemax.haptic === "function") {
-      window.facemax.haptic("success");
+    // Run parallel resilient analysis. The scan must never hang: the analysis is
+    // raced against a hard cap and falls back to local biometrics.
+    let aiResult = null;
+    try {
+      const analysisPromise = runResilientFaceAnalysis(cleanDataUrl).catch(() => null);
+      const capped = Promise.race([
+        analysisPromise,
+        new Promise(r => setTimeout(() => r(null), MOGLY_SCAN_MAX_MS))
+      ]);
+      // Keep laser sweeping smoothly for at least 2.6 seconds inside square card
+      [aiResult] = await Promise.all([capped, new Promise(r => setTimeout(r, 2600))]);
+    } catch(e) {
+      aiResult = null;
+    }
+    if (!aiResult) {
+      try { aiResult = generateResilientBiometrics(cleanDataUrl); } catch(e) { aiResult = null; }
     }
 
-    const finalScore = (aiResult && isFinite(aiResult.overall)) ? aiResult.overall : 84;
-    const finalMetrics = (aiResult && aiResult.metrics) ? aiResult.metrics : null;
-    const aiReport = (aiResult && aiResult.report) ? aiResult.report : null;
+    let finalScore = 84;
+    let finalMetrics = null;
+    let aiReport = null;
+    try {
+      finalScore = (aiResult && isFinite(aiResult.overall)) ? aiResult.overall : 84;
+      finalMetrics = (aiResult && aiResult.metrics) ? aiResult.metrics : null;
+      aiReport = (aiResult && aiResult.report) ? aiResult.report : null;
 
-    if (statusText) {
-      statusText.textContent = `● Scan complete: ${finalScore}/100`;
+      if (window.facemax && typeof window.facemax.haptic === "function") {
+        window.facemax.haptic("success");
+      }
+
+      // Save to history & lastReport
+      lastScanMetrics = finalMetrics;
+      lastScanScore = finalScore;
+      if (aiReport) {
+        lastReport = aiReport;
+        try { localStorage.setItem("facemax_last_report", JSON.stringify(aiReport)); } catch {}
+      }
+      const thumb = await Promise.race([
+        makeThumbnail(cleanDataUrl, 240).catch(() => null),
+        new Promise(r => setTimeout(() => r(null), 1500))
+      ]);
+      let shapeKey = null;
+      try { shapeKey = moglyFaceShapeFor(finalMetrics, aiReport).key; } catch(e) {}
+      saveToHistory(finalScore, thumb, { shape: shapeKey, face_shape: shapeKey, metrics: finalMetrics, report: aiReport, archetype: archetypeFor(finalScore) });
+      renderHomeHistory();
+      renderHomeStats();
+    } catch(e) {
+      console.warn("[FaceMax] Post-scan bookkeeping failed:", e);
+    } finally {
+      clearTimeout(step1);
+      clearTimeout(step2);
+      clearTimeout(step3);
+      clearTimeout(step4);
+      clearTimeout(step5);
+      // Always stop the laser and release the buttons, whatever happened above.
+      if (laser) laser.classList.remove("active");
+      window.setMoglyHomeButtonsState("idle");
+      if (statusText) statusText.textContent = `● Scan complete: ${finalScore}/100`;
     }
-
-    // Save to history & lastReport
-    lastScanMetrics = finalMetrics;
-    lastScanScore = finalScore;
-    if (aiReport) {
-      lastReport = aiReport;
-      try { localStorage.setItem("facemax_last_report", JSON.stringify(aiReport)); } catch {}
-    }
-    const thumb = await makeThumbnail(cleanDataUrl, 240).catch(() => null);
-    let shapeKey = null;
-    try { shapeKey = moglyFaceShapeFor(finalMetrics, aiReport).key; } catch(e) {}
-    saveToHistory(finalScore, thumb, { shape: shapeKey, face_shape: shapeKey, metrics: finalMetrics, report: aiReport, archetype: archetypeFor(finalScore) });
-    renderHomeHistory();
-    renderHomeStats();
-
 
     // Smoothly transition to results screen with detailed metric rings
     setTimeout(() => {
@@ -18644,8 +18680,14 @@ window.syncTDEEChoiceUI = function() {
     }, 1100);
   }
 
+  // Hard caps so a slow / cold / stalled backend can never freeze the scan.
+  const MOGLY_SCAN_FETCH_TIMEOUT_MS = 6500;
+  const MOGLY_SCAN_MAX_MS = 7500;
+
   // Resilient analysis: tries server, seamlessly falls back to accurate clinical biometrics
   async function runResilientFaceAnalysis(dataUrl) {
+    const controller = (typeof AbortController === "function") ? new AbortController() : null;
+    const abortTimer = setTimeout(() => { if (controller) controller.abort(); }, MOGLY_SCAN_FETCH_TIMEOUT_MS);
     try {
       const body = {
         user_id: currentUserId(),
@@ -18660,10 +18702,12 @@ window.syncTDEEChoiceUI = function() {
       const res = await fetch(API_BASE + "/api/full-report", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller ? controller.signal : undefined
       }).catch(() => null);
 
       if (res && res.ok) {
+        // The body read is covered by the same abort timer.
         const data = await res.json().catch(() => null);
         const report = data && (data.data || data.report);
         if (report) {
@@ -18687,6 +18731,8 @@ window.syncTDEEChoiceUI = function() {
       }
     } catch(e) {
       console.warn("[FaceMax] Server analysis unavailable, using resilient clinical biometrics:", e);
+    } finally {
+      clearTimeout(abortTimer);
     }
 
     return generateResilientBiometrics(dataUrl);
