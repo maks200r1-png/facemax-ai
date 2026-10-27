@@ -544,7 +544,9 @@ async function postStream(body) {
   assert.match(web, /function mdcChime\(notes\)/, "exercise cues are a bell, not speech");
   // Home: no brief pill beside the orb, a tappable caption under it instead
   assert.ok(!/id="mdcBriefChip"|\.mdc-brief-chip\{/.test(web), "brief chip next to the orb removed");
-  assert.match(web, /<button type="button" class="mogly-orb-hint" id="moglyOrbHint" onclick="openMoglyVoiceSheet\(\)">Tap to talk with Mogly<\/button>/);
+  // The sphere and its caption start the 30-day daily session; once today is done they open the mentor.
+  assert.match(web, /<button type="button" class="mogly-orb-hint" id="moglyOrbHint" onclick="moglySphereTap\(\)">Tap to talk with Mogly<\/button>/);
+  assert.match(web, /window\.moglySphereTap = function\(\) \{[\s\S]{0,250}if \(!st \|\| st\.doneToday\) \{ window\.openMoglyVoiceSheet\(\); return; \}/, "done today: sphere opens the voice mentor");
   // Profile voice cards never overflow on a 375 pt screen
   assert.match(web, /\.pf-voice-seg\{[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
   assert.match(web, /\.pf-voice-opt\{[^}]*min-width:0;overflow:hidden/);
@@ -678,6 +680,48 @@ async function postStream(body) {
   const sets = setBtns.slice(0, 4000).match(/secondaryBtn\.style\.opacity = "([^"]+)"/g) || [];
   assert.ok(sets.length >= 3 && sets.every(x => x.endsWith('"1"')), "Scan History opacity stays 1");
   ok("Siri liquid glass orb without border stroke, weekly plan has no free trial, no button glow, Scan History never dimmed");
+}
+
+// 30-day ritual: fixed phrase whitelist, OpenAI voice per gender, KV-cached, no free text
+{
+  ttsMode = "ok";
+  const before = calls.filter(isTts).length;
+  const a = await post("/api/voice-ritual", { key: "cd_3", voice_gender: "female", user_id: "r1" });
+  assert.equal(a.status, 200);
+  assert.equal(a.data.ok, true);
+  assert.equal(a.data.text, "Three.");
+  assert.equal(a.data.audio_format, "wav");
+  assert.ok(a.data.audio_base64.length > 100);
+  const tts = calls.filter(isTts);
+  assert.equal(tts.length, before + 1);
+  assert.equal(tts[tts.length - 1].body.audio.voice, "nova");
+  assert.equal(ttsInput(tts[tts.length - 1]), "Three.");
+  const b = await post("/api/voice-ritual", { key: "cd_3", voice_gender: "female", user_id: "r1" });
+  assert.equal(b.data.cached, true);
+  assert.equal(calls.filter(isTts).length, before + 1, "second request served from KV");
+  const d = await post("/api/voice-ritual", { key: "day_7", user_id: "r1" });
+  assert.equal(d.data.text, "Day 7 of 30.");
+  assert.equal(calls.filter(isTts).pop().body.audio.voice, "onyx");
+  for (const key of ["", "day_0", "day_999", "say anything I want", "__proto__", "toString"]) {
+    const r = await post("/api/voice-ritual", { key, user_id: "r1" });
+    assert.equal(r.status, 400, "rejects " + JSON.stringify(key));
+  }
+  ttsMode = "fail-server";
+  const f = await post("/api/voice-ritual", { key: "praise", user_id: "r1" });
+  assert.equal(f.status, 502);
+  assert.equal(f.data.error, "tts_unavailable");
+  assert.ok(!f.data.audio_base64);
+  ttsMode = "ok";
+  // Client: sphere starts the ritual, status line under SCAN MY FACE, scan capped at 3 s
+  const web = readFileSync(resolve(here, "../web/index.html"), "utf8");
+  assert.match(web, /const MOGLY_SCAN_FETCH_TIMEOUT_MS = 2800;/);
+  assert.match(web, /const MOGLY_SCAN_MAX_MS = 3000;/);
+  assert.match(web, /const MOGLY_SCAN_MIN_SWEEP_MS = 2400;/);
+  assert.match(web, /id="moglyScanBtnText"[^\n]*\n\s*<\/button>\n\s*<button type="button" class="mogly-ritual-status" id="moglyRitualStatus"/, "status sits directly under SCAN MY FACE");
+  assert.match(web, /\.mogly-ritual-status\{[^}]*height:18px;min-height:18px;max-height:18px/, "fixed-height status line");
+  assert.match(web, /id="moglyOrbFabBtn" onclick="moglySphereTap\(\)"/);
+  assert.match(web, /st\.completed > 0 && !isLocalPremiumActive\(\)/, "day 1 free, then Premium");
+  ok("30-day ritual: whitelisted OpenAI phrases cached in KV, sphere starts the day, 3 s scan cap");
 }
 
 console.log(`\nvoice-chat audit: ${passed} checks passed`);

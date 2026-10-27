@@ -2065,7 +2065,6 @@ async function voiceSpeak(env, text, lang, gender) {
         modalities: ["text", "audio"],
         audio: { voice, format: "pcm16" },
         stream: true,
-        temperature: 0,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: input },
@@ -2083,6 +2082,67 @@ async function voiceSpeak(env, text, lang, gender) {
   } catch (e) {
     return { ok: false, status: 502, reason: "tts_unavailable" };
   }
+}
+
+// 30-day ritual: the morning session is a fixed script, so its lines come from
+// this whitelist (never free text, so the route cannot be used as an open TTS
+// proxy). Each line is synthesised once per voice and kept in KV; the app
+// preloads the whole session so the countdown plays without a network gap.
+const RITUAL_PHRASES = {
+  intro_debloat: "Week one: debloat. We flush the water your face held overnight. Four moves, thirty seconds each. Breathe through your nose and follow my count.",
+  intro_posture: "Week two: posture and mewing. Tongue flat on the roof of your mouth, teeth lightly together, chin tucked, neck tall. It trains posture, it won't move bone. Hold it through every move.",
+  intro_tone: "Weeks three and four: tone. Same four moves, more control. Slow, firm pressure, full range, no rushing.",
+  ex_cheek_lift: "Move one: cheekbone depuff. Palms flat beside your nose. Sweep up and out toward the temples. Go.",
+  ex_masseter_release: "Move two: masseter release. Knuckles on the jaw angle. Slow, firm circles, teeth apart. Go.",
+  ex_thumbpulling: "Move three: palate press. Clean thumbs on the hard palate behind your front teeth. Press up and slightly out, never into pain. Go.",
+  ex_chin_glide: "Move four: jawline glide. Knuckles under the chin. Glide out along the jawline to the ears. Go.",
+  halfway: "Halfway. Keep it slow.",
+  cd_3: "Three.",
+  cd_2: "Two.",
+  cd_1: "One. Release.",
+  praise: "That's the ritual done. Streak secured. Same time tomorrow.",
+  checkin_7: "Day seven. Your first check-in is ready. Scan your face in the same light and we measure the change.",
+  checkin_14: "Day fourteen. Two weeks in. Your check-in scan is ready. Let's see the delta.",
+  checkin_30: "Day thirty. The full program. Take your check-in scan and we set the next target.",
+};
+const RITUAL_MAX_DAY = 365;
+
+function ritualPhrase(key) {
+  const k = String(key || "");
+  if (Object.prototype.hasOwnProperty.call(RITUAL_PHRASES, k)) return RITUAL_PHRASES[k];
+  const m = /^day_(\d{1,3})$/.exec(k);
+  if (m) {
+    const n = Number(m[1]);
+    if (n >= 1 && n <= RITUAL_MAX_DAY) return n <= 30 ? `Day ${n} of 30.` : `Day ${n}.`;
+  }
+  return "";
+}
+
+async function voiceRitual(request, env) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ ok: false, error: "invalid_json" }, 400);
+  }
+  const key = String(body.key || "");
+  const text = ritualPhrase(key);
+  if (!text) return json({ ok: false, error: "unknown_phrase" }, 400);
+  const gender = body.voice_gender === "female" ? "female" : "male";
+  const voice = gender === "female" ? VOICE_TTS_VOICES.female : VOICE_TTS_VOICES.male;
+  const cacheKey = `ritual_tts:v1:${VOICE_TTS_MODEL}:${voice}:${key}`;
+  if (env.PREMIUM_KV) {
+    try {
+      const hit = await env.PREMIUM_KV.get(cacheKey);
+      if (hit) return json({ ok: true, key, text, audio_base64: hit, audio_format: "wav", cached: true });
+    } catch {}
+  }
+  const speech = await voiceSpeak(env, text, "en", gender);
+  if (!speech.ok) return json({ ok: false, key, text, error: "tts_unavailable" }, 502);
+  if (env.PREMIUM_KV) {
+    try { await env.PREMIUM_KV.put(cacheKey, speech.base64, { expirationTtl: 60 * 60 * 24 * 30 }); } catch {}
+  }
+  return json({ ok: true, key, text, audio_base64: speech.base64, audio_format: speech.format, cached: false });
 }
 
 function voiceClip(value, max) {
@@ -3742,6 +3802,7 @@ export default {
           "/api/jawline-plan",
           "/api/voice-chat (POST)",
           "/api/voice-consult (POST, legacy)",
+          "/api/voice-ritual (POST)",
           "/api/apple-receipt-verify",
           "/api/apple-server-notification",
           "/api/referral/code?user_id=",
@@ -3817,6 +3878,7 @@ export default {
       if (path === "/api/jawline-plan" && request.method === "POST") return await simpleTool(request, env, "jawline-plan");
       if (path === "/api/voice-consult" && request.method === "POST") return await voiceConsult(request, env);
       if (path === "/api/voice-chat" && request.method === "POST") return await voiceChat(request, env, ctx);
+      if (path === "/api/voice-ritual" && request.method === "POST") return await voiceRitual(request, env);
 
       if (path === "/api/apple-receipt-verify" && request.method === "POST") return await verifyAppleReceipt(request, env);
       if (path === "/api/apple-server-notification" && request.method === "POST") return await appleServerNotification(request, env);

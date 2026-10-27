@@ -4892,6 +4892,45 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
   text-shadow:0 0 14px rgba(90,160,255,.45);-webkit-tap-highlight-color:transparent;cursor:pointer}
 .mogly-orb-hint:active{opacity:.6}
 
+/* ---------------- Home: 30-day ritual status under SCAN MY FACE ----------------
+   One fixed 18px line in every state, so switching state never moves the layout. */
+.mogly-ritual-status{display:block;width:100%;height:18px;min-height:18px;max-height:18px;margin:-6px 0;padding:0;border:0;background:transparent;
+  color:rgba(235,235,245,.58);font-size:12px;font-weight:600;line-height:18px;letter-spacing:.01em;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;cursor:default;
+  -webkit-tap-highlight-color:transparent;transition:color .3s ease,text-shadow .3s ease}
+.mogly-ritual-status.is-done{color:#30D158;text-shadow:0 0 10px rgba(48,209,88,.45)}
+.mogly-ritual-status.is-checkin{color:#5AC8FA;cursor:pointer}
+.mogly-ritual-status.is-checkin:active{opacity:.6}
+/* The line costs 14px; Home gives the same 14px back from spacing above the
+   sphere, so the sphere, its caption and the tab bar stay where they were. */
+#home .mogly-square-card{margin-top:clamp(2px,.5vh,4px)!important}
+#home .mogly-actions-container{margin-top:4px!important}
+#home .mogly-assistant-fab-container{padding-top:0}
+
+/* ---------------- Daily ritual overlay (hands-free voice session) ---------------- */
+.mr-overlay{position:fixed;inset:0;z-index:310;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 20px calc(env(safe-area-inset-bottom,0px) + 18px);background:#000;color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .32s ease,visibility 0s linear .32s}
+.mr-overlay.active{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .32s ease,visibility 0s}
+.mr-top{width:100%;max-width:440px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mr-day{font-size:15px;font-weight:700;letter-spacing:-.01em;color:rgba(235,235,245,.75)}
+.mr-stage{flex:1;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:0}
+.mr-orb{width:min(52vw,24vh,220px);height:min(52vw,24vh,220px);flex-shrink:0;padding:0;border:0;background:transparent;border-radius:50%;
+  overflow:hidden;-webkit-clip-path:circle(50% at 50% 50%);clip-path:circle(50% at 50% 50%);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mr-count{height:64px;font-size:56px;font-weight:800;line-height:64px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.mr-count.is-done{color:#30D158}
+.mr-title{font-size:20px;font-weight:750;letter-spacing:-.02em;text-align:center}
+.mr-caption{min-height:44px;max-width:340px;font-size:15px;line-height:1.45;color:rgba(235,235,245,.62);text-align:center}
+.mr-steps{display:flex;gap:8px}
+.mr-steps span{width:28px;height:4px;border-radius:2px;background:rgba(255,255,255,.14);transition:background .3s ease}
+.mr-steps span.is-on{background:#0A84FF}
+.mr-steps span.is-done{background:#30D158}
+.mr-scan{height:48px;padding:0 26px;border:0;border-radius:999px;background:linear-gradient(135deg,#007AFF 0%,#00C2FF 60%,#38E1FF 100%);
+  color:#fff;font-size:15px;font-weight:800;cursor:pointer}
+.mr-talk{flex-shrink:0;min-height:40px;padding:8px 16px;border:0;background:transparent;color:rgba(235,235,245,.5);font-size:14px;font-weight:600;cursor:pointer}
+.mr-talk:active{opacity:.6}
+
 /* ---------------- Exercise: voice coach toggle ---------------- */
 .ed-coach-voice{grid-column:1 / -1;justify-self:center;white-space:nowrap;margin:2px auto 0;display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 16px;
   border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(235,235,245,.6);font-size:14px;font-weight:600}
@@ -5403,6 +5442,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
         </span>
         <span id="moglyScanBtnText" data-i18n="btn_scan_face">SCAN MY FACE</span>
       </button>
+      <button type="button" class="mogly-ritual-status" id="moglyRitualStatus" onclick="moglyRitualStatusTap()" aria-live="polite">🔥 Streak: 0 Days · Next Check-in: Day 7</button>
 
       <button type="button" class="mogly-btn-secondary" id="moglySecondaryBtn" onclick="handleMoglySecondaryClick()">
         <span id="moglySecondaryBtnIconWrap">
@@ -5419,14 +5459,14 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 
     <!-- Mogly voice orb (liquid glass). Tap opens the voice overlay. -->
     <div class="mogly-assistant-fab-container is-home" id="moglyAssistantFabContainer">
-      <button type="button" class="mv-orb-btn" id="moglyOrbFabBtn" onclick="openMoglyVoiceSheet()" aria-label="Mogly voice mentor">
+      <button type="button" class="mv-orb-btn" id="moglyOrbFabBtn" onclick="moglySphereTap()" aria-label="Mogly daily session">
         <div class="mv-orb">
           <div class="mv-orb-glow"></div>
           <canvas class="mv-orb-canvas" id="mvHomeCanvas"></canvas>
           <div class="mv-orb-glass"></div>
         </div>
       </button>
-      <button type="button" class="mogly-orb-hint" id="moglyOrbHint" onclick="openMoglyVoiceSheet()">Tap to talk with Mogly</button>
+      <button type="button" class="mogly-orb-hint" id="moglyOrbHint" onclick="moglySphereTap()">Tap to talk with Mogly</button>
     </div>
 
     <!-- Results Block (Kept hidden on Home; full results presented on FaceScan screen) -->
@@ -6775,6 +6815,30 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
   </button>
   <span class="mv-dock-grip" aria-hidden="true"></span>
 </div>
+<!-- 30-day daily ritual: Mogly voices the day's focus and counts through the 4 exercises. -->
+<div class="mr-overlay" id="mrOverlay" role="dialog" aria-modal="true" aria-label="Mogly daily ritual">
+  <div class="mr-top">
+    <div class="mr-day" id="mrDay">Day 1 · Debloat</div>
+    <button type="button" class="mv-close" onclick="moglyEndRitual()" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="mr-stage">
+    <button type="button" class="mr-orb" id="mrOrb" onclick="moglyRitualOrbTap()" aria-label="Pause or resume">
+      <div class="mv-orb">
+        <div class="mv-orb-glow"></div>
+        <canvas class="mv-orb-canvas" id="mrCanvas"></canvas>
+        <div class="mv-orb-glass"></div>
+      </div>
+    </button>
+    <div class="mr-count" id="mrCount"></div>
+    <div class="mr-title" id="mrTitle"></div>
+    <div class="mr-caption" id="mrCaption" aria-live="polite"></div>
+    <div class="mr-steps" id="mrSteps"><span></span><span></span><span></span><span></span></div>
+    <button type="button" class="mr-scan" id="mrScan" onclick="moglyRitualScan()" hidden>Take check-in scan</button>
+  </div>
+  <button type="button" class="mr-talk" onclick="moglyRitualTalk()">Talk to Mogly instead</button>
+</div>
 <div class="mv-overlay" id="mvOverlay" data-state="idle" role="dialog" aria-modal="true" aria-label="Mogly voice mentor">
   <div class="mv-top">
     <div class="mv-title">Mogly</div>
@@ -7384,6 +7448,7 @@ function renderHomeStats(){
   }
   setText("homeScans", String(scans));
   setText("homeBest", best != null ? String(best) : "—");
+  if (typeof window.moglyRenderRitualStatus === "function") window.moglyRenderRitualStatus();
 
   // ── umax-style last-scan card ──────────────────────────────────────────────
   const card = document.getElementById("lastScanCard");
@@ -14676,6 +14741,7 @@ window.markExerciseDone = function(id){
   renderExerciseList();
   renderExerciseWeekTracker();
   refreshDailyTiles();
+  if (typeof window.moglyRenderRitualStatus === "function") window.moglyRenderRitualStatus();
   try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch {}
   // Tonight's streak reminder must not fire once the day is secured.
   if (dayComplete) { try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch {} }
@@ -18580,9 +18646,12 @@ window.syncTDEEChoiceUI = function() {
     _makeInstantCrop(cleanDataUrl).then(instant => {
       if (instant && !_avatarCropUrl) _applyAvatarCrop(instant);
     }).catch(() => {});
-    _makeFaceCrop(cleanDataUrl).then(crop => {
-      if (crop) _applyAvatarCrop(crop);
-    }).catch(() => {});
+    // The BlazeFace crop (TF.js download + WebGL inference) runs on the main
+    // thread and froze the laser and every timer for seconds; it now runs only
+    // after the results screen is up. The thumbnail starts now so it is ready
+    // when the laser stops.
+    const thumbPromise = makeThumbnail(cleanDataUrl, 240).catch(() => null);
+    const scanStartedAt = Date.now();
 
     const laser = document.getElementById("moglyLaserBeam");
     const statusText = document.getElementById("moglySquareStatusText");
@@ -18593,24 +18662,26 @@ window.syncTDEEChoiceUI = function() {
     window.setMoglyHomeButtonsState("scanning");
 
     // Progressive status updates inside the square card
+    // Progress steps fit inside the 2.4-3.0 s scan window.
     const step1 = setTimeout(() => {
       if (statusText) statusText.textContent = "● Analyzing jawline definition...";
-    }, 700);
+    }, 500);
     const step2 = setTimeout(() => {
       if (statusText) statusText.textContent = "● Calculating canthal tilt & symmetry...";
-    }, 1500);
+    }, 1000);
     const step3 = setTimeout(() => {
       if (statusText) statusText.textContent = "● Detecting water retention index...";
-    }, 2400);
+    }, 1500);
     const step4 = setTimeout(() => {
       if (statusText) statusText.textContent = "● Mapping clinical facial matrix...";
-    }, 3600);
+    }, 2000);
     const step5 = setTimeout(() => {
       if (statusText) statusText.textContent = "● Finalizing aesthetic breakdown...";
-    }, 5000);
+    }, 2400);
 
-    // Run parallel resilient analysis. The scan must never hang: the analysis is
-    // raced against a hard cap and falls back to local biometrics.
+    // Run parallel resilient analysis. The scan must never hang: the server gets
+    // MOGLY_SCAN_FETCH_TIMEOUT_MS, the whole analysis is raced against
+    // MOGLY_SCAN_MAX_MS, and anything slower falls back to local biometrics.
     let aiResult = null;
     try {
       const analysisPromise = runResilientFaceAnalysis(cleanDataUrl).catch(() => null);
@@ -18618,8 +18689,8 @@ window.syncTDEEChoiceUI = function() {
         analysisPromise,
         new Promise(r => setTimeout(() => r(null), MOGLY_SCAN_MAX_MS))
       ]);
-      // Keep laser sweeping smoothly for at least 2.6 seconds inside square card
-      [aiResult] = await Promise.all([capped, new Promise(r => setTimeout(r, 2600))]);
+      // Keep the laser sweeping for at least MOGLY_SCAN_MIN_SWEEP_MS.
+      [aiResult] = await Promise.all([capped, new Promise(r => setTimeout(r, MOGLY_SCAN_MIN_SWEEP_MS))]);
     } catch(e) {
       aiResult = null;
     }
@@ -18646,9 +18717,10 @@ window.syncTDEEChoiceUI = function() {
         lastReport = aiReport;
         try { localStorage.setItem("facemax_last_report", JSON.stringify(aiReport)); } catch {}
       }
+      // Started with the laser; a few ms at most by now. Never hold the results for it.
       const thumb = await Promise.race([
-        makeThumbnail(cleanDataUrl, 240).catch(() => null),
-        new Promise(r => setTimeout(() => r(null), 1500))
+        thumbPromise,
+        new Promise(r => setTimeout(() => r(null), 150))
       ]);
       let shapeKey = null;
       try { shapeKey = moglyFaceShapeFor(finalMetrics, aiReport).key; } catch(e) {}
@@ -18669,7 +18741,9 @@ window.syncTDEEChoiceUI = function() {
       if (statusText) statusText.textContent = `● Scan complete: ${finalScore}/100`;
     }
 
-    // Smoothly transition to results screen with detailed metric rings
+    // Brief beat on "Scan complete", then the results screen. Tap to results
+    // stays within ~3.5 s even on the slowest path.
+    const elapsed = Date.now() - scanStartedAt;
     setTimeout(() => {
       openScreen("result");
       // 2 s after the results appear, Mogly voices the scan breakdown.
@@ -18677,21 +18751,35 @@ window.syncTDEEChoiceUI = function() {
       requestAnimationFrame(() => {
         paintResultV2(finalScore, finalMetrics, aiReport);
       });
-    }, 1100);
+      // Sharper face-centred avatar, once the results are already on screen.
+      setTimeout(() => {
+        _makeFaceCrop(cleanDataUrl).then(crop => {
+          if (crop) _applyAvatarCrop(crop);
+        }).catch(() => {});
+      }, 1200);
+    }, Math.max(150, Math.min(350, MOGLY_SCAN_TOTAL_MS - elapsed)));
   }
 
-  // Hard caps so a slow / cold / stalled backend can never freeze the scan.
-  const MOGLY_SCAN_FETCH_TIMEOUT_MS = 6500;
-  const MOGLY_SCAN_MAX_MS = 7500;
+  // Hard caps so a slow / cold / stalled backend can never freeze the scan:
+  // 2.8 s for the network, 3.0 s for the whole analysis, laser sweeps >= 2.4 s.
+  const MOGLY_SCAN_FETCH_TIMEOUT_MS = 2800;
+  const MOGLY_SCAN_MAX_MS = 3000;
+  const MOGLY_SCAN_MIN_SWEEP_MS = 2400;
+  const MOGLY_SCAN_TOTAL_MS = 3400;
 
   // Resilient analysis: tries server, seamlessly falls back to accurate clinical biometrics
   async function runResilientFaceAnalysis(dataUrl) {
     const controller = (typeof AbortController === "function") ? new AbortController() : null;
     const abortTimer = setTimeout(() => { if (controller) controller.abort(); }, MOGLY_SCAN_FETCH_TIMEOUT_MS);
     try {
+      // A full-resolution photo is megabytes of base64; 1024 px is plenty for the
+      // vision model and keeps the upload inside the 2.8 s budget.
+      const scanImage = (typeof makeScanImage === "function")
+        ? await makeScanImage(dataUrl, 1024).catch(() => null)
+        : null;
       const body = {
         user_id: currentUserId(),
-        image: dataUrl,
+        image: scanImage || dataUrl,
         gender: (typeof currentGender === "function") ? currentGender() : null,
         visual_scan: true,
         local_date: new Date().toLocaleDateString('en-CA'),
@@ -18993,10 +19081,12 @@ window.syncTDEEChoiceUI = function() {
       const f = mvEl("moglyAssistantFabContainer");
       const h = mvEl("home");
       const ov = mvEl("mvOverlay");
+      const ro = mvEl("mrOverlay");
       return !!(f && h && h.classList.contains("active") && f.classList.contains("is-home") &&
         !document.documentElement.classList.contains("fm-quiz-active") &&
-        !(ov && ov.classList.contains("active")));
+        !(ov && ov.classList.contains("active")) && !(ro && ro.classList.contains("active")));
     }, "moglyOrbFabBtn");
+    mvMakeOrb("mrCanvas", () => { const o = mvEl("mrOverlay"); return !!(o && o.classList.contains("active")); }, "mrOrb");
     mvMakeOrb("mvBigCanvas", () => { const o = mvEl("mvOverlay"); return !!(o && o.classList.contains("active")); }, "mvBigOrb");
     mvMakeOrb("mvDockCanvas", () => {
       const d = mvEl("mvScanDock");
@@ -20122,6 +20212,364 @@ window.syncTDEEChoiceUI = function() {
     const pr = a.play();
     if (pr && pr.catch) pr.catch(fallback);
   };
+
+  // ----- 30-day voice + streak program -----
+  // Tap the Home sphere: Mogly voices the day's focus (week 1 debloat, week 2
+  // posture / mewing, weeks 3-4 tone) and counts the user through the 4 exercises
+  // hands-free. Every line is a fixed phrase synthesised by the worker's OpenAI
+  // voice (/api/voice-ritual) and preloaded when the session opens, so the
+  // "3, 2, 1, release" countdown plays from memory with no network gap. Without
+  // audio the session still runs on screen; there is never a device voice.
+  const MR_CHECKINS = [7, 14, 30];
+  const MR_STATE_KEY = "facemax_ritual_v1";
+  const MR_PHASES = {
+    debloat: { label: "Debloat", caption: "Week 1 · flush the water your face held overnight." },
+    posture: { label: "Posture & Mewing", caption: "Week 2 · tongue up, chin tucked, neck tall through every move." },
+    tone: { label: "Tone", caption: "Weeks 3-4 · same four moves, slower and firmer." },
+  };
+  function mrLoad() { try { return JSON.parse(localStorage.getItem(MR_STATE_KEY) || "{}") || {}; } catch (e) { return {}; } }
+  function mrSave(o) { try { localStorage.setItem(MR_STATE_KEY, JSON.stringify(o)); } catch (e) {} }
+  function mrIsCheckinDay(n) { return MR_CHECKINS.indexOf(n) >= 0 || (n > 30 && n % 30 === 0); }
+  function mrNextCheckin(completed) {
+    const n = MR_CHECKINS.find(d => d > completed);
+    return n || (Math.floor(completed / 30) + 1) * 30;
+  }
+  function mrPhaseFor(day) { return day <= 7 ? "debloat" : day <= 14 ? "posture" : "tone"; }
+
+  // Program day = days with all 4 exercises done; today counts once finished.
+  window.moglyRitualState = function() {
+    const log = readExerciseLog();
+    const total = FACE_EXERCISES.length;
+    const full = (v) => Array.isArray(v) && v.length >= total;
+    const completed = Object.keys(log).filter(k => full(log[k])).length;
+    const doneSet = readExerciseDoneToday();
+    const doneToday = FACE_EXERCISES.every(e => doneSet.has(e.id));
+    const day = doneToday ? completed : completed + 1;
+    const streak = (typeof moglyStreakCount === "function") ? moglyStreakCount() : 0;
+    // Check-in: the latest milestone reached, until a scan is taken after it.
+    let checkinDay = 0;
+    for (let n = completed; n >= 7; n--) { if (mrIsCheckinDay(n)) { checkinDay = n; break; } }
+    let checkinReady = false;
+    if (checkinDay) {
+      const st = mrLoad();
+      st.checkins = st.checkins || {};
+      if (!st.checkins[checkinDay]) { st.checkins[checkinDay] = { reachedAt: Date.now() }; mrSave(st); }
+      const reachedAt = Number(st.checkins[checkinDay].reachedAt) || 0;
+      if (!scanHistory.length) { try { loadHistory(); } catch (e) {} }
+      checkinReady = !scanHistory.some(h => Number(h && h.date) >= reachedAt);
+    }
+    return {
+      completed, doneToday, day, streak,
+      phase: mrPhaseFor(day),
+      doneIds: doneSet,
+      nextCheckin: mrNextCheckin(completed),
+      checkinDay, checkinReady,
+    };
+  };
+
+  window.moglyRenderRitualStatus = function() {
+    const b = mvEl("moglyRitualStatus");
+    let st;
+    try { st = window.moglyRitualState(); } catch (e) { return; }
+    const days = (n) => n + (n === 1 ? " Day" : " Days");
+    let text, cls = "";
+    if (st.checkinReady) {
+      text = `📸 Day ${st.checkinDay} check-in ready — tap to scan`;
+      cls = "is-checkin";
+    } else if (st.doneToday) {
+      text = `✓ Day ${st.day} done · 🔥 ${st.streak}-day streak`;
+      cls = "is-done";
+    } else {
+      text = `🔥 Streak: ${days(st.streak)} · Next Check-in: Day ${st.nextCheckin}`;
+    }
+    if (b) {
+      if (b.textContent !== text) b.textContent = text;
+      b.classList.toggle("is-done", cls === "is-done");
+      b.classList.toggle("is-checkin", cls === "is-checkin");
+    }
+    const hint = mvEl("moglyOrbHint");
+    if (hint) {
+      const h = st.doneToday ? "Tap to talk with Mogly" : `Tap Mogly to start Day ${st.day}`;
+      if (hint.textContent !== h) hint.textContent = h;
+    }
+  };
+  window.moglyRitualStatusTap = function() {
+    let st;
+    try { st = window.moglyRitualState(); } catch (e) { return; }
+    if (st.checkinReady) {
+      mvHaptic("light");
+      if (typeof window.handleMoglyPrimaryScanClick === "function") window.handleMoglyPrimaryScanClick();
+    } else if (!st.doneToday) {
+      window.moglySphereTap();
+    }
+  };
+
+  // Ritual already done today: the sphere is the voice mentor again.
+  window.moglySphereTap = function() {
+    mvUnlockSpeech();
+    let st = null;
+    try { st = window.moglyRitualState(); } catch (e) {}
+    if (!st || st.doneToday) { window.openMoglyVoiceSheet(); return; }
+    window.moglyStartRitual();
+  };
+
+  // --- phrase audio: fetched once per voice, replayed from memory ---
+  const mrClips = new Map();
+  function mrClip(key) {
+    const ck = _voiceGender + ":" + key;
+    if (mrClips.has(ck)) return mrClips.get(ck);
+    const p = (async () => {
+      const ctl = (typeof AbortController === "function") ? new AbortController() : null;
+      const t = setTimeout(() => { if (ctl) ctl.abort(); }, 20000);
+      try {
+        const r = await fetch(API_BASE + "/api/voice-ritual", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ key, voice_gender: _voiceGender, user_id: currentUserId() }),
+          signal: ctl ? ctl.signal : undefined,
+        });
+        const d = await r.json().catch(() => null);
+        if (!r.ok || !d || !d.ok || !d.audio_base64) return null;
+        const bytes = mvBase64ToBytes(d.audio_base64);
+        const url = URL.createObjectURL(new Blob([bytes], { type: d.audio_format === "wav" ? "audio/wav" : "audio/mpeg" }));
+        const audio = new Audio();
+        audio.preload = "auto";
+        audio.setAttribute("playsinline", "");
+        audio.src = url;
+        try { audio.load(); } catch (e) {}
+        return { audio, text: String(d.text || "") };
+      } catch (e) {
+        return null;
+      } finally {
+        clearTimeout(t);
+      }
+    })();
+    mrClips.set(ck, p);
+    // A failed phrase is fetched again next session instead of staying silent.
+    p.then(v => { if (!v && mrClips.get(ck) === p) mrClips.delete(ck); });
+    return p;
+  }
+
+  let mrRun = 0;          // session token; bumping it cancels everything in flight
+  let mrPaused = false;
+  let mrAudio = null;
+  const mrSleep = (ms) => new Promise(r => setTimeout(r, ms));
+  function mrAlive(run) { return run === mrRun; }
+  function mrStopAudio() {
+    const a = mrAudio;
+    mrAudio = null;
+    if (a) { try { a.onended = null; a.onerror = null; a.pause(); } catch (e) {} }
+  }
+  // Plays a phrase and resolves when it ends. waitMs: how long to wait for a clip
+  // that is still loading (0 = play only if already cached, as for the countdown).
+  async function mrSay(run, key, waitMs, showCaption) {
+    const clip = await Promise.race([mrClip(key), mrSleep(waitMs || 0).then(() => null)]);
+    if (!mrAlive(run)) return false;
+    if (clip && showCaption && clip.text) mrSet({ caption: clip.text });
+    if (!clip) return false;
+    mrStopAudio();
+    const a = clip.audio;
+    mrAudio = a;
+    return new Promise(resolve => {
+      let done = false;
+      const fin = (ok) => {
+        if (done) return;
+        done = true;
+        clearTimeout(guard);
+        a.onended = null; a.onerror = null;
+        if (mrAudio === a) mrAudio = null;
+        resolve(ok);
+      };
+      // Never wait on a lost "ended" event longer than the clip itself.
+      const dur = Number(a.duration);
+      const guard = setTimeout(() => fin(true), isFinite(dur) && dur > 0 ? dur * 1000 + 1200 : 12000);
+      a.onended = () => fin(true);
+      a.onerror = () => fin(false);
+      try { a.currentTime = 0; } catch (e) {}
+      mvAudioSession("playback");
+      const pr = a.play();
+      if (pr && pr.catch) pr.catch(() => fin(false));
+    });
+  }
+
+  function mrSet(p) {
+    if ("day" in p) { const n = mvEl("mrDay"); if (n) n.textContent = p.day; }
+    if ("count" in p) { const n = mvEl("mrCount"); if (n) n.textContent = p.count; }
+    if ("title" in p) { const n = mvEl("mrTitle"); if (n) n.textContent = p.title; }
+    if ("caption" in p) { const n = mvEl("mrCaption"); if (n) n.textContent = p.caption; }
+    if ("countDone" in p) { const n = mvEl("mrCount"); if (n) n.classList.toggle("is-done", !!p.countDone); }
+    if ("scan" in p) { const n = mvEl("mrScan"); if (n) n.hidden = !p.scan; }
+  }
+  function mrSteps(doneIds, current) {
+    const box = mvEl("mrSteps");
+    if (!box) return;
+    Array.from(box.children).forEach((s, i) => {
+      const ex = FACE_EXERCISES[i];
+      s.classList.toggle("is-done", !!(ex && doneIds.has(ex.id)));
+      s.classList.toggle("is-on", i === current);
+    });
+  }
+
+  // Counts real active seconds: pauses with the orb tap or when the app is backgrounded.
+  function mrTimer(run, seconds, onSecond) {
+    return new Promise(resolve => {
+      let left = seconds * 1000;
+      let last = Date.now();
+      let shown = seconds + 1;
+      const iv = setInterval(() => {
+        if (!mrAlive(run)) { clearInterval(iv); resolve(false); return; }
+        const now = Date.now();
+        const dt = now - last;
+        last = now;
+        if (mrPaused || document.hidden) return;
+        left -= dt;
+        const sec = Math.max(0, Math.ceil(left / 1000));
+        if (sec !== shown) { shown = sec; onSecond(sec); }
+        if (left <= 0) { clearInterval(iv); resolve(true); }
+      }, 100);
+    });
+  }
+
+  function mrMarkExercise(id) {
+    const log = readExerciseLog();
+    const k = todayKey();
+    const arr = Array.isArray(log[k]) ? log[k].slice() : [];
+    if (!arr.includes(id)) arr.push(id);
+    log[k] = arr;
+    writeExerciseLog(log);
+  }
+  function mrRefreshApp() {
+    try { renderExerciseList(); } catch (e) {}
+    try { renderExerciseWeekTracker(); } catch (e) {}
+    try { refreshDailyTiles(); } catch (e) {}
+    try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch (e) {}
+    try { renderHomeStats(); } catch (e) {}
+    window.moglyRenderRitualStatus();
+  }
+
+  window.moglyStartRitual = function(_premiumChecked) {
+    mvUnlockSpeech();
+    mvHaptic("medium");
+    let st;
+    try { st = window.moglyRitualState(); } catch (e) { return; }
+    if (st.doneToday) { window.moglyRenderRitualStatus(); return; }
+    // Day 1 is free; from day 2 the program is Premium.
+    if (!_premiumChecked && st.completed > 0 && !isLocalPremiumActive()) {
+      ensurePremiumForAction(
+        () => window.moglyStartRitual(true),
+        "30-Day Program — Pro",
+        "Day 1 was on us. Unlock the daily voice ritual, streaks and check-in scans."
+      );
+      return;
+    }
+    const ov = mvEl("mrOverlay");
+    if (!ov) return;
+    const mentor = mvEl("mvOverlay");
+    if (mentor && mentor.classList.contains("active")) mvCloseOverlay(false);
+    if (typeof window.moglyCoachStop === "function") window.moglyCoachStop();
+    const run = ++mrRun;
+    mrPaused = false;
+    ov.classList.add("active");
+    mvOrbs.forEach(o => { o.size = 0; });
+    mvKick();
+    mrSession(run, st);
+  };
+
+  async function mrSession(run, st) {
+    const phase = MR_PHASES[st.phase];
+    const todo = FACE_EXERCISES.filter(e => !st.doneIds.has(e.id));
+    const keys = ["day_" + st.day, "intro_" + st.phase]
+      .concat(todo.map(e => "ex_" + e.id))
+      .concat(["halfway", "cd_3", "cd_2", "cd_1", "praise"]);
+    if (mrIsCheckinDay(st.day)) keys.push("checkin_" + st.day);
+    keys.forEach(mrClip);   // all in parallel, while the intro plays
+
+    mrSet({ day: `Day ${st.day} · ${phase.label}`, count: "", countDone: false, title: phase.label, caption: phase.caption, scan: false });
+    mrSteps(st.doneIds, -1);
+    await mrSay(run, "day_" + st.day, 6000, false);
+    if (!mrAlive(run)) return;
+    await mrSay(run, "intro_" + st.phase, 3000, true);
+    if (!mrAlive(run)) return;
+
+    for (const ex of FACE_EXERCISES) {
+      if (st.doneIds.has(ex.id)) continue;
+      const idx = FACE_EXERCISES.indexOf(ex);
+      const seconds = Number(ex.seconds) || 30;
+      mrSteps(st.doneIds, idx);
+      mrSet({ count: String(seconds), title: ex.name, caption: ex.cue + "." });
+      await mrSay(run, "ex_" + ex.id, 2500, true);
+      if (!mrAlive(run)) return;
+      mvHaptic("light");
+      const half = Math.ceil(seconds / 2);
+      const ok = await mrTimer(run, seconds, (sec) => {
+        mrSet({ count: String(sec) });
+        if (sec === half && seconds >= 10) mrSay(run, "halfway", 0, false);
+        if (sec >= 1 && sec <= 3) { mvHaptic("light"); mrSay(run, "cd_" + sec, 0, false); }
+      });
+      if (!ok) return;
+      mrMarkExercise(ex.id);
+      st.doneIds.add(ex.id);
+      mrSteps(st.doneIds, -1);
+      mvHaptic("medium");
+    }
+    await mrFinish(run);
+  }
+
+  async function mrFinish(run) {
+    // Same bookkeeping as finishing the 4 moves on the Exercises screen, minus its
+    // chime + toast (Mogly says it here).
+    try {
+      const mdc = mdcLoad();
+      mdc.dayDone = todayKey();
+      mdcSave(mdc);
+    } catch (e) {}
+    try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch (e) {}
+    mrRefreshApp();
+    const st = window.moglyRitualState();
+    mvHaptic("success");
+    mrSet({ count: "✓", countDone: true, title: `Day ${st.day} done`, caption: `🔥 ${st.streak}-day streak`, scan: st.checkinReady });
+    await mrSay(run, "day_" + st.day, 2500, false);
+    if (!mrAlive(run)) return;
+    await mrSay(run, "praise", 2500, false);
+    if (!mrAlive(run)) return;
+    if (st.checkinReady && st.checkinDay === st.day) {
+      await mrSay(run, "checkin_" + st.day, 2500, true);
+      return; // stays open on the "Take check-in scan" button
+    }
+    await mrSleep(1800);
+    if (mrAlive(run)) window.moglyEndRitual();
+  }
+
+  window.moglyRitualOrbTap = function() {
+    mvHaptic("light");
+    mrPaused = !mrPaused;
+    if (mrPaused) {
+      mrStopAudio();
+      mrSet({ caption: "Paused. Tap Mogly to continue." });
+    } else {
+      mrSet({ caption: "" });
+    }
+  };
+  window.moglyEndRitual = function() {
+    mrRun++;
+    mrPaused = false;
+    mrStopAudio();
+    const ov = mvEl("mrOverlay");
+    if (ov) ov.classList.remove("active");
+    window.moglyRenderRitualStatus();
+  };
+  window.moglyRitualTalk = function() {
+    window.moglyEndRitual();
+    window.openMoglyVoiceSheet();
+  };
+  window.moglyRitualScan = function() {
+    window.moglyEndRitual();
+    if (typeof openScreen === "function") openScreen("home");
+    setTimeout(() => { if (window.handleMoglyPrimaryScanClick) window.handleMoglyPrimaryScanClick(); }, 300);
+  };
+  document.addEventListener("visibilitychange", () => { if (document.hidden) mrStopAudio(); });
+  window.addEventListener("DOMContentLoaded", () => window.moglyRenderRitualStatus());
+  if (document.readyState !== "loading") setTimeout(() => window.moglyRenderRitualStatus(), 0);
 
   window.addEventListener("DOMContentLoaded", mvInitOrbs);
   if (document.readyState !== "loading") mvInitOrbs();
