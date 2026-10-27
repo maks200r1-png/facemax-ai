@@ -2635,7 +2635,7 @@ html.cam-active .app { background:transparent !important; }
 #result.fm-teaser .result-unlock { display:block !important; animation:quizSlide .4s cubic-bezier(.4,0,.2,1); }
 
 /* Big "SCAN MY FACE" CTA on the test-result screen */
-.btn.btn-scanface { font-size:18px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; padding:18px 22px; border-radius:18px; background:radial-gradient(140% 160% at 30% 0%,rgba(255,255,255,.28) 0%,rgba(255,255,255,.08) 30%,transparent 55%),linear-gradient(135deg,#0055FF 0%,#007AFF 50%,#00C2FF 100%) !important; border:1px solid rgba(0,194,255,.65) !important; box-shadow:0 10px 30px rgba(0,122,255,.55),0 2px 8px rgba(0,122,255,.35),inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12); position:relative; overflow:hidden; -webkit-text-fill-color:#fff !important; color:#fff !important; }
+.btn.btn-scanface { font-size:18px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; padding:18px 22px; border-radius:18px; background:radial-gradient(140% 160% at 30% 0%,rgba(255,255,255,.28) 0%,rgba(255,255,255,.08) 30%,transparent 55%),linear-gradient(135deg,#0055FF 0%,#007AFF 50%,#00C2FF 100%) !important; border:1px solid rgba(0,194,255,.65) !important; box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12); position:relative; overflow:hidden; -webkit-text-fill-color:#fff !important; color:#fff !important; }
 .btn.btn-scanface .btn-ico { width:22px; height:22px; position:relative; z-index:1; }
 .btn.btn-scanface span { position:relative; z-index:1; }
 
@@ -2666,10 +2666,10 @@ html.cam-active .app { background:transparent !important; }
   box-shadow: none !important;
 }
 
-/* 1a. Exception: SCAN MY FACE button and welcome CTA keep their MTN-style glow */
+/* 1a. Exception: SCAN MY FACE button and welcome CTA keep a clean subtle shadow */
 .btn.btn-scanface,
 .btn.btn-welcome-cta {
-  box-shadow: 0 10px 30px rgba(0,122,255,.55), 0 2px 8px rgba(0,122,255,.35), inset 0 1px 0 rgba(255,255,255,.32), inset 0 -1px 0 rgba(0,0,0,.12) !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.32), inset 0 -1px 0 rgba(0,0,0,.12) !important;
 }
 
 /* 2. Kill all text-shadows */
@@ -3640,7 +3640,7 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   border-top: 1px solid rgba(255, 255, 255, 0.28) !important;
   overflow: hidden !important;
   box-shadow: 0 20px 52px rgba(0, 0, 0, 0.85), inset 0 1px 1.5px rgba(255, 255, 255, 0.35), 0 0 28px rgba(0, 102, 255, 0.20) !important;
-  margin: clamp(10px, 2vh, 18px) auto 0 auto !important;
+  margin: clamp(6px, 1.4vh, 12px) auto 0 auto !important;
   cursor: pointer !important;
 }
 
@@ -3841,8 +3841,8 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   max-width: 360px !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 10px !important;
-  margin: clamp(10px, 1.8vh, 16px) auto 0 auto !important;
+  gap: 8px !important;
+  margin: 6px auto 0 auto !important;
   margin-bottom: 0 !important;
   flex-shrink: 0 !important;
 }
@@ -3862,14 +3862,14 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   justify-content: center !important;
   gap: 10px !important;
   cursor: pointer !important;
-  box-shadow: 0 10px 32px rgba(0, 194, 255, 0.55), 0 2px 8px rgba(0, 122, 255, 0.4), inset 0 1.5px 2px rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease !important;
   -webkit-tap-highlight-color: transparent !important;
 }
 
 .mogly-btn-primary:active {
   transform: scale(0.97) !important;
-  box-shadow: 0 6px 20px rgba(0, 194, 255, 0.45) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
 }
 
 .mogly-btn-icon {
@@ -3894,7 +3894,7 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   justify-content: center !important;
   gap: 8px !important;
   cursor: pointer !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
   transition: background 0.2s ease, transform 0.12s ease !important;
   -webkit-tap-highlight-color: transparent !important;
 }
@@ -6193,9 +6193,9 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 
   </div>
 
-    <!-- Achievements -->
-  <div class="sec-hdr" style="margin-top:24px"><h3>Achievements <span id="dailyAchievCount" style="font-size:13px;font-weight:600;color:var(--muted)"></span></h3></div>
-  <div id="dailyAchievGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-bottom:24px"></div>
+    <!-- Achievements (Excised) -->
+  <div class="sec-hdr" style="display:none !important"><h3>Achievements <span id="dailyAchievCount" style="font-size:13px;font-weight:600;color:var(--muted)"></span></h3></div>
+  <div id="dailyAchievGrid" style="display:none !important"></div>
 </section>
 
 <!-- =============================== GLOW UP HUB =============================== -->
@@ -10150,11 +10150,11 @@ async function scheduleRetentionPack(){
   const morning = _fmPickMorningMessage(ctx);
   const evening = _fmPickEveningMessage(ctx);
 
-  // Morning reminder — repeats at the stored reminder time (08:00 by default).
+  // Morning reminder — repeats at the stored reminder time (08:30 by default).
   const prefs = notifLoadPrefs();
-  const timeMatch = /^(\d{1,2}):(\d{2})$/.exec(String(prefs.dailyTime || "08:00"));
+  const timeMatch = /^(\d{1,2}):(\d{2})$/.exec(String(prefs.dailyTime || "08:30"));
   const reminderHour = timeMatch ? Math.max(0, Math.min(23, Number(timeMatch[1]))) : 8;
-  const reminderMinute = timeMatch ? Math.max(0, Math.min(59, Number(timeMatch[2]))) : 0;
+  const reminderMinute = timeMatch ? Math.max(0, Math.min(59, Number(timeMatch[2]))) : 30;
   await window.facemax.notif.scheduleDaily({
     id: window.facemax.notif.ids.DAILY,
     hour: reminderHour, minute: reminderMinute,
@@ -10169,7 +10169,7 @@ async function scheduleRetentionPack(){
   await window.facemax.notif.cancel(window.facemax.notif.ids.STREAK);
   if (!ctx.completedToday) {
     const eveningAt = new Date();
-    eveningAt.setHours(20, 0, 0, 0);
+    eveningAt.setHours(20, 30, 0, 0);
     if (eveningAt.getTime() > Date.now() + 5000) {
       await window.facemax.notif.scheduleAt({
         id: window.facemax.notif.ids.EVENING,
@@ -10214,8 +10214,8 @@ async function scheduleRetentionPack(){
     await window.facemax.notif.scheduleAt({
       id: window.facemax.notif.ids.RESCAN_7D,
       at: rescan,
-      title: "Time to re-scan",
-      body: "See how your score moved this week.",
+      title: "7 days of consistency 📸",
+      body: "Time for your weekly progress scan. See how your jawline and bloat improved.",
       extra: { route:"upload", inboxType:"scan" },
     });
   }
@@ -13006,79 +13006,16 @@ async function _fmPushAchievement(a){
   } catch {}
 }
 function _fmSyncAchievementUnlocks(opts){
-  const defs = _fmAchievementData();
-  const unlocked = defs.filter(a => Number(a.current) >= Number(a.target));
-  let seen = _fmAchievementSeen();
-  // Migration/bootstrap: don't blast existing users with every old achievement
-  // the first time they open a build that contains achievement notifications.
-  if (seen === null) {
-    _fmAchievementSaveSeen(unlocked.map(a => a.id));
-    return [];
-  }
-  const seenSet = new Set(seen);
-  const fresh = unlocked.filter(a => !seenSet.has(a.id));
-  if (!fresh.length) return [];
-  fresh.forEach(a => seenSet.add(a.id));
-  _fmAchievementSaveSeen([...seenSet]);
-  fresh.forEach(a => {
-    fmInboxAdd({
-      key:`achievement:${a.id}`,
-      title:`Achievement unlocked ${a.icon}`,
-      body:`${a.label} — ${a.desc}`,
-      route:"daily",
-      type:"achievement",
-      ts:Date.now(),
-    });
-    _fmPushAchievement(a);
-  });
-  if (!(opts && opts.silentToast)) {
-    if (fresh.length === 1) showToast(`${fresh[0].icon} Achievement unlocked: ${fresh[0].label}`);
-    else showToast(`🏆 ${fresh.length} achievements unlocked`);
-  }
-  return fresh;
+  // Achievements toasts and push popups completely excised per user standard
+  return [];
 }
 window._fmSyncAchievementUnlocks = _fmSyncAchievementUnlocks;
 
 function renderDailyAchievements() {
   const grid = el("dailyAchievGrid");
   const countEl = el("dailyAchievCount");
-  if (!grid) return;
-
-  const ACHIEVEMENTS = _fmAchievementData();
-  const done   = ACHIEVEMENTS.filter(a => a.current >= a.target).length;
-  const total  = ACHIEVEMENTS.length;
-  if (countEl) countEl.textContent = `${done} / ${total}`;
-
-  // Sort: done first, then by progress desc
-  const sorted = [...ACHIEVEMENTS].sort((a, b) => {
-    const aDone = a.current >= a.target;
-    const bDone = b.current >= b.target;
-    if (aDone !== bDone) return aDone ? -1 : 1;
-    return (b.current / b.target) - (a.current / a.target);
-  });
-
-  grid.innerHTML = sorted.map(a => {
-    const isDone   = a.current >= a.target;
-    const pct      = Math.min(100, Math.round((a.current / a.target) * 100));
-    const badge    = isDone
-      ? `<span style="font-size:10px;font-weight:800;letter-spacing:.06em;padding:3px 8px;border-radius:999px;background:rgba(0,122,255,.28);color:#80D8FF">✓ DONE</span>`
-      : `<span style="font-size:10px;font-weight:700;letter-spacing:.04em;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.45)">${a.current}/${a.target} D</span>`;
-    const border   = isDone ? "rgba(0,122,255,.6)" : "rgba(0,194,255,.18)";
-    const barColor = isDone
-      ? "linear-gradient(90deg,#007AFF,#00C2FF)"
-      : "linear-gradient(90deg,#0055FF,#007AFF)";
-    return `<div style="background:rgba(0,122,255,.10);border:1px solid ${border};border-radius:16px;padding:14px 13px 12px;display:flex;flex-direction:column;gap:6px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <span style="font-size:26px;line-height:1">${a.icon}</span>
-        ${badge}
-      </div>
-      <div style="font-size:13.5px;font-weight:800;color:#fff;margin-top:2px">${a.label}</div>
-      <div style="font-size:11.5px;color:rgba(255,255,255,.5);font-weight:500">${a.desc}</div>
-      <div style="height:3px;border-radius:999px;background:rgba(255,255,255,.08);margin-top:2px">
-        <div style="height:100%;border-radius:999px;width:${pct}%;background:${barColor};transition:width .4s"></div>
-      </div>
-    </div>`;
-  }).join("");
+  if (grid) grid.innerHTML = "";
+  if (countEl) countEl.textContent = "";
 }
 
 window.openDailyHub = async function(_premiumChecked){
@@ -19310,7 +19247,7 @@ window.syncTDEEChoiceUI = function() {
     const strong = v != null && v >= 80;
     if (key === "jawline") {
       const out = [
-        v != null ? `Jawline is ${v} out of 100${strong ? ", already a strong feature, so maintain it rather than chase it" : ""}.` : "Here's the honest jawline breakdown.",
+        strong ? "Your jawline is already a standout feature, so we focus on maintenance and debloat." : "Here's the honest jawline breakdown.",
         "Jaw definition is mostly body fat and water, not bone. If you're above about fifteen percent body fat, a slow cut is the biggest jaw upgrade you can get.",
         "Mewing, honestly: whole tongue on the palate, lips sealed, neck stacked over your shoulders. It instantly improves how your jaw reads in profile and photos, but it won't reshape adult bone.",
       ];
@@ -19324,7 +19261,7 @@ window.syncTDEEChoiceUI = function() {
     }
     if (key === "cheekbones") {
       const out = [
-        v != null ? `Cheekbones are ${v} out of 100.` : "Cheekbones are mostly hidden by puffiness.",
+        "Cheekbones are framed by facial contour. Water and soft tissue almost always hide them. Drop the bloat and the cheekbones pop.",
         "You can't change the zygomatic bone, but water and soft tissue almost always hide it. Drop the bloat and the cheekbones show.",
       ];
       if (!short) out.push("Tonight: low salt, no alcohol, last big meal three hours before bed. Morning: one minute of cold water or an ice roller, then two minutes of lymphatic drainage from the nose along the cheekbones to the ears and down the neck.");
@@ -19332,7 +19269,7 @@ window.syncTDEEChoiceUI = function() {
     }
     if (key === "eyes") {
       const out = [
-        v != null ? `Eye area is ${v} out of 100.` : "Here's the honest eye breakdown.",
+        "Eye area is key to your facial intensity. Here's the honest breakdown.",
         "Canthal tilt and orbital bone are hardmaxxing, you can't train them, and I won't pretend you can.",
         "What does change: under-eye puffiness and dark circles. Seven and a half to nine hours of sleep, a cold compress in the morning, a caffeine eye serum.",
       ];
@@ -19341,7 +19278,7 @@ window.syncTDEEChoiceUI = function() {
     }
     if (key === "skin") {
       const out = [
-        v != null ? `Skin is ${v} out of 100${strong ? ", so you're in maintenance mode" : ""}.` : "For skin, here's the proven base.",
+        strong ? "Skin quality is in solid shape, so you're in maintenance mode." : "For skin clarity, here's the proven base.",
         "The proven stack: gentle cleanser, moisturizer and SPF thirty plus every morning. At night a retinoid, adapalene or retinol, pea-sized, two to three nights a week, then build up.",
       ];
       if (!short) out.push("Benzoyl peroxide on active spots. Skin turns over in about twenty-eight days, so judge it after six to eight weeks, not three days. If acne is deep or won't clear, see a dermatologist.");
@@ -19403,7 +19340,7 @@ window.syncTDEEChoiceUI = function() {
     } else if (intent === "scan") {
       if (!f.hasScan) { S.push(noScan); action = "scan"; }
       else {
-        if (f.score != null) S.push(`Your scan is in. ${f.score} out of 100, ${mvBand(f.score)}.`);
+        if (f.score != null) S.push(`Your scan is in, placing you in the ${mvBand(f.score)} tier.`);
         const d = f.ctx.progress && f.ctx.progress.scan_delta;
         if (d && isFinite(d.overall)) {
           const since = d.days > 1 ? `in ${d.days} days` : "since your last scan";
@@ -19412,15 +19349,15 @@ window.syncTDEEChoiceUI = function() {
           if (moves.length) S.push("Biggest moves: " + moves.map(k => `${names[k]} ${d.areas[k] > 0 ? "up" : "down"} ${Math.abs(d.areas[k])}`).join(", ") + ".");
         }
         if (f.shape) S.push(`Face shape reads as ${f.shape.label.toLowerCase()}.`);
-        if (f.strong) S.push(`Your strongest feature is your ${names[f.strong.key]} at ${f.strong.v}. That's your edge.`);
+        if (f.strong) S.push(`Your strongest feature is your ${names[f.strong.key]}. That's your visual edge.`);
         if (f.weak) {
-          S.push(`First thing to fix: your ${names[f.weak.key]} at ${f.weak.v}.`);
+          S.push(`First area to level up: your ${names[f.weak.key]}.`);
           S.push(...mvAreaPlan(f.weak.key, f, true).slice(1));
           action = MV_AREA_ACTION[f.weak.key];
         }
         if (f.sym != null) S.push(f.sym >= 80
-          ? (`Symmetry is ${f.sym}, that's strong.`)
-          : (`Symmetry is ${f.sym}: chew on both sides and stop sleeping on the same side every night.`));
+          ? "Facial symmetry is well balanced."
+          : "To balance symmetry: chew on both sides and avoid sleeping on only one side.");
         S.push("Daily biomechanics: tongue on the palate, lips sealed, neck stacked over your shoulders. Posture changes how your face reads instantly.");
         S.push("Tap Fix first and I'll give you the full plan.");
       }
@@ -19431,8 +19368,8 @@ window.syncTDEEChoiceUI = function() {
         action = "scan";
       } else {
         if (heard && !fn) S.push("Here's what matters most for your face right now.");
-        if (f.score != null) S.push(`Overall you're at ${f.score}.`);
-        if (f.strong) S.push(`Your strong side is your ${names[f.strong.key]} at ${f.strong.v}.`);
+        if (f.score != null) S.push("Here's your personal facial breakdown.");
+        if (f.strong) S.push(`Your strongest feature is your ${names[f.strong.key]}.`);
         if (f.weak) {
           S.push(`Fix this first: your ${names[f.weak.key]}.`);
           S.push(...mvAreaPlan(f.weak.key, f, false));
@@ -19444,8 +19381,7 @@ window.syncTDEEChoiceUI = function() {
       S.push(...mvAreaPlan(intent, f, false));
       action = MV_AREA_ACTION[intent];
     } else if (intent === "debloat") {
-      const cheek = f.areas.find(a => a.key === "cheekbones");
-      S.push(`Puffiness hides your cheekbones${cheek ? `, currently ${cheek.v}` : ""} and your jawline. It's the fastest lever, you see it within a day.`);
+      S.push("Puffiness hides your cheekbones and your jawline. It's the fastest lever, you see it within a day.");
       S.push("Tonight: salt down, no alcohol, last big meal three hours before bed, drink your water during the day, not at night. Sleep with your head slightly raised.");
       S.push("Morning: one minute of cold water or an ice roller, then two minutes of lymphatic drainage from the center of your face out to the ears and down the neck. Forty minutes later your face looks noticeably sharper.");
       action = "exercises";

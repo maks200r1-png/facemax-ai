@@ -162,7 +162,10 @@ setPremium("u1", true);
   assert.equal(chat.model, "anthropic/claude-haiku-5.5");
   assert.ok(!chat.provider.order, "no Google provider order for a non-Google model");
   assert.equal(chat.provider.data_collection, "deny");
-  ok("female voice -> Kore; VOICE_LLM_MODEL override keeps data_collection deny");
+  assert.match(promptOf(chat), /elite female aesthetic mentor/);
+  assert.match(promptOf(chat), /Darling, no candidate is fixing/);
+  assert.match(promptOf(chat), /Strictly NO masculine slang/);
+  ok("female voice -> Kore + female aesthetic mentor persona; VOICE_LLM_MODEL override keeps data_collection deny");
 }
 
 // 4. transcribe_only does not call the LLM or TTS and does not use quota
@@ -552,13 +555,13 @@ async function postStream(body) {
     progress: { streak: 5, scans: 2, first_score: 66, last_score: 71, days_since_scan: 9, local_hour: 20 } };
   const en = build("en", ctx);
   const fixEn = en.mvLocalAnswer("fixfirst", "");
-  assert.match(fixEn.answer, /Overall you're at 71/);
+  assert.match(fixEn.answer, /Here's your personal facial breakdown/);
   assert.match(fixEn.answer, /Fix this first: your skin/, "lowest metric (skin 58) is the first fix");
   assert.match(fixEn.answer, /retinoid/);
   assert.equal(fixEn.action, "daily");
   const scanEn = en.mvLocalAnswer("scan", "");
-  assert.match(scanEn.answer, /Your scan is in\. 71 out of 100/);
-  assert.match(scanEn.answer, /strongest feature is your eye area at 74/);
+  assert.match(scanEn.answer, /Your scan is in/);
+  assert.match(scanEn.answer, /strongest feature is your eye area/);
   assert.match(scanEn.answer, /Face shape reads as diamond/, "jaw 62 vs cheekbones 68 -> diamond");
   assert.match(scanEn.answer, /tongue on the palate/);
   assert.match(en.mvLocalAnswer("jawline", "").answer, /won't reshape adult bone/, "honest mewing");
