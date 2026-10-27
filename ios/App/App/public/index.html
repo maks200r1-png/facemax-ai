@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-title" content="Mogly">
 <meta name="format-detection" content="telephone=no">
 <title>Mogly — AI Looksmax &amp; Aesthetic Biometrics</title>
-<link rel="icon" href="assets/logo.png">
+<link rel="icon" href="assets/app_icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -2653,7 +2653,7 @@ html.cam-active .app { background:transparent !important; }
 .result-unlock .lock-feats { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:16px; }
 .result-unlock .lock-feat { font-size:12px; font-weight:600; color:var(--text); background:var(--surface-2); border:1px solid var(--line); border-radius:999px; padding:6px 11px; }
 
-/* Bigger quiz typography to feel "крупно" */
+/* Bigger quiz typography */
 #quiz .quiz-title { font-size:31px; }
 #quiz .quiz-sub { font-size:15.5px; }
 </style>
@@ -4629,6 +4629,164 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
   .qa2-pts circle{opacity:.7}
 }
 @media (max-height:700px){.qa2-foot{display:none}.qa2-mod{padding:8px 12px}}
+/* ==========================================================================
+   MOGLY v5 — Apple-grade motion, haptic press, Profile, Daily Coach
+   ========================================================================== */
+:root{
+  --fm-spring:cubic-bezier(0.32,0.72,0,1);
+  --fm-glass:rgba(255,255,255,0.04);
+  --fm-glass-line:rgba(255,255,255,0.08);
+  --fm-sep:rgba(84,84,88,0.42);
+}
+/* Screens and sheets settle with the iOS sheet curve. */
+@keyframes fmSpringIn{from{opacity:0;transform:translate3d(0,14px,0) scale(.992)}to{opacity:1;transform:none}}
+/* Transform-based entrance only on plain scroll screens: a transform on a
+   screen with position:fixed children would re-anchor them mid-animation. */
+.screen.active{animation-timing-function:var(--fm-spring)}
+#profile.screen.active,#exercises.screen.active,#exerciseDetail.screen.active,#history.screen.active,#notifications.screen.active{animation:fmSpringIn .42s var(--fm-spring)}
+@media (prefers-reduced-motion:reduce){#profile.screen.active,#exercises.screen.active,#exerciseDetail.screen.active,#history.screen.active,#notifications.screen.active{animation:fmFadeIn .15s linear}}
+
+/* Tactile micro-scale on every pressable surface (GPU-only transform). */
+button,.btn,.pf-row,.pf-stat,.exercise-tile,.mogly-btn-primary,.mogly-btn-secondary,.mdc-brief-chip,.nav,.tool{
+  transition:transform .32s var(--fm-spring),opacity .2s ease,background-color .2s ease;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise-tile:active,.mogly-btn-primary:active,.mogly-btn-secondary:active,.mdc-brief-chip:active,.tool:active{
+  transform:scale(0.975);
+  transition-duration:.08s;
+}
+.mv-orb-btn:active{transform:scale(0.93)}
+
+/* Coach avatar crossfade when the voice changes. */
+#moglySquareHeroImg{transition:opacity .22s var(--fm-spring)!important}
+#moglySquareHeroImg.is-swapping{opacity:0!important}
+
+/* ---------------- Profile ---------------- */
+#profile.pf-v5{background:#000!important;padding-left:20px!important;padding-right:20px!important}
+#profile.pf-v5 .pf-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 0 6px}
+#profile.pf-v5 .pf-avatar{position:relative;width:112px;height:112px;border-radius:50%;padding:0;margin:0;border:0;
+  background:#111 center/cover no-repeat;box-shadow:0 0 0 1px var(--fm-glass-line),0 18px 50px rgba(0,122,255,.18);overflow:visible;flex:none}
+#profile.pf-v5 .pf-avatar .profile-avatar-default-img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+#profile.pf-v5 .pf-avatar.has-image .profile-avatar-default-img{display:none}
+#profile.pf-v5 .pf-avatar svg:not(.pf-avatar-edit svg){display:none}
+#profile.pf-v5 .pf-avatar-edit{position:absolute;right:2px;bottom:2px;width:32px;height:32px;border-radius:50%;background:#0A84FF;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #000}
+#profile.pf-v5 .pf-avatar-edit svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linejoin:round}
+#profile.pf-v5 .pf-name{margin-top:14px;font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.02em;color:#fff}
+
+#profile.pf-v5 .pf-plan{margin-top:16px;width:100%;box-sizing:border-box;padding:18px;border-radius:24px;background:var(--fm-glass);
+  border:1px solid var(--fm-glass-line);display:flex;flex-direction:column;align-items:center;gap:6px}
+#profile.pf-v5 .pf-plan[data-pro="1"]{background:linear-gradient(160deg,rgba(10,132,255,.16),rgba(255,255,255,.035) 60%);border-color:rgba(10,132,255,.32)}
+#profile.pf-v5 .pf-plan-badge{display:inline-flex;align-items:center;gap:8px;font-size:17px;font-weight:700;color:#fff;letter-spacing:-.01em}
+#profile.pf-v5 .pf-plan-badge img{width:24px;height:24px;border-radius:7px}
+#profile.pf-v5 .pf-plan[data-pro="1"] .pf-plan-badge::after{content:"ACTIVE";font-size:10.5px;font-weight:700;letter-spacing:.06em;color:#30D158;
+  background:rgba(48,209,88,.14);padding:3px 7px;border-radius:999px}
+#profile.pf-v5 .pf-plan-sub{font-size:14px;color:rgba(235,235,245,.6);line-height:1.35}
+#profile.pf-v5 .pf-plan-btn{margin-top:8px;width:100%;min-height:50px;border:0;border-radius:14px;font-size:17px;font-weight:600;
+  background:#0A84FF;color:#fff}
+#profile.pf-v5 .pf-plan[data-pro="1"] .pf-plan-btn{background:rgba(255,255,255,.08);color:#fff}
+
+#profile.pf-v5 .pf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 4px}
+#profile.pf-v5 .pf-stat{padding:18px 8px 16px;border-radius:22px;background:var(--fm-glass);border:1px solid var(--fm-glass-line);
+  display:flex;flex-direction:column;align-items:center;gap:6px}
+#profile.pf-v5 .pf-stat b{font-size:34px;line-height:1;font-weight:700;letter-spacing:-.03em;color:#fff;font-variant-numeric:tabular-nums}
+#profile.pf-v5 .pf-stat span{font-size:12.5px;font-weight:500;color:rgba(235,235,245,.6);white-space:nowrap}
+#profile.pf-v5 .pf-stat-streak b{color:#FF9F0A}
+
+#profile.pf-v5 .pf-section-title{margin:26px 4px 8px;font-size:22px;font-weight:700;letter-spacing:-.02em;color:#fff}
+#profile.pf-v5 .pf-card{padding:8px;border-radius:24px;background:var(--fm-glass);border:1px solid var(--fm-glass-line)}
+
+#profile.pf-v5 .pf-voice-seg{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0;padding:4px;border-radius:18px;background:rgba(255,255,255,.04)}
+#profile.pf-v5 .pf-voice-thumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:14px;background:rgba(255,255,255,.12);
+  box-shadow:0 6px 18px rgba(0,0,0,.4);transition:transform .42s var(--fm-spring)}
+#profile.pf-v5 .pf-voice-seg[data-active="female"] .pf-voice-thumb{transform:translateX(100%)}
+#profile.pf-v5 .pf-voice-opt{position:relative;z-index:1;display:flex;align-items:center;gap:10px;padding:10px;min-height:64px;border:0;
+  background:transparent;color:#fff;text-align:left;border-radius:14px}
+#profile.pf-v5 .pf-voice-opt img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex:none;opacity:.55;transition:opacity .3s ease}
+#profile.pf-v5 .pf-voice-opt.active img{opacity:1}
+#profile.pf-v5 .pf-voice-copy{display:flex;flex-direction:column;min-width:0}
+#profile.pf-v5 .pf-voice-copy b{font-size:17px;font-weight:600}
+#profile.pf-v5 .pf-voice-copy small{font-size:12.5px;color:rgba(235,235,245,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#profile.pf-v5 .pf-voice-opt:not(.active) .pf-voice-copy b{color:rgba(235,235,245,.6)}
+#profile.pf-v5 .pf-voice-preview{margin-top:8px;width:100%;min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;
+  border:0;border-radius:16px;background:transparent;color:#0A84FF;font-size:17px;font-weight:600}
+#profile.pf-v5 .pf-play{width:30px;height:30px;border-radius:50%;background:rgba(10,132,255,.16);display:flex;align-items:center;justify-content:center}
+#profile.pf-v5 .pf-play svg{width:14px;height:14px;fill:#0A84FF;margin-left:2px}
+#profile.pf-v5 .pf-voice-preview.is-playing .pf-play{animation:pfPulse 1s ease-in-out infinite}
+@keyframes pfPulse{50%{transform:scale(1.12);background:rgba(10,132,255,.3)}}
+
+#profile.pf-v5 .pf-chart{margin-top:22px;border-radius:24px!important;background:var(--fm-glass)!important;border:1px solid var(--fm-glass-line)!important}
+
+#profile.pf-v5 .pf-list{margin-top:12px;border-radius:20px;background:var(--fm-glass);border:1px solid var(--fm-glass-line);overflow:hidden}
+#profile.pf-v5 .pf-section-title + .pf-list{margin-top:0}
+#profile.pf-v5 .pf-row{position:relative;width:100%;display:flex;align-items:center;gap:14px;min-height:56px;padding:10px 16px;border:0;
+  background:transparent;color:#fff;text-align:left;font:inherit;border-radius:0}
+#profile.pf-v5 .pf-row:active{background:rgba(255,255,255,.06);transform:none}
+#profile.pf-v5 .pf-row + .pf-row::before{content:"";position:absolute;top:0;right:0;left:60px;height:.5px;background:var(--fm-sep)}
+#profile.pf-v5 .pf-row:not(:has(.pf-ico)) + .pf-row::before,#profile.pf-v5 .pf-danger::before{left:16px!important}
+#profile.pf-v5 .pf-ico{width:30px;height:30px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center}
+#profile.pf-v5 .pf-ico svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#profile.pf-v5 .pf-ico-red{background:#FF3B30}#profile.pf-v5 .pf-ico-blue{background:#0A84FF}
+#profile.pf-v5 .pf-ico-green{background:#30D158}#profile.pf-v5 .pf-ico-gray{background:#636366}
+#profile.pf-v5 .pf-row-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+#profile.pf-v5 .pf-row-copy b{font-size:17px;font-weight:400;letter-spacing:-.01em}
+#profile.pf-v5 .pf-row-copy small{font-size:13px;color:rgba(235,235,245,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#profile.pf-v5 .pf-mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px!important}
+#profile.pf-v5 .pf-row-meta{font-size:15px;color:#0A84FF}
+#profile.pf-v5 .pf-chev{width:16px;height:16px;flex:none;stroke:rgba(235,235,245,.3);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+#profile.pf-v5 .pf-danger .pf-row-copy b{color:#FF453A}
+#profile.pf-v5 .pf-row[aria-busy="true"]{opacity:.5;pointer-events:none}
+#profile.pf-v5 .pf-switch{position:relative;width:51px;height:31px;flex:none}
+#profile.pf-v5 .pf-switch input{position:absolute;opacity:0;inset:0;margin:0;z-index:1}
+#profile.pf-v5 .pf-switch i{position:absolute;inset:0;border-radius:999px;background:rgba(120,120,128,.32);transition:background .25s ease}
+#profile.pf-v5 .pf-switch i::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;
+  box-shadow:0 3px 8px rgba(0,0,0,.25);transition:transform .35s var(--fm-spring)}
+#profile.pf-v5 .pf-switch input:checked + i{background:#30D158}
+#profile.pf-v5 .pf-switch input:checked + i::after{transform:translateX(20px)}
+#profile.pf-v5 .pf-footer{margin:22px 0 8px;text-align:center;font-size:13px;color:rgba(235,235,245,.3)}
+
+/* ---------------- Daily brief chip next to the orb ---------------- */
+.mdc-brief-chip{position:absolute;top:50%;left:calc(50% + 60px);transform:translateY(-50%);max-width:calc(50% - 64px);
+  display:flex;align-items:center;gap:8px;padding:8px 12px 8px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.07);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);color:#fff;text-align:left;
+  animation:mdcChipIn .6s var(--fm-spring) both}
+.mdc-brief-chip[hidden]{display:none}
+.mdc-brief-chip:active{transform:translateY(-50%) scale(.975)}
+.mdc-brief-play{width:28px;height:28px;border-radius:50%;background:#0A84FF;display:flex;align-items:center;justify-content:center;flex:none;
+  box-shadow:0 0 0 0 rgba(10,132,255,.5);animation:mdcPing 2.4s ease-out infinite}
+.mdc-brief-play svg{width:12px;height:12px;fill:#fff;margin-left:2px}
+.mdc-brief-copy{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.mdc-brief-copy small{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(235,235,245,.55)}
+.mdc-brief-copy b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@keyframes mdcChipIn{from{opacity:0;transform:translate(-8px,-50%)}to{opacity:1;transform:translate(0,-50%)}}
+@keyframes mdcPing{0%{box-shadow:0 0 0 0 rgba(10,132,255,.55)}70%,100%{box-shadow:0 0 0 10px rgba(10,132,255,0)}}
+@media (prefers-reduced-motion:reduce){.mdc-brief-chip,.mdc-brief-play{animation:none}}
+
+/* ---------------- Exercise: voice coach toggle ---------------- */
+.ed-coach-voice{grid-column:1 / -1;justify-self:center;white-space:nowrap;margin:2px auto 0;display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 16px;
+  border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(235,235,245,.6);font-size:14px;font-weight:600}
+.ed-coach-voice svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ed-coach-voice.is-on{color:#0A84FF;border-color:rgba(10,132,255,.35);background:rgba(10,132,255,.1)}
+.ed-coach-voice:not(.is-on) svg path:last-child{opacity:.2}
+
+/* ---------------- Streak celebration ---------------- */
+.mdc-celebrate{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:rgba(0,0,0,0);transition:background .35s var(--fm-spring)}
+.mdc-celebrate[hidden]{display:none}
+.mdc-celebrate.is-open{background:rgba(0,0,0,.72)}
+.mdc-celebrate-card{width:100%;max-width:360px;padding:28px 22px 18px;border-radius:30px;text-align:center;background:#0d0d0f;
+  border:1px solid rgba(255,159,10,.28);box-shadow:0 30px 80px rgba(255,120,0,.18);opacity:0;transform:scale(.9) translateY(14px);
+  transition:transform .5s var(--fm-spring),opacity .3s ease}
+.mdc-celebrate.is-open .mdc-celebrate-card{opacity:1;transform:none}
+.mdc-celebrate-flame{font-size:44px;line-height:1}
+.mdc-celebrate-num{margin-top:6px;font-size:76px;line-height:1;font-weight:800;letter-spacing:-.04em;
+  background:linear-gradient(180deg,#FFD60A,#FF9F0A 55%,#FF453A);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mdc-celebrate-title{margin-top:4px;font-size:22px;font-weight:700;color:#fff}
+.mdc-celebrate-line{margin:10px 4px 18px;font-size:15.5px;line-height:1.45;color:rgba(235,235,245,.7)}
+.mdc-celebrate-primary{width:100%;min-height:52px;border:0;border-radius:16px;background:#FF9F0A;color:#000;font-size:17px;font-weight:700}
+.mdc-celebrate-primary[hidden]{display:none}
+.mdc-celebrate-secondary{width:100%;min-height:48px;margin-top:6px;border:0;border-radius:16px;background:transparent;color:rgba(235,235,245,.7);font-size:16px;font-weight:600}
 </style>
 </head>
 <body>
@@ -5025,7 +5183,7 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
 
     </div>
 
-    <p style="text-align:center;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 14px">FaceMax AI Premium · Auto-Renewable Subscription</p>
+    <p style="text-align:center;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:0 0 14px">Mogly Pro · Auto-Renewable Subscription</p>
 
     <div class="qp-plans" id="qpPlans">
       <button class="qp-plan" data-plan="weekly" onclick="quizBuyPlan('weekly')">
@@ -5139,6 +5297,10 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
           <canvas class="mv-orb-canvas" id="mvHomeCanvas"></canvas>
           <div class="mv-orb-glass"></div>
         </div>
+      </button>
+      <button type="button" class="mdc-brief-chip" id="mdcBriefChip" hidden onclick="moglyPlayDailyBrief()" aria-label="Play today's brief from Mogly">
+        <span class="mdc-brief-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg></span>
+        <span class="mdc-brief-copy"><small id="mdcBriefLabel">Morning</small><b>Brief</b></span>
       </button>
     </div>
 
@@ -5653,132 +5815,119 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
 </section>
 
 <!-- =============================== PROFILE =============================== -->
-<section id="profile" class="screen design-profile-screen">
+<section id="profile" class="screen design-profile-screen pf-v5">
   <div class="screen-topbar mogly-screen-topbar">
     <div class="stb-logo"><img src="assets/app_icon.png" alt="Mogly"></div>
-    <span class="stb-title" data-i18n="nav_profile">Profile</span>
+    <span class="stb-title">Profile</span>
   </div>
 
-  <div class="profile-hero-v4">
-    <div class="profile-avatar" id="profileAvatar" onclick="pickProfileAvatar()" role="button" aria-label="Change profile picture">
-      <img class="profile-avatar-default-img" src="assets/logo.png" alt="">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
-      <span class="pa-edit" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="#fff" fill="none"/></svg></span>
-    </div>
+  <!-- Identity: large avatar + plan status -->
+  <div class="pf-hero">
+    <button type="button" class="pf-avatar profile-avatar" id="profileAvatar" onclick="pickProfileAvatar()" aria-label="Change profile picture">
+      <img class="profile-avatar-default-img" src="assets/app_icon.png" alt="">
+      <span class="pf-avatar-edit" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span>
+    </button>
     <input type="file" id="profileAvatarInput" accept="image/*" style="display:none" onchange="handleProfileAvatarPick(this.files && this.files[0])">
-    <div class="profile-hero-copy">
-      <div class="profile-name" id="profileName">You</div>
-      <div class="profile-uid" id="profileUid">ID: --</div>
-      <div class="status-badge free hidden" id="statusBadge"></div>
-      <div id="premiumUntilBlock" class="premium-until hidden">Active until <b id="premiumUntilDate">--</b></div>
+    <div class="pf-name" id="profileName">You</div>
+
+    <div class="pf-plan" id="pfPlanCard" data-pro="0">
+      <div class="pf-plan-badge">
+        <img src="assets/app_icon.png" alt="">
+        <span id="pfPlanTitle">Mogly Pro</span>
+      </div>
+      <div class="pf-plan-sub" id="pfPlanSub">Unlock scans, exercises and your voice coach</div>
+      <button type="button" class="pf-plan-btn" id="pfPlanBtn" onclick="pfPlanAction()">Unlock Mogly Pro</button>
     </div>
+    <!-- Legacy hooks kept for older render paths -->
+    <div class="status-badge free hidden" id="statusBadge"></div>
+    <div id="premiumUntilBlock" class="hidden"><b id="premiumUntilDate">--</b></div>
+    <div id="profileUpgrade" style="display:none" aria-hidden="true"></div>
   </div>
 
-  <div class="profile-stats-v4">
-    <div class="profile-stat-v4"><span>Best</span><b id="statBest">--</b></div>
-    <div class="profile-stat-v4"><span>Average</span><b id="statAvg">--</b></div>
-    <div class="profile-stat-v4"><span>Scans</span><b id="statScans">--</b></div>
+  <!-- Key numbers -->
+  <div class="pf-stats">
+    <div class="pf-stat"><b id="statBest">--</b><span>Best Score</span></div>
+    <div class="pf-stat"><b id="statScans">--</b><span>Scans Done</span></div>
+    <div class="pf-stat pf-stat-streak"><b id="pfStatStreak">0</b><span>Day Streak</span></div>
+  </div>
+  <span id="statAvg" hidden></span>
+
+  <!-- Coach voice -->
+  <div class="pf-section-title">Coach Voice</div>
+  <div class="pf-card pf-voice">
+    <div class="pf-voice-seg" id="pfVoiceSeg" role="radiogroup" aria-label="Coach voice" data-active="male">
+      <span class="pf-voice-thumb" aria-hidden="true"></span>
+      <button type="button" class="pf-voice-opt" data-voice-gender="male" role="radio" onclick="setMoglyVoiceGender('male')">
+        <img src="assets/hero_male.jpg" alt="">
+        <span class="pf-voice-copy"><b>Onyx</b><small>Male · deep, calm</small></span>
+      </button>
+      <button type="button" class="pf-voice-opt" data-voice-gender="female" role="radio" onclick="setMoglyVoiceGender('female')">
+        <img src="assets/hero_female.jpg" alt="">
+        <span class="pf-voice-copy"><b>Nova</b><small>Female · warm, clear</small></span>
+      </button>
+    </div>
+    <button type="button" class="pf-voice-preview" id="pfVoicePreview" onclick="moglyPreviewVoice()">
+      <span class="pf-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg></span>
+      <span id="pfVoicePreviewLabel">Hear the voice</span>
+    </button>
   </div>
 
-  <div id="progressChartWrap" class="chart-card empty profile-chart-v4"></div>
-  <div id="profileUpgrade" style="display:none" aria-hidden="true"></div>
+  <!-- Progress -->
+  <div id="progressChartWrap" class="chart-card empty profile-chart-v4 pf-chart"></div>
 
-  <!-- Mogly Elite Glass Settings: Language & Voice -->
-  <div class="mogly-profile-section">
-    <!-- Language Switcher Card -->
-    <div class="mogly-big-card">
-      <div class="mogly-card-head">
-        <div class="mogly-card-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
-        <div class="mogly-card-titles">
-          <span class="mogly-card-title" data-i18n="prof_lang_title">Language</span>
-          <span class="mogly-card-sub" data-i18n="prof_lang_sub">Interface &amp; Voice</span>
-        </div>
-      </div>
-      <div class="mogly-segmented-control" id="moglyLangControl">
-        <button type="button" class="mogly-seg-btn active" id="moglyLangBtnEn" onclick="setMoglyLanguage('en')">English</button>
-        <button type="button" class="mogly-seg-btn" id="moglyLangBtnRu" onclick="setMoglyLanguage('ru')">Русский</button>
-      </div>
+  <!-- Settings -->
+  <div class="pf-section-title">Settings</div>
+  <div class="pf-list">
+    <div class="pf-row" id="notifSettingsCard" style="display:none">
+      <span class="pf-ico pf-ico-red"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+      <span class="pf-row-copy"><b>Daily reminders</b><small id="notifDailyHint">Morning brief and streak alerts</small></span>
+      <label class="pf-switch"><input type="checkbox" id="notifDailyToggle" onchange="toggleDailyReminder(this.checked)"><i></i></label>
     </div>
-
-    <!-- Voice Model Selector Card -->
-    <div class="mogly-big-card">
-      <div class="mogly-card-head">
-        <div class="mogly-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
-        </div>
-        <div class="mogly-card-titles">
-          <span class="mogly-card-title" data-i18n="prof_voice_title">Voice</span>
-          <span class="mogly-card-sub" data-i18n="prof_voice_sub">AI Mentor</span>
-        </div>
-      </div>
-      <div class="mogly-segmented-control" id="moglyVoiceControl">
-        <button type="button" class="mogly-seg-btn active" id="moglyVoiceBtnMale" onclick="setMoglyVoiceGender('male')">Male</button>
-        <button type="button" class="mogly-seg-btn" id="moglyVoiceBtnFemale" onclick="setMoglyVoiceGender('female')">Female</button>
-      </div>
-    </div>
-
-    <!-- Subscription & Legal Card -->
-    <div class="mogly-big-card">
-      <div class="mogly-card-head">
-        <div class="mogly-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
-        </div>
-        <div class="mogly-card-titles">
-          <span class="mogly-card-title" data-i18n="prof_legal_title">Subscription &amp; Legal</span>
-          <span class="mogly-card-sub" data-i18n="prof_legal_sub">App Store &amp; Privacy</span>
-        </div>
-      </div>
-      <button class="mogly-settings-row" type="button" onclick="restoreApplePurchases()">
-        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></div>
-        <div class="sr-copy"><b>Restore purchases</b><span>Sync an existing App Store plan</span></div>
-        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-      <div class="mogly-settings-divider"></div>
-      <button class="mogly-settings-row" type="button" onclick="window.open('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/','_blank','noopener')">
-        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></div>
-        <div class="sr-copy"><b>Terms of use</b><span>Subscription and service terms</span></div>
-        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-      <div class="mogly-settings-divider"></div>
-      <button class="mogly-settings-row" type="button" onclick="window.open('https://facemaxaiapp.com/privacy','_blank','noopener')">
-        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg></div>
-        <div class="sr-copy"><b>Privacy policy</b><span>How your data is handled</span></div>
-        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-      <div class="mogly-settings-divider"></div>
-      <button class="mogly-settings-row" type="button" onclick="window.open('https://facemaxaiapp.com/support','_blank','noopener')">
-        <div class="sr-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg></div>
-        <div class="sr-copy"><b>Support</b><span>Questions, billing and feedback</span></div>
-        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-    </div>
-
-    <!-- Your Data Card -->
-    <div class="mogly-big-card">
-      <div class="mogly-card-head">
-        <div class="mogly-card-icon" style="background: rgba(255, 69, 58, 0.16); border-color: rgba(255, 69, 58, 0.35); color: #FF453A;">
-          <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg>
-        </div>
-        <div class="mogly-card-titles">
-          <span class="mogly-card-title" data-i18n="prof_data_title">Your Data</span>
-          <span class="mogly-card-sub" data-i18n="prof_data_sub">Account &amp; History</span>
-        </div>
-      </div>
-      <button class="mogly-settings-row danger" type="button" onclick="confirmClearScanHistory()">
-        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg></div>
-        <div class="sr-copy"><b>Clear scan history</b><span>Remove scores and progress data</span></div>
-        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-      <div class="mogly-settings-divider"></div>
-      <button class="mogly-settings-row danger" type="button" onclick="confirmDeleteAccount()">
-        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg></div>
-        <div class="sr-copy"><b>Delete account</b><span>Permanently remove all app data</span></div>
-        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-    </div>
+    <button type="button" class="pf-row" onclick="openGoalPreferences()">
+      <span class="pf-ico pf-ico-blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>
+      <span class="pf-row-copy"><b>Goals</b><small id="goalPrefsSummary">Personalize your daily plan</small></span>
+      <svg class="pf-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
   </div>
+
+  <div class="pf-list">
+    <button type="button" class="pf-row" onclick="pfRestorePurchases(this)">
+      <span class="pf-ico pf-ico-green"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></span>
+      <span class="pf-row-copy"><b>Restore Purchases</b></span>
+      <svg class="pf-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <button type="button" class="pf-row" onclick="fmOpenExternal('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')">
+      <span class="pf-ico pf-ico-gray"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg></span>
+      <span class="pf-row-copy"><b>Terms of Use</b></span>
+      <svg class="pf-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <button type="button" class="pf-row" onclick="fmOpenExternal('https://facemaxaiapp.com/privacy')">
+      <span class="pf-ico pf-ico-gray"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg></span>
+      <span class="pf-row-copy"><b>Privacy Policy</b></span>
+      <svg class="pf-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+    <button type="button" class="pf-row" onclick="fmOpenExternal('https://facemaxaiapp.com/support')">
+      <span class="pf-ico pf-ico-gray"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg></span>
+      <span class="pf-row-copy"><b>Support</b></span>
+      <svg class="pf-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+  </div>
+
+  <!-- Account -->
+  <div class="pf-section-title">Account</div>
+  <div class="pf-list">
+    <button type="button" class="pf-row" onclick="pfCopyUserId()">
+      <span class="pf-row-copy"><b>User ID</b><small class="pf-mono" id="profileUid">--</small></span>
+      <span class="pf-row-meta">Copy</span>
+    </button>
+    <button type="button" class="pf-row pf-danger" onclick="confirmClearScanHistory()">
+      <span class="pf-row-copy"><b>Clear Scan History</b></span>
+    </button>
+    <button type="button" class="pf-row pf-danger" onclick="confirmDeleteAccount()">
+      <span class="pf-row-copy"><b>Delete Account</b></span>
+    </button>
+  </div>
+  <div class="pf-footer">Mogly · Made for your daily glow-up</div>
 </section>
 
 <div id="goalPrefsModal" class="goal-prefs-modal hidden" onclick="if(event.target===this)closeGoalPreferences()">
@@ -6426,6 +6575,9 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
       <button class="btn" id="timerStartBtn" onclick="toggleTimer()"><svg class="btn-ico" viewBox="0 0 24 24"><path d="m8 5 12 7-12 7z"/></svg><span>Start timer</span></button>
       <button class="timer-reset-v4" onclick="resetTimer()" aria-label="Reset timer"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg></button>
     </div>
+    <button type="button" class="ed-coach-voice is-on" id="edCoachVoiceBtn" aria-pressed="true" onclick="setMoglyCoachVoice(this.getAttribute('aria-pressed') !== 'true')">
+      <svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg><span>Voice coach on</span>
+    </button>
   </div>
 
   <div class="steps-card-v4"><div class="section-title-v4"><div><span>Technique</span><h3>How to do it</h3></div></div><div class="ed-steps" id="edSteps"></div></div>
@@ -6450,7 +6602,7 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
   <button class="nav active mogly-nav-item" data-screen="home" onclick="openScreen('home')" id="moglyNavHomeBtn" aria-label="Home">
     <svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9z"/></svg>
   </button>
-  <button class="nav mogly-nav-item" data-screen="exercises" onclick="openExercises(true)" id="moglyNavExercisesBtn" aria-label="Exercises">
+  <button class="nav mogly-nav-item" data-screen="exercises" onclick="openExercises()" id="moglyNavExercisesBtn" aria-label="Exercises">
     <svg viewBox="0 0 24 24"><path d="M6 5v14M18 5v14M2 9v6M22 9v6M6 12h12"/></svg>
   </button>
   <button class="nav mogly-nav-item" data-screen="profile" onclick="openScreen('profile')" id="moglyNavProfileBtn" aria-label="Profile">
@@ -6470,6 +6622,16 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
 </div>
 
 <!-- ==================== MOGLY VOICE OVERLAY (liquid glass) ==================== -->
+<div class="mdc-celebrate" id="mdcCelebrate" hidden role="dialog" aria-modal="true" aria-labelledby="mdcCelebrateTitle">
+  <div class="mdc-celebrate-card">
+    <div class="mdc-celebrate-flame" aria-hidden="true">🔥</div>
+    <div class="mdc-celebrate-num" id="mdcCelebrateNum">7</div>
+    <div class="mdc-celebrate-title" id="mdcCelebrateTitle">7-day streak</div>
+    <p class="mdc-celebrate-line" id="mdcCelebrateLine"></p>
+    <button type="button" class="mdc-celebrate-primary" id="mdcCelebrateRescan" onclick="moglyCloseCelebrate(true)">Rescan my face</button>
+    <button type="button" class="mdc-celebrate-secondary" onclick="moglyCloseCelebrate(false)">Keep going</button>
+  </div>
+</div>
 <div class="mv-overlay" id="mvOverlay" data-state="idle" role="dialog" aria-modal="true" aria-label="Mogly voice mentor">
   <div class="mv-top">
     <div class="mv-title">Mogly</div>
@@ -6634,6 +6796,7 @@ window.hasUnlockedAccess = hasUnlockedAccess;
 // "stuck on paywall" bug).
 function markPremiumActiveLocally(untilMs){
   premium = true;
+  try { _premiumConfirmedAt = Date.now(); } catch {}
   premiumUntil = untilMs || premiumUntil || null;
   try { localStorage.setItem("FACEMAX_QUIZ_UNLOCKED", "1"); } catch {}
   try { localStorage.setItem("FACEMAX_PREMIUM_CONFIRMED_AT", String(Date.now())); } catch {}
@@ -8291,10 +8454,10 @@ window.openGlowUpHub = async function(_premiumChecked) {
     const metricsSection = el("ghMetricsSection");
     const metricsGrid = el("ghMetricsGrid");
     const m = last.metrics || {};
-    // Potential (Glow-up score) — не приходит в metrics, считаем как на экране результата
+    // Potential (Glow-up score) is not part of metrics; compute it like the result screen does
     const _ghOverallScore = Number(last.score) || 0;
     m.potential = Math.min(100, Math.round(_ghOverallScore + 9));
-    // Те же метрики что показываются на экране результата face scan (Lips заменён на Potential)
+    // Same metrics as on the face scan result screen (Lips replaced with Potential)
     const METRIC_DEFS = [
       { key: "jawline",    label: "Jawline",    icon: "💎" },
       { key: "potential",  label: "Potential",  icon: "🚀" },
@@ -8402,7 +8565,7 @@ window.openGlowUpHub = async function(_premiumChecked) {
 
       const mNew = newest.metrics || {};
       const mOld = previous.metrics || {};
-      // Potential (Glow-up score) не хранится в metrics — считаем как на экране результата
+      // Potential (Glow-up score) is not stored in metrics; compute it like the result screen does
       mNew.potential = Math.min(100, Math.round((Number(newest.score) || 0) + 9));
       mOld.potential = Math.min(100, Math.round((Number(previous.score) || 0) + 9));
       const DELTA_DEFS = [
@@ -8922,14 +9085,31 @@ let _premiumCheckInFlight = null;
 let _gateOpenSeq = 0;
 
 function dropGateFromHistory(){
-  if (_screenHistory[_screenHistory.length - 1] === "gate") _screenHistory.pop();
+  while (_screenHistory.length && (_screenHistory[_screenHistory.length - 1] === "gate" || _screenHistory[_screenHistory.length - 1] === "quizPaywall" || _screenHistory[_screenHistory.length - 1] === "prePay")) {
+    _screenHistory.pop();
+  }
 }
+
+// After a successful purchase / restore with nothing to resume: leave every
+// paywall in one navigation and scrub paywall + onboarding screens from the
+// back stack, so Back can never land on a paywall again.
+const FM_PAYWALL_STACK_SCREENS = new Set(["gate", "quizPaywall", "prePay", "quiz", "quizResult", "quizAnalyze", "capture", "genderSelect", "loading"]);
+function fmDismissPaywallAfterUnlock(){
+  _pendingPremiumAction = null;
+  for (let i = _screenHistory.length - 1; i >= 0; i--) {
+    if (FM_PAYWALL_STACK_SCREENS.has(_screenHistory[i])) _screenHistory.splice(i, 1);
+  }
+  document.documentElement.classList.remove("fm-quiz-active");
+  const prev = _screenHistory.pop() || "home";
+  openScreen(prev);
+}
+window.fmDismissPaywallAfterUnlock = fmDismissPaywallAfterUnlock;
 
 window.closePremiumGate = function(){
   _pendingPremiumAction = null;
   dropGateFromHistory();
   const prev = _screenHistory[_screenHistory.length - 1] || "home";
-  openScreen(prev);
+  openScreen(prev === "gate" || prev === "quizPaywall" || prev === "prePay" ? "home" : prev);
 };
 
 window.showGate = function(title, text, resumeAction){
@@ -8967,12 +9147,19 @@ function isLocalPremiumActive(){
 }
 window.isLocalPremiumActive = isLocalPremiumActive;
 
+// Last time RevenueCat/backend confirmed an active entitlement. Lets paid taps
+// open instantly instead of waiting on a fresh network round-trip every time.
+let _premiumConfirmedAt = 0;
+const PREMIUM_RECHECK_MS = 10 * 60 * 1000;
+const PREMIUM_TAP_WAIT_MS = 2500;
+
 function runSharedPremiumCheck(){
   // Sharing an in-flight promise prevents several rapid taps from stacking
   // RevenueCat/backend requests.
   if (!_premiumCheckInFlight) {
     _premiumCheckInFlight = Promise.resolve()
       .then(() => checkPremium(false))
+      .then(active => { if (active) _premiumConfirmedAt = Date.now(); return active; })
       .catch(() => false)
       .finally(() => { _premiumCheckInFlight = null; });
   }
@@ -8997,9 +9184,21 @@ async function ensurePremiumForAction(resumeAction, title, text){
     });
     return false;
   }
-  // Locally premium: confirm with a fresh RevenueCat check so an expired
-  // subscription can't keep using a stale in-memory flag.
-  const active = await runSharedPremiumCheck();
+  // Locally premium and confirmed recently: open right away, refresh quietly.
+  if (Date.now() - _premiumConfirmedAt < PREMIUM_RECHECK_MS) {
+    runSharedPremiumCheck();
+    return true;
+  }
+  // Otherwise confirm with RevenueCat so an expired subscription can't keep
+  // using a stale flag, but never freeze the tap: after 2.5 s trust the local
+  // entitlement and let the check finish in the background (checkPremium
+  // clears `premium` if it really expired, so the next tap is gated).
+  const check = runSharedPremiumCheck();
+  const active = await Promise.race([
+    check,
+    new Promise(resolve => setTimeout(() => resolve("timeout"), PREMIUM_TAP_WAIT_MS)),
+  ]);
+  if (active === "timeout") return isLocalPremiumActive();
   if (active) return true;
   showGate(title, text, resumeAction);
   return false;
@@ -9287,40 +9486,107 @@ function renderProfileScreen(){
   _profileHistoryExpanded = false;
   const uid = currentUserId();
   el("profileName").textContent = "You";
-  el("profileUid").textContent = "ID: " + uid;
-  const pci = el("profileCurrentId"); if (pci) pci.textContent = uid;
+  el("profileUid").textContent = uid || "--";
   // Restore the user's saved profile picture (if any).
   try {
     const saved = localStorage.getItem(PROFILE_AVATAR_KEY);
     if (saved) applyProfileAvatar(saved);
   } catch {}
-  if (premium) {
-    el("statusBadge").className = "status-badge active";
-    el("statusBadge").innerHTML = `<svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6" stroke="currentColor" fill="none"/></svg><span>Premium active</span>`;
-    el("profileUpgrade").style.display = "none";
-    if (premiumUntil) {
-      el("premiumUntilBlock").classList.remove("hidden");
-      el("premiumUntilDate").textContent = fmtDate(premiumUntil);
-    }
+  const isPro = !!premium || (typeof isLocalPremiumActive === "function" && isLocalPremiumActive());
+  const card = el("pfPlanCard");
+  if (card) card.setAttribute("data-pro", isPro ? "1" : "0");
+  const sub = el("pfPlanSub"), btn = el("pfPlanBtn"), title = el("pfPlanTitle");
+  if (isPro) {
+    if (title) title.textContent = "Mogly Pro";
+    if (sub) sub.textContent = premiumUntil ? ("Active · renews " + fmtDate(premiumUntil)) : "Active";
+    if (btn) btn.textContent = "Manage Subscription";
+    el("statusBadge").className = "status-badge active hidden";
+    if (premiumUntil) el("premiumUntilDate").textContent = fmtDate(premiumUntil);
   } else {
-    // v2: don't label non-premium users as "Free" — only show the
-    // Premium-active badge after purchase. Until then the badge stays empty.
+    if (title) title.textContent = "Mogly Pro";
+    if (sub) sub.textContent = "Face scans, daily exercises and your voice coach";
+    if (btn) btn.textContent = "Unlock Mogly Pro";
     el("statusBadge").className = "status-badge free hidden";
-    el("statusBadge").innerHTML = "";
-    el("profileUpgrade").style.display = "";
-    el("premiumUntilBlock").classList.add("hidden");
   }
-  const best = scanHistory.length ? Math.max(...scanHistory.map(h => h.score)) : 0;
-  const avg = scanHistory.length ? Math.round(scanHistory.reduce((a,b) => a + b.score, 0) / scanHistory.length) : 0;
+  const best = scanHistory.length ? Math.max(...scanHistory.map(h => Number(h.score) || 0)) : 0;
   el("statBest").textContent = best ? best : "--";
-  el("statAvg").textContent = avg ? avg : "--";
-  el("statScans").textContent = scanHistory.length || "--";
+  el("statScans").textContent = scanHistory.length || "0";
+  const st = el("pfStatStreak");
+  if (st) st.textContent = String(moglyStreakCount());
+  if (typeof window.setMoglyVoiceGender === "function" && typeof window.getMoglyVoiceGender === "function") {
+    window.setMoglyVoiceGender(window.getMoglyVoiceGender(), { silent: true });
+  }
   renderProgressChart();
   renderProfileHistory();
   refreshNotifSettings();
   refreshGoalPreferencesSummary();
   renderGenderSetting();
 }
+
+// The daily ritual is the 4 exercises; a day counts when all of them are done.
+// Profile, the voice brief and the streak celebrations all read this one number.
+function moglyStreakCount(){
+  try { return exerciseStreakCount(); } catch { return 0; }
+}
+window.moglyStreakCount = moglyStreakCount;
+
+// External links: SFSafariViewController via @capacitor/browser on iOS
+// (window.open is silently dropped by WKWebView), a new tab on the web.
+window.fmOpenExternal = async function(url){
+  try { if (window.facemax && window.facemax.haptic) window.facemax.haptic("light"); } catch {}
+  try {
+    const Browser = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser;
+    if (Browser && typeof fmIsNative === "function" && fmIsNative()) {
+      await Browser.open({ url, presentationStyle: "popover" });
+      return;
+    }
+  } catch (e) { console.warn("[facemax] Browser.open failed", e); }
+  const w = window.open(url, "_blank", "noopener");
+  if (!w) location.href = url;
+};
+
+// Apple ID subscription management: RevenueCat's native sheet first, then the
+// App Store account page (Capacitor hands non-app URLs to UIApplication.open).
+window.fmManageSubscription = async function(){
+  try { if (window.facemax && window.facemax.haptic) window.facemax.haptic("light"); } catch {}
+  try {
+    const P = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases;
+    if (P && typeof P.showManageSubscriptions === "function" && typeof fmIsNative === "function" && fmIsNative()) {
+      await P.showManageSubscriptions();
+      return;
+    }
+  } catch (e) { console.warn("[facemax] showManageSubscriptions failed", e); }
+  if (typeof fmIsNative === "function" && fmIsNative()) location.href = "https://apps.apple.com/account/subscriptions";
+  else window.fmOpenExternal("https://apps.apple.com/account/subscriptions");
+};
+
+window.pfPlanAction = function(){
+  const isPro = !!premium || (typeof isLocalPremiumActive === "function" && isLocalPremiumActive());
+  if (isPro) { window.fmManageSubscription(); return; }
+  showGate("Mogly Pro", "Unlock face scans, the daily exercise program and your voice coach.", () => openScreen("profile"));
+};
+
+window.pfRestorePurchases = async function(btn){
+  if (btn && btn.getAttribute("aria-busy") === "true") return;
+  if (btn) btn.setAttribute("aria-busy", "true");
+  try { await window.restoreApplePurchases(); }
+  finally {
+    if (btn) btn.removeAttribute("aria-busy");
+    if (fmActiveScreenId() === "profile") renderProfileScreen();
+  }
+};
+
+window.pfCopyUserId = async function(){
+  const uid = currentUserId() || "";
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(uid);
+    else throw new Error("no clipboard");
+    showToast("User ID copied", 1600);
+  } catch {
+    showToast("ID: " + uid, 3500);
+  }
+  try { if (window.facemax && window.facemax.haptic) window.facemax.haptic("selection"); } catch {}
+};
 
 function renderGenderSetting(){
   const g = getSavedGender();
@@ -9508,7 +9774,7 @@ function _fmInboxMetaForId(id, extra){
   if (extra && extra.route) return { route:String(extra.route), type:String(extra.inboxType || "plan") };
   if (n === ids.RESCAN_7D || n === ids.WINBACK_7D || n === ids.WINBACK_14D) return { route:"upload", type:"scan" };
   if (n === ids.STREAK || n === ids.EVENING || n === ids.WINBACK_3D) return { route:"glowupHub", type:"streak" };
-  if (n === ids.DAILY) return { route:"glowupHub", type:"plan" };
+  if (n === ids.DAILY) return { route:"home", type:"plan" };
   if (n >= 1300 && n < 1400) return { route:"daily", type:"achievement" };
   return { route:"home", type:"plan" };
 }
@@ -9516,7 +9782,7 @@ function fmInboxAdd(item){
   if (!item || !item.title) return null;
   const ts = Number(item.ts) || Date.now();
   const meta = _fmInboxMetaForId(item.notifId, item.extra || {});
-  const title = String(item.title || "FaceMax AI");
+  const title = String(item.title || "Mogly");
   const body = String(item.body || "");
   const key = String(item.key || `os:${Number(item.notifId)||0}:${_fmInboxDayKey(ts)}:${title}:${body}`);
   const items = fmInboxLoad();
@@ -9569,16 +9835,16 @@ function renderNotificationInbox(){
   const host = el("notificationInboxList"); if (!host) return;
   const items = fmInboxLoad();
   const unread = items.filter(x => x && !x.read).length;
-  const sub = el("notificationInboxSub"); if (sub) sub.textContent = unread ? `${unread} unread · reminders and progress updates` : "Your FaceMax reminders and progress updates";
+  const sub = el("notificationInboxSub"); if (sub) sub.textContent = unread ? `${unread} unread · reminders and progress updates` : "Your Mogly reminders and progress updates";
   const mark = el("notificationMarkAll"); if (mark) mark.style.visibility = unread ? "visible" : "hidden";
   if (!items.length) {
-    host.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">${_fmInboxIcon("plan")}</div><b>No updates yet</b><span>Your streak reminders, re-scan nudges and important FaceMax updates will appear here.</span></div>`;
+    host.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">${_fmInboxIcon("plan")}</div><b>No updates yet</b><span>Your streak reminders, re-scan nudges and important Mogly updates will appear here.</span></div>`;
     updateNotificationBadges(); return;
   }
   host.innerHTML = items.map((it,idx) => `<button type="button" class="notif-item${it.read?'':' unread'}" onclick="openNotificationItem(${idx})">`
     + `${it.read?'':'<span class="notif-unread-dot"></span>'}`
     + `<span class="notif-item-icon ${escapeHtml(it.type||'plan')}">${_fmInboxIcon(it.type)}</span>`
-    + `<span class="notif-item-copy"><span class="notif-item-title">${escapeHtml(it.title||'FaceMax AI')}</span><span class="notif-item-body">${escapeHtml(it.body||'')}</span><span class="notif-item-time">${escapeHtml(_fmInboxTimeLabel(it.ts))}</span></span>`
+    + `<span class="notif-item-copy"><span class="notif-item-title">${escapeHtml(it.title||'Mogly')}</span><span class="notif-item-body">${escapeHtml(it.body||'')}</span><span class="notif-item-time">${escapeHtml(_fmInboxTimeLabel(it.ts))}</span></span>`
     + `<svg class="notif-item-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>`).join("");
   updateNotificationBadges();
 }
@@ -9588,10 +9854,11 @@ function fmInboxMarkAllRead(){
 window.fmInboxMarkAllRead = fmInboxMarkAllRead;
 function _fmInboxNavigate(route){
   const r = String(route || "home");
-  if (r === "glowupHub") { if (typeof window.openGlowUpHub === "function") return window.openGlowUpHub(); return openScreen("home"); }
-  if (r === "upload") return openScreen("upload");
+  if (r === "exercises" || r === "daily" || r === "glowupHub") {
+    if (typeof window.openExercises === "function") return window.openExercises();
+    return openScreen("exercises");
+  }
   if (r === "profile") return openScreen("profile");
-  if (r === "daily") { if (typeof window.openDailyHub === "function") return window.openDailyHub(); return openScreen("daily"); }
   return openScreen("home");
 }
 function openNotificationItem(index){
@@ -9607,7 +9874,7 @@ async function fmInboxSyncDelivered(){
       const id = Number(n && n.id);
       if (!(id >= 1000 && id < 2000)) return;
       const meta = _fmInboxMetaForId(id, n.extra || {});
-      fmInboxAdd({ key:n?.extra?.inboxKey || undefined, notifId:id, title:n.title || "FaceMax AI", body:n.body || "", extra:n.extra || {}, route:meta.route, type:meta.type, ts:Date.now() });
+      fmInboxAdd({ key:n?.extra?.inboxKey || undefined, notifId:id, title:n.title || "Mogly", body:n.body || "", extra:n.extra || {}, route:meta.route, type:meta.type, ts:Date.now() });
     });
   } catch {}
 }
@@ -9694,7 +9961,7 @@ async function toggleDailyReminder(on){
     const perm = await window.facemax.notif.requestPermission();
     if (!perm || perm.display !== "granted") {
       const toggle = el("notifDailyToggle"); if (toggle) toggle.checked = false;
-      showToast("Enable notifications in iOS Settings → FaceMax AI: Glow Up Lab");
+      showToast("Enable notifications in iOS Settings → Mogly");
       return;
     }
     prefs.dailyOn = true;
@@ -9739,8 +10006,16 @@ function _fmBuildNotifContext(){
       progressTotal = (typeof _guGetPlanTotal === "function") ? _guGetPlanTotal() : 6;
     }
   } catch {}
+  // The daily ritual is now the 4 face exercises: reminders count those, so
+  // the push copy, Profile and Mogly's voice all quote the same streak.
+  let exStreak = streak;
+  try {
+    exStreak = (typeof moglyStreakCount === "function") ? moglyStreakCount() : streak;
+    progressDone = readExerciseDoneToday().size;
+    progressTotal = FACE_EXERCISES.length;
+  } catch {}
   const startedToday = progressDone > 0;
-  const completedToday = momentum ? momentum.completedToday : (progressTotal > 0 && progressDone >= progressTotal);
+  const completedToday = progressTotal > 0 && progressDone >= progressTotal;
   const lastScanTs = (scanHistory && scanHistory.length) ? scanHistory[0].date : null;
   const daysSinceScan = lastScanTs ? _fmDaysSince(new Date(lastScanTs).toISOString()) : Infinity;
   const hasEverScanned = !!(scanHistory && scanHistory.length);
@@ -9751,11 +10026,11 @@ function _fmBuildNotifContext(){
   } catch {}
   const reminderFocus = _fmReminderFocus();
   return {
-    streak, startedToday, completedToday, progressDone, progressTotal,
+    streak: exStreak, startedToday, completedToday, progressDone, progressTotal,
     daysSinceScan, hasEverScanned, daysSinceFood, reminderFocus,
-    atRisk: momentum ? momentum.atRisk : false,
-    left: momentum ? momentum.left : Math.max(0, progressTotal - progressDone),
-    minsLeft: momentum ? momentum.minsLeft : 5,
+    atRisk: exStreak > 0 && !completedToday,
+    left: Math.max(0, progressTotal - progressDone),
+    minsLeft: Math.max(1, Math.ceil(Math.max(0, progressTotal - progressDone) * 0.5)),
     commitmentMinutes: momentum ? _guGetCommitmentMinutes() : 5,
     brokenCount: momentum ? momentum.brokenCount : 0,
   };
@@ -9769,9 +10044,9 @@ function _fmPickMorningMessage(ctx){
     return { title: "Your glow-up starts here ✨", body: "Take your first face scan — takes 30 seconds." };
   }
   const generic = [
-    { title: "Today's plan is ready ✨", body: `A focused ${Math.max(1, Number(ctx.commitmentMinutes) || 5)}-minute ${ctx.reminderFocus} session is waiting.` },
-    { title: "Keep the momentum going", body: `Open today's ${ctx.reminderFocus} plan and close the day.` },
-    { title: "One day at a time ✨", body: `Today's ${ctx.reminderFocus} plan is ready when you are.` },
+    { title: "Your morning brief is ready", body: "Mogly has today's debloat brief. Then 4 moves, 2 minutes." },
+    { title: "Drain the overnight puff 💧", body: "Cold water, tongue on the palate, then your 4 face exercises." },
+    { title: "2 minutes for your jawline", body: "Four guided moves with Mogly. Same time every day wins." },
   ];
   return generic[new Date().getDay() % generic.length];
 }
@@ -9780,7 +10055,7 @@ function _fmPickEveningMessage(ctx){
   const left = Math.max(1, ctx.left || (ctx.progressTotal - ctx.progressDone));
   if (ctx.atRisk && ctx.startedToday) {
     return {
-      title: `${left} ${left === 1 ? "step" : "steps"} to save your streak 🔥`,
+      title: `${left} ${left === 1 ? "exercise" : "exercises"} to save your streak 🔥`,
       body: `Finish before midnight to lock in Day ${ctx.streak + 1}.`
     };
   }
@@ -9792,20 +10067,20 @@ function _fmPickEveningMessage(ctx){
   }
   if (ctx.startedToday && !ctx.completedToday) {
     return {
-      title: "Finish today's plan 💪",
-      body: `${left} ${left === 1 ? "step" : "steps"} left in today's ${ctx.reminderFocus} plan.`
+      title: "Finish today's exercises 💪",
+      body: `${left} ${left === 1 ? "move" : "moves"} left. Mogly will talk you through ${left === 1 ? "it" : "them"}.`
     };
   }
   if (ctx.brokenCount >= 2 && ctx.streak === 0) {
     return {
       title: "The comeback can start tonight",
-      body: `One completed plan restarts your streak from Day 1.`
+      body: `Four exercises, two minutes, and your streak restarts from Day 1.`
     };
   }
   if (ctx.daysSinceScan >= 10) {
-    return { title: "Long time no scan 👀", body: "Quick re-scan when you're ready — your plan will update from it." };
+    return { title: "Time for your weekly rescan 👀", body: "Same light, same angle. Mogly will audit what changed." };
   }
-  return { title: "Still time today", body: `Open your ${ctx.reminderFocus} plan and finish one useful session.` };
+  return { title: "Still time today", body: "Your 4 face exercises take two minutes. Mogly is ready." };
 }
 
 function _fmPickLastChanceMessage(ctx){
@@ -9813,8 +10088,8 @@ function _fmPickLastChanceMessage(ctx){
   return {
     title: `${ctx.streak}-day streak: last call 🔥`,
     body: ctx.startedToday
-      ? `${left} ${left === 1 ? "step" : "steps"} left. Finish before midnight to secure Day ${ctx.streak + 1}.`
-      : `Your streak is still alive for tonight. Open the plan before midnight.`
+      ? `${left} ${left === 1 ? "exercise" : "exercises"} left. Finish before midnight to secure Day ${ctx.streak + 1}.`
+      : `Your streak is still alive for tonight. Two minutes is enough.`
   };
 }
 
@@ -9841,7 +10116,7 @@ async function scheduleRetentionPack(){
     hour: reminderHour, minute: reminderMinute,
     title: morning.title,
     body: morning.body,
-    extra: { route:"glowupHub", inboxType:"plan" },
+    extra: { route:"home", inboxType:"plan" },
   });
 
   // Evening reminder — one-shot for TODAY only. Never carry today's stale
@@ -9986,17 +10261,16 @@ function renderProgressChart(){
     .map(h => ({ ...h, score: Math.max(0, Math.min(100, Number(h.score))) }));
 
   let isTrajectory = false;
-  const isRu = (window._currentLang === "ru") || (localStorage.getItem("mogly_lang") === "ru");
 
   if (!pts.length) {
     isTrajectory = true;
     const now = Date.now();
     pts = [
-      { score: 74, date: new Date(now - 86400000 * 14).toISOString(), label: isRu ? "Старт" : "Start" },
-      { score: 79, date: new Date(now - 86400000 * 10).toISOString(), label: isRu ? "Неделя 1" : "Week 1" },
+      { score: 74, date: new Date(now - 86400000 * 14).toISOString(), label: "Start" },
+      { score: 79, date: new Date(now - 86400000 * 10).toISOString(), label: "Week 1" },
       { score: 83, date: new Date(now - 86400000 * 7).toISOString(), label: "Debloat" },
       { score: 88, date: new Date(now - 86400000 * 3).toISOString(), label: "Jawline" },
-      { score: 92, date: new Date(now).toISOString(), label: isRu ? "Текущий" : "Current" }
+      { score: 92, date: new Date(now).toISOString(), label: "Current" }
     ];
   }
 
@@ -10008,8 +10282,8 @@ function renderProgressChart(){
   const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${xScale(i).toFixed(1)},${yScale(p.score).toFixed(1)}`).join(" ");
   const area = `${path} L${xScale(pts.length - 1).toFixed(1)},${(PAD_T + innerH).toFixed(1)} L${xScale(0).toFixed(1)},${(PAD_T + innerH).toFixed(1)} Z`;
   const dots = pts.map((p, i) => {
-    const dateStr = p.date ? new Date(p.date).toLocaleDateString(isRu ? "ru-RU" : "en-US", { month:"short", day:"numeric" }) : "";
-    const timeStr = p.date ? new Date(p.date).toLocaleTimeString(isRu ? "ru-RU" : "en-US", { hour:"numeric", minute:"2-digit" }) : "";
+    const dateStr = p.date ? new Date(p.date).toLocaleDateString("en-US", { month:"short", day:"numeric" }) : "";
+    const timeStr = p.date ? new Date(p.date).toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" }) : "";
     const tip = [Math.round(p.score), dateStr + (timeStr ? " · " + timeStr : "")].filter(Boolean).join("|");
     return `<circle cx="${xScale(i).toFixed(1)}" cy="${yScale(p.score).toFixed(1)}" r="4.8" fill="#00C2FF" stroke="#001833" stroke-width="2" data-tip="${tip}" onclick="chartShowTip(this,event)"/>`;
   }).join("");
@@ -10029,10 +10303,10 @@ function renderProgressChart(){
     ? `<path d="${area}" fill="url(#chartGrad)"/><path d="${path}" stroke="#00C2FF" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px rgba(0,194,255,0.7));"/>`
     : "";
 
-  const titleText = isRu ? "Прогресс эстетики" : "Progress";
+  const titleText = "Progress";
   const subText = isTrajectory
-    ? (isRu ? "Траектория трансформации · 74 → 92" : "Glow-up trajectory · 74 → 92")
-    : (isRu ? `Все сканы: ${pts.length}` : `All ${pts.length} scans`);
+    ? ("Glow-up trajectory · 74 → 92")
+    : (`All ${pts.length} scans`);
 
   wrap.innerHTML = `<div class="chart-hdr">
       <div class="chart-title-wrap"><div class="chart-title">${titleText}</div><div class="chart-period">${subText}</div></div>
@@ -10049,9 +10323,9 @@ function renderProgressChart(){
       ${gridLines}${lineAndArea}${dots}${labels}
     </svg>
     <div class="chart-foot">
-      <span>${isTrajectory ? (isRu ? "Старт" : "Start") : fmtDateShort(first.date)}</span>
-      <span>${isTrajectory ? (isRu ? "5 этапов" : "5 stages") : pts.length + (isRu ? " сканов" : " scans")}</span>
-      <span>${isTrajectory ? (isRu ? "Цель (92)" : "Target (92)") : fmtDateShort(last.date)}</span>
+      <span>${isTrajectory ? ("Start") : fmtDateShort(first.date)}</span>
+      <span>${isTrajectory ? ("5 stages") : pts.length + (" scans")}</span>
+      <span>${isTrajectory ? ("Target (92)") : fmtDateShort(last.date)}</span>
     </div>`;
 }
 
@@ -10746,8 +11020,8 @@ function startScanBars(){
       } else if (elapsed > 0){
         b.cur += (b.softCap - b.cur) * 0.022;
       }
-      // Цвет обновляем каждый кадр — иначе при переходе к реальному значению
-      // бар резко меняет цвет с пурпурного на зелёный/жёлтый (вспышка/затемнение).
+      // Update the color every frame, otherwise the bar jumps from purple to
+      // green/yellow when it reaches the real value (flash/darkening).
       if (b.fill && b.cur > 0) b.fill.style.background = scanBarColor(b.cur);
       if (b.fill) b.fill.style.width = b.cur.toFixed(1) + "%";
       if (b.pct) b.pct.textContent = Math.round(b.cur) + "%";
@@ -10945,7 +11219,7 @@ window.startScan = async function(_premiumChecked){
       });
     });
 
-    // Запросить отзыв на 3-м+ скане с хорошим результатом (Bug 6)
+    // Ask for a review on the 3rd+ scan with a good result (Bug 6)
     const scanCount = scanHistory ? scanHistory.length : 0;
     if (scanCount >= 3) {
       setTimeout(function () {
@@ -10983,7 +11257,6 @@ function retryAnalysis(){
 }
 /* Resilient On-Device Clinical Biometric Synthesis (Guarantees zero crashes / failures) */
 function generateResilientBiometrics(imageDataUrl) {
-  const isRu = (typeof _currentLang !== "undefined" ? _currentLang === "ru" : false);
   const str = String(imageDataUrl || "facemax-default-seed");
   let hash = 0;
   const len = str.length;
@@ -11016,26 +11289,18 @@ function generateResilientBiometrics(imageDataUrl) {
       harmony: harmony,
       improvement_potential: Math.min(98, overall + 9)
     },
-    summary: isRu 
-      ? "Сильная костная структура нижней челюсти и выразительный canthal tilt. Умеренная задержка воды сглаживает гониальный угол."
-      : "Strong mandibular bone structure with positive canthal tilt. Mild water retention softens the gonial angle.",
+    summary: "Strong mandibular bone structure with positive canthal tilt. Mild water retention softens the gonial angle.",
     fastest_upgrade: {
-      title: isRu ? "Деблоатинг и контуринг" : "Debloating Protocol",
-      text: isRu 
-        ? "Снижение задержки натрия контрастным душем и лимфодренажный массаж подбородка добавят +4 балла к челюсти."
-        : "Targeted sodium management and lymphatic drainage along the jawline will add +4 points."
+      title: "Debloating Protocol",
+      text: "Targeted sodium management and lymphatic drainage along the jawline will add +4 points."
     },
-    jawline: isRu 
-      ? `Выразительный гониальный угол, хорошая костная проекция подбородка (${jaw}/100). Рекомендуется контроль осанки и лимфодренаж.`
-      : `Sharp mandibular angle with strong chin projection (${jaw}/100). Maintain upright neck posture.`,
-    skin: isRu 
-      ? `Ровный тон кожи (${skin}/100). Рекомендуется поддержание гидробаланса и крем с гиалуроновой кислотой.`
-      : `Even complexion (${skin}/100). Maintain daily hydration and lightweight barrier moisturizer.`,
+    jawline: `Sharp mandibular angle with strong chin projection (${jaw}/100). Maintain upright neck posture.`,
+    skin: `Even complexion (${skin}/100). Maintain daily hydration and lightweight barrier moisturizer.`,
     weak_points: [
-      { title: isRu ? "Утренняя отёчность" : "Morning Water Retention", text: isRu ? "Задержка жидкости в щечной зоне" : "Mild puffiness along buccinator muscles" }
+      { title: "Morning Water Retention", text: "Mild puffiness along buccinator muscles" }
     ],
     strengths: [
-      { title: isRu ? "Костная база челюсти" : "Mandibular Base", text: isRu ? "Мужественный выразительный угол подбородка" : "Clean gonial angle and forward chin projection" }
+      { title: "Mandibular Base", text: "Clean gonial angle and forward chin projection" }
     ],
     _ai_source: "openrouter"
   };
@@ -11219,15 +11484,14 @@ async function fetchGeminiScan(imageDataUrl, _mpScore, _mpMetrics){
 /* Face shape label for the result screen and the voice mentor. Uses the AI/landmark
  * label when there is one, otherwise reads it from the jaw vs cheekbone balance. */
 const MOGLY_FACE_SHAPES = {
-  oval:    { en: "Oval",    ru: "Овальная" },
-  round:   { en: "Round",   ru: "Круглая" },
-  square:  { en: "Square",  ru: "Квадратная" },
-  heart:   { en: "Heart",   ru: "Сердцевидная" },
-  diamond: { en: "Diamond", ru: "Ромбовидная" },
-  oblong:  { en: "Oblong",  ru: "Вытянутая" },
+  oval:    { en: "Oval" },
+  round:   { en: "Round" },
+  square:  { en: "Square" },
+  heart:   { en: "Heart" },
+  diamond: { en: "Diamond" },
+  oblong:  { en: "Oblong" },
 };
 function moglyFaceShapeFor(metrics, report){
-  const isRu = (typeof _currentLang !== "undefined" && _currentLang === "ru");
   let key = null;
   const raw = (report && typeof report.face_shape === "string" && report.face_shape) || "";
   const k = raw.toLowerCase();
@@ -11242,7 +11506,7 @@ function moglyFaceShapeFor(metrics, report){
       key = d >= 5 ? "square" : d <= -7 ? "heart" : d <= -4 ? "diamond" : (jaw + cheek) / 2 >= 72 ? "oval" : "round";
     } else key = "oval";
   }
-  return { key, label: MOGLY_FACE_SHAPES[key][isRu ? "ru" : "en"] };
+  return { key, label: MOGLY_FACE_SHAPES[key]["en"] };
 }
 window.moglyFaceShapeFor = moglyFaceShapeFor;
 
@@ -11303,7 +11567,7 @@ function paintResultV2(score, computedMetrics, aiReport){
     return "linear-gradient(90deg,#EF4444,#FB923C)";
   }
   // Reset all bars to 0 synchronously first, so CSS transition always plays from 0→value.
-  // Также скрываем грид метрик чтобы не было видно тёмных/пустых баров пока экран появляется.
+  // Also hide the metric grid so empty dark bars never show while the screen appears
   const _metricGrid = el("resultMetricGrid");
   if (_metricGrid) { _metricGrid.style.opacity = "0"; _metricGrid.style.transition = "none"; }
   for (const [, , , , , barId] of tiles) {
@@ -11339,7 +11603,7 @@ function paintResultV2(score, computedMetrics, aiReport){
           bar.style.background = barColor(v);
         }
       }
-      // Показываем грид плавно уже с заполненными значениями — никакого тёмного мелькания
+      // Fade the grid in with values already filled, no dark flash
       if (_metricGrid) {
         _metricGrid.style.transition = "opacity 0.3s ease";
         _metricGrid.style.opacity = "1";
@@ -12065,7 +12329,7 @@ window.openReport = async function(silent, _premiumChecked, _retried){
 };
 
 function renderReport(report, source){
-  el("reportSource").textContent = "FaceMax AI: Glow Up Lab";
+  el("reportSource").textContent = "Mogly";
   const sc = Math.max(1, Math.min(100, Number(report.overall_score || lastScanScore || 72)));
   // Sync the canonical score: AI tools, history, profile stats all key off lastScanScore.
   lastScanScore = sc;
@@ -12150,7 +12414,7 @@ window.checkPremium = async function(showAlert = false){
     const data = await res.json();
     fmLog("info", "checkPremium status:", { status: res.status, data, nativeStatus, forcePaywall, quizUnlocked });
     const serverPremium = !!(data.active || data.premium);
-    const serverUntil = data.premium_until || data.premium_до || null;
+    const serverUntil = data.premium_until || null;
 
     if (nativeStatus && nativeStatus.ok) {
       // Native active/inactive status wins for the paywall. Keep the server
@@ -12245,15 +12509,12 @@ window.restoreApplePurchases = async function(){
         if (typeof quizResumePendingScan === "function") {
           try { resumed = !!quizResumePendingScan(); } catch {}
         }
-        // Restore can be tapped directly on prePay/quizPaywall without a pending
-        // scan. In that case explicitly leave the paywall after success.
-        const activeScreen = document.querySelector(".screen.active");
-        const activeScreenId = activeScreen && activeScreen.id;
-        const isQuizPaywallOpen = activeScreenId === "prePay" || activeScreenId === "quizPaywall";
-        if (!resumed && isQuizPaywallOpen && typeof quizPaywallClose === "function") {
-          quizPaywallClose();
-        } else if (!resumed && activeScreenId === "gate") {
-          await resumePendingPremiumAction();
+        if (!resumed) {
+          if (_pendingPremiumAction) {
+            await resumePendingPremiumAction();
+          } else {
+            fmDismissPaywallAfterUnlock();
+          }
         }
         setTimeout(() => { checkPremium(false).catch(() => {}); }, 3000);
       } else if (res && res.error === "nothing_to_restore") {
@@ -12272,8 +12533,8 @@ window.restoreApplePurchases = async function(){
     const isPremium = await checkPremium(false);
     if (isPremium) {
       showToast(wasPremium ? "Premium is active" : "Premium restored!", 3000);
-      const activeScreen = document.querySelector(".screen.active");
-      if (activeScreen && activeScreen.id === "gate") await resumePendingPremiumAction();
+      if (_pendingPremiumAction) await resumePendingPremiumAction();
+      else if (FM_PAYWALL_STACK_SCREENS.has(fmActiveScreenId())) fmDismissPaywallAfterUnlock();
     } else {
       showToast("No active Premium found on this account", 3500);
     }
@@ -12342,8 +12603,11 @@ async function _handlePurchaseInternal(plan){
   else if (raw === "weekly" || raw === "starter") plan = "weekly";
   else plan = "monthly";
   if (premium) {
-    const activeScreen = document.querySelector(".screen.active");
-    if (activeScreen && activeScreen.id === "gate") await resumePendingPremiumAction();
+    if (_pendingPremiumAction) {
+      await resumePendingPremiumAction();
+    } else {
+      fmDismissPaywallAfterUnlock();
+    }
     return true;
   }
 
@@ -12364,13 +12628,13 @@ async function _handlePurchaseInternal(plan){
         // if checkPremium() fires before the RevenueCat webhook lands on the server.
         try { localStorage.setItem("FACEMAX_QUIZ_UNLOCKED", "1"); } catch {}
         showToast("Premium activated ✓", 3500);
+        try { if (window.facemax && window.facemax.haptic) window.facemax.haptic("success"); } catch {}
         applyPremiumToResult();
-        // Purchases started from the generic feature gate do not pass through
-        // quizCheckout(), so close that gate here after RevenueCat confirms the
-        // entitlement. Quiz paywalls keep using their pending-scan resume flow.
-        const activeScreen = document.querySelector(".screen.active");
-        if (activeScreen && activeScreen.id === "gate") {
+        // Immediately dismiss the paywall and resume action or open home
+        if (_pendingPremiumAction) {
           await resumePendingPremiumAction();
+        } else {
+          fmDismissPaywallAfterUnlock();
         }
         // The RevenueCat entitlement is already active. Do not keep the paywall
         // open while the backend mirror retries in the background.
@@ -12773,24 +13037,22 @@ function renderDailyAchievements() {
 }
 
 window.openDailyHub = async function(_premiumChecked){
-  if (!_premiumChecked) {
-    const ok = await ensurePremiumForAction(
-      () => window.openDailyHub(true),
-      "Daily debloat — Premium",
-      "Choose a plan to continue with your daily glow-up tools."
-    );
-    if (!ok) return;
-  }
-  refreshDailyGreeting();
-  refreshDailyTiles();
-  renderDailyAchievements();
-  openScreen("daily");
+  if (typeof window.openExercises === "function") return window.openExercises(_premiumChecked);
+  openScreen("exercises");
 };
 
 /* === v2: history tab — show every scan the user has done so far.
  * Reuses the same `scanHistory` list that powers Home's "Recent scans"
  * and the Profile screen's history strip, but renders the full list. */
-window.openHistoryScreen = function(){
+window.openHistoryScreen = async function(_premiumChecked){
+  if (!_premiumChecked) {
+    const ok = await ensurePremiumForAction(
+      () => window.openHistoryScreen(true),
+      "Scan History — Pro",
+      "Unlock complete scan history and biometric progress tracking."
+    );
+    if (!ok) return;
+  }
   openScreen("history");
   renderHistoryFull();
 };
@@ -14280,13 +14542,12 @@ function renderExerciseList(){
   // Hero pill
   const pill = el("exerciseHeroPillText");
   if (pill) {
-    const isRu = (localStorage.getItem("facemax_lang") || navigator.language || "").toLowerCase().startsWith("ru");
     if (doneCount >= total) {
-      pill.textContent = isRu ? "Все 4 упражнения выполнены!" : "All 4 exercises completed today!";
+      pill.textContent = "All 4 exercises completed today!";
     } else if (doneCount > 0) {
-      pill.textContent = isRu ? `${doneCount} из 4 выполнено · 2 мин` : `${doneCount} of 4 completed · 2 min`;
+      pill.textContent = `${doneCount} of 4 completed · 2 min`;
     } else {
-      pill.textContent = isRu ? "4 ежедневных упражнения · 2 мин" : "4 Daily Exercises · 2 Min Total";
+      pill.textContent = "4 Daily Exercises · 2 Min Total";
     }
   }
   // Safe fallback for legacy elements
@@ -14296,9 +14557,12 @@ function renderExerciseList(){
   // List
   const list = el("exercisesList");
   if (!list) return;
+  // Release the old thumbnails' decoders before the list is rebuilt; detached
+  // playing <video>s otherwise linger until GC.
+  list.querySelectorAll("video").forEach(v => { try { v.pause(); v.removeAttribute("src"); v.load(); } catch {} });
   list.innerHTML = FACE_EXERCISES.map(e => {
     const isDone = done.has(e.id);
-    return `<div class="exercise-tile ${isDone ? "ex-done" : ""}" onclick="openExerciseDetail('${e.id}')">
+    return `<div class="exercise-tile ${isDone ? "ex-done" : ""}" onclick="openExerciseDetail('${e.id}', true)">
       <div class="ex-step-num">${e.step}</div>
       <div class="exercise-thumb">
         <video autoplay loop muted playsinline preload="metadata" src="${e.video}" style="width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;"></video>
@@ -14339,29 +14603,42 @@ window.markExerciseDone = function(id){
   const arr = Array.isArray(log[k]) ? log[k].slice() : [];
   if (!arr.includes(id)) arr.push(id);
   log[k] = arr; writeExerciseLog(log);
-  if (arr.length >= FACE_EXERCISES.length) showToast("All exercises done — excellent!");
+  const dayComplete = arr.length >= FACE_EXERCISES.length;
+  if (dayComplete) showToast("All 4 done — streak secured 🔥");
   else showToast("Exercise done ✓");
   renderExerciseList();
   renderExerciseWeekTracker();
   refreshDailyTiles();
   try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch {}
+  // Tonight's streak reminder must not fire once the day is secured.
+  if (dayComplete) { try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch {} }
+  if (dayComplete && typeof window.moglyOnDayComplete === "function") {
+    setTimeout(() => { try { window.moglyOnDayComplete(); } catch {} }, 700);
+  }
 };
 
-window.openExerciseDetail = function(id){
+window.openExerciseDetail = function(id, _premiumChecked){
   const e = FACE_EXERCISES.find(x => x.id === id); if (!e) return;
+  // Reachable from the voice overlay and notifications, not only from the
+  // gated list, so it carries its own Premium check.
+  if (!_premiumChecked && !isLocalPremiumActive()) {
+    showGate("Exercise program — Premium", "Choose a plan to continue with your daily exercise program.", () => window.openExerciseDetail(id, true));
+    return;
+  }
   currentExerciseId = id;
   el("edArea").textContent = e.area;
   el("edTitle").textContent = e.step + ". " + e.name;
   const edTitleTopbar = el("edTitleTopbar");
   if (edTitleTopbar) {
-    const isRu = (localStorage.getItem("facemax_lang") || navigator.language || "").toLowerCase().startsWith("ru");
-    edTitleTopbar.textContent = isRu ? "Упражнение" : "Exercise";
+    edTitleTopbar.textContent = "Exercise";
   }
   const edVideo = el("edVideo");
   if (edVideo) {
-    edVideo.src = e.video;
-    edVideo.play().catch(() => {});
+    if (edVideo.getAttribute("src") !== e.video) edVideo.setAttribute("src", e.video);
+    try { edVideo.currentTime = 0; } catch {}
+    const pr = edVideo.play(); if (pr && pr.catch) pr.catch(() => {});
   }
+  if (typeof window.moglyCoachRenderToggle === "function") window.moglyCoachRenderToggle();
   el("edDesc").textContent = "💡 " + e.desc;
   el("edSteps").innerHTML = e.steps.map((s, i) => `<div class="step"><div class="step-n">${i+1}</div><div class="step-t">${escapeHtml(s)}</div></div>`).join("");
   // Show/hide done button
@@ -14377,14 +14654,20 @@ window.openExerciseDetail = function(id){
 function fmtClock(s){ const m = Math.floor(s/60); const r = s%60; return m + ":" + String(r).padStart(2,"0"); }
 
 window.toggleTimer = function(){
-  if (timerId) { clearInterval(timerId); timerId = null; updateTimerBtn("Resume"); return; }
-  // Start or resume
-  if (timerRemaining <= 0) {
-    const e = FACE_EXERCISES.find(x => x.id === currentExerciseId); if (!e) return;
-    timerTotal = e.seconds; timerRemaining = e.seconds;
+  if (timerId) {
+    clearInterval(timerId); timerId = null; updateTimerBtn("Resume");
+    if (typeof window.moglyCoachStop === "function") window.moglyCoachStop();
+    return;
   }
+  const e = FACE_EXERCISES.find(x => x.id === currentExerciseId); if (!e) return;
+  // Start or resume
+  const fresh = timerRemaining <= 0 || timerRemaining >= timerTotal;
+  if (timerRemaining <= 0) { timerTotal = e.seconds; timerRemaining = e.seconds; }
   updateTimerBtn("Pause");
   el("timerSub").textContent = "Hold the move";
+  try { if (window.facemax && window.facemax.haptic) window.facemax.haptic("medium"); } catch {}
+  if (typeof window.moglyCoachCue === "function") window.moglyCoachCue(fresh ? "start" : "resume", e);
+  const half = Math.floor(timerTotal / 2);
   timerId = setInterval(() => {
     timerRemaining--;
     if (timerRemaining <= 0) {
@@ -14393,15 +14676,29 @@ window.toggleTimer = function(){
       el("timerSub").textContent = "Nice work";
       el("timerRing").style.setProperty("--tp", 100);
       updateTimerBtn("Restart");
+      try { if (window.facemax && window.facemax.haptic) window.facemax.haptic("heavy"); } catch {}
       // Auto-mark as done when timer finishes
       if (currentExerciseId) markExerciseDone(currentExerciseId);
+      if (typeof window.moglyCoachCue === "function") window.moglyCoachCue("done", e);
       const doneBtn = el("edMarkDoneBtn"); if (doneBtn) doneBtn.style.display = "none";
       return;
+    }
+    if (timerRemaining === half && typeof window.moglyCoachCue === "function") window.moglyCoachCue("mid", e);
+    if (timerRemaining === 5) {
+      if (typeof window.moglyCoachCue === "function") window.moglyCoachCue("last5", e);
+      try { if (window.facemax && window.facemax.haptic) window.facemax.haptic("light"); } catch {}
     }
     el("timerTxt").textContent = fmtClock(timerRemaining);
     const pct = Math.round((timerTotal - timerRemaining) / timerTotal * 100);
     el("timerRing").style.setProperty("--tp", pct);
   }, 1000);
+};
+// Leaving the exercise screen pauses the timer instead of letting it run (and
+// auto-complete) in the background.
+window.pauseExerciseTimer = function(){
+  if (!timerId) return;
+  clearInterval(timerId); timerId = null;
+  updateTimerBtn("Resume");
 };
 window.onMarkExerciseDone = function(){
   if (!currentExerciseId) return;
@@ -14411,7 +14708,7 @@ window.onMarkExerciseDone = function(){
   const done = readExerciseDoneToday();
   const nextEx = FACE_EXERCISES.find(e => !done.has(e.id));
   if (nextEx) {
-    setTimeout(() => openExerciseDetail(nextEx.id), 600);
+    setTimeout(() => openExerciseDetail(nextEx.id, true), 600);
   } else {
     setTimeout(() => openExercises(true), 600);
   }
@@ -15100,89 +15397,7 @@ const QUIZ_STEPS_EN = [
   },
 ];
 
-const QUIZ_STEPS_RU = [
-  // 0 — Welcome / Intro
-  {
-    type: "intro",
-    emoji: "🗿",
-    eyebrow: "MOGLY AI",
-    title: "Твой персональный ИИ-протокол эстетики.",
-    sub: "Ответь на <b>5 быстрых вопросов</b>, чтобы рассчитать персональный план сушки, обострения челюсти и взгляда охотника.",
-    cta: "Начать протокол",
-    next: () => quizGoTo(1),
-  },
-  // 1 — Возраст & Гормональный профиль
-  {
-    type: "single",
-    key: "age",
-    eyebrow: "Шаг 1 из 5",
-    title: "Твой возраст и категория?",
-    sub: "Каждый возраст требует разного баланса андрогенов, питания и механики челюсти.",
-    options: [
-      { e: "⚡", v: "13-17", t: "13–17 лет", d: "Базовый рост челюсти, осанка, профилактика сколиоза" },
-      { e: "🔥", v: "18-24", t: "18–24 года", d: "Пиковый тестостерон, быстрый рельеф скул и челюсти" },
-      { e: "💼", v: "25-34", t: "25–34 года", d: "Мужской статус, плотный овал, защита от утренних отеков" },
-      { e: "🗿", v: "35+",   t: "35+ лет",   d: "Антивозрастной тонус кожи, лимфодренаж и деблоат" },
-    ],
-  },
-  // 2 — Главная цель
-  {
-    type: "single",
-    key: "goals",
-    eyebrow: "Шаг 2 из 5",
-    title: "Главный фокус на 30 дней?",
-    sub: "Выбери ключевую метрику, на которую будет направлен ежедневный протокол.",
-    options: [
-      { e: "🗿", v: "jawline", t: "Острая челюсть & скулы", d: "Гониальный угол, мьюинг, сушка подбородка" },
-      { e: "💧", v: "debloat", t: "Сгон отеков & Debloat", d: "Слив натрия, лимфодренаж, четкий овал лица" },
-      { e: "⚡", v: "eyes",    t: "Взгляд охотника & симметрия", d: "Кантальный наклон, убрать темные круги" },
-      { e: "🔥", v: "glowup",  t: "Полный Glow-Up (Mogly)", d: "Комплексная трансформация по всем 478 точкам лица" },
-    ],
-  },
-  // 3 — Главная проблема прямо сейчас
-  {
-    type: "single",
-    key: "concerns",
-    eyebrow: "Шаг 3 из 5",
-    title: "Что больше всего портит лицо?",
-    sub: "Честный ответ позволит убрать первопричину за первые 7 дней.",
-    options: [
-      { e: "⭕", v: "round",     t: "Мягкий, размытый овал", d: "Нет четкой границы между шеей и челюстью" },
-      { e: "💧", v: "bloating",  t: "Утренние отеки", d: "Лицо одутловатое после сна и соленой еды" },
-      { e: "👀", v: "eyebags",   t: "Мешки и темные круги", d: "Уставший взгляд, запавшие подглазья" },
-      { e: "🐢", v: "posture",   t: "Выдвинутая шея и подбородок", d: "Смартфонная шея скрадывает угол челюсти на 20%" },
-    ],
-  },
-  // 4 — Привычки и рацион
-  {
-    type: "single",
-    key: "routine",
-    eyebrow: "Шаг 4 из 5",
-    title: "Твой текущий режим питания?",
-    sub: "80% одутловатости лица зависит от натрия и водно-солевого баланса.",
-    options: [
-      { e: "🧂", v: "junk",     t: "Много соленого / фастфуд", d: "Частая задержка натрия и жидкости" },
-      { e: "💧", v: "low_water",t: "Пью мало чистой воды", d: "Организм запасает воду в тканях лица" },
-      { e: "💻", v: "sedentary",t: "Много сижу за экраном", d: "Зажим шейного отдела и застой лимфы" },
-      { e: "🥗", v: "balanced", t: "В целом нормальный", d: "Нужен четкий структурированный ИИ-план" },
-    ],
-  },
-  // 5 — Интенсивность
-  {
-    type: "single",
-    key: "commitment",
-    eyebrow: "Шаг 5 из 5",
-    title: "Сколько времени готов уделять?",
-    sub: "Регулярность важнее перегрузок. Мы составим план под твой график.",
-    options: [
-      { e: "⏱️", v: "5",  t: "5 мин / день · Экспресс-старт", d: "Базовый деблоат-массаж и контроль натрия" },
-      { e: "⚡", v: "15", t: "15 мин / день · Оптимальный режим", d: "Мьюинг + упражнения на челюсть + рацион" },
-      { e: "🏆", v: "25", t: "25 мин / день · Hardcore Mogly", d: "Максимальная трансформация и глубокий протокол" },
-    ],
-  },
-];
-
-let QUIZ_STEPS = (localStorage.getItem("mogly_lang") === "ru") ? QUIZ_STEPS_RU : QUIZ_STEPS_EN;
+let QUIZ_STEPS = QUIZ_STEPS_EN;
 
 let quizState = { step: 0, answers: {} };
 try { const _raw = localStorage.getItem(QUIZ_KEY); if (_raw) quizState = Object.assign(quizState, JSON.parse(_raw)); } catch {}
@@ -15938,7 +16153,7 @@ function quizRender(){
   const totalQ = countableSteps.length;
   if (step.type !== "intro" && step.type !== "signin") {
     const stepNumber = QUIZ_STEPS.slice(0, quizState.step + 1).filter(s => s.type !== "intro" && s.type !== "signin").length;
-    step.eyebrow = (window._currentLang === "ru") ? ("Шаг " + stepNumber + " из " + totalQ) : ("Step " + stepNumber + " of " + totalQ);
+    step.eyebrow = ("Step " + stepNumber + " of " + totalQ);
   }
 
   if (step.type === "intro") {
@@ -15956,7 +16171,7 @@ function quizRender(){
       </div>
       <div class="quiz-cta">
         <button class="btn btn-welcome-cta" onclick="quizHaptic();quizGoTo(1)">${quizEsc(step.cta)} →</button>
-        <div class="quiz-cta-note">${(window._currentLang === "ru") ? "Без регистрации. Фото пока не требуется." : "No signup. No photo upload yet."}</div>
+        <div class="quiz-cta-note">${"No signup. No photo upload yet."}</div>
         <p class="quiz-legal-note">By continuing, you agree to our <a href="https://facemaxaiapp.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms of Use</a>.</p>
       </div>`;
     // Typewriter effect on the title
@@ -16007,7 +16222,7 @@ function quizRender(){
       <p class="quiz-sub">${step.sub}</p>
       <div class="quiz-options">${optionsHtml}</div>
       <div class="quiz-cta">
-        <button class="btn" id="quizContBtn" ${canContinue ? "" : "disabled"} onclick="quizContinue()">${(window._currentLang === "ru") ? "Продолжить" : "Continue"} →</button>
+        <button class="btn" id="quizContBtn" ${canContinue ? "" : "disabled"} onclick="quizContinue()">${"Continue"} →</button>
       </div>`;
     return;
   }
@@ -17070,7 +17285,7 @@ window.shareResultCard = async function() {
         <!-- Branding footer -->
         <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:20px;">
           ${window._fmLogoImg ? `<img src="${window._fmLogoImg.src}" style="width:28px;height:28px;border-radius:7px;display:block;flex-shrink:0;" crossorigin="anonymous">` : `<div style="width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#007AFF,#00C2FF);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='5'/><path d='M3 21c0-4.418 4.03-8 9-8s9 3.582 9 8'/></svg></div>`}
-          <span style="font-size:14px;font-weight:700;letter-spacing:.01em;color:#fff;">FaceMax AI: Glow Up Lab</span>
+          <span style="font-size:14px;font-weight:700;letter-spacing:.01em;color:#fff;">Mogly</span>
         </div>
       </div>`;
 
@@ -17223,7 +17438,7 @@ window.downloadResultCard = async function() {
   img.onload = function() { window._fmLogoImg = img; };
   img.onerror = function() { window._fmLogoImg = null; };
   // Try same-origin asset path first; native Capacitor serves from bundle root.
-  img.src = "assets/logo.png";
+  img.src = "assets/app_icon.png";
 })();
 
 (function(){
@@ -17293,7 +17508,7 @@ window.downloadResultCard = async function() {
 <script>
   // Paste your RevenueCat iOS key (appl_...) here before submitting to App Store.
   // Must not be empty in production builds — see Fix notes in CHANGELOG.
-  // ⚠️  ВАЖНО: вставьте PRODUCTION ключ RevenueCat (appl_...) — тестовый ключ (test_...) НЕ работает в TestFlight!
+  // IMPORTANT: use the PRODUCTION RevenueCat key (appl_...); a test key (test_...) does NOT work in TestFlight!
   // RevenueCat Dashboard → Project Settings → API Keys → App-specific → iOS
   window.FACEMAX_REVENUECAT_API_KEY = "appl_najSElZgKcUrHaOrJuCQfcFbXpg";
 </script>
@@ -17484,7 +17699,7 @@ window.downloadResultCard = async function() {
 </defs></svg>
 
 
-<script>(function(){try{function syncScoreBar(){try{var line=document.querySelector('#result .score-bar-line');var marker=document.getElementById('resultScoreMarker');if(!line||!marker)return;var w=marker.style.left||'0%';line.style.setProperty('--bar-w',w);}catch(_){}}setInterval(syncScoreBar,300);}catch(e){}})();
+<script>(function(){try{function syncScoreBar(){try{var line=document.querySelector('#result .score-bar-line');var marker=document.getElementById('resultScoreMarker');if(!line||!marker)return;var w=marker.style.left||'0%';line.style.setProperty('--bar-w',w);}catch(_){}}setInterval(function(){var r=document.getElementById('result');if(r&&r.classList.contains('active')&&!document.hidden)syncScoreBar();},300);}catch(e){}})();
 // ── Face mesh scan animation ──────────────────────────────────────────────────
 let _meshAnimRaf = null;
 let _meshFading = false;
@@ -17496,7 +17711,7 @@ function stopMeshAnim() {
   _meshFading = false; _meshFadeStart = null;
 }
 
-// Плавное затухание — вызывается когда скан завершён
+// Smooth fade-out, called when the scan has finished
 function fadeOutMeshAnim() {
   if (!_meshAnimRaf) return;
   if (_meshFading) return;
@@ -17529,7 +17744,7 @@ function _runFakeMeshAnim(canvas, totalDur) {
     const elapsed = now - startT;
     ctx.clearRect(0, 0, W, H);
 
-    // Затухание только по внешнему сигналу (fadeOutMeshAnim)
+    // Fade out only on an external signal (fadeOutMeshAnim)
     let alpha = 1;
     if (_meshFading && _meshFadeStart) {
       const t = Math.min(1, (now - _meshFadeStart) / _MESH_FADE_DUR);
@@ -17713,7 +17928,9 @@ window.selectInternalPlan = function(plan) {
 // renderStoreKitPrices() fills from StoreKit), never hardcoded — otherwise the
 // card can say 12.99 € while the button still says $14.99.
 function internalPlanPriceText(plan){
-  var node = document.querySelector('[data-internal-plan="' + plan + '"] [data-price-plan="' + plan + '"]');
+  var cards = Array.from(document.querySelectorAll('.ipw-plan-v4'));
+  var targetCard = cards.find(function(c){ return c.getAttribute('data-internal-plan') === plan; });
+  var node = targetCard ? targetCard.querySelector('[data-price-plan="' + plan + '"]') : null;
   var txt = node ? String(node.textContent || '').trim() : '';
   return (txt && txt !== '\u2026') ? txt : '';
 }
@@ -17814,80 +18031,35 @@ window.syncTDEEChoiceUI = function() {
       offtopic_refusal: "I am your dedicated mentor for facial aesthetics and looksmaxxing. Let's stay focused on optimizing your appearance. What would you like to improve — your jawline, eye area, haircut, or skin?",
       debrief_male: "Scan complete. Strong 121-degree gonial angle and positive canthal tilt detected — textbook hunter eyes. Your bone structure sits in the top 5th percentile. However, mild subcutaneous water retention in the lower cheek plane is softening your mandibular definition by roughly 15%. I recommend initiating the 3-day debloat protocol to flush excess sodium.",
       debrief_female: "Scan complete. Outstanding facial harmony and compact midface ratio in the top 2% tier. High cheekbone projection gives excellent structural support. Primary optimization: gentle lymphatic drainage along the jawline to enhance perimeter definition."
-    },
-    ru: {
-      brand_subtitle: "ИИ ЛУКСМАКС",
-      nav_home: "Главная",
-      nav_profile: "Профиль",
-      status_ready: "БИОМЕТРИЯ ГОТОВА",
-      status_cam_active: "КАМЕРА АКТИВНА · ЛИЦО В ЦЕНТР",
-      status_scanning: "РАСЧЕТ СИММЕТРИИ И УГЛОВ ЛИЦА...",
-      status_complete: "● ВЕРИФИКАЦИЯ MOGLY ПРОЙДЕНА",
-      btn_scan_face: "СКАНИРОВАТЬ ЛИЦО",
-      btn_scan_history: "ИСТОРИЯ СКАНОВ",
-      btn_take_photo: "СДЕЛАТЬ ФОТО",
-      btn_gallery: "ЗАГРУЗИТЬ ИЗ ГАЛЕРЕИ",
-      vc_title: "Mogly ИИ Ментор",
-      vc_badge: "ГОЛОСОВОЙ ВЕРДИКТ",
-      vc_listen_hint: "Слушать полный разбор лица голосом (0:28)",
-      metric_overall: "ОБЩИЙ БАЛЛ",
-      tier_top1: "ТОП 1% TIER",
-      metric_jawline: "ГОНИАЛЬНЫЙ УГОЛ",
-      tier_chiseled: "РЕЛЬЕФ ЧЕЛЮСТИ",
-      metric_canthal: "CANTHAL TILT",
-      tier_hunter: "HUNTER EYES",
-      metric_debloat: "ПРОТОКОЛ ДЕБЛОАТИНГА",
-      tier_sodium: "БАЛАНС НАТРИЯ",
-      prof_lang_title: "Язык",
-      prof_lang_sub: "Интерфейс и голос",
-      prof_voice_title: "Голос",
-      prof_voice_sub: "ИИ Ментор",
-      prof_pref_title: "Настройки",
-      prof_pref_sub: "Уведомления и цели",
-      prof_legal_title: "Подписка и данные",
-      prof_legal_sub: "App Store и конфиденциальность",
-      prof_data_title: "Управление данными",
-      prof_data_sub: "История и аккаунт",
-      assistant_speaking: "Mogly говорит...",
-      assistant_ready: "Готов ответить на вопросы",
-      assistant_listening: "AI Ментор по лицу",
-      transcript_tag: "БИОМЕТРИЧЕСКИЙ РАЗБОР",
-      btn_replay: "Повторить голос",
-      qa_chips_label: "Быстрые вопросы ментору по внешности:",
-      chip_debloat: "💦 Как быстро убрать отек с лица?",
-      chip_jawline: "📐 Как сделать угол челюсти острее?",
-      chip_haircut: "💈 Какая стрижка подойдет под мое лицо?",
-      chip_eyes: "👁️ Как усилить контраст Hunter Eyes?",
-      input_placeholder: "Спроси о внешности, челюсти или уходе...",
-      offtopic_refusal: "Я твой персональный ментор по внешности и эстетике лица. Давай сосредоточимся на твоем луксмаксинге. Что именно во внешности разберем — челюсть, скулы, глаза или уход за кожей?",
-      debrief_male: "Анализ завершен. Зафиксирован отличный угол челюсти 121 градус и выраженный положительный наклон глаз — hunter eyes. Твоя костная база входит в топ-5 процентов. Однако в нижней трети щек выявлена умеренная задержка жидкости, скрывающая рельеф челюсти на 15 процентов. Рекомендую сбалансировать натрий и запустить деблоатинг.",
-      debrief_female: "Анализ завершен. Превосходная гармония лица и компактная средняя треть на уровне топ-2 процента. Высокие скулы обеспечивают сильную поддержку контура. Главная рекомендация: легкий лимфодренажный массаж по контуру нижней челюсти."
     }
   };
 
   let _currentLang = "en";
   try { localStorage.setItem("mogly_lang", "en"); } catch(e) {}
   window._currentLang = "en";
-  let _voiceGender = localStorage.getItem("mogly_voice_gender") || "male";
-  let _heroGender = "male";
+  let _voiceGender = (function() {
+    try {
+      const v = localStorage.getItem("mogly_voice_gender");
+      if (v === "male" || v === "female") return v;
+      const g = localStorage.getItem("fm_gender") || localStorage.getItem("facemax_gender");
+      return g === "female" ? "female" : "male";
+    } catch (e) { return "male"; }
+  })();
+  let _heroGender = _voiceGender;
   let _cameraStream = null;
   let _moglyVoiceSpeaking = false;
   let _waveAnimId = null;
   let _speechRecognition = null;
   let _isRecordingVoice = false;
 
-  // Apply Language to UI
-  window.setMoglyLanguage = function(lang) {
-    _currentLang = (lang === "ru" || lang === "en") ? lang : "en";
-    window._currentLang = _currentLang;
-    try { localStorage.setItem("mogly_lang", _currentLang); } catch(e) {}
+  // English-only UI (US / global). Kept as a function because init and older
+  // call sites still invoke it; it only re-applies the English copy.
+  window.setMoglyLanguage = function() {
+    _currentLang = "en";
+    window._currentLang = "en";
+    try { localStorage.setItem("mogly_lang", "en"); localStorage.removeItem("facemax_lang"); } catch(e) {}
 
-    const btnEn = document.getElementById("moglyLangBtnEn");
-    const btnRu = document.getElementById("moglyLangBtnRu");
-    if (btnEn) btnEn.classList.toggle("active", _currentLang === "en");
-    if (btnRu) btnRu.classList.toggle("active", _currentLang === "ru");
-
-    const dict = MOGLY_I18N[_currentLang] || MOGLY_I18N.en;
+    const dict = MOGLY_I18N.en;
     document.querySelectorAll("[data-i18n]").forEach(el => {
       const key = el.getAttribute("data-i18n");
       if (dict[key]) el.textContent = dict[key];
@@ -17896,25 +18068,14 @@ window.syncTDEEChoiceUI = function() {
     const inp = document.getElementById("moglyVoiceTextInput");
     if (inp && dict.input_placeholder) inp.placeholder = dict.input_placeholder;
 
-    // Update active transcript debrief
     const transcriptEl = document.getElementById("moglyTranscriptText");
     if (transcriptEl) {
       transcriptEl.textContent = _heroGender === "female" ? dict.debrief_female : dict.debrief_male;
     }
 
-    // Update listening label
     const listeningLabel = document.getElementById("moglyListeningLabel");
     if (listeningLabel && dict.assistant_listening) {
       listeningLabel.textContent = dict.assistant_listening;
-    }
-
-    // Update QUIZ_STEPS dynamically
-    if (typeof QUIZ_STEPS_RU !== "undefined" && typeof QUIZ_STEPS_EN !== "undefined") {
-      QUIZ_STEPS = (_currentLang === "ru") ? QUIZ_STEPS_RU : QUIZ_STEPS_EN;
-      const quizScreen = document.getElementById("quiz");
-      if (typeof quizRender === "function" && quizScreen && quizScreen.classList.contains("active")) {
-        quizRender();
-      }
     }
 
     if (typeof window.setMoglyHomeButtonsState === "function") {
@@ -17924,24 +18085,32 @@ window.syncTDEEChoiceUI = function() {
     }
   };
 
-  // Voice Gender Selection
-  window.setMoglyVoiceGender = function(gender) {
+  // Voice Gender Selection. The coach voice only drives the timbre (Onyx / Nova)
+  // and the coach avatar in the Home square. It must NOT touch the user's own
+  // gender (fm_gender), which the face analysis and haircut advice read.
+  window.setMoglyVoiceGender = function(gender, opts) {
     _voiceGender = (gender === "female") ? "female" : "male";
     try { localStorage.setItem("mogly_voice_gender", _voiceGender); } catch(e) {}
-    try { if (typeof window.changeGender === "function") window.changeGender(_voiceGender); } catch(e) {}
 
-    const btnMale = document.getElementById("moglyVoiceBtnMale");
-    const btnFemale = document.getElementById("moglyVoiceBtnFemale");
-    if (btnMale) btnMale.classList.toggle("active", _voiceGender === "male");
-    if (btnFemale) btnFemale.classList.toggle("active", _voiceGender === "female");
+    document.querySelectorAll("[data-voice-gender]").forEach(btn => {
+      const on = btn.getAttribute("data-voice-gender") === _voiceGender;
+      btn.classList.toggle("active", on);
+      btn.setAttribute("aria-checked", on ? "true" : "false");
+    });
+    const seg = document.getElementById("pfVoiceSeg");
+    if (seg) seg.setAttribute("data-active", _voiceGender);
 
-    if (window.facemax && typeof window.facemax.haptic === "function") {
+    // Coach avatar follows the voice: male voice -> male model, female -> female.
+    if (typeof window.setMoglyHeroGender === "function") window.setMoglyHeroGender(_voiceGender, { silent: true });
+
+    if (!(opts && opts.silent) && window.facemax && typeof window.facemax.haptic === "function") {
       window.facemax.haptic("selection");
     }
   };
+  window.getMoglyVoiceGender = function() { return _voiceGender; };
 
   // Example Model Switcher (Male / Female in Square)
-  window.setMoglyHeroGender = function(gender) {
+  window.setMoglyHeroGender = function(gender, opts) {
     _heroGender = (gender === "female") ? "female" : "male";
     const btnMale = document.getElementById("mgtBtnMale");
     const btnFemale = document.getElementById("mgtBtnFemale");
@@ -17949,28 +18118,37 @@ window.syncTDEEChoiceUI = function() {
     if (btnMale) btnMale.classList.toggle("active", _heroGender === "male");
     if (btnFemale) btnFemale.classList.toggle("active", _heroGender === "female");
 
-    const heroImg = document.getElementById("moglySquareHeroImg");
-    if (heroImg) {
-      heroImg.src = _heroGender === "female" ? "assets/hero_female.jpg" : "assets/hero_male.jpg";
-    }
+    window.updateMoglySquareHeroPhoto();
 
-    const dict = MOGLY_I18N[_currentLang] || MOGLY_I18N.en;
+    const dict = MOGLY_I18N.en;
     const transcriptEl = document.getElementById("moglyTranscriptText");
     if (transcriptEl) {
       transcriptEl.textContent = _heroGender === "female" ? dict.debrief_female : dict.debrief_male;
     }
 
-    if (window.facemax && typeof window.facemax.haptic === "function") {
+    if (!(opts && opts.silent) && window.facemax && typeof window.facemax.haptic === "function") {
       window.facemax.haptic("light");
     }
   };
 
-  // The square hero viewfinder on Home ALWAYS displays the stock model image
+  // The square hero viewfinder on Home shows the coach model that matches the
+  // selected voice. Swapping is a short crossfade so it never flashes.
   window.updateMoglySquareHeroPhoto = function() {
     const heroImg = document.getElementById("moglySquareHeroImg");
     if (!heroImg) return;
-    heroImg.src = (_heroGender === "female") ? "assets/hero_female.jpg" : "assets/hero_male.jpg";
+    const want = (_heroGender === "female") ? "assets/hero_female.jpg" : "assets/hero_male.jpg";
     heroImg.style.display = "block";
+    if ((heroImg.getAttribute("src") || "") === want) return;
+    const swap = () => {
+      heroImg.setAttribute("src", want);
+      const show = () => { heroImg.classList.remove("is-swapping"); };
+      if (heroImg.complete) requestAnimationFrame(show);
+      else heroImg.addEventListener("load", show, { once: true });
+      setTimeout(show, 400);
+    };
+    if (heroImg.offsetParent === null) { heroImg.setAttribute("src", want); return; }
+    heroImg.classList.add("is-swapping");
+    setTimeout(swap, 160);
   };
 
   // Dynamic Home buttons controller:
@@ -17986,7 +18164,6 @@ window.syncTDEEChoiceUI = function() {
     const secondaryBtn = document.getElementById("moglySecondaryBtn");
     const secondaryBtnText = document.getElementById("moglySecondaryBtnText");
     const secondaryBtnIconWrap = document.getElementById("moglySecondaryBtnIconWrap");
-    const isRu = (_currentLang === "ru");
 
     if (isScan) {
       if (scanBtn) {
@@ -17998,7 +18175,7 @@ window.syncTDEEChoiceUI = function() {
         secondaryBtn.style.pointerEvents = "none";
         secondaryBtn.style.opacity = "0.4";
       }
-      if (scanBtnText) scanBtnText.textContent = isRu ? "АНАЛИЗ БИОМЕТРИИ..." : "ANALYZING BIOMETRICS...";
+      if (scanBtnText) scanBtnText.textContent = "ANALYZING BIOMETRICS...";
       if (scanBtnIconWrap) {
         scanBtnIconWrap.innerHTML = `
           <svg viewBox="0 0 24 24" class="mogly-btn-icon" fill="none" stroke="currentColor" stroke-width="2.2" style="animation: spin 1s linear infinite;">
@@ -18016,7 +18193,7 @@ window.syncTDEEChoiceUI = function() {
         secondaryBtn.style.pointerEvents = "auto";
         secondaryBtn.style.opacity = "1";
       }
-      if (scanBtnText) scanBtnText.textContent = isRu ? "СДЕЛАТЬ СНИМОК" : "TAKE PHOTO";
+      if (scanBtnText) scanBtnText.textContent = "TAKE PHOTO";
       if (scanBtnIconWrap) {
         scanBtnIconWrap.innerHTML = `
           <svg viewBox="0 0 24 24" class="mogly-btn-icon" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -18025,7 +18202,7 @@ window.syncTDEEChoiceUI = function() {
           </svg>
         `;
       }
-      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "ЗАГРУЗИТЬ ИЗ ГАЛЕРЕИ" : "UPLOAD FROM GALLERY";
+      if (secondaryBtnText) secondaryBtnText.textContent = "UPLOAD FROM GALLERY";
       if (secondaryBtnIconWrap) {
         secondaryBtnIconWrap.innerHTML = `
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1">
@@ -18045,7 +18222,7 @@ window.syncTDEEChoiceUI = function() {
         secondaryBtn.style.pointerEvents = "auto";
         secondaryBtn.style.opacity = "1";
       }
-      if (scanBtnText) scanBtnText.textContent = isRu ? "СКАНИРОВАТЬ ЛИЦО" : "SCAN MY FACE";
+      if (scanBtnText) scanBtnText.textContent = "SCAN MY FACE";
       if (scanBtnIconWrap) {
         scanBtnIconWrap.innerHTML = `
           <svg viewBox="0 0 24 24" class="mogly-btn-icon" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -18054,7 +18231,7 @@ window.syncTDEEChoiceUI = function() {
           </svg>
         `;
       }
-      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "ИСТОРИЯ СКАНОВ" : "SCAN HISTORY";
+      if (secondaryBtnText) secondaryBtnText.textContent = "SCAN HISTORY";
       if (secondaryBtnIconWrap) {
         secondaryBtnIconWrap.innerHTML = `
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
@@ -18105,7 +18282,7 @@ window.syncTDEEChoiceUI = function() {
   };
 
   // --- 2. IN-PLACE CAMERA SCANNING INSIDE SQUARE CARD ---
-  window.handleMoglyPrimaryScanClick = async function() {
+  window.handleMoglyPrimaryScanClick = async function(_premiumChecked) {
     if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("medium");
     if (typeof window.moglyUnlockVoice === "function") window.moglyUnlockVoice();
 
@@ -18118,28 +18295,47 @@ window.syncTDEEChoiceUI = function() {
       return;
     }
 
+    // Must be premium to start face scan
+    if (!_premiumChecked) {
+      const ok = await ensurePremiumForAction(
+        () => window.handleMoglyPrimaryScanClick(true),
+        "Face Scan — Pro",
+        "Unlock unlimited biometric face scans, rating and personalized analysis."
+      );
+      if (!ok) return;
+    }
+
     // 2. Start inline camera inside square card!
     let cameraStarted = await window.startMoglyFaceScan();
 
     // 3. Fallback: if camera unavailable / permission denied, open gallery picker
     if (!cameraStarted) {
-      window.triggerMoglyGalleryPicker();
+      window.triggerMoglyGalleryPicker(true);
     }
   };
 
-  window.handleMoglySecondaryClick = async function() {
+  window.handleMoglySecondaryClick = async function(_premiumChecked) {
     if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("light");
     const video = document.getElementById("moglyInlineVideo");
     const isCameraActive = video && video.style.display !== "none" && video.srcObject;
 
     // Camera open: the alternative to a selfie is a photo from the gallery.
     if (isCameraActive) {
-      window.triggerMoglyGalleryPicker();
+      window.triggerMoglyGalleryPicker(true);
       return;
     }
 
-    // Idle: open the archive of past scans.
-    if (typeof window.openHistoryScreen === "function") window.openHistoryScreen();
+    // Idle: open the archive of past scans (Pro feature)
+    if (!_premiumChecked) {
+      const ok = await ensurePremiumForAction(
+        () => window.handleMoglySecondaryClick(true),
+        "Scan History — Pro",
+        "Unlock complete scan history and biometric progress tracking."
+      );
+      if (!ok) return;
+    }
+
+    if (typeof window.openHistoryScreen === "function") window.openHistoryScreen(true);
     else if (typeof openScreen === "function") openScreen("history");
   };
 
@@ -18165,7 +18361,7 @@ window.syncTDEEChoiceUI = function() {
         }
         if (heroImg) heroImg.style.display = "none";
         if (overlay) overlay.classList.remove("hidden");
-        if (statusText) statusText.textContent = dict.status_cam_active || "● Камера активна";
+        if (statusText) statusText.textContent = dict.status_cam_active || "● Camera active";
 
         window.setMoglyHomeButtonsState("camera");
         return true;
@@ -18225,13 +18421,22 @@ window.syncTDEEChoiceUI = function() {
     if (resetHero) {
       window.updateMoglySquareHeroPhoto();
     }
-    if (statusText) statusText.textContent = dict.status_ready || "● Готов к сканированию";
+    if (statusText) statusText.textContent = dict.status_ready || "● Ready to scan";
 
     window.setMoglyHomeButtonsState("idle");
   };
 
-  window.triggerMoglyGalleryPicker = async function() {
+  window.triggerMoglyGalleryPicker = async function(_premiumChecked) {
     if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("light");
+
+    if (!_premiumChecked) {
+      const ok = await ensurePremiumForAction(
+        () => window.triggerMoglyGalleryPicker(true),
+        "Face Scan — Pro",
+        "Unlock unlimited biometric face scans, rating and personalized analysis."
+      );
+      if (!ok) return;
+    }
 
     // Native iOS photo picker
     if (typeof fmIsNative === "function" && fmIsNative() && window.facemax && typeof window.facemax.pickPhoto === "function") {
@@ -18267,6 +18472,14 @@ window.syncTDEEChoiceUI = function() {
   // --- 3. IN-PLACE SCAN ANIMATION & RESILIENT CLINICAL ANALYSIS ---
   async function processMoglyScanPhoto(dataUrl) {
     if (!dataUrl) return;
+    if (typeof isLocalPremiumActive === "function" && !isLocalPremiumActive()) {
+      showGate(
+        "Face Scan — Pro",
+        "Unlock unlimited biometric scans, rating, and personalized analysis.",
+        () => processMoglyScanPhoto(dataUrl)
+      );
+      return;
+    }
     const cleanDataUrl = await urlToDataUrl(dataUrl);
     selectedImageData = cleanDataUrl;
     window._userScannedThisSession = true;
@@ -18288,22 +18501,21 @@ window.syncTDEEChoiceUI = function() {
 
     const laser = document.getElementById("moglyLaserBeam");
     const statusText = document.getElementById("moglySquareStatusText");
-    const isRu = (_currentLang === "ru");
 
     // Start in-place laser sweep strictly inside the 1:1 square card!
     if (laser) laser.classList.add("active");
-    if (statusText) statusText.textContent = isRu ? "● Сканирование пропорций лица..." : "● Scanning facial proportions...";
+    if (statusText) statusText.textContent = "● Scanning facial proportions...";
     window.setMoglyHomeButtonsState("scanning");
 
     // Progressive status updates inside the square card
     const step1 = setTimeout(() => {
-      if (statusText) statusText.textContent = isRu ? "● Анализ челюсти и скул..." : "● Analyzing jawline definition...";
+      if (statusText) statusText.textContent = "● Analyzing jawline definition...";
     }, 700);
     const step2 = setTimeout(() => {
-      if (statusText) statusText.textContent = isRu ? "● Расчёт canthal tilt и симметрии..." : "● Calculating canthal tilt & symmetry...";
+      if (statusText) statusText.textContent = "● Calculating canthal tilt & symmetry...";
     }, 1400);
     const step3 = setTimeout(() => {
-      if (statusText) statusText.textContent = isRu ? "● Определение индекса отёчности..." : "● Detecting water retention index...";
+      if (statusText) statusText.textContent = "● Detecting water retention index...";
     }, 2100);
 
     // Run parallel resilient analysis
@@ -18332,7 +18544,7 @@ window.syncTDEEChoiceUI = function() {
     const aiReport = (aiResult && aiResult.report) ? aiResult.report : null;
 
     if (statusText) {
-      statusText.textContent = isRu ? `● Скан готов: ${finalScore}/100` : `● Scan complete: ${finalScore}/100`;
+      statusText.textContent = `● Scan complete: ${finalScore}/100`;
     }
 
     // Save to history & lastReport
@@ -18502,53 +18714,13 @@ window.syncTDEEChoiceUI = function() {
       gateTitle: "Voice mentor — Premium",
       gateText: "Choose a plan to talk with your AI mentor.",
       openExercises: "Open exercises",
-      openDaily: "Open today's plan",
+      openDaily: "Open daily exercises",
       openFoodScan: "Scan a meal",
       startExercise: "Open the exercise",
       openScan: "Scan my face",
-    },
-    ru: {
-      tapToTalk: "Нажми на шар и говори",
-      listening: "Слушаю",
-      thinking: "Думаю",
-      speaking: "Нажми, чтобы остановить",
-      fixfirst: "Что исправить первым",
-      jawline: "Челюсть",
-      debloat: "Убрать отёк",
-      eyes: "Hunter eyes",
-      skin: "Кожа",
-      hair: "Стрижка",
-      brief: "Брифинг дня",
-      priority: "Что улучшить в первую очередь",
-      today: "План на сегодня",
-      exercise: "Упражнение с голосом",
-      meal: "Что мне съесть",
-      scan: "Разбор твоего скана",
-      notHeard: "Не расслышал. Нажми на шар и повтори.",
-      micDenied: "Разреши доступ к микрофону в настройках, чтобы говорить с Mogly.",
-      micFail: "Микрофон сейчас недоступен.",
-      error: "Mogly не смог ответить. Нажми ещё раз через пару секунд.",
-      errOffline: "Нет подключения к интернету. Проверь сеть и попробуй снова.",
-      errNetwork: "Не удалось связаться с Mogly. Проверь интернет и попробуй снова.",
-      errTimeout: "Mogly слишком долго отвечал. Попробуй ещё раз.",
-      errBusy: "Mogly сейчас перегружен. Попробуй через несколько секунд.",
-      errServer: "На сервере Mogly произошла ошибка. Попробуй ещё раз.",
-      errStt: "Не получилось распознать голос. Повтори или нажми кнопку ниже.",
-      errTooLong: "Сообщение слишком длинное. Уложись примерно в 30 секунд.",
-      cutOff: "Связь прервалась. Вот что Mogly успел сказать.",
-      limit: "Лимит голосовых ответов на сегодня исчерпан. Mogly вернётся завтра.",
-      noVoice: "Голос сейчас недоступен, вот ответ текстом.",
-      playBlocked: "Нажми на шар, чтобы услышать ответ.",
-      gateTitle: "Голосовой ментор — Premium",
-      gateText: "Выбери план, чтобы говорить с AI-ментором.",
-      openExercises: "Открыть упражнения",
-      openDaily: "Открыть план на сегодня",
-      openFoodScan: "Сканировать еду",
-      startExercise: "Открыть упражнение",
-      openScan: "Сканировать лицо",
-    },
+    }
   };
-  const mvLang = () => (window._currentLang === "ru" ? "ru" : "en");
+  const mvLang = () => "en";
   const mvT = (k) => (MV_TXT[mvLang()] && MV_TXT[mvLang()][k]) || MV_TXT.en[k] || "";
   const mvEl = (id) => document.getElementById(id);
   const mvHaptic = (kind) => { try { if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic(kind); } catch (e) {} };
@@ -18560,6 +18732,7 @@ window.syncTDEEChoiceUI = function() {
   let mvRecorder = null;
   let mvChunks = [];
   let mvMicAnalyser = null;
+  let mvMicSource = null;
   let mvMicData = null;
   let mvVadTimer = 0;
   let mvManualStop = false;
@@ -18583,6 +18756,9 @@ window.syncTDEEChoiceUI = function() {
     mvOrbs.push({ canvas, ctx: canvas.getContext("2d"), size: 0, isVisible, cssTargetId });
   }
   function mvResizeOrb(o) {
+    // Measuring every frame forced a synchronous layout 60x/s. The size is reset
+    // to 0 on resize and when the overlay opens, so measure only then.
+    if (o.size > 2) return;
     const r = o.canvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const s = Math.max(2, Math.round(r.width * dpr));
@@ -18666,12 +18842,16 @@ window.syncTDEEChoiceUI = function() {
   }
 
   let mvRaf = 0;
+  let mvFrame = 0;
   function mvTick(ts) {
     mvRaf = 0;
     const t = ts / 1000;
     let anyVisible = false;
     for (let i = 0; i < mvOrbs.length; i++) if (mvOrbs[i].isVisible()) { anyVisible = true; break; }
     if (!anyVisible || document.hidden) return;
+    // Idle breathing is slow: 30 fps is visually identical and halves the GPU
+    // and battery cost of the orb that sits on Home all day.
+    if (mvState === "idle" && (mvFrame++ & 1)) { mvRaf = requestAnimationFrame(mvTick); return; }
     const target = mvTargetLevel(t);
     mvLevel += (target - mvLevel) * (target > mvLevel ? 0.38 : 0.12);
     const lvlStr = mvLevel.toFixed(3);
@@ -18693,12 +18873,21 @@ window.syncTDEEChoiceUI = function() {
     mvInited = true;
     mvMakeOrb("mvHomeCanvas", () => {
       const f = mvEl("moglyAssistantFabContainer");
+      const h = mvEl("home");
       const ov = mvEl("mvOverlay");
-      return !!(f && f.offsetParent !== null && !(ov && ov.classList.contains("active")));
+      return !!(f && h && h.classList.contains("active") && f.classList.contains("is-home") &&
+        !document.documentElement.classList.contains("fm-quiz-active") &&
+        !(ov && ov.classList.contains("active")));
     }, "moglyOrbFabBtn");
     mvMakeOrb("mvBigCanvas", () => { const o = mvEl("mvOverlay"); return !!(o && o.classList.contains("active")); }, "mvBigOrb");
     window.addEventListener("resize", () => mvOrbs.forEach(o => { o.size = 0; }));
-    document.addEventListener("visibilitychange", () => { if (document.hidden) { if (mvState === "listening") mvCancelTurn(); } else mvKick(); });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        if (mvState === "listening") mvCancelTurn();
+        // Idle audio graph off while backgrounded; mvEnsureCtx() resumes it on the next tap.
+        if (mvAudioCtx && mvState === "idle" && mvAudioCtx.state === "running") { try { mvAudioCtx.suspend(); } catch (e) {} }
+      } else mvKick();
+    });
     setInterval(mvKick, 600);
     mvKick();
   }
@@ -18777,6 +18966,7 @@ window.syncTDEEChoiceUI = function() {
   function mvStopMic() {
     if (mvVadTimer) { clearInterval(mvVadTimer); mvVadTimer = 0; }
     if (mvMicStream) { try { mvMicStream.getTracks().forEach(tr => tr.stop()); } catch (e) {} mvMicStream = null; }
+    if (mvMicSource) { try { mvMicSource.disconnect(); } catch (e) {} mvMicSource = null; }
     mvMicAnalyser = null;
     mvMicData = null;
   }
@@ -18943,35 +19133,20 @@ window.syncTDEEChoiceUI = function() {
   }
   const MV_AREA = {
     en: { jawline: "jawline", cheekbones: "cheekbones", eyes: "eye area", skin: "skin" },
-    ru: { jawline: "челюсть", cheekbones: "скулы", eyes: "зона глаз", skin: "кожа" },
   };
-  function mvBand(v, ru) {
-    if (v >= 85) return ru ? "это топовый уровень" : "that's top tier";
-    if (v >= 75) return ru ? "это выше среднего" : "that's above average";
-    if (v >= 65) return ru ? "это крепкая база с понятным запасом роста" : "that's a solid base with clear upside";
-    if (v >= 50) return ru ? "это средний уровень, есть куда расти" : "that's average, with a lot of room to climb";
-    return ru ? "старт низкий, а значит и прирост будет самым быстрым" : "it's a low start, which means the fastest gains";
+  function mvBand(v) {
+    if (v >= 85) return "that's top tier";
+    if (v >= 75) return "that's above average";
+    if (v >= 65) return "that's a solid base with clear upside";
+    if (v >= 50) return "that's average, with a lot of room to climb";
+    return "it's a low start, which means the fastest gains";
   }
   // One expert plan per area. Each returns a list of sentences.
-  function mvAreaPlan(key, f, ru, short) {
+  function mvAreaPlan(key, f, short) {
     const a = f.areas.find(x => x.key === key);
     const v = a ? a.v : null;
     const strong = v != null && v >= 80;
     if (key === "jawline") {
-      if (ru) {
-        const out = [
-          v != null ? `Челюсть — ${v} из 100${strong ? ", это уже сильная черта, её нужно держать, а не перекраивать" : ""}.` : "Про челюсть честно.",
-          "Чёткость линии челюсти на восемьдесят процентов — это жир и вода, а не кость. Если у тебя больше пятнадцати процентов жира, медленная сушка даст челюсти больше, чем любое упражнение.",
-          "Мьюинг по-честному: весь язык прижат к нёбу, губы сомкнуты, шея ровно над плечами. Это сразу улучшает то, как челюсть выглядит в профиль и на фото, но взрослую кость он не перестраивает.",
-        ];
-        if (!short) {
-          out.push(f.female
-            ? "Жвачку для жевательных мышц тебе не советую — они расширяют низ лица. Лучше лимфодренаж вдоль челюсти к ушам и шее, две минуты утром."
-            : "Для жевательной мышцы — твёрдая жвачка, десять–пятнадцать минут в день, не больше, иначе перегрузишь сустав.");
-          out.push("Вечером меньше соли и алкоголя. И никакого bonesmashing — это просто травма.");
-        }
-        return out;
-      }
       const out = [
         v != null ? `Jawline is ${v} out of 100${strong ? ", already a strong feature, so maintain it rather than chase it" : ""}.` : "Here's the honest jawline breakdown.",
         "Jaw definition is mostly body fat and water, not bone. If you're above about fifteen percent body fat, a slow cut is the biggest jaw upgrade you can get.",
@@ -18986,14 +19161,6 @@ window.syncTDEEChoiceUI = function() {
       return out;
     }
     if (key === "cheekbones") {
-      if (ru) {
-        const out = [
-          v != null ? `Скулы — ${v} из 100.` : "Скулы прячет в первую очередь отёк.",
-          "Скуловую кость не изменить, но её почти всегда прячет вода и мягкие ткани. Убери отёк — и скулы проявятся.",
-        ];
-        if (!short) out.push("Вечером минимум соли и никакого алкоголя, последний плотный приём пищи за три часа до сна. Утром минута холода или ледяного роллера и две минуты лимфодренажа: от носа вдоль скул к ушам и вниз по шее.");
-        return out;
-      }
       const out = [
         v != null ? `Cheekbones are ${v} out of 100.` : "Cheekbones are mostly hidden by puffiness.",
         "You can't change the zygomatic bone, but water and soft tissue almost always hide it. Drop the bloat and the cheekbones show.",
@@ -19002,15 +19169,6 @@ window.syncTDEEChoiceUI = function() {
       return out;
     }
     if (key === "eyes") {
-      if (ru) {
-        const out = [
-          v != null ? `Зона глаз — ${v} из 100.` : "Про глаза честно.",
-          "Canthal tilt и орбитальная кость — это hardmaxxing, тренировкой их не изменить, и я не буду тебе это обещать.",
-          "Что реально меняется: отёк и тёмные круги под глазами. Сон семь с половиной — девять часов, утром холодный компресс, сыворотка с кофеином.",
-        ];
-        if (!short) out.push("Брови держи густыми и низко посаженными, убирай только лишние волоски между и под ними — ровная низкая линия бровей и даёт эффект hunter eyes. И не щурься: на улице солнечные очки.");
-        return out;
-      }
       const out = [
         v != null ? `Eye area is ${v} out of 100.` : "Here's the honest eye breakdown.",
         "Canthal tilt and orbital bone are hardmaxxing, you can't train them, and I won't pretend you can.",
@@ -19020,14 +19178,6 @@ window.syncTDEEChoiceUI = function() {
       return out;
     }
     if (key === "skin") {
-      if (ru) {
-        const out = [
-          v != null ? `Кожа — ${v} из 100${strong ? ", режим поддержки" : ""}.` : "По коже — проверенная база.",
-          "Проверенный стек: мягкое очищение, увлажняющий крем и SPF тридцать плюс каждое утро. Вечером ретиноид — адапален или ретинол, со зерно гороха, два–три вечера в неделю, потом чаще.",
-        ];
-        if (!short) out.push("На активные воспаления — бензоилпероксид точечно. Кожа обновляется примерно за двадцать восемь дней, так что оценивай через шесть–восемь недель, а не через три дня. Если акне глубокое или не проходит, иди к дерматологу.");
-        return out;
-      }
       const out = [
         v != null ? `Skin is ${v} out of 100${strong ? ", so you're in maintenance mode" : ""}.` : "For skin, here's the proven base.",
         "The proven stack: gentle cleanser, moisturizer and SPF thirty plus every morning. At night a retinoid, adapalene or retinol, pea-sized, two to three nights a week, then build up.",
@@ -19038,9 +19188,9 @@ window.syncTDEEChoiceUI = function() {
     return [];
   }
   const MV_AREA_ACTION = { jawline: "exercises", cheekbones: "exercises", eyes: "exercises", skin: "daily" };
-  function mvHairPlan(f, ru) {
+  function mvHairPlan(f) {
     const k = f.shape ? f.shape.key : "oval";
-    const label = f.shape ? f.shape.label.toLowerCase() : (ru ? "овальная" : "oval");
+    const label = f.shape ? f.shape.label.toLowerCase() : ("oval");
     const M = {
       en: {
         oval: "Oval is the most forgiving shape. A textured crop or a medium quiff works, keep the sides tighter than the top so the jaw stays visible.",
@@ -19050,144 +19200,123 @@ window.syncTDEEChoiceUI = function() {
         diamond: "Diamond means the cheekbones are the widest point. Keep some fullness at the forehead and sides, a fringe or side-swept top works. Avoid very short sides.",
         oblong: "For a longer face, don't add height. Keep the top flatter, some fringe, and more width at the sides.",
       },
-      ru: {
-        oval: "Овальная — самая выигрышная форма. Подойдёт текстурный кроп или средний квифф, бока держи короче верха, чтобы линия челюсти оставалась открытой.",
-        round: "Для круглого лица нужны высота и углы: объём сверху, низкий или средний фейд по бокам. Избегай тяжёлой прямой чёлки — она расширяет лицо.",
-        square: "Квадратная челюсть — твоя сильная сторона, её надо показывать. Подойдёт короткое: crew cut или текстурный верх с аккуратными боками. Избегай плоских квадратных форм.",
-        heart: "При сердцевидной форме уравновесь узкий низ: средняя длина, чуть больше объёма по бокам, боковой пробор. Не делай очень короткие бока с высоким верхом.",
-        diamond: "Ромбовидная форма — значит, скулы самая широкая точка. Оставь объём у лба и по бокам, подойдёт чёлка или зачёс набок. Избегай совсем коротких боков.",
-        oblong: "Для вытянутого лица не добавляй высоту. Верх площе, немного чёлки и больше ширины по бокам.",
-      },
     };
     const F = {
       en: "For you: layers that start at the jaw or cheekbone, curtain bangs, and volume placed where your face is narrowest.",
-      ru: "Тебе: слои от уровня скул или челюсти, шторки-чёлка и объём там, где лицо уже всего.",
     };
-    const lang = ru ? "ru" : "en";
-    const out = [ru ? `Форма лица у тебя ${label}.` : `Your face shape reads as ${label}.`, M[lang][k] || M[lang].oval];
+    const lang = "en";
+    const out = [`Your face shape reads as ${label}.`, M[lang][k] || M[lang].oval];
     if (f.female) out.push(F[lang]);
-    out.push(ru ? "Покажи барберу фото, сделай стрижку и пересканируйся при том же свете — посмотрим, как изменилась гармония." : "Show your barber a photo, get the cut, then rescan in the same light and we'll see how the harmony moved.");
+    out.push("Show your barber a photo, get the cut, then rescan in the same light and we'll see how the harmony moved.");
     return out;
   }
   function mvIntentFromText(text) {
     const t = String(text || "").toLowerCase();
     if (!t) return "";
-    if (/bone ?smash|steroid|\bsarm|\bdnp\b|starv|стероид|голода|бонсмеш|бон смеш/.test(t)) return "refuse";
-    if (/jaw|mew|chin|masseter|челюст|мьюи|подбород|жеват/.test(t)) return "jawline";
-    if (/bloat|puff|swell|water retention|отёк|отек|опух|вода в лице/.test(t)) return "debloat";
-    if (/eye|canthal|brow|hunter|глаз|бров|век|кантал/.test(t)) return "eyes";
-    if (/skin|acne|pimple|spot|retino|кож|прыщ|акне|ретино/.test(t)) return "skin";
-    if (/hair|haircut|barber|стриж|волос|причес|барбер/.test(t)) return "hair";
-    if (/cheek|скул/.test(t)) return "debloat";
-    if (/eat|food|meal|diet|еда|есть|ест|питани|диет|съесть/.test(t)) return "meal";
-    if (/plan|today|streak|сегодня|план|стрик/.test(t)) return "today";
+    if (/bone ?smash|steroid|\bsarm|\bdnp\b|starv/.test(t)) return "refuse";
+    if (/jaw|mew|chin|masseter/.test(t)) return "jawline";
+    if (/bloat|puff|swell|water retention/.test(t)) return "debloat";
+    if (/eye|canthal|brow|hunter/.test(t)) return "eyes";
+    if (/skin|acne|pimple|spot|retino/.test(t)) return "skin";
+    if (/hair|haircut|barber/.test(t)) return "hair";
+    if (/cheek/.test(t)) return "debloat";
+    if (/eat|food|meal|diet/.test(t)) return "meal";
+    if (/plan|today|streak/.test(t)) return "today";
     return "";
   }
   function mvLocalAnswer(fn, heard) {
     const f = mvLocalFace();
-    const ru = mvLang() === "ru";
-    const names = MV_AREA[ru ? "ru" : "en"];
+    const names = MV_AREA["en"];
     let intent = fn || mvIntentFromText(heard) || "fixfirst";
     if (intent === "priority") intent = "fixfirst";
     if (intent === "brief") intent = "today";
     const S = [];
     let action = null;
-    const noScan = ru
-      ? "Скана у меня пока нет, поэтому без цифр. Нажми «Сканировать лицо» на главном — и я скажу точно, что исправлять первым."
-      : "I don't have your scan yet, so no numbers. Tap Scan my face on Home and I'll tell you exactly what to fix first.";
+    const noScan = "I don't have your scan yet, so no numbers. Tap Scan my face on Home and I'll tell you exactly what to fix first.";
 
     if (intent === "refuse") {
-      S.push(ru
-        ? "Bonesmashing, стероиды, DNP и голодовки я не тренирую. Это переломы, гормональные сбои и поражение органов, и лицу это вредит надолго."
-        : "I won't coach bonesmashing, steroids, DNP or starvation. That's fractures, hormone damage and organ damage, and it wrecks your face long term.");
-      S.push(ru
-        ? "Безопасная версия того же результата: сушка до здорового процента жира, убрать отёк, осанка и мьюинг, уход за кожей и правильная стрижка."
-        : "The safe version of the same goal: cut to a healthy body fat, drop the bloat, fix posture and tongue position, skincare, and the right haircut.");
+      S.push("I won't coach bonesmashing, steroids, DNP or starvation. That's fractures, hormone damage and organ damage, and it wrecks your face long term.");
+      S.push("The safe version of the same goal: cut to a healthy body fat, drop the bloat, fix posture and tongue position, skincare, and the right haircut.");
       action = "exercises";
     } else if (intent === "scan") {
       if (!f.hasScan) { S.push(noScan); action = "scan"; }
       else {
-        if (f.score != null) S.push(ru ? `Скан готов. ${f.score} из 100, ${mvBand(f.score, true)}.` : `Your scan is in. ${f.score} out of 100, ${mvBand(f.score, false)}.`);
-        if (f.shape) S.push(ru ? `Форма лица — ${f.shape.label.toLowerCase()}.` : `Face shape reads as ${f.shape.label.toLowerCase()}.`);
-        if (f.strong) S.push(ru ? `Сильнейшая черта — ${names[f.strong.key]}, ${f.strong.v}. Это твой козырь.` : `Your strongest feature is your ${names[f.strong.key]} at ${f.strong.v}. That's your edge.`);
+        if (f.score != null) S.push(`Your scan is in. ${f.score} out of 100, ${mvBand(f.score)}.`);
+        const d = f.ctx.progress && f.ctx.progress.scan_delta;
+        if (d && isFinite(d.overall)) {
+          const since = d.days > 1 ? `in ${d.days} days` : "since your last scan";
+          S.push(d.overall > 0 ? `That's up ${d.overall} ${since}. The work is showing.` : d.overall < 0 ? `That's down ${-d.overall} ${since}. Usually that's water, light or angle, not your face. Same light, same angle next time.` : `Flat ${since}. Holding is fine, now we push.`);
+          const moves = Object.keys(d.areas).filter(k => d.areas[k] !== 0).sort((x, y) => Math.abs(d.areas[y]) - Math.abs(d.areas[x])).slice(0, 2);
+          if (moves.length) S.push("Biggest moves: " + moves.map(k => `${names[k]} ${d.areas[k] > 0 ? "up" : "down"} ${Math.abs(d.areas[k])}`).join(", ") + ".");
+        }
+        if (f.shape) S.push(`Face shape reads as ${f.shape.label.toLowerCase()}.`);
+        if (f.strong) S.push(`Your strongest feature is your ${names[f.strong.key]} at ${f.strong.v}. That's your edge.`);
         if (f.weak) {
-          S.push(ru ? `Первым исправляем: ${names[f.weak.key]}, ${f.weak.v}.` : `First thing to fix: your ${names[f.weak.key]} at ${f.weak.v}.`);
-          S.push(...mvAreaPlan(f.weak.key, f, ru, true).slice(1));
+          S.push(`First thing to fix: your ${names[f.weak.key]} at ${f.weak.v}.`);
+          S.push(...mvAreaPlan(f.weak.key, f, true).slice(1));
           action = MV_AREA_ACTION[f.weak.key];
         }
         if (f.sym != null) S.push(f.sym >= 80
-          ? (ru ? `Симметрия ${f.sym}, это сильно.` : `Symmetry is ${f.sym}, that's strong.`)
-          : (ru ? `Симметрия ${f.sym}: жуй на обе стороны и не спи всегда на одном боку.` : `Symmetry is ${f.sym}: chew on both sides and stop sleeping on the same side every night.`));
-        S.push(ru
-          ? "Биомеханика на каждый день: язык на нёбе, губы сомкнуты, шея над плечами. Осанка меняет то, как читается лицо, мгновенно."
-          : "Daily biomechanics: tongue on the palate, lips sealed, neck stacked over your shoulders. Posture changes how your face reads instantly.");
-        S.push(ru ? "Нажми «Что исправить первым», и я дам полный план." : "Tap Fix first and I'll give you the full plan.");
+          ? (`Symmetry is ${f.sym}, that's strong.`)
+          : (`Symmetry is ${f.sym}: chew on both sides and stop sleeping on the same side every night.`));
+        S.push("Daily biomechanics: tongue on the palate, lips sealed, neck stacked over your shoulders. Posture changes how your face reads instantly.");
+        S.push("Tap Fix first and I'll give you the full plan.");
       }
     } else if (intent === "fixfirst") {
       if (!f.hasScan) {
         S.push(noScan);
-        S.push(ru
-          ? "А пока универсальные рычаги: сон, меньше соли вечером, язык на нёбе и SPF каждое утро."
-          : "Until then, the universal levers: sleep, less salt at night, tongue on the palate, and SPF every morning.");
+        S.push("Until then, the universal levers: sleep, less salt at night, tongue on the palate, and SPF every morning.");
         action = "scan";
       } else {
-        if (heard && !fn) S.push(ru ? "Вот что сейчас важнее всего для твоего лица." : "Here's what matters most for your face right now.");
-        if (f.score != null) S.push(ru ? `Общий балл ${f.score}.` : `Overall you're at ${f.score}.`);
-        if (f.strong) S.push(ru ? `Сильная сторона — ${names[f.strong.key]}, ${f.strong.v}.` : `Your strong side is your ${names[f.strong.key]} at ${f.strong.v}.`);
+        if (heard && !fn) S.push("Here's what matters most for your face right now.");
+        if (f.score != null) S.push(`Overall you're at ${f.score}.`);
+        if (f.strong) S.push(`Your strong side is your ${names[f.strong.key]} at ${f.strong.v}.`);
         if (f.weak) {
-          S.push(ru ? `Исправляем первым — ${names[f.weak.key]}.` : `Fix this first: your ${names[f.weak.key]}.`);
-          S.push(...mvAreaPlan(f.weak.key, f, ru, false));
+          S.push(`Fix this first: your ${names[f.weak.key]}.`);
+          S.push(...mvAreaPlan(f.weak.key, f, false));
           action = MV_AREA_ACTION[f.weak.key];
         }
-        S.push(ru
-          ? "Делай это четырнадцать дней и пересканируйся при том же свете — так мы увидим реальную разницу."
-          : "Do this for fourteen days, then rescan in the same light, that's how we see the real delta.");
+        S.push("Do this for fourteen days, then rescan in the same light, that's how we see the real delta.");
       }
     } else if (intent === "jawline" || intent === "eyes" || intent === "skin") {
-      S.push(...mvAreaPlan(intent, f, ru, false));
+      S.push(...mvAreaPlan(intent, f, false));
       action = MV_AREA_ACTION[intent];
     } else if (intent === "debloat") {
       const cheek = f.areas.find(a => a.key === "cheekbones");
-      S.push(ru
-        ? `Отёк прячет скулы${cheek ? `, сейчас они ${cheek.v}` : ""} и линию челюсти. Это самый быстрый рычаг: результат виден за сутки.`
-        : `Puffiness hides your cheekbones${cheek ? `, currently ${cheek.v}` : ""} and your jawline. It's the fastest lever, you see it within a day.`);
-      S.push(ru
-        ? "Сегодня вечером: соль вниз, без алкоголя, последний плотный приём пищи за три часа до сна, вода — днём, а не на ночь. Спи с чуть приподнятой головой."
-        : "Tonight: salt down, no alcohol, last big meal three hours before bed, drink your water during the day, not at night. Sleep with your head slightly raised.");
-      S.push(ru
-        ? "Утром: минута холодной воды или ледяного роллера, потом две минуты лимфодренажа — от центра лица к ушам и вниз по шее. Через сорок минут лицо заметно суше."
-        : "Morning: one minute of cold water or an ice roller, then two minutes of lymphatic drainage from the center of your face out to the ears and down the neck. Forty minutes later your face looks noticeably sharper.");
+      S.push(`Puffiness hides your cheekbones${cheek ? `, currently ${cheek.v}` : ""} and your jawline. It's the fastest lever, you see it within a day.`);
+      S.push("Tonight: salt down, no alcohol, last big meal three hours before bed, drink your water during the day, not at night. Sleep with your head slightly raised.");
+      S.push("Morning: one minute of cold water or an ice roller, then two minutes of lymphatic drainage from the center of your face out to the ears and down the neck. Forty minutes later your face looks noticeably sharper.");
       action = "exercises";
     } else if (intent === "hair") {
-      S.push(...mvHairPlan(f, ru));
+      S.push(...mvHairPlan(f));
     } else if (intent === "meal") {
-      S.push(ru
-        ? "Ешь так, чтобы убрать воду и воспаление. Белок в каждом приёме: яйца, рыба, курица, греческий йогурт."
-        : "Eat to cut water and inflammation. Protein at every meal: eggs, fish, chicken, Greek yogurt.");
-      S.push(ru
-        ? "Калий против соли: бананы, картофель, шпинат, авокадо. Соль и алкоголь — минимум, особенно после семи вечера, и меньше ультраобработанных углеводов, они тянут воду в лицо."
-        : "Potassium to balance salt: bananas, potatoes, spinach, avocado. Keep salt and alcohol low, especially after seven pm, and cut ultra-processed carbs, they pull water into your face.");
-      S.push(ru ? "Два–три литра воды, равномерно в течение дня." : "Two to three liters of water spread through the day.");
+      S.push("Eat to cut water and inflammation. Protein at every meal: eggs, fish, chicken, Greek yogurt.");
+      S.push("Potassium to balance salt: bananas, potatoes, spinach, avocado. Keep salt and alcohol low, especially after seven pm, and cut ultra-processed carbs, they pull water into your face.");
+      S.push("Two to three liters of water spread through the day.");
       try {
         const plan = f.ctx.meal_plan;
-        if (plan && plan.meals && plan.meals[0] && plan.meals[0].name) S.push(ru ? `По твоему плану сегодня первым идёт ${plan.meals[0].name}.` : `Your plan today starts with ${plan.meals[0].name}.`);
+        if (plan && plan.meals && plan.meals[0] && plan.meals[0].name) S.push(`Your plan today starts with ${plan.meals[0].name}.`);
       } catch (e) {}
       action = "foodscan";
     } else if (intent === "today") {
       const t = f.ctx.today || {}, p = f.ctx.progress || {};
       const h = Number(p.local_hour != null ? p.local_hour : new Date().getHours());
-      S.push(ru ? (h < 12 ? "Доброе утро." : h < 18 ? "Добрый день." : "Добрый вечер.") : (h < 12 ? "Good morning." : h < 18 ? "Good afternoon." : "Good evening."));
-      if (p.streak) S.push(ru ? `Серия — ${p.streak} дн. подряд${p.streak_at_risk ? ", и она сгорит сегодня, если не закрыть план" : ""}.` : `You're on a ${p.streak} day streak${p.streak_at_risk ? ", and it ends tonight unless you finish the plan" : ""}.`);
-      if (t.exercises_total) S.push(ru
-        ? `Упражнения: ${t.exercises_done || 0} из ${t.exercises_total}.${t.next_exercise ? ` Следующее — ${t.next_exercise}.` : ""}`
-        : `Exercises: ${t.exercises_done || 0} of ${t.exercises_total} done.${t.next_exercise ? ` Next up is ${t.next_exercise}.` : ""}`);
-      if (t.water_goal) S.push(ru ? `Вода: ${t.water_glasses || 0} из ${t.water_goal} стаканов.` : `Water: ${t.water_glasses || 0} of ${t.water_goal} glasses.`);
-      if (p.first_score != null && p.last_score != null && p.scans > 1) S.push(ru ? `Балл вырос с ${p.first_score} до ${p.last_score}.` : `Your score went from ${p.first_score} to ${p.last_score}.`);
-      if (p.days_since_scan != null && p.days_since_scan >= 7) S.push(ru ? `Последний скан был ${p.days_since_scan} дн. назад, пора пересканироваться.` : `Your last scan was ${p.days_since_scan} days ago, time to rescan.`);
-      if (f.weak) S.push(ru ? `Фокус дня — ${names[f.weak.key]}.` : `Today's focus is your ${names[f.weak.key]}.`);
+      S.push((h < 12 ? "Good morning." : h < 18 ? "Good afternoon." : "Good evening."));
+      S.push(h < 12
+        ? "Two-minute ritual first: sixty seconds of cold water or an ice roller to drain the overnight puff. Then stand tall, ears over shoulders, tongue flat on the palate, lips sealed. That's your jaw posture all day."
+        : h < 18
+          ? "Midday check: shoulders back, chin in, tongue up. Finish your water now so it's not in your face tonight."
+          : "Tonight decides tomorrow's face: salt down, no alcohol, last big meal three hours before bed, head slightly raised on the pillow.");
+      if (p.streak) S.push(`You're on a ${p.streak} day streak${p.streak_at_risk ? ", and it ends tonight unless you finish the four exercises" : ""}.`);
+      else S.push("Today we start a streak. Four exercises, two minutes.");
+      if (t.exercises_total) S.push(`Exercises: ${t.exercises_done || 0} of ${t.exercises_total} done.${t.next_exercise ? ` Next up is ${t.next_exercise}.` : ""}`);
+      if (t.water_goal) S.push(`Water: ${t.water_glasses || 0} of ${t.water_goal} glasses.`);
+      if (p.first_score != null && p.last_score != null && p.scans > 1) S.push(`Your score went from ${p.first_score} to ${p.last_score}.`);
+      if (p.days_since_scan != null && p.days_since_scan >= 7) S.push(`Your last scan was ${p.days_since_scan} days ago, time to rescan.`);
+      if (f.weak) S.push(`Today's focus is your ${names[f.weak.key]}.`);
       action = t.next_exercise ? "exercises" : "daily";
     } else if (intent === "exercise") {
-      S.push(ru ? "Открываю упражнение. Повторяй за видео, медленно и без боли, таймер запустится сам." : "Opening the exercise. Follow the video, slow and pain-free, the timer starts on its own.");
+      S.push("Opening the exercise. Follow the video, slow and pain-free, the timer starts on its own.");
     }
     if (!S.length) S.push(noScan);
     return { answer: S.join(" "), action };
@@ -19205,13 +19334,10 @@ window.syncTDEEChoiceUI = function() {
   }
   function mvPickVoice() {
     if (!mvVoices.length) mvLoadVoices();
-    const ru = mvLang() === "ru";
     const female = _voiceGender === "female";
-    const pool = mvVoices.filter(v => String(v.lang || "").toLowerCase().replace("_", "-").startsWith(ru ? "ru" : "en"));
+    const pool = mvVoices.filter(v => String(v.lang || "").toLowerCase().replace("_", "-").startsWith("en"));
     if (!pool.length) return null;
-    const names = ru
-      ? (female ? ["milena", "милена", "katya", "катя", "alena", "алёна"] : ["yuri", "юрий", "maxim", "максим", "pavel", "dmitri"])
-      : (female ? ["samantha", "ava", "allison", "serena", "karen", "moira", "zoe", "susan", "kate"] : ["daniel", "aaron", "arthur", "alex", "evan", "nathan", "oliver", "tom", "rishi", "fred"]);
+    const names = (female ? ["samantha", "ava", "allison", "serena", "karen", "moira", "zoe", "susan", "kate"] : ["daniel", "aaron", "arthur", "alex", "evan", "nathan", "oliver", "tom", "rishi", "fred"]);
     const novelty = /(albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|junior|ralph|kathy|grandma|grandpa|eddy|flo|reed|rocko|sandy|shelley)/i;
     let best = null, bestScore = -1e9;
     for (const v of pool) {
@@ -19221,7 +19347,7 @@ window.syncTDEEChoiceUI = function() {
       const idx = names.findIndex(n => name.includes(n));
       if (idx >= 0) sc += 30 - idx;
       if (/premium|enhanced|neural|natural|siri/.test(name)) sc += 8;
-      if (!ru && /en-(us|gb)/i.test(String(v.lang).replace("_", "-"))) sc += 2;
+      if (/en-(us|gb)/i.test(String(v.lang).replace("_", "-"))) sc += 2;
       if (v.localService) sc += 1;
       if (sc > bestScore) { bestScore = sc; best = v; }
     }
@@ -19245,7 +19371,6 @@ window.syncTDEEChoiceUI = function() {
     mvStopSynth();
     const parts = mvSentences(text);
     const voice = mvPickVoice();
-    const ru = mvLang() === "ru";
     const me = { turn: myTurn, beat: performance.now(), started: false, utt: null };
     mvSynth = me;
     let i = 0;
@@ -19256,8 +19381,8 @@ window.syncTDEEChoiceUI = function() {
       if (i >= parts.length) { finish(); return; }
       const u = new SpeechSynthesisUtterance(parts[i++]);
       if (voice) u.voice = voice;
-      u.lang = voice ? voice.lang : (ru ? "ru-RU" : "en-US");
-      u.rate = ru ? 1.0 : 0.98;
+      u.lang = voice ? voice.lang : ("en-US");
+      u.rate = 0.98;
       u.pitch = _voiceGender === "female" ? 1.04 : 0.94;
       u.volume = 1;
       u.onstart = () => { if (mvSynth === me) { me.started = true; me.beat = performance.now(); } };
@@ -19360,11 +19485,14 @@ window.syncTDEEChoiceUI = function() {
       const m = (typeof _guBuildMomentumState === "function") ? _guBuildMomentumState() : null;
       const scored = (Array.isArray(scanHistory) ? scanHistory : []).filter(h => h && Number(h.score) > 0);
       const last = scored[0];
+      const exStreak = (typeof moglyStreakCount === "function") ? moglyStreakCount() : (m ? m.streak : 0);
+      const exDoneToday = (() => { try { return readExerciseDoneToday().size; } catch (e) { return 0; } })();
       ctx.progress = {
-        streak: m ? m.streak : null,
-        plan_done: m ? m.done : null,
-        plan_total: m ? m.total : null,
-        streak_at_risk: !!(m && m.atRisk),
+        streak: exStreak,
+        plan_done: exDoneToday,
+        plan_total: FACE_EXERCISES.length,
+        streak_at_risk: exStreak > 0 && exDoneToday < FACE_EXERCISES.length && new Date().getHours() >= 18,
+        scan_delta: mvScanDelta(scored),
         scans: scored.length,
         first_score: scored.length ? scored[scored.length - 1].score : null,
         last_score: last ? last.score : null,
@@ -19381,6 +19509,21 @@ window.syncTDEEChoiceUI = function() {
       }
     } catch (e) {}
     return ctx;
+  }
+  // Per-area change between the two most recent scans: { days, overall, areas: { jawline: +3, ... } }.
+  function mvScanDelta(scored) {
+    try {
+      const a = scored[0], b = scored[1];
+      if (!a || !b) return null;
+      const out = { days: Math.max(0, Math.round((Number(a.date) - Number(b.date)) / 86400000)), overall: Number(a.score) - Number(b.score), areas: {} };
+      const ma = a.metrics || {}, mb = b.metrics || {};
+      ["jawline", "cheekbones", "eyes", "skin"].forEach(k => {
+        const va = Number(ma[k] != null ? ma[k] : (k === "eyes" ? ma.eye_area : null));
+        const vb = Number(mb[k] != null ? mb[k] : (k === "eyes" ? mb.eye_area : null));
+        if (isFinite(va) && isFinite(vb) && va > 0 && vb > 0) out.areas[k] = Math.round(va - vb);
+      });
+      return out;
+    } catch (e) { return null; }
   }
   // One request per turn (speech -> transcript -> answer -> voice). The worker streams
   // NDJSON events; onEvent gets each one as it lands. Plain JSON replies (paywall, limit,
@@ -19509,6 +19652,7 @@ window.syncTDEEChoiceUI = function() {
     const AC = mvEnsureCtx();
     if (AC) {
       const src = AC.createMediaStreamSource(mvMicStream);
+      mvMicSource = src;
       mvMicAnalyser = AC.createAnalyser();
       mvMicAnalyser.fftSize = 1024;
       mvMicData = new Uint8Array(mvMicAnalyser.fftSize);
@@ -19757,9 +19901,7 @@ window.syncTDEEChoiceUI = function() {
     const kind = mvActionKind;
     mvCloseOverlay(false);
     try {
-      if (kind === "exercises") openExercises();
-      else if (kind === "daily") openScreen("daily");
-      else if (kind === "foodscan") openFoodScan();
+      if (kind === "exercises" || kind === "daily" || kind === "foodscan") openExercises();
       else if (kind === "scan") { openScreen("home"); setTimeout(() => { if (window.handleMoglyPrimaryScanClick) window.handleMoglyPrimaryScanClick(); }, 250); }
       else if (kind === "exercise-start") {
         const done = readExerciseDoneToday();
@@ -19768,6 +19910,229 @@ window.syncTDEEChoiceUI = function() {
       }
     } catch (e) {}
   };
+  // --- 6. MOGLY DAILY COACH ---
+  // The voice leads the user through every day:
+  //   brief   -> once a day the orb offers a time-of-day brief (morning debloat,
+  //              midday posture, evening salt/sleep) with streak, next exercise
+  //              and the weekly rescan prompt. Server voice (Onyx/Nova) via the
+  //              "brief" function, on-device answer when the worker is down.
+  //   scan    -> after every scan Mogly audits the change vs. the previous scan
+  //              (mvScanDelta) and names the focus zone.
+  //   workout -> short spoken cues inside each of the 4 exercises (start,
+  //              halfway, last 5 s, next move). Device voice: instant, offline,
+  //              and never spends the daily server voice limit.
+  //   streak  -> all 4 done = a streak day; 3 / 7 / 14 / 30 get a celebration.
+  const MDC_KEY = "mogly_coach_v1";
+  const MDC_VOICE_KEY = "mogly_coach_voice";
+  function mdcLoad() { try { return JSON.parse(localStorage.getItem(MDC_KEY) || "{}") || {}; } catch (e) { return {}; } }
+  function mdcSave(o) { try { localStorage.setItem(MDC_KEY, JSON.stringify(o)); } catch (e) {} }
+  function mdcVoiceOn() { try { return localStorage.getItem(MDC_VOICE_KEY) !== "0"; } catch (e) { return true; } }
+
+  let mdcUtt = null;
+  window.moglyCoachStop = function() {
+    if (!mdcUtt) return;
+    mdcUtt = null;
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+  };
+  function mdcSay(text) {
+    if (!text || !mdcVoiceOn() || !mvHasSynth() || document.hidden) return;
+    const ov = mvEl("mvOverlay");
+    if (ov && ov.classList.contains("active")) return; // never talk over the mentor
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+    const u = new SpeechSynthesisUtterance(text);
+    const v = mvPickVoice();
+    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = "en-US";
+    u.rate = 1.0;
+    u.pitch = _voiceGender === "female" ? 1.04 : 0.94;
+    u.onend = u.onerror = () => { if (mdcUtt === u) mdcUtt = null; };
+    mdcUtt = u;
+    mvAudioSession("playback");
+    try { window.speechSynthesis.speak(u); } catch (e) { mdcUtt = null; }
+  }
+  window.moglyCoachSay = mdcSay;
+
+  window.setMoglyCoachVoice = function(on) {
+    try { localStorage.setItem(MDC_VOICE_KEY, on ? "1" : "0"); } catch (e) {}
+    if (!on) window.moglyCoachStop();
+    mdcRenderVoiceToggle();
+    mvHaptic("selection");
+  };
+  function mdcRenderVoiceToggle() {
+    const b = mvEl("edCoachVoiceBtn");
+    if (!b) return;
+    const on = mdcVoiceOn();
+    b.classList.toggle("is-on", on);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    const l = b.querySelector("span");
+    if (l) l.textContent = on ? "Voice coach on" : "Voice coach off";
+  }
+  window.moglyCoachRenderToggle = mdcRenderVoiceToggle;
+
+  const MDC_CUES = {
+    cheek_lift: {
+      start: "Palms flat beside your nose. Sweep up and out toward the temples, light and steady.",
+      mid: "Halfway. Slow sweeps, this is what drains the cheeks.",
+    },
+    masseter_release: {
+      start: "Knuckles on the jaw angle. Slow, firm circles. Let your teeth come apart.",
+      mid: "Halfway. Unclench and breathe through your nose.",
+    },
+    thumbpulling: {
+      start: "Clean thumbs on the hard palate behind your front teeth. Press up and slightly out, hold, release.",
+      mid: "Halfway. Steady pressure, never pain. Nose breathing.",
+    },
+    chin_glide: {
+      start: "Knuckles under the chin. Glide out along the jawline to the ears. Stay on the bone.",
+      mid: "Halfway. Long, smooth strokes all the way to the ears.",
+    },
+  };
+  const MDC_NUM = ["zero", "one", "two", "three", "four"];
+  window.moglyCoachCue = function(kind, ex) {
+    if (!ex) return;
+    const cue = MDC_CUES[ex.id] || {};
+    if (kind === "start") {
+      mdcSay(`Exercise ${MDC_NUM[ex.step] || ex.step} of four. ${cue.start || ex.cue + "."} Thirty seconds, go.`);
+    } else if (kind === "resume") {
+      mdcSay("Back to it.");
+    } else if (kind === "mid") {
+      mdcSay(cue.mid || "Halfway. Keep it smooth.");
+    } else if (kind === "last5") {
+      mdcSay("Five seconds. Finish strong.");
+    } else if (kind === "done") {
+      let next = null;
+      try {
+        const done = readExerciseDoneToday();
+        next = FACE_EXERCISES.find(e => !done.has(e.id)) || null;
+      } catch (e) {}
+      if (next) mdcSay(`Done. Next up, ${next.name}.`);
+      // The last exercise is voiced by moglyOnDayComplete instead.
+    }
+  };
+
+  const MDC_MILESTONES = {
+    3: { title: "3-day streak", line: "Three days straight. This is where the morning puff starts dropping for real. Don't break it now." },
+    7: { title: "7-day streak", line: "Seven days. A full week. Your face holds less water than it did last week. Rescan in the same light and let's measure it.", rescan: true },
+    14: { title: "14-day streak", line: "Fourteen days. Two weeks of discipline, this is when people start to notice. Rescan, I want to see the delta.", rescan: true },
+    30: { title: "30-day streak", line: "Thirty days. That's not motivation anymore, that's who you are. Rescan and we set the next target.", rescan: true },
+  };
+  window.moglyOnDayComplete = function() {
+    const st = mdcLoad();
+    const today = todayKey();
+    if (st.dayDone === today) return;
+    st.dayDone = today;
+    const streak = (typeof moglyStreakCount === "function") ? moglyStreakCount() : 1;
+    st.ms = st.ms || {};
+    const ms = MDC_MILESTONES[streak];
+    if (ms && !st.ms[streak]) {
+      st.ms[streak] = today;
+      mdcSave(st);
+      mvHaptic("heavy");
+      setTimeout(() => mvHaptic("medium"), 120);
+      mdcCelebrate(streak, ms);
+      mdcSay(ms.line);
+      return;
+    }
+    mdcSave(st);
+    mvHaptic("success");
+    mdcSay(streak > 1
+      ? `All four done. Day ${streak} in a row. Same time tomorrow.`
+      : "All four done. That's day one. Come back tomorrow and make it two.");
+  };
+  function mdcCelebrate(streak, ms) {
+    const ov = mvEl("mdcCelebrate");
+    if (!ov) return;
+    const n = mvEl("mdcCelebrateNum"), t = mvEl("mdcCelebrateTitle"), l = mvEl("mdcCelebrateLine"), b = mvEl("mdcCelebrateRescan");
+    if (n) n.textContent = String(streak);
+    if (t) t.textContent = ms.title;
+    if (l) l.textContent = ms.line;
+    if (b) b.hidden = !ms.rescan;
+    ov.hidden = false;
+    requestAnimationFrame(() => ov.classList.add("is-open"));
+  }
+  window.moglyCloseCelebrate = function(rescan) {
+    const ov = mvEl("mdcCelebrate");
+    if (ov) { ov.classList.remove("is-open"); setTimeout(() => { ov.hidden = true; }, 320); }
+    window.moglyCoachStop();
+    if (rescan) {
+      openScreen("home");
+      setTimeout(() => { if (window.handleMoglyPrimaryScanClick) window.handleMoglyPrimaryScanClick(); }, 300);
+    }
+  };
+
+  // Daily brief entry on Home: a pill above the orb, once per day until played.
+  function mdcBriefLabel() {
+    const h = new Date().getHours();
+    if (h < 12) return "Morning";
+    if (h < 18) return "Midday";
+    return "Evening";
+  }
+  window.moglyRenderBriefChip = function() {
+    const chip = mvEl("mdcBriefChip");
+    if (!chip) return;
+    const played = mdcLoad().briefDate === todayKey();
+    const lbl = mvEl("mdcBriefLabel");
+    if (lbl) lbl.textContent = mdcBriefLabel();
+    chip.hidden = played;
+    const fab = mvEl("moglyAssistantFabContainer");
+    if (fab) fab.classList.toggle("has-brief", !played);
+  };
+  window.moglyPlayDailyBrief = async function(_premiumChecked) {
+    mvUnlockSpeech();
+    mvHaptic("medium");
+    if (!_premiumChecked) {
+      const ok = await ensurePremiumForAction(() => window.moglyPlayDailyBrief(true), mvT("gateTitle"), mvT("gateText"));
+      if (!ok) return;
+    }
+    const st = mdcLoad();
+    st.briefDate = todayKey();
+    mdcSave(st);
+    window.moglyRenderBriefChip();
+    if (!mvOpenOverlay(false)) return;
+    mvRunFunction("brief");
+  };
+
+  // Profile "Hear the voice": real Onyx / Nova sample when bundled
+  // (assets/audio/voice_onyx.mp3, voice_nova.mp3), device voice otherwise.
+  let mdcPreviewAudio = null;
+  function mdcPreviewLabel(playing) {
+    const l = mvEl("pfVoicePreviewLabel");
+    if (l) l.textContent = playing ? "Playing…" : "Hear the voice";
+    const b = mvEl("pfVoicePreview");
+    if (b) b.classList.toggle("is-playing", !!playing);
+  }
+  window.moglyPreviewVoice = function() {
+    mvUnlockSpeech();
+    mvHaptic("light");
+    if (mdcPreviewAudio) { try { mdcPreviewAudio.pause(); } catch (e) {} mdcPreviewAudio = null; mdcPreviewLabel(false); return; }
+    window.moglyCoachStop();
+    const female = _voiceGender === "female";
+    const line = female
+      ? "Hi, I'm Nova. Every day I'll walk you through your face routine, and we'll measure what changes."
+      : "I'm Onyx. Every day I'll walk you through your face routine, and we'll measure what changes.";
+    const a = new Audio(female ? "assets/audio/voice_nova.mp3" : "assets/audio/voice_onyx.mp3");
+    mdcPreviewAudio = a;
+    mdcPreviewLabel(true);
+    const done = () => { if (mdcPreviewAudio === a) { mdcPreviewAudio = null; mdcPreviewLabel(false); } };
+    const fallback = () => {
+      if (mdcPreviewAudio !== a) return;
+      mdcPreviewAudio = null;
+      if (!mvHasSynth()) { mdcPreviewLabel(false); return; }
+      const prev = localStorage.getItem(MDC_VOICE_KEY);
+      try { localStorage.removeItem(MDC_VOICE_KEY); } catch (e) {}
+      mdcSay(line);
+      try { if (prev != null) localStorage.setItem(MDC_VOICE_KEY, prev); } catch (e) {}
+      const u = mdcUtt;
+      if (!u) { mdcPreviewLabel(false); return; }
+      const end = u.onend;
+      u.onend = u.onerror = (ev) => { if (end) end(ev); mdcPreviewLabel(false); };
+    };
+    a.addEventListener("ended", done, { once: true });
+    a.addEventListener("error", fallback, { once: true });
+    mvAudioSession("playback");
+    const pr = a.play();
+    if (pr && pr.catch) pr.catch(fallback);
+  };
+
   window.addEventListener("DOMContentLoaded", mvInitOrbs);
   if (document.readyState !== "loading") mvInitOrbs();
 
@@ -19782,16 +20147,48 @@ window.syncTDEEChoiceUI = function() {
   };
 
   // --- 5. SYNC 3-BUTTON NAVIGATION & PAYWALL CAROUSEL ---
+  // Media lifecycle: only the visible screen may decode video or hold the
+  // camera. Off-screen <video loop> elements kept decoding forever (4 exercise
+  // thumbnails + the detail player), which drained memory and froze WKWebView.
+  let _fmPrevScreen = "home";
+  function fmSyncScreenMedia(id) {
+    const prev = _fmPrevScreen;
+    _fmPrevScreen = id;
+    if (prev === id) return;
+    if (prev === "home" && _cameraStream && typeof window.stopMoglyInlineCamera === "function") {
+      window.stopMoglyInlineCamera(true);
+    }
+    if (prev === "exerciseDetail") {
+      if (typeof window.pauseExerciseTimer === "function") window.pauseExerciseTimer();
+      if (typeof window.moglyCoachStop === "function") window.moglyCoachStop();
+    }
+    const active = document.getElementById(id);
+    document.querySelectorAll("section.screen video").forEach(v => {
+      if (v.id === "moglyInlineVideo" || v.srcObject) return; // camera streams are managed above
+      const inActive = !!(active && active.contains(v));
+      if (!inActive) { if (!v.paused) { try { v.pause(); } catch (e) {} } }
+      else if (v.hasAttribute("autoplay") && v.paused && v.getAttribute("src")) {
+        const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
+      }
+    });
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) return;
+    if (_cameraStream && typeof window.stopMoglyInlineCamera === "function") window.stopMoglyInlineCamera(true);
+  });
+
   function hookMoglyScreenNavigation() {
     const originalOpenScreen = window.openScreen;
     window.openScreen = function(id) {
       if (typeof originalOpenScreen === "function") {
         originalOpenScreen(id);
       }
+      try { fmSyncScreenMedia(id); } catch (e) {}
       syncMoglyBottomNav(id);
 
       // Restore user photo in square card and reset buttons whenever entering Home
       if (id === "home") {
+        if (typeof window.moglyRenderBriefChip === "function") window.moglyRenderBriefChip();
         if (typeof window.updateMoglySquareHeroPhoto === "function") {
           window.updateMoglySquareHeroPhoto();
         }
@@ -19862,8 +20259,8 @@ window.syncTDEEChoiceUI = function() {
     try {
       localStorage.removeItem("mogly_user_face_photo");
     } catch(e) {}
-    window.setMoglyLanguage(_currentLang);
-    window.setMoglyVoiceGender(_voiceGender);
+    window.setMoglyLanguage();
+    window.setMoglyVoiceGender(_voiceGender, { silent: true });
     if (typeof window.updateMoglySquareHeroPhoto === "function") {
       window.updateMoglySquareHeroPhoto();
     }
@@ -19871,6 +20268,7 @@ window.syncTDEEChoiceUI = function() {
       window.setMoglyHomeButtonsState("idle");
     }
     hookMoglyScreenNavigation();
+    if (typeof window.moglyRenderBriefChip === "function") window.moglyRenderBriefChip();
     const fab = document.getElementById("moglyAssistantFabContainer");
     const homeScreen = document.getElementById("home");
     if (fab && homeScreen && homeScreen.classList.contains("active")) {

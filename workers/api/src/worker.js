@@ -1994,6 +1994,76 @@ function pcmRate(contentType) {
   return r >= 8000 && r <= 48000 ? r : VOICE_PCM_RATE;
 }
 
+async function voiceSpeakOpenAI(env, text, lang, gender) {
+  const key = String(env.OPENROUTER_API_KEY || "").trim();
+  if (!key) return null;
+  const input = String(text || "").trim().slice(0, 1200);
+  if (!input) return null;
+  const isFemale = gender === "female";
+  const voice = isFemale ? "nova" : "onyx";
+  const systemPrompt = lang === "ru"
+    ? "Repeat the exact text provided by the user verbatim in Russian with a confident, natural human tone. Do NOT add anything else."
+    : "Repeat the exact text provided by the user verbatim with a confident, natural human tone. Do NOT add anything else.";
+
+  try {
+    const res = await voiceFetch(openRouterBase(env) + "/chat/completions", {
+      method: "POST",
+      headers: voiceHeaders(key),
+      body: JSON.stringify({
+        model: "openai/gpt-audio-mini",
+        modalities: ["text", "audio"],
+        audio: { voice, format: "pcm16" },
+        stream: true,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: input }
+        ]
+      }),
+    }, 25000);
+
+    if (!res.ok) return null;
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    const audioBuffers = [];
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop();
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data: ")) continue;
+        const dataStr = trimmed.slice(6);
+        if (dataStr === "[DONE]") continue;
+        try {
+          const json = JSON.parse(dataStr);
+          const audioDelta = json.choices?.[0]?.delta?.audio?.data;
+          if (audioDelta) {
+            const raw = atob(audioDelta);
+            const u8 = new Uint8Array(raw.length);
+            for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+            audioBuffers.push(u8);
+          }
+        } catch (e) {}
+      }
+    }
+    const totalLen = audioBuffers.reduce((acc, b) => acc + b.length, 0);
+    if (totalLen < 800) return null;
+    const fullPcm = new Uint8Array(totalLen);
+    let offset = 0;
+    for (const b of audioBuffers) {
+      fullPcm.set(b, offset);
+      offset += b.length;
+    }
+    const wav = pcmToWav(fullPcm, 24000);
+    return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: "openai/gpt-audio-mini" };
+  } catch (e) {
+    return null;
+  }
+}
+
 async function voiceSpeak(env, text, lang, gender) {
   const key = String(env.OPENROUTER_API_KEY || "").trim();
   if (!key) return { ok: false, reason: "OPENROUTER_API_KEY missing" };
@@ -2003,6 +2073,14 @@ async function voiceSpeak(env, text, lang, gender) {
     ? "Говори по-русски, естественно, спокойно и уверенно, как живой тренер. Не театрально, без спешки."
     : "Speak naturally, calm and confident, like a real coach. Warm and direct, never theatrical.";
   const g = gender === "female" ? "female" : "male";
+
+  // Premier ultra-realistic OpenAI voice (Onyx for male, Nova for female)
+  if (env.VOICE_ENGINE !== "gemini") {
+    try {
+      const openAiRes = await voiceSpeakOpenAI(env, input, lang, g);
+      if (openAiRes && openAiRes.ok) return openAiRes;
+    } catch (e) {}
+  }
 
   let lastReason = "speech failed";
   let lastStatus = 0;

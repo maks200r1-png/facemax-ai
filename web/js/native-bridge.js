@@ -31,15 +31,28 @@
 
   // -------------------- Haptics --------------------
 
+  // Timestamp of the last explicit haptic, so the global button handler below
+  // does not stack a second "light" tick on top of a deliberate one.
+  let _lastHapticAt = 0;
   facemax.haptic = function (style) {
+    _lastHapticAt = Date.now();
     try {
       const Haptics = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics;
       if (Haptics && facemax.native) {
-        if (style === "selection") return Haptics.selectionStart();
+        // selectionStart() only prepares the generator; the tick is selectionChanged().
+        if (style === "selection") {
+          return Promise.resolve(Haptics.selectionStart())
+            .then(function () { return Haptics.selectionChanged(); })
+            .then(function () { return Haptics.selectionEnd(); })
+            .catch(function () {});
+        }
+        if (style === "success" || style === "warning" || style === "error") {
+          return Haptics.notification({ type: style.toUpperCase() });
+        }
         const styleEnum = { light: "LIGHT", medium: "MEDIUM", heavy: "HEAVY" }[style] || "LIGHT";
         return Haptics.impact({ style: styleEnum });
       }
-      if (navigator.vibrate) navigator.vibrate(style === "heavy" ? 25 : style === "medium" ? 15 : 8);
+      if (navigator.vibrate) navigator.vibrate(style === "heavy" || style === "success" ? 25 : style === "medium" ? 15 : 8);
     } catch (e) { /* ignore */ }
   };
 
@@ -63,12 +76,13 @@
     }, { passive: true });
 
     document.addEventListener("click", function (e) {
-      const btn = e.target.closest("button, .btn, .nav, .tool, .meal-tab, .mogly-orb-fab-btn");
+      const btn = e.target.closest("button, .btn, .nav, .tool, .meal-tab, .mogly-orb-fab-btn, .pf-row, .exercise-tile");
       if (!btn) return;
       if (btn.classList.contains("mogly-orb-fab-btn") || btn.id === "moglyOrbFabBtn") {
         facemax.orbHaptic();
         return;
       }
+      if (Date.now() - _lastHapticAt < 120) return;
       const style = btn.classList.contains("btn-pay") || btn.classList.contains("btn-pay-starter")
         ? "medium"
         : btn.classList.contains("nav") ? "light" : "light";
@@ -1101,7 +1115,7 @@
         await p.schedule({
           notifications: [{
             id,
-            title: String(title || "FaceMax AI"),
+            title: String(title || "Mogly"),
             body: String(body || ""),
             sound: "default",
             smallIcon: "ic_stat_icon",
@@ -1122,7 +1136,7 @@
         await p.schedule({
           notifications: [{
             id,
-            title: String(title || "FaceMax AI"),
+            title: String(title || "Mogly"),
             body: String(body || ""),
             schedule: { at, allowWhileIdle: true },
             sound: "default",
@@ -1143,7 +1157,7 @@
         await p.schedule({
           notifications: [{
             id,
-            title: String(title || "FaceMax AI"),
+            title: String(title || "Mogly"),
             body: String(body || ""),
             schedule: {
               on: { hour: Number(hour), minute: Number(minute) },

@@ -432,13 +432,17 @@ async function postStream(body) {
   assert.match(chips, /class="mv-chip mv-chip-primary" data-fn="fixfirst"/, "Fix first is the highlighted chip");
   const mvTxt = web.slice(web.indexOf("const MV_TXT = {"), web.indexOf("const mvLang = "));
   for (const k of ["fixfirst", "jawline", "debloat", "eyes", "skin", "hair"]) {
-    assert.equal((mvTxt.match(new RegExp("\\n\\s+" + k + ': "', "g")) || []).length, 2, k + " label in en + ru");
+    assert.equal((mvTxt.match(new RegExp("\\n\\s+" + k + ': "', "g")) || []).length, 1, k + " label, English only");
   }
+  // The app ships for the US / global market: no Russian UI, no language switch.
+  assert.ok(!/[\u0400-\u04FF]/.test(web), "no Cyrillic text anywhere in the client");
+  assert.ok(!/setMoglyLanguage\('ru'\)|moglyLangBtnRu/.test(web), "no language picker");
+  assert.match(web, /const mvLang = \(\) => "en";/);
   assert.ok(!web.includes("Something went wrong. Please try again."), "no single generic error");
   assert.match(web, /ev\.type === "error"/, "stream error event handled");
   assert.match(web, /streamErr \? streamErr\.error/, "error reason drives the message");
   for (const k of ["errOffline", "errNetwork", "errTimeout", "errBusy", "errServer", "errStt", "errTooLong", "cutOff"]) {
-    assert.equal((mvTxt.match(new RegExp(k + ': "', "g")) || []).length, 2, k + " in en + ru");
+    assert.equal((mvTxt.match(new RegExp(k + ': "', "g")) || []).length, 1, k + " in English");
   }
   assert.match(web, /case "ai_busy": return mvT\("errBusy"\)/);
   assert.match(web, /if \(!answer\) \{ local\(e && e\.mvKind\); return; \}/, "network drop before the answer -> device answers");
@@ -487,7 +491,7 @@ async function postStream(body) {
   const ctx = { score: 71, gender: "male", metrics: { jawline: 62, cheekbones: 68, eyes: 74, skin: 58, symmetry: 80 },
     today: { exercises_done: 1, exercises_total: 4, next_exercise: "Masseter Release", water_glasses: 3, water_goal: 8 },
     progress: { streak: 5, scans: 2, first_score: 66, last_score: 71, days_since_scan: 9, local_hour: 20 } };
-  const en = build("en", ctx), ru = build("ru", ctx);
+  const en = build("en", ctx);
   const fixEn = en.mvLocalAnswer("fixfirst", "");
   assert.match(fixEn.answer, /Overall you're at 71/);
   assert.match(fixEn.answer, /Fix this first: your skin/, "lowest metric (skin 58) is the first fix");
@@ -503,16 +507,18 @@ async function postStream(body) {
   assert.match(en.mvLocalAnswer("eyes", "").answer, /Canthal tilt and orbital bone are hardmaxxing/);
   assert.match(en.mvLocalAnswer("debloat", "").answer, /lymphatic drainage/);
   assert.match(en.mvLocalAnswer("hair", "").answer, /Diamond means the cheekbones are the widest point/);
-  assert.match(en.mvLocalAnswer("today", "").answer, /Good evening\. You're on a 5 day streak.*1 of 4 done.*Masseter Release.*3 of 8 glasses.*66 to 71.*9 days ago/);
+  assert.match(en.mvLocalAnswer("today", "").answer, /Good evening\. Tonight decides tomorrow's face: salt down.*You're on a 5 day streak.*1 of 4 done.*Masseter Release.*3 of 8 glasses.*66 to 71.*9 days ago/);
+  // Daily brief adapts to the time of day (morning debloat ritual).
+  const morning = build("en", Object.assign({}, ctx, { progress: Object.assign({}, ctx.progress, { local_hour: 8 }) }));
+  assert.match(morning.mvLocalAnswer("brief", "").answer, /Good morning\. Two-minute ritual first: sixty seconds of cold water.*tongue flat on the palate/);
+  // Scan audit: change vs. the previous scan, biggest movers named.
+  const delta = build("en", Object.assign({}, ctx, { progress: Object.assign({}, ctx.progress, { scan_delta: { days: 7, overall: 3, areas: { jawline: 4, skin: -1, eyes: 0 } } }) }));
+  assert.match(delta.mvLocalAnswer("scan", "").answer, /That's up 3 in 7 days\. The work is showing\. Biggest moves: jawline up 4, skin down 1\./);
   assert.match(en.mvLocalAnswer("", "should I try bonesmashing?").answer, /I won't coach bonesmashing, steroids, DNP or starvation/);
   assert.equal(en.mvIntentFromText("how do I get rid of puffy face"), "debloat");
-  assert.equal(ru.mvIntentFromText("как убрать отёк"), "debloat");
-  assert.equal(ru.mvIntentFromText("какая стрижка мне подойдёт"), "hair");
-  assert.match(ru.mvLocalAnswer("fixfirst", "").answer, /Исправляем первым — кожа\./);
-  assert.match(ru.mvLocalAnswer("scan", "").answer, /Скан готов\. 71 из 100/);
-  assert.match(ru.mvLocalAnswer("jawline", "").answer, /взрослую кость он не перестраивает/);
+  assert.equal(en.mvIntentFromText("what haircut suits me"), "hair");
   for (const fn of ["fixfirst", "jawline", "debloat", "eyes", "skin", "hair", "scan", "brief", "priority", "today", "meal", "exercise"]) {
-    for (const b of [en, ru]) {
+    for (const b of [en, morning, delta]) {
       const a = b.mvLocalAnswer(fn, "").answer;
       assert.ok(a.length > 40 && !/undefined|null|NaN/.test(a), fn + " answer is clean: " + a.slice(0, 60));
     }
@@ -520,7 +526,7 @@ async function postStream(body) {
   const empty = build("en", { metrics: {} });
   assert.match(empty.mvLocalAnswer("fixfirst", "").answer, /I don't have your scan yet/);
   assert.equal(empty.mvLocalAnswer("scan", "").action, "scan");
-  ok("offline-first: 404/5xx/timeout -> on-device looksmax answer in en+ru, spoken via speechSynthesis, scan debrief at +2 s");
+  ok("offline-first: 404/5xx/timeout -> on-device looksmax answer (English), time-of-day brief, scan delta audit, spoken via speechSynthesis, scan debrief at +2 s");
 }
 
 console.log(`\nvoice-chat audit: ${passed} checks passed`);
