@@ -1406,15 +1406,15 @@ async function callOpenRouter(env, prompt, images, opts = {}) {
   }
 
   const temperature = opts.temperature != null ? opts.temperature : 0.35;
-  const provider = {
-    order: ["google-vertex/eu", "google-vertex", "google-ai-studio"],
-    allow_fallbacks: true,
-    data_collection: "deny",
-  };
+  // opts.model is only used by voice (VOICE_LLM_MODEL); everything else stays on Gemini.
+  const model = String(opts.model || "google/gemini-2.5-flash-lite");
+  const provider = model.startsWith("google/")
+    ? { order: ["google-vertex/eu", "google-vertex", "google-ai-studio"], allow_fallbacks: true, data_collection: "deny" }
+    : { allow_fallbacks: true, data_collection: "deny" };
   if (opts.responseFormat) provider.require_parameters = true;
 
   const payloadObj = {
-    model: "google/gemini-2.5-flash-lite",
+    model,
     provider,
     temperature,
     max_tokens: Number(opts.maxTokens) > 0 ? Number(opts.maxTokens) : (content.length > 1 ? 4096 : 3072),
@@ -1856,8 +1856,18 @@ Rules:
 // ==================== VOICE (Mogly AI mentor) ====================
 //
 // Pipeline, everything through OpenRouter:
-//   mic audio -> /audio/transcriptions -> Gemini (same EU Vertex route as every
-//   other AI flow) -> /audio/speech (OpenAI TTS) -> mp3 back to the app.
+//   mic audio -> /audio/transcriptions (gpt-4o-mini-transcribe) -> Gemini
+//   2.5 Flash-Lite (same route as every other AI flow) -> /audio/speech
+//   (Gemini 3.8 Flash Lite TTS) -> audio back to the app.
+//
+// TTS model chain: OpenRouter does not list openai/gpt-4o-mini-tts in its
+// speech catalog (GET /models?output_modalities=speech, checked 2026-10-27;
+// its endpoints route returns 404), so every speech call to it failed and the
+// app only ever showed text. Gemini 3.8 Flash Lite TTS is the cheapest
+// natural multilingual voice in that catalog. Gemini TTS only returns raw
+// 16-bit PCM, which is wrapped into a WAV container here so <audio> can play
+// it. Gemini 3.8 Flash TTS (same voices) is the fallback; OpenAI is last in
+// case it comes back.
 //
 // Why this replaced the old openai/gpt-audio-mini call: OpenRouter only returns
 // audio output from chat completions when stream:true is set, and the old code
@@ -1868,16 +1878,28 @@ Rules:
 // Endpoints:
 //   POST /api/voice-chat     free mode + function buttons (premium, daily limit)
 //   POST /api/voice-consult  legacy route kept for older app builds (IP limited)
+//
+// Streaming (body.stream = true, current app): one request does STT -> answer
+// -> speech and replies with NDJSON. The answer is cut into up to 3 sentence
+// groups that are voiced in parallel and sent in order, so the first sentence
+// plays while the rest is still being synthesised. TTS is billed per
+// character, so splitting costs nothing extra. Without stream the route
+// returns a single JSON object (older builds).
 
 const VOICE_STT_MODEL = "openai/gpt-4o-mini-transcribe";
-const VOICE_TTS_MODEL = "openai/gpt-4o-mini-tts-2025-12-15";
-const VOICE_TTS_VOICES = ["ash", "alloy"];
+const VOICE_TTS_CHAIN = [
+  { model: "google/gemini-3.8-flash-lite-tts", format: "pcm", voices: { male: ["Charon", "Orus"], female: ["Kore", "Sulafat"] } },
+  { model: "google/gemini-3.8-flash-tts", format: "pcm", voices: { male: ["Charon"], female: ["Kore"] } },
+  { model: "openai/gpt-4o-mini-tts-2025-12-15", format: "mp3", voices: { male: ["ash"], female: ["alloy"] } },
+];
+const VOICE_PCM_RATE = 24000;           // Gemini TTS: 24 kHz mono s16le
 const DAILY_VOICE_LIMIT = 40;          // voice turns per user per day
 const DAILY_VOICE_LEGACY_IP_LIMIT = 12; // old builds send no user id
 const VOICE_REQUIRES_PREMIUM = true;
 const VOICE_MAX_AUDIO_B64 = 6000000;   // ~4.5 MB of audio
 const VOICE_MAX_ANSWER_CHARS = 700;
-const VOICE_FUNCTIONS = new Set(["priority", "today", "exercise", "meal"]);
+const VOICE_FUNCTIONS = new Set(["brief", "priority", "today", "exercise", "meal"]);
+const VOICE_MAX_SEGMENTS = 3;
 const VOICE_ACTIONS = new Set(["exercises", "daily", "foodscan"]);
 
 function openRouterBase(env) {
@@ -1947,7 +1969,27 @@ async function voiceTranscribe(env, audioB64, format, lang) {
   }
 }
 
-async function voiceSpeak(env, text, lang) {
+// Raw 16-bit mono PCM -> WAV bytes.
+function pcmToWav(pcm, rate) {
+  const len = pcm.length - (pcm.length % 2);
+  const out = new Uint8Array(44 + len);
+  const v = new DataView(out.buffer);
+  const tag = (o, t) => { for (let i = 0; i < 4; i++) out[o + i] = t.charCodeAt(i); };
+  tag(0, "RIFF"); v.setUint32(4, 36 + len, true); tag(8, "WAVE");
+  tag(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  tag(36, "data"); v.setUint32(40, len, true);
+  out.set(pcm.subarray(0, len), 44);
+  return out;
+}
+
+function pcmRate(contentType) {
+  const m = String(contentType || "").match(/rate=(\d+)/i);
+  const r = m ? Number(m[1]) : 0;
+  return r >= 8000 && r <= 48000 ? r : VOICE_PCM_RATE;
+}
+
+async function voiceSpeak(env, text, lang, gender) {
   const key = String(env.OPENROUTER_API_KEY || "").trim();
   if (!key) return { ok: false, reason: "OPENROUTER_API_KEY missing" };
   const input = String(text || "").trim().slice(0, 1200);
@@ -1955,43 +1997,47 @@ async function voiceSpeak(env, text, lang) {
   const instructions = lang === "ru"
     ? "Говори по-русски, естественно, спокойно и уверенно, как живой тренер. Не театрально, без спешки."
     : "Speak naturally, calm and confident, like a real coach. Warm and direct, never theatrical.";
+  const g = gender === "female" ? "female" : "male";
 
   let lastReason = "speech failed";
   let lastStatus = 0;
-  for (const voice of VOICE_TTS_VOICES) {
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try {
-        const res = await voiceFetch(openRouterBase(env) + "/audio/speech", {
-          method: "POST",
-          headers: voiceHeaders(key),
-          body: JSON.stringify({
-            model: VOICE_TTS_MODEL,
-            input,
-            voice,
-            response_format: "mp3",
-            instructions,
-          }),
-        }, 30000);
-        lastStatus = res.status;
-        if (res.ok) {
-          const buf = new Uint8Array(await res.arrayBuffer());
-          if (buf.length > 800) {
-            return { ok: true, base64: bytesToBase64(buf), format: "mp3", voice };
+  for (const tts of VOICE_TTS_CHAIN) {
+    voices:
+    for (const voice of tts.voices[g]) {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const res = await voiceFetch(openRouterBase(env) + "/audio/speech", {
+            method: "POST",
+            headers: voiceHeaders(key),
+            body: JSON.stringify({ model: tts.model, input, voice, response_format: tts.format, instructions }),
+          }, 30000);
+          lastStatus = res.status;
+          if (res.ok) {
+            const buf = new Uint8Array(await res.arrayBuffer());
+            if (buf.length > 800) {
+              if (tts.format === "pcm") {
+                const wav = pcmToWav(buf, pcmRate(res.headers.get("Content-Type")));
+                return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: tts.model };
+              }
+              return { ok: true, base64: bytesToBase64(buf), format: "mp3", voice, model: tts.model };
+            }
+            lastReason = "speech returned no audio";
+            break;
           }
-          lastReason = "speech returned no audio";
-          break;
+          const raw = await res.text().catch(() => "");
+          let data = {};
+          try { data = raw ? JSON.parse(raw) : {}; } catch {}
+          lastReason = data?.error?.message || raw.slice(0, 200) || ("speech HTTP " + res.status);
+          // Auth or credit errors: no model will work, stop. Model not found:
+          // next model. Bad voice / bad request: next voice.
+          if ([401, 402, 403].includes(res.status)) return { ok: false, status: res.status, reason: lastReason };
+          if (res.status === 404) break voices;
+          if ([400, 422].includes(res.status)) break;
+          if (attempt === 0) await new Promise(r => setTimeout(r, 600));
+        } catch (e) {
+          lastReason = e?.name === "AbortError" ? "speech timed out" : (e?.message || String(e));
+          if (attempt === 0) await new Promise(r => setTimeout(r, 400));
         }
-        const raw = await res.text().catch(() => "");
-        let data = {};
-        try { data = raw ? JSON.parse(raw) : {}; } catch {}
-        lastReason = data?.error?.message || raw.slice(0, 200) || ("speech HTTP " + res.status);
-        // Bad voice / bad request: try the next voice. Auth or credit errors: stop.
-        if ([401, 402, 403].includes(res.status)) return { ok: false, status: res.status, reason: lastReason };
-        if ([400, 404, 422].includes(res.status)) break;
-        if (attempt === 0) await new Promise(r => setTimeout(r, 700));
-      } catch (e) {
-        lastReason = e?.name === "AbortError" ? "speech timed out" : (e?.message || String(e));
-        if (attempt === 0) await new Promise(r => setTimeout(r, 500));
       }
     }
   }
@@ -2032,6 +2078,23 @@ function voiceContextBlock(ctx) {
     }
     if (parts.length) lines.push("Today: " + parts.join("; "));
   }
+  const p = ctx.progress;
+  if (p && typeof p === "object") {
+    const parts = [];
+    const num = (v) => (v === null || v === undefined || v === "" ? NaN : Number(v));
+    if (Number.isFinite(num(p.streak))) parts.push(`streak ${num(p.streak)} days`);
+    if (Number.isFinite(num(p.plan_done)) && Number.isFinite(num(p.plan_total))) {
+      parts.push(`daily plan ${num(p.plan_done)} of ${num(p.plan_total)} done`);
+    }
+    if (p.streak_at_risk) parts.push("streak ends tonight if today's plan is not finished");
+    if (Number.isFinite(num(p.scans))) parts.push(`${num(p.scans)} scans so far`);
+    if (Number.isFinite(num(p.first_score)) && Number.isFinite(num(p.last_score)) && num(p.scans) > 1) {
+      parts.push(`score went from ${Math.round(num(p.first_score))} to ${Math.round(num(p.last_score))}`);
+    }
+    if (Number.isFinite(num(p.days_since_scan))) parts.push(`last scan ${num(p.days_since_scan)} days ago`);
+    if (Number.isFinite(num(p.local_hour))) parts.push(`local time ${num(p.local_hour)}:00`);
+    if (parts.length) lines.push("Progress: " + parts.join("; "));
+  }
   if (ctx.meal_plan) lines.push("Meal plan: " + voiceClip(JSON.stringify(ctx.meal_plan), 900));
   return lines.length ? lines.join("\n") : "No scan data yet.";
 }
@@ -2039,6 +2102,7 @@ function voiceContextBlock(ctx) {
 function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise }) {
   const ru = lang === "ru";
   const functionGoal = {
+    brief: "The user tapped 'Daily brief', their short daily check-in. Greet them for the time of day. In one sentence, reflect their real progress from the data (streak, plan done today, score change); never invent numbers. Then give today's single focus: the one action with the biggest visible payoff for their weakest improvable area. If the streak is at risk, say so plainly. If the last scan is 7 or more days ago, suggest a re-scan to measure progress. Up to 5 short sentences. End with [[go:daily]] if today's plan is not finished.",
     priority: "The user tapped 'What should I improve first'. From the metrics, pick the one or two most improvable weak areas (skip anything that is fixed bone structure), say plainly what matters most, and give ONE concrete first step they can do today. Up to 4 short sentences.",
     today: "The user tapped 'My plan for today'. Briefly say how their day is going using the Today data (exercises done, water), name the next exercise, and ask if they want to start it. Up to 4 short sentences. If the next exercise exists end with the tag [[go:exercises]].",
     meal: "The user tapped 'What should I eat'. Using the meal plan if present, suggest what to eat next and why it helps with facial bloating. If there is no meal plan, give one practical suggestion and mention the food scanner. Up to 4 short sentences. End with the tag [[go:foodscan]] only if you mention scanning a meal.",
@@ -2099,9 +2163,64 @@ function parseVoiceAnswer(text) {
   return { answer, action };
 }
 
+// Splits a spoken answer into at most VOICE_MAX_SEGMENTS sentence groups. The
+// first group is kept short so its audio is ready first.
+function voiceSegments(answer) {
+  const text = String(answer || "").trim();
+  if (!text) return [];
+  const sentences = text.match(/[^.!?…]+(?:[.!?…]+["»”')]*|$)\s*/g) || [text];
+  const parts = sentences.map(x => x.trim()).filter(Boolean);
+  if (parts.length < 2) return [text];
+  let i = 0;
+  let first = "";
+  while (i < parts.length && (first.length < 50 || i === 0)) first = (first ? first + " " : "") + parts[i++];
+  const rest = parts.slice(i);
+  if (!rest.length) return [first];
+  const restText = rest.join(" ");
+  if (VOICE_MAX_SEGMENTS < 3 || rest.length < 2 || restText.length < 200) return [first, restText];
+  let mid = 0;
+  let acc = 0;
+  while (mid < rest.length - 1 && acc < restText.length / 2) acc += rest[mid++].length + 1;
+  return [first, rest.slice(0, mid).join(" "), rest.slice(mid).join(" ")];
+}
+
+// NDJSON stream of a finished turn: transcript, then the text answer, then the
+// audio segments in order, then done. Events:
+//   {type:"transcript", text}
+//   {type:"answer", answer, action, used, limit}
+//   {type:"audio", index, count, audio_base64, audio_format}
+//   {type:"done", tts_ok, tts_error}
+//   {type:"error", error, reason}
+function voiceStreamResponse(run) {
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const enc = new TextEncoder();
+  const send = (ev) => writer.write(enc.encode(JSON.stringify(ev) + "\n"));
+  (async () => {
+    try {
+      await run(send);
+    } catch (e) {
+      try { await send({ type: "error", error: "ai_error", reason: e?.message || String(e) }); } catch {}
+    } finally {
+      try { await writer.close(); } catch {}
+    }
+  })();
+  return new Response(readable, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/x-ndjson; charset=utf-8",
+      "Cache-Control": "no-store",
+      ...corsHeaders(),
+    },
+  });
+}
+
 async function voiceAnswer(env, params) {
   const prompt = buildVoicePrompt(params);
+  // VOICE_LLM_MODEL (optional var/secret) swaps the voice brain without a
+  // redeploy of the app, e.g. "anthropic/claude-haiku-5.5" for an A/B test.
   const result = await callOpenRouter(env, prompt, [], {
+    model: String(env.VOICE_LLM_MODEL || "").trim() || undefined,
     tries: 2,
     temperature: 0.6,
     maxTokens: 400,
@@ -2135,6 +2254,7 @@ async function voiceChat(request, env) {
   }
 
   const lang = body.lang === "ru" || body.language === "ru" ? "ru" : "en";
+  const gender = body.voice_gender === "female" ? "female" : "male";
   const fn = VOICE_FUNCTIONS.has(String(body.function || "")) ? String(body.function) : "";
 
   // Optional audio. Used for free mode and for "transcribe only" (the app shows
@@ -2164,6 +2284,37 @@ async function voiceChat(request, env) {
   }
 
   const exercise = (fn === "exercise" && body.exercise && typeof body.exercise === "object") ? body.exercise : null;
+
+  if (body.stream) {
+    return voiceStreamResponse(async (send) => {
+      if (transcript) await send({ type: "transcript", text: transcript });
+      const answer = await voiceAnswer(env, {
+        lang, fn, userText, history: body.history, ctx: body.context, exercise,
+      });
+      if (!answer.ok) {
+        await send({ type: "error", error: "ai_error", reason: answer.reason });
+        return;
+      }
+      await send({ type: "answer", answer: answer.answer, action: answer.action, used: limit.used, limit: limit.limit });
+      const segments = voiceSegments(answer.answer);
+      // All segments are synthesised in parallel; each is sent as soon as it
+      // and every segment before it is ready.
+      const jobs = segments.map(seg => voiceSpeak(env, seg, lang, gender));
+      let ttsOk = true;
+      let ttsError = null;
+      for (let i = 0; i < jobs.length; i++) {
+        const speech = await jobs[i];
+        if (!speech.ok) {
+          ttsOk = false;
+          ttsError = speech.reason;
+          break;
+        }
+        await send({ type: "audio", index: i, count: jobs.length, audio_base64: speech.base64, audio_format: speech.format });
+      }
+      await send({ type: "done", tts_ok: ttsOk, tts_error: ttsError });
+    });
+  }
+
   const answer = await voiceAnswer(env, {
     lang, fn, userText, history: body.history, ctx: body.context, exercise,
   });
@@ -2171,7 +2322,7 @@ async function voiceChat(request, env) {
     return json({ ok: false, error: "ai_error", reason: answer.reason }, 502);
   }
 
-  const speech = await voiceSpeak(env, answer.answer, lang);
+  const speech = await voiceSpeak(env, answer.answer, lang, gender);
   return json({
     ok: true,
     transcript: transcript || userText,

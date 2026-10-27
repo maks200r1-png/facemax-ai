@@ -3171,11 +3171,10 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: calc(env(safe-area-inset-top, 0px) + 10px) 20px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  padding: calc(env(safe-area-inset-top, 0px) + 12px) 20px calc(env(safe-area-inset-bottom, 0px) + 18px);
   box-sizing: border-box;
-  background: radial-gradient(120% 70% at 50% 28%, rgba(30, 66, 134, 0.55) 0%, rgba(4, 7, 14, 0.97) 64%);
-  -webkit-backdrop-filter: blur(30px) saturate(160%);
-  backdrop-filter: blur(30px) saturate(160%);
+  /* OLED: true black, the orb is the only light on screen. */
+  background: #000;
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
@@ -3192,19 +3191,24 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
 .mv-top {
   width: 100%;
+  max-width: 440px;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   flex-shrink: 0;
 }
+.mv-title {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
 .mv-close {
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.09);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #161618;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3217,16 +3221,16 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 18px;
 }
 .mv-big-orb {
-  width: min(58vw, 230px);
-  height: min(58vw, 230px);
+  width: min(62vw, 26vh, 260px);
+  height: min(62vw, 26vh, 260px);
   flex-shrink: 0;
   padding: 0;
   border: 0;
@@ -3235,24 +3239,32 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transform: scale(calc(1 + var(--lvl, 0) * 0.06));
-  transition: transform 0.12s linear;
+  transition: transform 0.12s linear, width 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1), height 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+/* With an answer on screen the orb contracts to give the words room. */
+.mv-overlay.mv-has-text .mv-big-orb {
+  width: min(44vw, 19vh, 200px);
+  height: min(44vw, 19vh, 200px);
 }
 .mv-status {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-  min-height: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  min-height: 20px;
+  text-align: center;
   transition: color 0.25s ease;
 }
 .mv-overlay[data-state="listening"] .mv-status { color: #6fdcff; }
 .mv-overlay[data-state="speaking"] .mv-status { color: #b9a6ff; }
 
+/* The answer is spoken, so long text scrolls; the action button below it never does. */
 .mv-text {
   width: 100%;
-  min-height: 92px;
-  max-height: 24vh;
+  flex: 0 1 auto;
+  min-height: 48px;
+  max-height: 32vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   text-align: center;
@@ -3261,34 +3273,33 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   mask-image: linear-gradient(to bottom, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
 }
 .mv-you {
-  font-size: 14px;
+  font-size: 17px;
   line-height: 1.35;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 8px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 10px;
 }
 .mv-answer {
-  font-size: 19px;
-  line-height: 1.38;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-size: 24px;
+  line-height: 1.28;
+  font-weight: 750;
+  letter-spacing: -0.02em;
   color: #fff;
 }
 .mv-action {
-  margin: 12px auto 0;
+  margin: 0 auto;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
-  padding: 0 18px;
+  height: 52px;
+  padding: 0 26px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.12);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
+  border: 0;
+  background: #fff;
+  color: #000;
+  font-size: 17px;
+  font-weight: 800;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -3296,37 +3307,63 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 
 .mv-chips {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
+  margin-top: 12px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   flex-shrink: 0;
 }
+/* Large tactile tiles: flat near-black on OLED, one hairline, bold label. */
 .mv-chip {
   position: relative;
-  min-height: 64px;
-  padding: 10px 14px;
-  border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-top-color: rgba(255, 255, 255, 0.34);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 100%);
-  -webkit-backdrop-filter: blur(22px) saturate(190%);
-  backdrop-filter: blur(22px) saturate(190%);
-  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.4), 0 10px 26px rgba(0, 0, 0, 0.35);
+  min-height: 78px;
+  padding: 13px 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #111113;
   color: #fff;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 10px;
   text-align: left;
-  font-size: 14px;
-  line-height: 1.2;
-  font-weight: 650;
+  font-size: 17px;
+  line-height: 1.15;
+  font-weight: 750;
+  letter-spacing: -0.01em;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2), background 0.2s ease;
 }
-.mv-chip:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.2); }
-.mv-chip svg { flex-shrink: 0; opacity: 0.92; }
+.mv-chip:active { transform: scale(0.96); background: #1c1c1f; }
+.mv-chip svg { flex-shrink: 0; width: 26px; height: 26px; }
+/* The daily habit: one full-width primary button. */
+.mv-chip.mv-chip-primary {
+  grid-column: 1 / -1;
+  min-height: 68px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font-size: 20px;
+  font-weight: 800;
+}
+.mv-chip.mv-chip-primary:active { background: #e6e6e6; }
+/* Short phones (SE / mini): keep everything on one screen. */
+@media (max-height: 740px) {
+  .mv-stage { gap: 10px; }
+  .mv-answer { font-size: 20px; }
+  .mv-you { font-size: 15px; margin-bottom: 6px; }
+  .mv-action { height: 46px; font-size: 16px; }
+  .mv-chip { min-height: 68px; padding: 11px 14px; font-size: 16px; }
+  .mv-chip svg { width: 22px; height: 22px; }
+  .mv-chip.mv-chip-primary { min-height: 58px; font-size: 18px; }
+}
 .mv-chip[disabled] { opacity: 0.45; pointer-events: none; }
 
 @media (max-height: 680px) {
@@ -6355,6 +6392,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 <!-- ==================== MOGLY VOICE OVERLAY (liquid glass) ==================== -->
 <div class="mv-overlay" id="mvOverlay" data-state="idle" role="dialog" aria-modal="true" aria-label="Mogly voice mentor">
   <div class="mv-top">
+    <div class="mv-title">Mogly</div>
     <button type="button" class="mv-close" onclick="closeMoglyVoiceSheet()" aria-label="Close">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
@@ -6372,11 +6410,15 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
     <div class="mv-text" id="mvText">
       <div class="mv-you" id="mvYou"></div>
       <div class="mv-answer" id="mvAnswer"></div>
-      <button type="button" class="mv-action" id="mvAction" onclick="moglyVoiceAction()" hidden></button>
     </div>
+    <button type="button" class="mv-action" id="mvAction" onclick="moglyVoiceAction()" hidden></button>
   </div>
 
   <div class="mv-chips" id="mvChips">
+    <button type="button" class="mv-chip mv-chip-primary" data-fn="brief" onclick="moglyVoiceChip('brief')">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>
+      <span>Daily brief</span>
+    </button>
     <button type="button" class="mv-chip" data-fn="priority" onclick="moglyVoiceChip('priority')">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="#fff"/></svg>
       <span>What to fix first</span>
@@ -18196,6 +18238,7 @@ window.syncTDEEChoiceUI = function() {
       listening: "Listening",
       thinking: "Thinking",
       speaking: "Tap to stop",
+      brief: "Daily brief",
       priority: "What to fix first",
       today: "My plan for today",
       exercise: "Guided exercise",
@@ -18219,6 +18262,7 @@ window.syncTDEEChoiceUI = function() {
       listening: "Слушаю",
       thinking: "Думаю",
       speaking: "Нажми, чтобы остановить",
+      brief: "Брифинг дня",
       priority: "Что улучшить в первую очередь",
       today: "План на сегодня",
       exercise: "Упражнение с голосом",
@@ -18361,7 +18405,7 @@ window.syncTDEEChoiceUI = function() {
     for (let i = 0; i < mvOrbs.length; i++) {
       const o = mvOrbs[i];
       if (!o.isVisible()) continue;
-      if (!o.size) mvResizeOrb(o);
+      mvResizeOrb(o);
       mvDrawOrb(o, t, mvLevel);
       const holder = mvEl(o.cssTargetId);
       if (holder) holder.style.setProperty("--lvl", lvlStr);
@@ -18399,6 +18443,8 @@ window.syncTDEEChoiceUI = function() {
     const y = mvEl("mvYou"), a = mvEl("mvAnswer");
     if (y) y.textContent = you || "";
     if (a) a.textContent = answer || "";
+    const ov = mvEl("mvOverlay");
+    if (ov) ov.classList.toggle("mv-has-text", !!answer);
     const box = mvEl("mvText");
     if (box) box.scrollTop = 0;
   }
@@ -18484,39 +18530,89 @@ window.syncTDEEChoiceUI = function() {
       return out;
     } catch (e) { return null; }
   }
-  function mvStopPlayback() {
+  // The answer arrives as up to 3 audio segments (sentence groups, wav or mp3) that play back to back
+  // through a normal <audio> element. The first segment starts while the rest is still
+  // being synthesised on the server.
+  let mvQueue = null;            // { turn, items, played, done, blocked, onEnd }
+  function mvReleaseCurrent() {
     const p = mvPlayback;
     mvPlayback = null;
     if (!p) return;
     try { p.audio.onended = null; p.audio.onerror = null; p.audio.pause(); } catch (e) {}
     try { URL.revokeObjectURL(p.url); } catch (e) {}
   }
-  async function mvPlay(b64, myTurn, onEnd) {
-    const bytes = mvBase64ToBytes(b64);
-    const envelope = await mvEnvelope(bytes);
-    if (myTurn !== mvTurn) return;
+  function mvStopPlayback() {
+    mvQueue = null;
+    mvReleaseCurrent();
+  }
+  function mvStartQueue(myTurn, onEnd) {
     mvStopPlayback();
+    mvQueue = { turn: myTurn, items: [], played: [], done: false, blocked: false, onEnd };
+  }
+  function mvQueuePush(bytes, format) {
+    if (!mvQueue) return;
+    mvQueue.items.push({ bytes, mime: format === "wav" ? "audio/wav" : "audio/mpeg" });
+    mvPlayNext();
+  }
+  function mvQueueEnd() {
+    if (!mvQueue) return;
+    mvQueue.done = true;
+    mvPlayNext();
+  }
+  async function mvPlayNext() {
+    const q = mvQueue;
+    if (!q || q.blocked || mvPlayback || q.turn !== mvTurn) return;
+    if (!q.items.length) {
+      if (q.done) {
+        mvQueue = null;
+        mvSetState("idle");
+        if (q.onEnd) q.onEnd();
+      }
+      return;
+    }
+    const item = q.items.shift();
+    q.played.push(item);
     mvAudioSession("playback");
-    const url = URL.createObjectURL(new Blob([bytes], { type: "audio/mpeg" }));
+    const url = URL.createObjectURL(new Blob([item.bytes], { type: item.mime }));
     const audio = new Audio();
     audio.preload = "auto";
     audio.setAttribute("playsinline", "");
     audio.src = url;
-    const finish = () => {
+    // A broken segment is skipped rather than ending the whole answer.
+    const next = () => {
       if (!mvPlayback || mvPlayback.audio !== audio) return;
-      mvStopPlayback();
-      if (myTurn === mvTurn) { mvSetState("idle"); if (onEnd) onEnd(); }
+      mvReleaseCurrent();
+      mvPlayNext();
     };
-    audio.onended = finish;
-    audio.onerror = () => { if (myTurn === mvTurn) { mvStopPlayback(); mvSetState("idle"); } };
-    mvPlayback = { audio, url, envelope };
+    audio.onended = next;
+    audio.onerror = next;
+    mvPlayback = { audio, url, envelope: null };
+    // The loudness envelope only drives the orb. It is decoded alongside playback and never
+    // delays it: WebKit's decodeAudioData can stall on a suspended AudioContext.
+    mvEnvelope(item.bytes).then(env => { if (mvPlayback && mvPlayback.audio === audio) mvPlayback.envelope = env; });
     try {
       await audio.play();
-      if (myTurn === mvTurn) mvSetState("speaking");
+      if (mvQueue === q) mvSetState("speaking");
     } catch (e) {
-      mvStopPlayback();
-      if (myTurn === mvTurn) { mvSetState("idle"); const a = mvEl("mvStatus"); if (a) a.textContent = mvT("playBlocked"); }
+      // Autoplay refused: keep every segment and play them on the next tap of the orb.
+      if (!mvPlayback || mvPlayback.audio !== audio) return;
+      mvReleaseCurrent();
+      if (mvQueue !== q) return;
+      q.items = q.played.concat(q.items);
+      q.played = [];
+      q.blocked = true;
+      mvSetState("idle");
+      const st = mvEl("mvStatus");
+      if (st) st.textContent = mvT("playBlocked");
     }
+  }
+  function mvResumeBlocked() {
+    const q = mvQueue;
+    if (!q || !q.blocked) return false;
+    q.blocked = false;
+    mvSetState("speaking");
+    mvPlayNext();
+    return true;
   }
 
   // ----- backend -----
@@ -18538,6 +18634,22 @@ window.syncTDEEChoiceUI = function() {
       };
     } catch (e) {}
     try {
+      const m = (typeof _guBuildMomentumState === "function") ? _guBuildMomentumState() : null;
+      const scored = (Array.isArray(scanHistory) ? scanHistory : []).filter(h => h && Number(h.score) > 0);
+      const last = scored[0];
+      ctx.progress = {
+        streak: m ? m.streak : null,
+        plan_done: m ? m.done : null,
+        plan_total: m ? m.total : null,
+        streak_at_risk: !!(m && m.atRisk),
+        scans: scored.length,
+        first_score: scored.length ? scored[scored.length - 1].score : null,
+        last_score: last ? last.score : null,
+        days_since_scan: last && last.date ? Math.max(0, Math.floor((Date.now() - Number(last.date)) / 86400000)) : null,
+        local_hour: new Date().getHours(),
+      };
+    } catch (e) {}
+    try {
       if (mealPlanData && mealPlanData.plan) {
         ctx.meal_plan = {
           summary: mealPlanData.plan.summary,
@@ -18547,20 +18659,62 @@ window.syncTDEEChoiceUI = function() {
     } catch (e) {}
     return ctx;
   }
-  async function mvCall(payload) {
+  // One request per turn (speech -> transcript -> answer -> voice). The worker streams
+  // NDJSON events; onEvent gets each one as it lands. Plain JSON replies (paywall, limit,
+  // silence, or a worker without streaming) come back as { status, data, streamed:false }.
+  let mvAbort = null;
+  async function mvStreamCall(payload, myTurn, onEvent) {
     const body = Object.assign({
       user_id: currentUserId(),
       lang: mvLang(),
       local_date: todayKey(),
       context: mvContext(),
+      voice_gender: _voiceGender,
+      stream: true,
     }, payload);
-    const res = await fetchWithTimeout(API_BASE + "/api/voice-chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    }, 45000);
-    const data = await res.json().catch(() => null);
-    return { status: res.status, data };
+    const controller = new AbortController();
+    mvAbort = controller;
+    // Covers the whole body, not just the headers, so a stalled stream cannot hang the orb.
+    const timer = setTimeout(() => controller.abort(), 60000);
+    try {
+      const res = await fetch(API_BASE + "/api/voice-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      if (!/ndjson/i.test(res.headers.get("Content-Type") || "")) {
+        const data = await res.json().catch(() => null);
+        return { status: res.status, data, streamed: false };
+      }
+      const handle = (line) => {
+        line = line.trim();
+        if (!line || myTurn !== mvTurn) return;
+        let ev = null;
+        try { ev = JSON.parse(line); } catch (e) { return; }
+        onEvent(ev);
+      };
+      if (res.body && res.body.getReader && typeof TextDecoder !== "undefined") {
+        const reader = res.body.getReader();
+        const dec = new TextDecoder();
+        let buf = "";
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (myTurn !== mvTurn) { try { reader.cancel(); } catch (e) {} break; }
+          if (done) break;
+          buf += dec.decode(value, { stream: true });
+          let nl;
+          while ((nl = buf.indexOf("\n")) >= 0) { handle(buf.slice(0, nl)); buf = buf.slice(nl + 1); }
+        }
+        handle(buf);
+      } else {
+        String(await res.text()).split("\n").forEach(handle);
+      }
+      return { status: res.status, data: { ok: true }, streamed: true };
+    } finally {
+      clearTimeout(timer);
+      if (mvAbort === controller) mvAbort = null;
+    }
   }
 
   // Returns true when the reply was handled (an error was shown, or the paywall opened).
@@ -18654,50 +18808,75 @@ window.syncTDEEChoiceUI = function() {
     if ((!mvHeardSpeech && !mvManualStop) || blob.size < 1500) { mvError(mvT("notHeard")); return; }
     try {
       const audioB64 = await mvBlobToBase64(blob);
-      // Step 1: transcript only, so the user sees their words straight away.
-      let r = await mvCall({ audio_base64: audioB64, audio_format: mime, transcribe_only: true });
       if (myTurn !== mvTurn) return;
-      let fail = await mvHandleFailure(r, true);
-      if (fail.retry) { r = await mvCall({ audio_base64: audioB64, audio_format: mime, transcribe_only: true }); if (myTurn !== mvTurn) return; fail = await mvHandleFailure(r, false); }
-      if (fail.handled) return;
-      const said = String((r.data && r.data.transcript) || "").trim();
-      if (!said || r.data.empty) { mvError(mvT("notHeard")); return; }
-      mvShow(said, "");
-      // Step 2: answer + voice.
-      await mvAsk({ text: said, history: mvHistory.slice(-6) }, myTurn, said);
+      // The transcript event arrives first, so the user sees their words before the answer.
+      await mvAsk({ audio_base64: audioB64, audio_format: mime, history: mvHistory.slice(-6) }, myTurn, "");
     } catch (e) {
       if (myTurn === mvTurn) mvError(mvT("error"));
     }
   }
   async function mvAsk(payload, myTurn, said, extra) {
-    let r = await mvCall(payload);
-    if (myTurn !== mvTurn) return;
-    let fail = await mvHandleFailure(r, true);
-    if (fail.retry) { r = await mvCall(payload); if (myTurn !== mvTurn) return; fail = await mvHandleFailure(r, false); }
-    if (fail.handled) return;
-    const d = r.data;
-    mvShow(said || "", d.answer || "");
-    if (said) { mvHistory.push({ role: "user", text: said }, { role: "assistant", text: d.answer }); mvHistory = mvHistory.slice(-8); }
     const exercise = extra && extra.exercise;
-    mvSetAction(exercise ? null : (d.action || null));
-
-    if (d.audio_base64) {
-      if (exercise) {
-        // Hands-free exercise: open the exercise, speak the instructions, then start the timer.
-        mvCloseOverlay(true);
-        try { openExerciseDetail(exercise.id); } catch (e) {}
-        await mvPlay(d.audio_base64, myTurn, () => {
-          try {
-            const scr = mvEl("exerciseDetail");
-            if (scr && scr.classList.contains("active") && currentExerciseId === exercise.id && !timerId) toggleTimer();
-          } catch (e) {}
-        });
-        return;
+    let heard = said || "";
+    let answer = "";
+    let gotAudio = false;
+    let finished = false;
+    // Hands-free exercise: when the voice is ready, open the exercise, speak, then start the timer.
+    const onEnd = exercise ? () => {
+      try {
+        const scr = mvEl("exerciseDetail");
+        if (scr && scr.classList.contains("active") && currentExerciseId === exercise.id && !timerId) toggleTimer();
+      } catch (e) {}
+    } : null;
+    const onEvent = (ev) => {
+      if (ev.type === "transcript") {
+        heard = String(ev.text || "").trim();
+        mvShow(heard, "");
+      } else if (ev.type === "answer") {
+        answer = String(ev.answer || "");
+        mvShow(heard, answer);
+        mvSetAction(exercise ? null : (ev.action || null));
+        mvStartQueue(myTurn, onEnd);
+      } else if (ev.type === "audio" && ev.audio_base64) {
+        if (!gotAudio && exercise) {
+          mvCloseOverlay(true);
+          try { openExerciseDetail(exercise.id); } catch (e) {}
+        }
+        gotAudio = true;
+        try { mvQueuePush(mvBase64ToBytes(ev.audio_base64), ev.audio_format); } catch (e) {}
+      } else if (ev.type === "done") {
+        finished = true;
+        if (gotAudio) mvQueueEnd();
       }
-      await mvPlay(d.audio_base64, myTurn);
-      return;
+    };
+
+    let r = await mvStreamCall(payload, myTurn, onEvent);
+    if (myTurn !== mvTurn) return;
+    if (!r.streamed) {
+      let fail = await mvHandleFailure(r, true);
+      if (fail.retry) {
+        r = await mvStreamCall(payload, myTurn, onEvent);
+        if (myTurn !== mvTurn) return;
+        fail = r.streamed ? { handled: false } : await mvHandleFailure(r, false);
+      }
+      if (fail.handled) return;
     }
+    if (!r.streamed) {
+      const d = r.data;
+      if (d.empty) { mvError(mvT("notHeard")); return; }
+      // Worker without streaming: replay its single JSON reply as events.
+      if (d.transcript && !said) onEvent({ type: "transcript", text: d.transcript });
+      onEvent({ type: "answer", answer: d.answer, action: d.action });
+      if (d.audio_base64) onEvent({ type: "audio", audio_base64: d.audio_base64, audio_format: d.audio_format });
+      onEvent({ type: "done", tts_ok: !!d.audio_base64 });
+    }
+    if (!answer) { mvError(mvT("error")); return; }
+    if (heard) { mvHistory.push({ role: "user", text: heard }, { role: "assistant", text: answer }); mvHistory = mvHistory.slice(-8); }
+    // Stream cut after some audio: play what arrived.
+    if (gotAudio && !finished) mvQueueEnd();
+    if (gotAudio) return;
     // No audio came back: show the text and say so. No system-voice fallback.
+    mvStopPlayback();
     mvSetState("idle");
     const st = mvEl("mvStatus");
     if (st) st.textContent = mvT("noVoice");
@@ -18732,6 +18911,7 @@ window.syncTDEEChoiceUI = function() {
   // ----- turn control -----
   function mvCancelTurn(keepText) {
     mvTurn++;
+    if (mvAbort) { try { mvAbort.abort(); } catch (e) {} mvAbort = null; }
     mvStopMic();
     try { if (mvRecorder && mvRecorder.state !== "inactive") { mvRecorder.onstop = null; mvRecorder.stop(); } } catch (e) {}
     mvRecorder = null;
@@ -18768,6 +18948,7 @@ window.syncTDEEChoiceUI = function() {
   window.closeMoglyVoiceSheet = function() { mvCloseOverlay(false); };
   window.moglyVoiceOrbTap = function() {
     mvEnsureCtx();
+    if (mvState === "idle" && mvResumeBlocked()) return;
     if (mvState === "idle") { mvStartListening(); return; }
     if (mvState === "listening") { mvStopListening(true); return; }
     mvHaptic("light");
