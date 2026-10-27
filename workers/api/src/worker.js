@@ -2454,7 +2454,7 @@ async function voiceChat(request, env, ctx) {
     // Apple ID). Try to verify and store it so later turns are fast; if
     // RevenueCat cannot confirm it, honour the client claim anyway: a paying user
     // must hear the real voice. Abuse is capped by DAILY_VOICE_LIMIT below.
-    const clientPremium = body.premium === true || body.is_premium === true || body.sandbox === true || body.unlocked === true;
+    const clientPremium = body.premium === true || body.is_premium === true;
     if (!p.active && clientPremium) {
       const rcId = sanitizeRevenueCatUserId(body.revenuecat_app_user_id || body.revenueCatAppUserId || userId);
       // In the background: a slow RevenueCat lookup must not delay the answer.
