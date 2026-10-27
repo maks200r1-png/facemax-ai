@@ -845,7 +845,7 @@
   // Retries cover the short propagation delay immediately after StoreKit.
   async function syncServerPremium(userId, rcAppUserId) {
     if (!userId) return false;
-    const apiBase = (window.API_BASE || "https://facemax-api.voou96329.workers.dev");
+    const apiBase = (window.API_BASE || "https://facemax-api.maks200r1.workers.dev");
     // First attempt fires immediately, then exponential backoff: 1s, 2s, 4s, 6s, 8s.
     // Handles flaky mobile connections where the first few requests drop silently.
     const delays = [0, 1000, 2000, 4000, 6000, 8000];

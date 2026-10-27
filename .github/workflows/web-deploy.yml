@@ -47,7 +47,7 @@ jobs:
 
       - name: Verify deployed current-app-compatible Worker
         env:
-          HEALTH_URL: https://facemax-api.voou96329.workers.dev/health
+          HEALTH_URL: https://facemax-api.maks200r1.workers.dev/health
         run: |
           set -euo pipefail
           for attempt in $(seq 1 12); do

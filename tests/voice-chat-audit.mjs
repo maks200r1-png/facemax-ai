@@ -441,12 +441,86 @@ async function postStream(body) {
     assert.equal((mvTxt.match(new RegExp(k + ': "', "g")) || []).length, 2, k + " in en + ru");
   }
   assert.match(web, /case "ai_busy": return mvT\("errBusy"\)/);
-  assert.match(web, /if \(!answer\) \{ mvError\(mvErrorText\(e && e\.mvKind\)\); return; \}/, "network drop before the answer explains why");
+  assert.match(web, /if \(!answer\) \{ local\(e && e\.mvKind\); return; \}/, "network drop before the answer -> device answers");
   assert.match(web, /The full answer text stays on screen whatever happens to the audio/);
   assert.match(web, /mvNote\(cut \? mvT\("cutOff"\) : mvT\("noVoice"\)\)/, "TTS failure / cut keeps text and only notes the status");
   assert.match(web, /ctx\.face_shape = shape\.trim\(\)/);
   assert.match(web, /ctx\.gender = /);
   ok("client: 6 chips (Fix first primary), error events, kept text on drop, specific messages, web == ios");
+}
+
+// 19. offline-first: a dead /api/voice-chat (404 in prod while the worker deploy is broken),
+//     5xx, timeout or offline never shows an error; the device answers and speaks.
+{
+  const web = readFileSync(resolve(here, "../web/index.html"), "utf8");
+  // Failure routing
+  assert.match(web, /\/\/ 404 \(worker not deployed\), 5xx, daily_limit, bad JSON: the device answers\.\n\s+if \(!r\.data \|\| !r\.data\.ok\) \{\n\s+return \{ local:/);
+  assert.match(web, /if \(fail\.local\) \{ local\(fail\.local\); return; \}/);
+  assert.match(web, /if \(!answer\) \{ local\(streamErr \? streamErr\.error/);
+  assert.match(web, /if \(myTurn === mvTurn\) mvLocalTurn\(fn, myTurn, "", extra\);/, "chip exception -> device answer");
+  assert.match(web, /timer = setTimeout\(\(\) => \{ timedOut = true; controller\.abort\(\); \}, 15000\);/, "dead server gives up in 15 s");
+  // Server answer without audio is read by the device voice
+  assert.match(web, /if \(mvSpeakLocal\(answer, myTurn, onEnd\)\) return;/);
+  assert.match(web, /new SpeechSynthesisUtterance\(parts\[i\+\+\]\)/);
+  assert.match(web, /me\.utt = u;/, "utterance kept alive (WebKit GC)");
+  assert.match(web, /mvSynthPending = \{ text, onEnd \}/, "blocked autoplay keeps the answer for the next tap");
+  // Scan -> result -> 2 s -> debrief, on both scan paths, not on history reopen
+  const sched = (web.match(/window\.moglyScheduleScanDebrief\(\);/g) || []).length;
+  assert.equal(sched, 2, "debrief scheduled after both fresh-scan paths");
+  assert.match(web, /mvRunFunction\("scan"\);\n\s+\}, 2000\);/, "debrief fires exactly 2 s after results");
+  const openHist = web.slice(web.indexOf("window.openHistoryScan = function"), web.indexOf("window.openHistoryScan = function") + 900);
+  assert.ok(!openHist.includes("moglyScheduleScanDebrief"), "history reopen does not talk");
+  assert.match(web, /function mvGuestBlocked\(\)/, "free debrief, premium chips");
+
+  // Run the on-device brain for real with stubbed context.
+  const src = web.slice(web.indexOf("  function mvLocalFace() {"), web.indexOf("  // ----- on-device voice"));
+  const shapeSrc = web.slice(web.indexOf("const MOGLY_FACE_SHAPES = {"), web.indexOf("window.moglyFaceShapeFor = moglyFaceShapeFor;"));
+  const build = (lang, ctx) => new Function("ctxObj", "langCode", `
+    var _currentLang = langCode;
+    ${shapeSrc}
+    const mvLang = () => langCode;
+    const mvT = (k) => k;
+    const mvContext = () => ctxObj;
+    ${src}
+    return { mvLocalAnswer, mvIntentFromText };
+  `)(ctx, lang);
+  const ctx = { score: 71, gender: "male", metrics: { jawline: 62, cheekbones: 68, eyes: 74, skin: 58, symmetry: 80 },
+    today: { exercises_done: 1, exercises_total: 4, next_exercise: "Masseter Release", water_glasses: 3, water_goal: 8 },
+    progress: { streak: 5, scans: 2, first_score: 66, last_score: 71, days_since_scan: 9, local_hour: 20 } };
+  const en = build("en", ctx), ru = build("ru", ctx);
+  const fixEn = en.mvLocalAnswer("fixfirst", "");
+  assert.match(fixEn.answer, /Overall you're at 71/);
+  assert.match(fixEn.answer, /Fix this first: your skin/, "lowest metric (skin 58) is the first fix");
+  assert.match(fixEn.answer, /retinoid/);
+  assert.equal(fixEn.action, "daily");
+  const scanEn = en.mvLocalAnswer("scan", "");
+  assert.match(scanEn.answer, /Your scan is in\. 71 out of 100/);
+  assert.match(scanEn.answer, /strongest feature is your eye area at 74/);
+  assert.match(scanEn.answer, /Face shape reads as diamond/, "jaw 62 vs cheekbones 68 -> diamond");
+  assert.match(scanEn.answer, /tongue on the palate/);
+  assert.match(en.mvLocalAnswer("jawline", "").answer, /won't reshape adult bone/, "honest mewing");
+  assert.match(en.mvLocalAnswer("jawline", "").answer, /no bonesmashing/);
+  assert.match(en.mvLocalAnswer("eyes", "").answer, /Canthal tilt and orbital bone are hardmaxxing/);
+  assert.match(en.mvLocalAnswer("debloat", "").answer, /lymphatic drainage/);
+  assert.match(en.mvLocalAnswer("hair", "").answer, /Diamond means the cheekbones are the widest point/);
+  assert.match(en.mvLocalAnswer("today", "").answer, /Good evening\. You're on a 5 day streak.*1 of 4 done.*Masseter Release.*3 of 8 glasses.*66 to 71.*9 days ago/);
+  assert.match(en.mvLocalAnswer("", "should I try bonesmashing?").answer, /I won't coach bonesmashing, steroids, DNP or starvation/);
+  assert.equal(en.mvIntentFromText("how do I get rid of puffy face"), "debloat");
+  assert.equal(ru.mvIntentFromText("как убрать отёк"), "debloat");
+  assert.equal(ru.mvIntentFromText("какая стрижка мне подойдёт"), "hair");
+  assert.match(ru.mvLocalAnswer("fixfirst", "").answer, /Исправляем первым — кожа\./);
+  assert.match(ru.mvLocalAnswer("scan", "").answer, /Скан готов\. 71 из 100/);
+  assert.match(ru.mvLocalAnswer("jawline", "").answer, /взрослую кость он не перестраивает/);
+  for (const fn of ["fixfirst", "jawline", "debloat", "eyes", "skin", "hair", "scan", "brief", "priority", "today", "meal", "exercise"]) {
+    for (const b of [en, ru]) {
+      const a = b.mvLocalAnswer(fn, "").answer;
+      assert.ok(a.length > 40 && !/undefined|null|NaN/.test(a), fn + " answer is clean: " + a.slice(0, 60));
+    }
+  }
+  const empty = build("en", { metrics: {} });
+  assert.match(empty.mvLocalAnswer("fixfirst", "").answer, /I don't have your scan yet/);
+  assert.equal(empty.mvLocalAnswer("scan", "").action, "scan");
+  ok("offline-first: 404/5xx/timeout -> on-device looksmax answer in en+ru, spoken via speechSynthesis, scan debrief at +2 s");
 }
 
 console.log(`\nvoice-chat audit: ${passed} checks passed`);

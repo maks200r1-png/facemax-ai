@@ -1129,6 +1129,7 @@ html.fm-native .bottom{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bo
 .fm-result-v2 .score-bar-tick{position:static !important;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.02em;font-variant-numeric:tabular-nums}
 /* --- metric progress bars (premium style) --- */
 .fm-result-v2 .metric-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.fm-result-v2 .metric-row-val.is-text{font-size:26px!important;letter-spacing:-.02em;text-transform:capitalize;line-height:1.25}
 .fm-result-v2 .metric-row{display:block;align-items:initial;gap:0;margin-bottom:0;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px 10px;position:relative;overflow:hidden}
 .fm-result-v2 .metric-row::before{content:"";position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(0,194,255,.05),transparent 60%);pointer-events:none}
 .fm-result-v2 .metric-row-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px}
@@ -1775,7 +1776,7 @@ html.food-camera-active #liveCamera{visibility:visible!important}
   stroke-linejoin: round;
 }
 .exercise-detail{padding:20px;background:var(--surface);border:1px solid var(--line-2);border-radius:18px;margin:10px 0}
-.exercise-visual{width:100%;aspect-ratio:1.08;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);margin:14px 0}
+.exercise-visual{width:100%;aspect-ratio:1/1;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);margin:14px 0}
 .exercise-visual img{width:100%;height:100%;object-fit:cover;display:block}
 .exercise-detail h3.ed-title{font-size:18px;font-weight:700;letter-spacing:-0.02em;color:var(--text);text-transform:none;margin:0 0 4px}
 .exercise-detail .ed-area{font-size:11px;color:#80D8FF;letter-spacing:0.08em;text-transform:uppercase;font-weight:800;margin-bottom:12px;display:inline-block}
@@ -2817,10 +2818,10 @@ html.cam-active .app { background:transparent !important; }
 
 /* Mogly Luxury Paywall & Umax 3-Slide Auto-Rotating Carousel */
 .mogly-luxury-paywall{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;max-height:100dvh!important;overflow-y:auto!important;overflow-x:hidden!important;background:#000000!important;z-index:9999!important;padding:0!important}
-.mogly-pw-shell{min-height:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important;padding:calc(env(safe-area-inset-top, 24px) + 8px) 16px calc(env(safe-area-inset-bottom, 20px) + 12px)!important;box-sizing:border-box!important;background:radial-gradient(80% 45% at 50% 0%,rgba(0,122,255,.14),transparent 75%),#000000!important;border:none!important;border-radius:0!important}
-.mogly-pw-close{position:absolute!important;top:calc(env(safe-area-inset-top, 20px) + 8px)!important;right:16px!important;width:34px!important;height:34px!important;border-radius:50%!important;background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.16)!important;color:rgba(255,255,255,.8)!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:22px!important;line-height:1!important;z-index:100!important;cursor:pointer!important;-webkit-tap-highlight-color:transparent!important}
-.mogly-carousel-container{width:100%!important;max-width:320px!important;aspect-ratio:1/1!important;position:relative!important;overflow:hidden!important;border-radius:24px!important;margin:0 auto 12px!important;background:#050505!important;box-shadow:0 18px 45px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.12)!important}
-.mogly-carousel-track{display:flex!important;width:100%!important;height:100%!important;transition:transform .42s cubic-bezier(.22,1,.36,1)!important}
+.mogly-pw-shell{min-height:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important;padding:calc(env(safe-area-inset-top, 24px) + 60px) 16px calc(env(safe-area-inset-bottom, 20px) + 12px)!important;box-sizing:border-box!important;background:radial-gradient(80% 45% at 50% 0%,rgba(0,122,255,.14),transparent 75%),#000000!important;border:none!important;border-radius:0!important}
+.mogly-pw-close{position:absolute!important;top:calc(env(safe-area-inset-top, 20px) + 8px)!important;right:14px!important;width:40px!important;height:40px!important;border-radius:50%!important;background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.16)!important;color:rgba(255,255,255,.8)!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:22px!important;line-height:1!important;z-index:100!important;cursor:pointer!important;-webkit-tap-highlight-color:transparent!important}
+.mogly-carousel-container{width:100%!important;max-width:min(320px, 38vh)!important;aspect-ratio:1/1!important;position:relative!important;overflow:hidden!important;border-radius:24px!important;margin:0 auto 12px!important;background:#050505!important;box-shadow:0 18px 45px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.12)!important}
+.mogly-carousel-track{display:flex!important;width:100%!important;height:100%!important;will-change:transform}
 .mogly-carousel-slide{flex:0 0 100%!important;width:100%!important;height:100%!important;position:relative!important;overflow:hidden!important;background:#000!important}
 .mogly-carousel-slide img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
 .mogly-carousel-dots{position:absolute!important;bottom:12px!important;left:0!important;right:0!important;display:flex!important;justify-content:center!important;align-items:center!important;gap:7px!important;z-index:10!important;pointer-events:auto!important}
@@ -5104,7 +5105,8 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
       </div>
     </div>
 
-    <!-- Actions Container: 2 Clean Buttons (SCAN MY FACE & UPLOAD FROM GALLERY) -->
+    <!-- Actions Container: SCAN MY FACE + SCAN HISTORY. "Upload from gallery" only
+         replaces Scan History while the camera is open inside the square. -->
     <div class="mogly-actions-container">
       <button type="button" class="mogly-btn-primary" id="moglyScanBtn" onclick="handleMoglyPrimaryScanClick()">
         <span id="moglyScanBtnIconWrap">
@@ -5118,13 +5120,13 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
 
       <button type="button" class="mogly-btn-secondary" id="moglySecondaryBtn" onclick="handleMoglySecondaryClick()">
         <span id="moglySecondaryBtnIconWrap">
-          <svg viewBox="0 0 24 24" width="18" height="18" id="moglySecondaryBtnIcon" fill="none" stroke="currentColor" stroke-width="2.1">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
+          <svg viewBox="0 0 24 24" width="18" height="18" id="moglySecondaryBtnIcon" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7"/>
+            <path d="M3 4v4h4"/>
+            <path d="M12 8v4l3 2"/>
           </svg>
         </span>
-        <span id="moglySecondaryBtnText" data-i18n="btn_gallery">UPLOAD FROM GALLERY</span>
+        <span id="moglySecondaryBtnText" data-i18n="btn_scan_history">SCAN HISTORY</span>
       </button>
       <input type="file" id="moglyGalleryInput" accept="image/*" style="display:none" onchange="handleMoglyGalleryFile(this.files && this.files[0])">
     </div>
@@ -5377,7 +5379,7 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
     </div>
   </div>
 
-  <!-- 6 metric tiles with horizontal progress bars -->
+  <!-- 8 metric tiles: overall, potential, cheekbones, jawline, nose, eyes, skin, face shape -->
   <div class="metric-list" id="resultMetricGrid">
     <div class="metric-row is-locked" data-metric="overall">
       <span class="metric-row-label">Overall</span>
@@ -5429,6 +5431,16 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
       <div class="metric-row-sub" id="metricNoseSub">—</div>
       <svg style="display:none"><circle id="ringNose" r="15"/></svg>
     </div>
+    <div class="metric-row is-locked" data-metric="eyes">
+      <span class="metric-row-label">Eyes</span>
+      <div class="metric-row-val-line">
+        <span class="metric-row-val" id="metricEyesVal">--</span>
+        <span class="metric-row-pill-slot" id="metricEyesPill"></span>
+      </div>
+      <div class="metric-row-bar"><div class="metric-row-fill" id="barEyes"></div></div>
+      <div class="metric-row-sub" id="metricEyesSub">—</div>
+      <svg style="display:none"><circle id="ringEyes" r="15"/></svg>
+    </div>
     <div class="metric-row is-locked" data-metric="skin">
       <span class="metric-row-label">Skin</span>
       <div class="metric-row-val-line">
@@ -5438,6 +5450,13 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
       <div class="metric-row-bar"><div class="metric-row-fill" id="barSkin"></div></div>
       <div class="metric-row-sub" id="metricSkinSub">—</div>
       <svg style="display:none"><circle id="ringSkin" r="15"/></svg>
+    </div>
+    <div class="metric-row is-locked metric-row-shape" data-metric="face_shape">
+      <span class="metric-row-label">Face shape</span>
+      <div class="metric-row-val-line">
+        <span class="metric-row-val is-text" id="metricShapeVal">--</span>
+      </div>
+      <div class="metric-row-sub" id="metricShapeSub">—</div>
     </div>
   </div>
 
@@ -5700,33 +5719,6 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
       </div>
     </div>
 
-    <!-- Preferences & Smart Reminders Card -->
-    <div class="mogly-big-card">
-      <div class="mogly-card-head">
-        <div class="mogly-card-icon">
-          <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
-        </div>
-        <div class="mogly-card-titles">
-          <span class="mogly-card-title" data-i18n="prof_pref_title">Preferences</span>
-          <span class="mogly-card-sub" data-i18n="prof_pref_sub">Notifications &amp; Routines</span>
-        </div>
-      </div>
-      <div class="mogly-settings-row">
-        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></div>
-        <div class="sr-copy"><b>Smart reminders</b><span>Plan, streak and re-scan nudges</span></div>
-        <label class="notif-toggle" aria-label="Toggle smart reminders">
-          <input type="checkbox" id="notifDailyToggle" onchange="toggleDailyReminder(this.checked)">
-          <span class="notif-toggle-track"><span class="notif-toggle-dot"></span></span>
-        </label>
-      </div>
-      <div class="mogly-settings-divider"></div>
-      <button class="mogly-settings-row" type="button" onclick="openGoalPreferences()">
-        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="7"/></svg></div>
-        <div class="sr-copy"><b>Goals &amp; preferences</b><span id="goalPrefsSummary">Personalize your daily plan</span></div>
-        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-    </div>
-
     <!-- Subscription & Legal Card -->
     <div class="mogly-big-card">
       <div class="mogly-card-head">
@@ -5738,16 +5730,15 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
           <span class="mogly-card-sub" data-i18n="prof_legal_sub">App Store &amp; Privacy</span>
         </div>
       </div>
-      <!-- Preview Paywall (One-Tap Review for Founder / Tests) -->
-      <button class="mogly-settings-row" type="button" onclick="openScreen('gate');">
-        <div class="sr-icon" style="background: rgba(0, 122, 255, 0.16); border-color: rgba(0, 122, 255, 0.35); color: #007AFF;"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-        <div class="sr-copy"><b>Preview Paywall ↗</b><span>Test luxury paywall &amp; 3-slide carousel</span></div>
-        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-      <div class="mogly-settings-divider"></div>
       <button class="mogly-settings-row" type="button" onclick="restoreApplePurchases()">
         <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></div>
         <div class="sr-copy"><b>Restore purchases</b><span>Sync an existing App Store plan</span></div>
+        <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <div class="mogly-settings-divider"></div>
+      <button class="mogly-settings-row" type="button" onclick="window.open('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/','_blank','noopener')">
+        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></div>
+        <div class="sr-copy"><b>Terms of use</b><span>Subscription and service terms</span></div>
         <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
       </button>
       <div class="mogly-settings-divider"></div>
@@ -5757,9 +5748,9 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
         <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
       </button>
       <div class="mogly-settings-divider"></div>
-      <button class="mogly-settings-row" type="button" onclick="window.open('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/','_blank','noopener')">
-        <div class="sr-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg></div>
-        <div class="sr-copy"><b>Terms of use</b><span>Subscription and service terms</span></div>
+      <button class="mogly-settings-row" type="button" onclick="window.open('https://facemaxaiapp.com/support','_blank','noopener')">
+        <div class="sr-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg></div>
+        <div class="sr-copy"><b>Support</b><span>Questions, billing and feedback</span></div>
         <svg class="sr-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
       </button>
     </div>
@@ -6410,13 +6401,6 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
     <span class="stb-title" data-i18n="nav_exercises">Exercises</span>
   </div>
 
-  <div class="mogly-exercises-hero">
-    <div class="mogly-ex-hero-badge">
-      <span class="mogly-ex-dot-pulse"></span>
-      <span id="exerciseHeroPillText">4 Daily Exercises · 2 Min Total</span>
-    </div>
-  </div>
-
   <div id="exercisesList"></div>
 </section>
 
@@ -6430,7 +6414,7 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
   <div class="exercise-visual-card-v4">
     <div class="exercise-copy-v4"><span class="ed-area" id="edArea">AREA</span><h3 class="ed-title" id="edTitle">Exercise</h3></div>
     <div class="exercise-visual">
-      <video id="edVideo" autoplay loop muted playsinline preload="auto" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:18px;display:block;background:#000;"></video>
+      <video id="edVideo" autoplay loop muted playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;background:#000;"></video>
       <img id="edImage" alt="" style="display:none;">
     </div>
     <div class="ed-desc" id="edDesc"></div>
@@ -6541,7 +6525,7 @@ html.fm-fixed-screen .app{padding-top:0!important;padding-bottom:0!important}
 <div class="toast" id="toast"></div>
 </div>
 <script>
-const API_BASE = "https://facemax-api.voou96329.workers.dev";
+const API_BASE = "https://facemax-api.maks200r1.workers.dev";
 
 async function fetchWithTimeout(url, options = {}, timeoutMs = 70000) {
   const controller = new AbortController();
@@ -10951,6 +10935,8 @@ window.startScan = async function(_premiumChecked){
     stopMeshAnim();
     openScreen("result");
     applyPremiumToResult();
+    // 2 s after the results appear, Mogly voices the scan breakdown.
+    if (typeof window.moglyScheduleScanDebrief === "function") window.moglyScheduleScanDebrief();
     // Paint metrics AFTER the screen is visible so CSS transitions animate
     // from the initial state (width:0) to the real value — not flash dark first.
     requestAnimationFrame(() => {
@@ -10966,7 +10952,7 @@ window.startScan = async function(_premiumChecked){
         if (window.facemax && typeof window.facemax.requestReview === "function") {
           window.facemax.requestReview();
         }
-      }, 2500);
+      }, 20000); // after Mogly's scan debrief, never on top of it
     }
   });
 };
@@ -11230,6 +11216,36 @@ async function fetchGeminiScan(imageDataUrl, _mpScore, _mpMetrics){
  * The legacy "free results / locked premium" two-card layout was replaced
  * by this single compact view inspired by Hiface / Looksmax-style reports.
  */
+/* Face shape label for the result screen and the voice mentor. Uses the AI/landmark
+ * label when there is one, otherwise reads it from the jaw vs cheekbone balance. */
+const MOGLY_FACE_SHAPES = {
+  oval:    { en: "Oval",    ru: "Овальная" },
+  round:   { en: "Round",   ru: "Круглая" },
+  square:  { en: "Square",  ru: "Квадратная" },
+  heart:   { en: "Heart",   ru: "Сердцевидная" },
+  diamond: { en: "Diamond", ru: "Ромбовидная" },
+  oblong:  { en: "Oblong",  ru: "Вытянутая" },
+};
+function moglyFaceShapeFor(metrics, report){
+  const isRu = (typeof _currentLang !== "undefined" && _currentLang === "ru");
+  let key = null;
+  const raw = (report && typeof report.face_shape === "string" && report.face_shape) || "";
+  const k = raw.toLowerCase();
+  for (const name of Object.keys(MOGLY_FACE_SHAPES)) if (k.includes(name)) { key = name; break; }
+  if (!key && /rect|long/.test(k)) key = "oblong";
+  if (!key && /triang/.test(k)) key = "heart";
+  if (!key) {
+    const m = metrics || {};
+    const jaw = Number(m.jawline), cheek = Number(m.cheekbones);
+    if (isFinite(jaw) && isFinite(cheek) && jaw > 0 && cheek > 0) {
+      const d = jaw - cheek;
+      key = d >= 5 ? "square" : d <= -7 ? "heart" : d <= -4 ? "diamond" : (jaw + cheek) / 2 >= 72 ? "oval" : "round";
+    } else key = "oval";
+  }
+  return { key, label: MOGLY_FACE_SHAPES[key][isRu ? "ru" : "en"] };
+}
+window.moglyFaceShapeFor = moglyFaceShapeFor;
+
 function paintResultV2(score, computedMetrics, aiReport){
   const m = computedMetrics || {};
   let s = Math.max(0, Math.min(100, Math.round(Number(score) || 0)));
@@ -11270,8 +11286,15 @@ function paintResultV2(score, computedMetrics, aiReport){
     ["ringCheekbones", "metricCheekbonesVal", m.cheekbones ?? 70, "metricCheekbonesSub", "Midface",     "barCheekbones", "metricCheekbonesPill"],
     ["ringPotential",  "metricPotentialVal",  Math.min(100, s + 9), "metricPotentialSub",  "Glow-up score", "barPotential", "metricPotentialPill"],
     ["ringNose",       "metricNoseVal",       m.nose       ?? 70, "metricNoseSub",       "Proportion",  "barNose",       "metricNosePill"],
+    ["ringEyes",       "metricEyesVal",       m.eyes ?? m.eye_area ?? 70, "metricEyesSub",  "Eye area",    "barEyes",       "metricEyesPill"],
     ["ringSkin",       "metricSkinVal",       m.skin       ?? 70, "metricSkinSub",       "Quality",     "barSkin",       "metricSkinPill"],
   ];
+  /* Face shape is a label, not a score. */
+  try {
+    const shape = moglyFaceShapeFor(m, aiReport);
+    const sv = el("metricShapeVal"); if (sv) sv.textContent = shape.label;
+    const ss = el("metricShapeSub"); if (ss) ss.textContent = "Haircut & framing";
+  } catch {}
   function barColor(v){
     if(v>=75) return "linear-gradient(90deg,#4ADE80,#22C55E)";
     if(v>=60) return "linear-gradient(90deg,#A3E635,#4ADE80)";
@@ -17622,67 +17645,51 @@ window._internalPaywallPlan = 'yearly';
 let _moglyCarouselTimer = null;
 let _moglyCurrentSlide = 0;
 
-window.setMoglyCarouselSlide = function(idx) {
-  _moglyCurrentSlide = (idx + 3) % 3;
+// Infinite carousel: slides 1,2,3 + a clone of slide 1. Every step moves RIGHT-to-left
+// (1 -> 2 -> 3 -> clone of 1); once the clone is on screen the track jumps back to the
+// real slide 1 with no transition, which is pixel-identical, so the loop never rewinds.
+const MOGLY_CAROUSEL_EASE = "transform 0.6s cubic-bezier(0.45, 0, 0.2, 1)";
+function moglyCarouselMove(pos, animate) {
   const track = document.getElementById("moglyCarouselTrack");
-  if (track) {
-    track.style.transition = "transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)";
-    track.style.transform = "translateX(-" + (_moglyCurrentSlide * 100) + "%)";
-  }
+  if (!track) return;
+  track.style.setProperty("transition", animate ? MOGLY_CAROUSEL_EASE : "none", "important");
+  track.style.setProperty("transform", "translate3d(-" + (pos * 100) + "%,0,0)", "important");
+  if (!animate) void track.offsetWidth;
   const dots = document.querySelectorAll("#moglyCarouselDots .mogly-dot");
-  dots.forEach(function(dot, i) {
-    dot.classList.toggle("active", i === _moglyCurrentSlide);
-  });
+  dots.forEach(function(dot, i) { dot.classList.toggle("active", i === pos % 3); });
+}
+function moglyCarouselSettle() {
+  if (_moglyCurrentSlide === 3) { _moglyCurrentSlide = 0; moglyCarouselMove(0, false); }
+}
+(function() {
+  const bind = function() {
+    const track = document.getElementById("moglyCarouselTrack");
+    if (!track || track._moglyLoop) return;
+    track._moglyLoop = true;
+    track.addEventListener("transitionend", function(e) { if (e.target === track) moglyCarouselSettle(); });
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind); else bind();
+})();
+
+window.setMoglyCarouselSlide = function(idx) {
+  _moglyCurrentSlide = ((idx % 3) + 3) % 3;
+  moglyCarouselMove(_moglyCurrentSlide, true);
+  if (_moglyCarouselTimer) window.startMoglyCarousel(_moglyCurrentSlide);
 };
 
 window.nextMoglyCarouselSlide = function() {
-  const track = document.getElementById("moglyCarouselTrack");
-  const dots = document.querySelectorAll("#moglyCarouselDots .mogly-dot");
-  if (!track) return;
-
-  if (_moglyCurrentSlide === 2) {
-    // Smoothly slide forward to cloned slide 1 (index 3) to the right
-    _moglyCurrentSlide = 3;
-    track.style.transition = "transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)";
-    track.style.transform = "translateX(-300%)";
-    if (dots.length > 0) {
-      dots.forEach(function(dot, i) {
-        dot.classList.toggle("active", i === 0);
-      });
-    }
-    // After transition completes, snap back to slide 0 with zero animation
-    setTimeout(function() {
-      if (track) {
-        track.style.transition = "none";
-        track.style.transform = "translateX(0%)";
-        void track.offsetWidth; // force reflow
-      }
-      _moglyCurrentSlide = 0;
-    }, 430);
-  } else {
-    _moglyCurrentSlide = (_moglyCurrentSlide + 1) % 3;
-    track.style.transition = "transform 0.42s cubic-bezier(0.22, 1, 0.36, 1)";
-    track.style.transform = "translateX(-" + (_moglyCurrentSlide * 100) + "%)";
-    if (dots.length > 0) {
-      dots.forEach(function(dot, i) {
-        dot.classList.toggle("active", i === _moglyCurrentSlide);
-      });
-    }
-  }
+  // A transitionend can be skipped while the WebView is backgrounded; settle first.
+  moglyCarouselSettle();
+  _moglyCurrentSlide += 1;
+  moglyCarouselMove(_moglyCurrentSlide, true);
+  // Belt and braces for the loop-back in case transitionend never fires.
+  if (_moglyCurrentSlide === 3) setTimeout(moglyCarouselSettle, 700);
 };
 
-window.startMoglyCarousel = function() {
+window.startMoglyCarousel = function(from) {
   if (_moglyCarouselTimer) clearInterval(_moglyCarouselTimer);
-  _moglyCurrentSlide = 0;
-  const track = document.getElementById("moglyCarouselTrack");
-  if (track) {
-    track.style.transition = "none";
-    track.style.transform = "translateX(0%)";
-  }
-  const dots = document.querySelectorAll("#moglyCarouselDots .mogly-dot");
-  dots.forEach(function(dot, i) {
-    dot.classList.toggle("active", i === 0);
-  });
+  _moglyCurrentSlide = typeof from === "number" ? from : 0;
+  moglyCarouselMove(_moglyCurrentSlide, false);
   _moglyCarouselTimer = setInterval(function() {
     window.nextMoglyCarouselSlide();
   }, 3200);
@@ -17769,7 +17776,7 @@ window.syncTDEEChoiceUI = function() {
       status_scanning: "ANALYZING FACIAL HARMONY...",
       status_complete: "● MOGLY VERIFIED",
       btn_scan_face: "SCAN MY FACE",
-      btn_scan_history: "Scan history",
+      btn_scan_history: "SCAN HISTORY",
       btn_take_photo: "TAKE PHOTO",
       btn_gallery: "UPLOAD FROM GALLERY",
       vc_title: "Mogly AI Mentor",
@@ -17817,9 +17824,9 @@ window.syncTDEEChoiceUI = function() {
       status_scanning: "РАСЧЕТ СИММЕТРИИ И УГЛОВ ЛИЦА...",
       status_complete: "● ВЕРИФИКАЦИЯ MOGLY ПРОЙДЕНА",
       btn_scan_face: "СКАНИРОВАТЬ ЛИЦО",
-      btn_scan_history: "История сканов",
+      btn_scan_history: "ИСТОРИЯ СКАНОВ",
       btn_take_photo: "СДЕЛАТЬ ФОТО",
-      btn_gallery: "Загрузить из галереи",
+      btn_gallery: "ЗАГРУЗИТЬ ИЗ ГАЛЕРЕИ",
       vc_title: "Mogly ИИ Ментор",
       vc_badge: "ГОЛОСОВОЙ ВЕРДИКТ",
       vc_listen_hint: "Слушать полный разбор лица голосом (0:28)",
@@ -17967,11 +17974,8 @@ window.syncTDEEChoiceUI = function() {
   };
 
   // Dynamic Home buttons controller:
-  // State 'idle':   Button 1: SCAN MY FACE | Button 2: Scan history
-  // State 'camera': Button 1: TAKE PHOTO   | Button 2: Upload from gallery
-  // Dynamic Home buttons controller:
-  // State 'idle':     Button 1: SCAN MY FACE   | Button 2: Upload from gallery
-  // State 'camera':   Button 1: TAKE PHOTO     | Button 2: Cancel
+  // State 'idle':     Button 1: SCAN MY FACE   | Button 2: SCAN HISTORY
+  // State 'camera':   Button 1: TAKE PHOTO     | Button 2: UPLOAD FROM GALLERY (✕ in the square cancels)
   // State 'scanning': Button 1: ANALYZING...   | Button 2: Disabled
   window.setMoglyHomeButtonsState = function(state) {
     const isCam = (state === "camera");
@@ -18021,12 +18025,13 @@ window.syncTDEEChoiceUI = function() {
           </svg>
         `;
       }
-      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "ОТМЕНА" : "CANCEL";
+      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "ЗАГРУЗИТЬ ИЗ ГАЛЕРЕИ" : "UPLOAD FROM GALLERY";
       if (secondaryBtnIconWrap) {
         secondaryBtnIconWrap.innerHTML = `
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
           </svg>
         `;
       }
@@ -18049,13 +18054,13 @@ window.syncTDEEChoiceUI = function() {
           </svg>
         `;
       }
-      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "Загрузить из галереи" : "UPLOAD FROM GALLERY";
+      if (secondaryBtnText) secondaryBtnText.textContent = isRu ? "ИСТОРИЯ СКАНОВ" : "SCAN HISTORY";
       if (secondaryBtnIconWrap) {
         secondaryBtnIconWrap.innerHTML = `
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7"/>
+            <path d="M3 4v4h4"/>
+            <path d="M12 8v4l3 2"/>
           </svg>
         `;
       }
@@ -18086,20 +18091,23 @@ window.syncTDEEChoiceUI = function() {
     });
   }
 
-  // Direct card click allows instant selfie snapping if camera is active, or gallery picking
+  // Tapping the square snaps a selfie while the camera is live, otherwise it starts the
+  // scan the same way as the SCAN MY FACE button (gallery is offered inside the camera).
   window.handleMoglySquareCardClick = function(event) {
+    if (event && event.target && event.target.closest && event.target.closest(".mogly-cam-close-btn")) return;
     const video = document.getElementById("moglyInlineVideo");
     const isCameraActive = video && video.style.display !== "none" && video.srcObject;
     if (isCameraActive) {
       window.snapMoglyInlineSelfie();
       return;
     }
-    window.triggerMoglyGalleryPicker();
+    window.handleMoglyPrimaryScanClick();
   };
 
   // --- 2. IN-PLACE CAMERA SCANNING INSIDE SQUARE CARD ---
   window.handleMoglyPrimaryScanClick = async function() {
     if (window.facemax && typeof window.facemax.haptic === "function") window.facemax.haptic("medium");
+    if (typeof window.moglyUnlockVoice === "function") window.moglyUnlockVoice();
 
     const video = document.getElementById("moglyInlineVideo");
     const isCameraActive = video && video.style.display !== "none" && video.srcObject;
@@ -18124,14 +18132,15 @@ window.syncTDEEChoiceUI = function() {
     const video = document.getElementById("moglyInlineVideo");
     const isCameraActive = video && video.style.display !== "none" && video.srcObject;
 
-    // If camera is active, secondary button acts as Cancel
+    // Camera open: the alternative to a selfie is a photo from the gallery.
     if (isCameraActive) {
-      window.stopMoglyInlineCamera(true);
+      window.triggerMoglyGalleryPicker();
       return;
     }
 
-    // Otherwise, secondary button acts as Gallery Picker
-    window.triggerMoglyGalleryPicker();
+    // Idle: open the archive of past scans.
+    if (typeof window.openHistoryScreen === "function") window.openHistoryScreen();
+    else if (typeof openScreen === "function") openScreen("history");
   };
 
   window.startMoglyFaceScan = async function() {
@@ -18334,7 +18343,9 @@ window.syncTDEEChoiceUI = function() {
       try { localStorage.setItem("facemax_last_report", JSON.stringify(aiReport)); } catch {}
     }
     const thumb = await makeThumbnail(cleanDataUrl, 240).catch(() => null);
-    saveToHistory(finalScore, thumb, { shape: null, metrics: finalMetrics, report: aiReport, archetype: archetypeFor(finalScore) });
+    let shapeKey = null;
+    try { shapeKey = moglyFaceShapeFor(finalMetrics, aiReport).key; } catch(e) {}
+    saveToHistory(finalScore, thumb, { shape: shapeKey, face_shape: shapeKey, metrics: finalMetrics, report: aiReport, archetype: archetypeFor(finalScore) });
     renderHomeHistory();
     renderHomeStats();
 
@@ -18342,6 +18353,8 @@ window.syncTDEEChoiceUI = function() {
     // Smoothly transition to results screen with detailed metric rings
     setTimeout(() => {
       openScreen("result");
+      // 2 s after the results appear, Mogly voices the scan breakdown.
+      if (typeof window.moglyScheduleScanDebrief === "function") window.moglyScheduleScanDebrief();
       requestAnimationFrame(() => {
         paintResultV2(finalScore, finalMetrics, aiReport);
       });
@@ -18449,9 +18462,10 @@ window.syncTDEEChoiceUI = function() {
   //
   // Flow: tap orb on Home -> voice overlay. Tap the big orb and talk (free mode) or
   // tap one of the six looksmaxxing chips. Audio goes to /api/voice-chat (OpenRouter:
-  // speech-to-text -> Gemini -> text-to-speech) and comes back as mp3.
-  // There is deliberately NO fallback to the Apple system voice: if speech is not
-  // available the answer is shown as text and the user is told why.
+  // speech-to-text -> Gemini -> text-to-speech) and comes back as wav/mp3.
+  // Mogly never depends on that endpoint alone: on 404/5xx/timeout/offline the answer is
+  // built on the device from the scan (mvLocalAnswer) and spoken with the iOS voice
+  // (speechSynthesis), and a server answer without audio is spoken the same way.
   const MV_TXT = {
     en: {
       tapToTalk: "Tap the orb and speak",
@@ -18469,6 +18483,7 @@ window.syncTDEEChoiceUI = function() {
       today: "My plan for today",
       exercise: "Guided exercise",
       meal: "What should I eat",
+      scan: "Your scan breakdown",
       notHeard: "I didn't catch that. Tap the orb and try again.",
       micDenied: "Allow microphone access in Settings to talk to Mogly.",
       micFail: "The microphone isn't available right now.",
@@ -18490,6 +18505,7 @@ window.syncTDEEChoiceUI = function() {
       openDaily: "Open today's plan",
       openFoodScan: "Scan a meal",
       startExercise: "Open the exercise",
+      openScan: "Scan my face",
     },
     ru: {
       tapToTalk: "Нажми на шар и говори",
@@ -18507,6 +18523,7 @@ window.syncTDEEChoiceUI = function() {
       today: "План на сегодня",
       exercise: "Упражнение с голосом",
       meal: "Что мне съесть",
+      scan: "Разбор твоего скана",
       notHeard: "Не расслышал. Нажми на шар и повтори.",
       micDenied: "Разреши доступ к микрофону в настройках, чтобы говорить с Mogly.",
       micFail: "Микрофон сейчас недоступен.",
@@ -18528,6 +18545,7 @@ window.syncTDEEChoiceUI = function() {
       openDaily: "Открыть план на сегодня",
       openFoodScan: "Сканировать еду",
       startExercise: "Открыть упражнение",
+      openScan: "Сканировать лицо",
     },
   };
   const mvLang = () => (window._currentLang === "ru" ? "ru" : "en");
@@ -18550,6 +18568,7 @@ window.syncTDEEChoiceUI = function() {
   let mvHistory = [];
   let mvLevel = 0;
   let mvActionKind = null;
+  let mvGuest = false;           // overlay opened by the free scan debrief: chips and talk need Premium
 
   // ----- orb renderer (fluid blobs inside the glass sphere) -----
   const MV_BLOBS = [
@@ -18627,6 +18646,12 @@ window.syncTDEEChoiceUI = function() {
   }
   function mvTargetLevel(t) {
     if (mvState === "listening" && mvMicAnalyser) return Math.min(1, mvRms(mvMicAnalyser, mvMicData) * 6);
+    if (mvState === "speaking" && mvSynth) {
+      // No audio samples from speechSynthesis: pulse on every spoken word boundary.
+      const since = (performance.now() - mvSynth.beat) / 1000;
+      const spike = Math.max(0, 0.42 - since * 1.5);
+      return Math.min(1, 0.24 + spike + 0.22 * Math.abs(Math.sin(t * 6.1) * Math.sin(t * 2.3)));
+    }
     if (mvState === "speaking" && mvPlayback) {
       const a = mvPlayback.audio;
       if (mvPlayback.envelope) {
@@ -18700,7 +18725,7 @@ window.syncTDEEChoiceUI = function() {
     mvActionKind = kind;
     const b = mvEl("mvAction");
     if (!b) return;
-    const label = { exercises: "openExercises", daily: "openDaily", foodscan: "openFoodScan", "exercise-start": "startExercise" }[kind];
+    const label = { exercises: "openExercises", daily: "openDaily", foodscan: "openFoodScan", "exercise-start": "startExercise", scan: "openScan" }[kind];
     if (!kind || !label) { b.hidden = true; return; }
     b.textContent = mvT(label) + "  ›";
     b.hidden = false;
@@ -18812,6 +18837,7 @@ window.syncTDEEChoiceUI = function() {
   function mvStopPlayback() {
     mvQueue = null;
     mvReleaseCurrent();
+    mvStopSynth();
   }
   function mvStartQueue(myTurn, onEnd) {
     mvStopPlayback();
@@ -18883,6 +18909,428 @@ window.syncTDEEChoiceUI = function() {
     return true;
   }
 
+  // ----- on-device brain: Mogly answers even when the backend is down -----
+  //
+  // Same looksmaxxing persona as the worker prompt: softmaxxing (body fat, water, lymph,
+  // posture, skin, haircut) is what the user can change, hardmaxxing (bone, canthal tilt)
+  // is said honestly, and bonesmashing / steroids / DNP / starvation are refused.
+  // Built from the user's real scan metrics, in Russian or English.
+  function mvLocalFace() {
+    const c = mvContext();
+    const m = c.metrics || {};
+    const num = (v) => { const n = Number(v); return isFinite(n) && n > 0 ? Math.round(Math.max(1, Math.min(99, n))) : null; };
+    const score = num(c.score);
+    const areas = [
+      { key: "jawline", v: num(m.jawline) },
+      { key: "cheekbones", v: num(m.cheekbones) },
+      { key: "eyes", v: num(m.eyes != null ? m.eyes : m.eye_area) },
+      { key: "skin", v: num(m.skin) },
+    ].filter(a => a.v != null);
+    let shape = null;
+    try {
+      const raw = c.face_shape ? { face_shape: c.face_shape } : null;
+      shape = (typeof moglyFaceShapeFor === "function") ? moglyFaceShapeFor(m, raw) : null;
+    } catch (e) {}
+    const sorted = areas.slice().sort((a, b) => a.v - b.v);
+    return {
+      ctx: c, score, areas,
+      weak: sorted[0] || null,
+      strong: sorted.length > 1 ? sorted[sorted.length - 1] : null,
+      sym: num(m.symmetry), nose: num(m.nose), lips: num(m.lips),
+      shape, female: c.gender === "female",
+      hasScan: score != null || areas.length > 0,
+    };
+  }
+  const MV_AREA = {
+    en: { jawline: "jawline", cheekbones: "cheekbones", eyes: "eye area", skin: "skin" },
+    ru: { jawline: "челюсть", cheekbones: "скулы", eyes: "зона глаз", skin: "кожа" },
+  };
+  function mvBand(v, ru) {
+    if (v >= 85) return ru ? "это топовый уровень" : "that's top tier";
+    if (v >= 75) return ru ? "это выше среднего" : "that's above average";
+    if (v >= 65) return ru ? "это крепкая база с понятным запасом роста" : "that's a solid base with clear upside";
+    if (v >= 50) return ru ? "это средний уровень, есть куда расти" : "that's average, with a lot of room to climb";
+    return ru ? "старт низкий, а значит и прирост будет самым быстрым" : "it's a low start, which means the fastest gains";
+  }
+  // One expert plan per area. Each returns a list of sentences.
+  function mvAreaPlan(key, f, ru, short) {
+    const a = f.areas.find(x => x.key === key);
+    const v = a ? a.v : null;
+    const strong = v != null && v >= 80;
+    if (key === "jawline") {
+      if (ru) {
+        const out = [
+          v != null ? `Челюсть — ${v} из 100${strong ? ", это уже сильная черта, её нужно держать, а не перекраивать" : ""}.` : "Про челюсть честно.",
+          "Чёткость линии челюсти на восемьдесят процентов — это жир и вода, а не кость. Если у тебя больше пятнадцати процентов жира, медленная сушка даст челюсти больше, чем любое упражнение.",
+          "Мьюинг по-честному: весь язык прижат к нёбу, губы сомкнуты, шея ровно над плечами. Это сразу улучшает то, как челюсть выглядит в профиль и на фото, но взрослую кость он не перестраивает.",
+        ];
+        if (!short) {
+          out.push(f.female
+            ? "Жвачку для жевательных мышц тебе не советую — они расширяют низ лица. Лучше лимфодренаж вдоль челюсти к ушам и шее, две минуты утром."
+            : "Для жевательной мышцы — твёрдая жвачка, десять–пятнадцать минут в день, не больше, иначе перегрузишь сустав.");
+          out.push("Вечером меньше соли и алкоголя. И никакого bonesmashing — это просто травма.");
+        }
+        return out;
+      }
+      const out = [
+        v != null ? `Jawline is ${v} out of 100${strong ? ", already a strong feature, so maintain it rather than chase it" : ""}.` : "Here's the honest jawline breakdown.",
+        "Jaw definition is mostly body fat and water, not bone. If you're above about fifteen percent body fat, a slow cut is the biggest jaw upgrade you can get.",
+        "Mewing, honestly: whole tongue on the palate, lips sealed, neck stacked over your shoulders. It instantly improves how your jaw reads in profile and photos, but it won't reshape adult bone.",
+      ];
+      if (!short) {
+        out.push(f.female
+          ? "Skip hard gum for you, it widens the lower face. Do two minutes of lymphatic drainage along the jaw toward the ears and down the neck instead."
+          : "For the masseter, hard gum ten to fifteen minutes a day, no more, or you'll overload the jaw joint.");
+        out.push("Keep salt and alcohol low in the evening. And no bonesmashing, that's just injury.");
+      }
+      return out;
+    }
+    if (key === "cheekbones") {
+      if (ru) {
+        const out = [
+          v != null ? `Скулы — ${v} из 100.` : "Скулы прячет в первую очередь отёк.",
+          "Скуловую кость не изменить, но её почти всегда прячет вода и мягкие ткани. Убери отёк — и скулы проявятся.",
+        ];
+        if (!short) out.push("Вечером минимум соли и никакого алкоголя, последний плотный приём пищи за три часа до сна. Утром минута холода или ледяного роллера и две минуты лимфодренажа: от носа вдоль скул к ушам и вниз по шее.");
+        return out;
+      }
+      const out = [
+        v != null ? `Cheekbones are ${v} out of 100.` : "Cheekbones are mostly hidden by puffiness.",
+        "You can't change the zygomatic bone, but water and soft tissue almost always hide it. Drop the bloat and the cheekbones show.",
+      ];
+      if (!short) out.push("Tonight: low salt, no alcohol, last big meal three hours before bed. Morning: one minute of cold water or an ice roller, then two minutes of lymphatic drainage from the nose along the cheekbones to the ears and down the neck.");
+      return out;
+    }
+    if (key === "eyes") {
+      if (ru) {
+        const out = [
+          v != null ? `Зона глаз — ${v} из 100.` : "Про глаза честно.",
+          "Canthal tilt и орбитальная кость — это hardmaxxing, тренировкой их не изменить, и я не буду тебе это обещать.",
+          "Что реально меняется: отёк и тёмные круги под глазами. Сон семь с половиной — девять часов, утром холодный компресс, сыворотка с кофеином.",
+        ];
+        if (!short) out.push("Брови держи густыми и низко посаженными, убирай только лишние волоски между и под ними — ровная низкая линия бровей и даёт эффект hunter eyes. И не щурься: на улице солнечные очки.");
+        return out;
+      }
+      const out = [
+        v != null ? `Eye area is ${v} out of 100.` : "Here's the honest eye breakdown.",
+        "Canthal tilt and orbital bone are hardmaxxing, you can't train them, and I won't pretend you can.",
+        "What does change: under-eye puffiness and dark circles. Seven and a half to nine hours of sleep, a cold compress in the morning, a caffeine eye serum.",
+      ];
+      if (!short) out.push("Keep your brows full and low-set, clean only the stray hairs between and under them. A straight, low brow line is what reads as hunter eyes. And stop squinting, wear sunglasses outside.");
+      return out;
+    }
+    if (key === "skin") {
+      if (ru) {
+        const out = [
+          v != null ? `Кожа — ${v} из 100${strong ? ", режим поддержки" : ""}.` : "По коже — проверенная база.",
+          "Проверенный стек: мягкое очищение, увлажняющий крем и SPF тридцать плюс каждое утро. Вечером ретиноид — адапален или ретинол, со зерно гороха, два–три вечера в неделю, потом чаще.",
+        ];
+        if (!short) out.push("На активные воспаления — бензоилпероксид точечно. Кожа обновляется примерно за двадцать восемь дней, так что оценивай через шесть–восемь недель, а не через три дня. Если акне глубокое или не проходит, иди к дерматологу.");
+        return out;
+      }
+      const out = [
+        v != null ? `Skin is ${v} out of 100${strong ? ", so you're in maintenance mode" : ""}.` : "For skin, here's the proven base.",
+        "The proven stack: gentle cleanser, moisturizer and SPF thirty plus every morning. At night a retinoid, adapalene or retinol, pea-sized, two to three nights a week, then build up.",
+      ];
+      if (!short) out.push("Benzoyl peroxide on active spots. Skin turns over in about twenty-eight days, so judge it after six to eight weeks, not three days. If acne is deep or won't clear, see a dermatologist.");
+      return out;
+    }
+    return [];
+  }
+  const MV_AREA_ACTION = { jawline: "exercises", cheekbones: "exercises", eyes: "exercises", skin: "daily" };
+  function mvHairPlan(f, ru) {
+    const k = f.shape ? f.shape.key : "oval";
+    const label = f.shape ? f.shape.label.toLowerCase() : (ru ? "овальная" : "oval");
+    const M = {
+      en: {
+        oval: "Oval is the most forgiving shape. A textured crop or a medium quiff works, keep the sides tighter than the top so the jaw stays visible.",
+        round: "For a round face you want height and angles: volume on top, low or mid fade on the sides. Avoid a heavy straight fringe, it makes the face look wider.",
+        square: "Square jaw is a strength, show it. Short works: a crew cut or a textured top with clean sides. Avoid boxy, flat tops that double the width.",
+        heart: "With a heart shape, balance the narrower jaw: medium length, a bit more fullness at the sides, a side part. Avoid very tight sides with a tall top.",
+        diamond: "Diamond means the cheekbones are the widest point. Keep some fullness at the forehead and sides, a fringe or side-swept top works. Avoid very short sides.",
+        oblong: "For a longer face, don't add height. Keep the top flatter, some fringe, and more width at the sides.",
+      },
+      ru: {
+        oval: "Овальная — самая выигрышная форма. Подойдёт текстурный кроп или средний квифф, бока держи короче верха, чтобы линия челюсти оставалась открытой.",
+        round: "Для круглого лица нужны высота и углы: объём сверху, низкий или средний фейд по бокам. Избегай тяжёлой прямой чёлки — она расширяет лицо.",
+        square: "Квадратная челюсть — твоя сильная сторона, её надо показывать. Подойдёт короткое: crew cut или текстурный верх с аккуратными боками. Избегай плоских квадратных форм.",
+        heart: "При сердцевидной форме уравновесь узкий низ: средняя длина, чуть больше объёма по бокам, боковой пробор. Не делай очень короткие бока с высоким верхом.",
+        diamond: "Ромбовидная форма — значит, скулы самая широкая точка. Оставь объём у лба и по бокам, подойдёт чёлка или зачёс набок. Избегай совсем коротких боков.",
+        oblong: "Для вытянутого лица не добавляй высоту. Верх площе, немного чёлки и больше ширины по бокам.",
+      },
+    };
+    const F = {
+      en: "For you: layers that start at the jaw or cheekbone, curtain bangs, and volume placed where your face is narrowest.",
+      ru: "Тебе: слои от уровня скул или челюсти, шторки-чёлка и объём там, где лицо уже всего.",
+    };
+    const lang = ru ? "ru" : "en";
+    const out = [ru ? `Форма лица у тебя ${label}.` : `Your face shape reads as ${label}.`, M[lang][k] || M[lang].oval];
+    if (f.female) out.push(F[lang]);
+    out.push(ru ? "Покажи барберу фото, сделай стрижку и пересканируйся при том же свете — посмотрим, как изменилась гармония." : "Show your barber a photo, get the cut, then rescan in the same light and we'll see how the harmony moved.");
+    return out;
+  }
+  function mvIntentFromText(text) {
+    const t = String(text || "").toLowerCase();
+    if (!t) return "";
+    if (/bone ?smash|steroid|\bsarm|\bdnp\b|starv|стероид|голода|бонсмеш|бон смеш/.test(t)) return "refuse";
+    if (/jaw|mew|chin|masseter|челюст|мьюи|подбород|жеват/.test(t)) return "jawline";
+    if (/bloat|puff|swell|water retention|отёк|отек|опух|вода в лице/.test(t)) return "debloat";
+    if (/eye|canthal|brow|hunter|глаз|бров|век|кантал/.test(t)) return "eyes";
+    if (/skin|acne|pimple|spot|retino|кож|прыщ|акне|ретино/.test(t)) return "skin";
+    if (/hair|haircut|barber|стриж|волос|причес|барбер/.test(t)) return "hair";
+    if (/cheek|скул/.test(t)) return "debloat";
+    if (/eat|food|meal|diet|еда|есть|ест|питани|диет|съесть/.test(t)) return "meal";
+    if (/plan|today|streak|сегодня|план|стрик/.test(t)) return "today";
+    return "";
+  }
+  function mvLocalAnswer(fn, heard) {
+    const f = mvLocalFace();
+    const ru = mvLang() === "ru";
+    const names = MV_AREA[ru ? "ru" : "en"];
+    let intent = fn || mvIntentFromText(heard) || "fixfirst";
+    if (intent === "priority") intent = "fixfirst";
+    if (intent === "brief") intent = "today";
+    const S = [];
+    let action = null;
+    const noScan = ru
+      ? "Скана у меня пока нет, поэтому без цифр. Нажми «Сканировать лицо» на главном — и я скажу точно, что исправлять первым."
+      : "I don't have your scan yet, so no numbers. Tap Scan my face on Home and I'll tell you exactly what to fix first.";
+
+    if (intent === "refuse") {
+      S.push(ru
+        ? "Bonesmashing, стероиды, DNP и голодовки я не тренирую. Это переломы, гормональные сбои и поражение органов, и лицу это вредит надолго."
+        : "I won't coach bonesmashing, steroids, DNP or starvation. That's fractures, hormone damage and organ damage, and it wrecks your face long term.");
+      S.push(ru
+        ? "Безопасная версия того же результата: сушка до здорового процента жира, убрать отёк, осанка и мьюинг, уход за кожей и правильная стрижка."
+        : "The safe version of the same goal: cut to a healthy body fat, drop the bloat, fix posture and tongue position, skincare, and the right haircut.");
+      action = "exercises";
+    } else if (intent === "scan") {
+      if (!f.hasScan) { S.push(noScan); action = "scan"; }
+      else {
+        if (f.score != null) S.push(ru ? `Скан готов. ${f.score} из 100, ${mvBand(f.score, true)}.` : `Your scan is in. ${f.score} out of 100, ${mvBand(f.score, false)}.`);
+        if (f.shape) S.push(ru ? `Форма лица — ${f.shape.label.toLowerCase()}.` : `Face shape reads as ${f.shape.label.toLowerCase()}.`);
+        if (f.strong) S.push(ru ? `Сильнейшая черта — ${names[f.strong.key]}, ${f.strong.v}. Это твой козырь.` : `Your strongest feature is your ${names[f.strong.key]} at ${f.strong.v}. That's your edge.`);
+        if (f.weak) {
+          S.push(ru ? `Первым исправляем: ${names[f.weak.key]}, ${f.weak.v}.` : `First thing to fix: your ${names[f.weak.key]} at ${f.weak.v}.`);
+          S.push(...mvAreaPlan(f.weak.key, f, ru, true).slice(1));
+          action = MV_AREA_ACTION[f.weak.key];
+        }
+        if (f.sym != null) S.push(f.sym >= 80
+          ? (ru ? `Симметрия ${f.sym}, это сильно.` : `Symmetry is ${f.sym}, that's strong.`)
+          : (ru ? `Симметрия ${f.sym}: жуй на обе стороны и не спи всегда на одном боку.` : `Symmetry is ${f.sym}: chew on both sides and stop sleeping on the same side every night.`));
+        S.push(ru
+          ? "Биомеханика на каждый день: язык на нёбе, губы сомкнуты, шея над плечами. Осанка меняет то, как читается лицо, мгновенно."
+          : "Daily biomechanics: tongue on the palate, lips sealed, neck stacked over your shoulders. Posture changes how your face reads instantly.");
+        S.push(ru ? "Нажми «Что исправить первым», и я дам полный план." : "Tap Fix first and I'll give you the full plan.");
+      }
+    } else if (intent === "fixfirst") {
+      if (!f.hasScan) {
+        S.push(noScan);
+        S.push(ru
+          ? "А пока универсальные рычаги: сон, меньше соли вечером, язык на нёбе и SPF каждое утро."
+          : "Until then, the universal levers: sleep, less salt at night, tongue on the palate, and SPF every morning.");
+        action = "scan";
+      } else {
+        if (heard && !fn) S.push(ru ? "Вот что сейчас важнее всего для твоего лица." : "Here's what matters most for your face right now.");
+        if (f.score != null) S.push(ru ? `Общий балл ${f.score}.` : `Overall you're at ${f.score}.`);
+        if (f.strong) S.push(ru ? `Сильная сторона — ${names[f.strong.key]}, ${f.strong.v}.` : `Your strong side is your ${names[f.strong.key]} at ${f.strong.v}.`);
+        if (f.weak) {
+          S.push(ru ? `Исправляем первым — ${names[f.weak.key]}.` : `Fix this first: your ${names[f.weak.key]}.`);
+          S.push(...mvAreaPlan(f.weak.key, f, ru, false));
+          action = MV_AREA_ACTION[f.weak.key];
+        }
+        S.push(ru
+          ? "Делай это четырнадцать дней и пересканируйся при том же свете — так мы увидим реальную разницу."
+          : "Do this for fourteen days, then rescan in the same light, that's how we see the real delta.");
+      }
+    } else if (intent === "jawline" || intent === "eyes" || intent === "skin") {
+      S.push(...mvAreaPlan(intent, f, ru, false));
+      action = MV_AREA_ACTION[intent];
+    } else if (intent === "debloat") {
+      const cheek = f.areas.find(a => a.key === "cheekbones");
+      S.push(ru
+        ? `Отёк прячет скулы${cheek ? `, сейчас они ${cheek.v}` : ""} и линию челюсти. Это самый быстрый рычаг: результат виден за сутки.`
+        : `Puffiness hides your cheekbones${cheek ? `, currently ${cheek.v}` : ""} and your jawline. It's the fastest lever, you see it within a day.`);
+      S.push(ru
+        ? "Сегодня вечером: соль вниз, без алкоголя, последний плотный приём пищи за три часа до сна, вода — днём, а не на ночь. Спи с чуть приподнятой головой."
+        : "Tonight: salt down, no alcohol, last big meal three hours before bed, drink your water during the day, not at night. Sleep with your head slightly raised.");
+      S.push(ru
+        ? "Утром: минута холодной воды или ледяного роллера, потом две минуты лимфодренажа — от центра лица к ушам и вниз по шее. Через сорок минут лицо заметно суше."
+        : "Morning: one minute of cold water or an ice roller, then two minutes of lymphatic drainage from the center of your face out to the ears and down the neck. Forty minutes later your face looks noticeably sharper.");
+      action = "exercises";
+    } else if (intent === "hair") {
+      S.push(...mvHairPlan(f, ru));
+    } else if (intent === "meal") {
+      S.push(ru
+        ? "Ешь так, чтобы убрать воду и воспаление. Белок в каждом приёме: яйца, рыба, курица, греческий йогурт."
+        : "Eat to cut water and inflammation. Protein at every meal: eggs, fish, chicken, Greek yogurt.");
+      S.push(ru
+        ? "Калий против соли: бананы, картофель, шпинат, авокадо. Соль и алкоголь — минимум, особенно после семи вечера, и меньше ультраобработанных углеводов, они тянут воду в лицо."
+        : "Potassium to balance salt: bananas, potatoes, spinach, avocado. Keep salt and alcohol low, especially after seven pm, and cut ultra-processed carbs, they pull water into your face.");
+      S.push(ru ? "Два–три литра воды, равномерно в течение дня." : "Two to three liters of water spread through the day.");
+      try {
+        const plan = f.ctx.meal_plan;
+        if (plan && plan.meals && plan.meals[0] && plan.meals[0].name) S.push(ru ? `По твоему плану сегодня первым идёт ${plan.meals[0].name}.` : `Your plan today starts with ${plan.meals[0].name}.`);
+      } catch (e) {}
+      action = "foodscan";
+    } else if (intent === "today") {
+      const t = f.ctx.today || {}, p = f.ctx.progress || {};
+      const h = Number(p.local_hour != null ? p.local_hour : new Date().getHours());
+      S.push(ru ? (h < 12 ? "Доброе утро." : h < 18 ? "Добрый день." : "Добрый вечер.") : (h < 12 ? "Good morning." : h < 18 ? "Good afternoon." : "Good evening."));
+      if (p.streak) S.push(ru ? `Серия — ${p.streak} дн. подряд${p.streak_at_risk ? ", и она сгорит сегодня, если не закрыть план" : ""}.` : `You're on a ${p.streak} day streak${p.streak_at_risk ? ", and it ends tonight unless you finish the plan" : ""}.`);
+      if (t.exercises_total) S.push(ru
+        ? `Упражнения: ${t.exercises_done || 0} из ${t.exercises_total}.${t.next_exercise ? ` Следующее — ${t.next_exercise}.` : ""}`
+        : `Exercises: ${t.exercises_done || 0} of ${t.exercises_total} done.${t.next_exercise ? ` Next up is ${t.next_exercise}.` : ""}`);
+      if (t.water_goal) S.push(ru ? `Вода: ${t.water_glasses || 0} из ${t.water_goal} стаканов.` : `Water: ${t.water_glasses || 0} of ${t.water_goal} glasses.`);
+      if (p.first_score != null && p.last_score != null && p.scans > 1) S.push(ru ? `Балл вырос с ${p.first_score} до ${p.last_score}.` : `Your score went from ${p.first_score} to ${p.last_score}.`);
+      if (p.days_since_scan != null && p.days_since_scan >= 7) S.push(ru ? `Последний скан был ${p.days_since_scan} дн. назад, пора пересканироваться.` : `Your last scan was ${p.days_since_scan} days ago, time to rescan.`);
+      if (f.weak) S.push(ru ? `Фокус дня — ${names[f.weak.key]}.` : `Today's focus is your ${names[f.weak.key]}.`);
+      action = t.next_exercise ? "exercises" : "daily";
+    } else if (intent === "exercise") {
+      S.push(ru ? "Открываю упражнение. Повторяй за видео, медленно и без боли, таймер запустится сам." : "Opening the exercise. Follow the video, slow and pain-free, the timer starts on its own.");
+    }
+    if (!S.length) S.push(noScan);
+    return { answer: S.join(" "), action };
+  }
+
+  // ----- on-device voice (WKWebView ships Siri-class voices: Daniel, Samantha, Milena, Yuri...) -----
+  let mvSynth = null;            // { turn, beat, started, utt } while the device voice speaks
+  let mvSynthPending = null;     // { text, onEnd } when iOS refused to start speech without a tap
+  let mvVoices = [];
+  const mvHasSynth = () => typeof window.speechSynthesis !== "undefined" && typeof window.SpeechSynthesisUtterance !== "undefined";
+  function mvLoadVoices() { try { mvVoices = window.speechSynthesis.getVoices() || []; } catch (e) { mvVoices = []; } }
+  if (mvHasSynth()) {
+    mvLoadVoices();
+    try { window.speechSynthesis.addEventListener("voiceschanged", mvLoadVoices); } catch (e) {}
+  }
+  function mvPickVoice() {
+    if (!mvVoices.length) mvLoadVoices();
+    const ru = mvLang() === "ru";
+    const female = _voiceGender === "female";
+    const pool = mvVoices.filter(v => String(v.lang || "").toLowerCase().replace("_", "-").startsWith(ru ? "ru" : "en"));
+    if (!pool.length) return null;
+    const names = ru
+      ? (female ? ["milena", "милена", "katya", "катя", "alena", "алёна"] : ["yuri", "юрий", "maxim", "максим", "pavel", "dmitri"])
+      : (female ? ["samantha", "ava", "allison", "serena", "karen", "moira", "zoe", "susan", "kate"] : ["daniel", "aaron", "arthur", "alex", "evan", "nathan", "oliver", "tom", "rishi", "fred"]);
+    const novelty = /(albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|junior|ralph|kathy|grandma|grandpa|eddy|flo|reed|rocko|sandy|shelley)/i;
+    let best = null, bestScore = -1e9;
+    for (const v of pool) {
+      const name = String(v.name || "").toLowerCase();
+      let sc = 0;
+      if (novelty.test(name)) sc -= 50;
+      const idx = names.findIndex(n => name.includes(n));
+      if (idx >= 0) sc += 30 - idx;
+      if (/premium|enhanced|neural|natural|siri/.test(name)) sc += 8;
+      if (!ru && /en-(us|gb)/i.test(String(v.lang).replace("_", "-"))) sc += 2;
+      if (v.localService) sc += 1;
+      if (sc > bestScore) { bestScore = sc; best = v; }
+    }
+    return best;
+  }
+  function mvSentences(text) {
+    const parts = String(text || "").match(/[^.!?…]+[.!?…]+["»”)]*|[^.!?…]+$/g) || [String(text || "")];
+    return parts.map(s => s.trim()).filter(Boolean);
+  }
+  function mvStopSynth() {
+    mvSynthPending = null;
+    if (!mvSynth) return;
+    mvSynth = null;
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+  }
+  // Speaks the answer sentence by sentence on the device. Returns false when the device
+  // has no speech engine at all (the text stays on screen then).
+  function mvSpeakLocal(text, myTurn, onEnd) {
+    if (!mvHasSynth() || !String(text || "").trim()) return false;
+    const synth = window.speechSynthesis;
+    mvStopSynth();
+    const parts = mvSentences(text);
+    const voice = mvPickVoice();
+    const ru = mvLang() === "ru";
+    const me = { turn: myTurn, beat: performance.now(), started: false, utt: null };
+    mvSynth = me;
+    let i = 0;
+    const live = () => mvSynth === me && myTurn === mvTurn;
+    const finish = () => { if (!live()) return; mvSynth = null; mvSetState("idle"); if (onEnd) onEnd(); };
+    const next = () => {
+      if (!live()) return;
+      if (i >= parts.length) { finish(); return; }
+      const u = new SpeechSynthesisUtterance(parts[i++]);
+      if (voice) u.voice = voice;
+      u.lang = voice ? voice.lang : (ru ? "ru-RU" : "en-US");
+      u.rate = ru ? 1.0 : 0.98;
+      u.pitch = _voiceGender === "female" ? 1.04 : 0.94;
+      u.volume = 1;
+      u.onstart = () => { if (mvSynth === me) { me.started = true; me.beat = performance.now(); } };
+      u.onboundary = () => { if (mvSynth === me) me.beat = performance.now(); };
+      u.onend = next;
+      u.onerror = (e) => { if (e && (e.error === "interrupted" || e.error === "canceled")) return; next(); };
+      me.utt = u;                // WebKit drops callbacks of utterances that get garbage-collected
+      synth.speak(u);
+    };
+    mvAudioSession("playback");
+    mvSetState("speaking");
+    try { if (synth.paused) synth.resume(); } catch (e) {}
+    next();
+    // iOS can refuse speech that does not follow a tap: keep the answer and voice it on the next orb tap.
+    setTimeout(() => {
+      if (mvSynth !== me || me.started || !live()) return;
+      mvSynth = null;
+      try { synth.cancel(); } catch (e) {}
+      mvSynthPending = { text, onEnd };
+      mvSetState("idle");
+      mvNote(mvT("playBlocked"));
+    }, 3500);
+    return true;
+  }
+  function mvResumeSynthPending() {
+    const p = mvSynthPending;
+    if (!p) return false;
+    mvSynthPending = null;
+    return mvSpeakLocal(p.text, mvTurn, p.onEnd);
+  }
+  // A silent utterance inside a real tap unlocks speech for later automatic answers
+  // (the scan debrief 2 s after results).
+  let mvSpeechUnlocked = false;
+  function mvUnlockSpeech() {
+    if (mvSpeechUnlocked || !mvHasSynth()) return;
+    mvSpeechUnlocked = true;
+    try {
+      const u = new SpeechSynthesisUtterance(" ");
+      u.volume = 0;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+    mvEnsureCtx();
+  }
+  window.moglyUnlockVoice = mvUnlockSpeech;
+  ["touchend", "click"].forEach(evt => document.addEventListener(evt, mvUnlockSpeech, { capture: true, once: true, passive: true }));
+
+  // Answers on the device: used when the server is unreachable, returns an error, or for
+  // the scan debrief. The user never sees a server error, Mogly just answers.
+  function mvExerciseOnEnd(exercise) {
+    return exercise ? () => {
+      try {
+        const scr = mvEl("exerciseDetail");
+        if (scr && scr.classList.contains("active") && currentExerciseId === exercise.id && !timerId) toggleTimer();
+      } catch (e) {}
+    } : null;
+  }
+  function mvLocalTurn(fn, myTurn, heard, extra) {
+    if (myTurn !== mvTurn) return;
+    const exercise = extra && extra.exercise;
+    const r = mvLocalAnswer(fn, heard);
+    if (heard && !fn) { mvHistory.push({ role: "user", text: heard }, { role: "assistant", text: r.answer }); mvHistory = mvHistory.slice(-8); }
+    mvStopPlayback();
+    mvShow(heard || (fn ? mvT(fn) : ""), r.answer);
+    mvSetAction(exercise ? null : r.action);
+    if (exercise) {
+      mvCloseOverlay(true);
+      try { openExerciseDetail(exercise.id); } catch (e) {}
+    }
+    if (mvSpeakLocal(r.answer, myTurn, mvExerciseOnEnd(exercise))) return;
+    mvSetState("idle");
+    mvNote(mvT("noVoice"));
+  }
+
   // ----- backend -----
   function mvContext() {
     const f = (typeof getUserFaceContext === "function") ? getUserFaceContext() : {};
@@ -18951,7 +19399,9 @@ window.syncTDEEChoiceUI = function() {
     mvAbort = controller;
     // Covers the whole body, not just the headers, so a stalled stream cannot hang the orb.
     let timedOut = false;
-    const timer = setTimeout(() => { timedOut = true; controller.abort(); }, 60000);
+    // 15 s for the server to start answering (a dead worker must not keep the orb
+    // spinning, the device answers instead), then 45 s for the rest of the stream.
+    let timer = setTimeout(() => { timedOut = true; controller.abort(); }, 15000);
     try {
       const res = await fetch(API_BASE + "/api/voice-chat", {
         method: "POST",
@@ -18959,6 +19409,8 @@ window.syncTDEEChoiceUI = function() {
         body: JSON.stringify(body),
         signal: controller.signal,
       });
+      clearTimeout(timer);
+      timer = setTimeout(() => { timedOut = true; controller.abort(); }, 45000);
       if (!/ndjson/i.test(res.headers.get("Content-Type") || "")) {
         const data = await res.json().catch(() => null);
         return { status: res.status, data, streamed: false };
@@ -18998,7 +19450,8 @@ window.syncTDEEChoiceUI = function() {
     }
   }
 
-  // Returns true when the reply was handled (an error was shown, or the paywall opened).
+  // { handled } = paywall opened; { local: reason } = the device answers instead;
+  // { retry } = premium just confirmed, ask the server once more.
   async function mvHandleFailure(r, retry) {
     if (r.status === 402) {
       // Same pattern as the other paid features: trust the on-device entitlement first.
@@ -19007,17 +19460,20 @@ window.syncTDEEChoiceUI = function() {
         await new Promise(res => setTimeout(res, 1800));
         return { retry: true };
       }
+      // Paying user the server does not know about yet: answer on the device.
+      if (nowPremium || mvIsPremium()) return { local: "premium_not_synced" };
       mvCloseOverlay();
       showGate(mvT("gateTitle"), mvT("gateText"), () => window.openMoglyVoiceSheet(true));
       return { handled: true };
     }
-    if (r.status === 429 && (!r.data || r.data.error === "daily_limit")) { mvError(mvT("limit")); return { handled: true }; }
+    // 404 (worker not deployed), 5xx, daily_limit, bad JSON: the device answers.
     if (!r.data || !r.data.ok) {
-      const code = (r.data && r.data.error) || (r.status >= 500 ? "server" : "");
-      mvError(mvErrorText(code));
-      return { handled: true };
+      return { local: (r.data && r.data.error) || ("http_" + r.status) };
     }
     return { handled: false };
+  }
+  function mvIsPremium() {
+    try { return typeof isLocalPremiumActive === "function" ? !!isLocalPremiumActive() : !!hasUnlockedAccess(); } catch (e) { return false; }
   }
 
   // ----- free conversation -----
@@ -19097,7 +19553,7 @@ window.syncTDEEChoiceUI = function() {
       // The transcript event arrives first, so the user sees their words before the answer.
       await mvAsk({ audio_base64: audioB64, audio_format: mime, history: mvHistory.slice(-6) }, myTurn, "");
     } catch (e) {
-      if (myTurn === mvTurn) mvError(mvErrorText(e && e.mvKind));
+      if (myTurn === mvTurn) mvLocalTurn("", myTurn, "", null);
     }
   }
   async function mvAsk(payload, myTurn, said, extra) {
@@ -19108,12 +19564,12 @@ window.syncTDEEChoiceUI = function() {
     let finished = false;
     let streamErr = null;          // {type:"error", error, reason} from the worker
     // Hands-free exercise: when the voice is ready, open the exercise, speak, then start the timer.
-    const onEnd = exercise ? () => {
-      try {
-        const scr = mvEl("exerciseDetail");
-        if (scr && scr.classList.contains("active") && currentExerciseId === exercise.id && !timerId) toggleTimer();
-      } catch (e) {}
-    } : null;
+    const onEnd = mvExerciseOnEnd(exercise);
+    // Server unreachable / failed before answering: Mogly answers on the device instead.
+    const local = (why) => {
+      if (why) console.warn("[mogly voice] server unavailable, answering on device:", why);
+      mvLocalTurn(payload.function || "", myTurn, heard, extra);
+    };
     const onEvent = (ev) => {
       if (ev.type === "transcript") {
         heard = String(ev.text || "").trim();
@@ -19145,8 +19601,8 @@ window.syncTDEEChoiceUI = function() {
       r = await mvStreamCall(payload, myTurn, onEvent);
     } catch (e) {
       if (myTurn !== mvTurn) return;
-      // Network drop / timeout. Before the answer: say why. After it: keep it.
-      if (!answer) { mvError(mvErrorText(e && e.mvKind)); return; }
+      // Network drop / timeout. Before the answer: the device answers. After it: keep it.
+      if (!answer) { local(e && e.mvKind); return; }
       cut = (e && e.mvKind) || "network";
       r = { status: 200, data: { ok: true }, streamed: true };
     }
@@ -19154,11 +19610,13 @@ window.syncTDEEChoiceUI = function() {
     if (!r.streamed) {
       let fail = await mvHandleFailure(r, true);
       if (fail.retry) {
-        r = await mvStreamCall(payload, myTurn, onEvent);
+        try { r = await mvStreamCall(payload, myTurn, onEvent); }
+        catch (e) { if (myTurn === mvTurn) local(e && e.mvKind); return; }
         if (myTurn !== mvTurn) return;
         fail = r.streamed ? { handled: false } : await mvHandleFailure(r, false);
       }
       if (fail.handled) return;
+      if (fail.local) { local(fail.local); return; }
     }
     if (!r.streamed) {
       const d = r.data;
@@ -19169,7 +19627,7 @@ window.syncTDEEChoiceUI = function() {
       if (d.audio_base64) onEvent({ type: "audio", audio_base64: d.audio_base64, audio_format: d.audio_format });
       onEvent({ type: "done", tts_ok: !!d.audio_base64 });
     }
-    if (!answer) { mvError(mvErrorText(streamErr ? streamErr.error : (finished ? "" : "network"))); return; }
+    if (!answer) { local(streamErr ? streamErr.error : (finished ? "empty_answer" : "network")); return; }
     if (!finished && !cut) cut = "network";
     if (heard) { mvHistory.push({ role: "user", text: heard }, { role: "assistant", text: answer }); mvHistory = mvHistory.slice(-8); }
     // The full answer text stays on screen whatever happens to the audio.
@@ -19180,9 +19638,14 @@ window.syncTDEEChoiceUI = function() {
       if (cut) mvNote(mvT("cutOff"));
       return;
     }
-    // No audio came back (TTS failed or the stream dropped): show the text and say so.
-    // No system-voice fallback, and nothing is left waiting, so the orb and chips stay usable.
+    // No audio came back (TTS failed or the stream dropped): the device voice reads the answer.
     mvStopPlayback();
+    if (exercise) {
+      mvCloseOverlay(true);
+      try { openExerciseDetail(exercise.id); } catch (e) {}
+    }
+    if (mvSpeakLocal(answer, myTurn, onEnd)) return;
+    // No speech engine at all: text only, nothing left waiting, the orb and chips stay usable.
     mvSetState("idle");
     mvNote(cut ? mvT("cutOff") : mvT("noVoice"));
     if (exercise) mvSetAction("exercise-start");
@@ -19209,7 +19672,7 @@ window.syncTDEEChoiceUI = function() {
     try {
       await mvAsk(payload, myTurn, mvT(fn), extra);
     } catch (e) {
-      if (myTurn === mvTurn) mvError(mvErrorText(e && e.mvKind));
+      if (myTurn === mvTurn) mvLocalTurn(fn, myTurn, "", extra);
     }
   }
 
@@ -19238,8 +19701,13 @@ window.syncTDEEChoiceUI = function() {
       const ok = await ensurePremiumForAction(() => window.openMoglyVoiceSheet(true), mvT("gateTitle"), mvT("gateText"));
       if (!ok) return;
     }
+    mvOpenOverlay(false);
+  };
+  function mvOpenOverlay(guest) {
     const ov = mvEl("mvOverlay");
-    if (!ov) return;
+    if (!ov) return false;
+    mvCancelTurn();
+    mvGuest = !!guest;
     mvEnsureCtx();
     mvRenderLabels();
     mvShow("", "");
@@ -19249,17 +19717,42 @@ window.syncTDEEChoiceUI = function() {
     ov.classList.add("active");
     mvOrbs.forEach(o => { o.size = 0; });
     mvKick();
+    return true;
+  }
+  // The scan debrief is free; talking and the chips after it are Premium.
+  function mvGuestBlocked() {
+    if (!mvGuest || mvIsPremium()) return false;
+    mvCloseOverlay(false);
+    ensurePremiumForAction(() => window.openMoglyVoiceSheet(true), mvT("gateTitle"), mvT("gateText"));
+    return true;
+  }
+
+  // Face scan -> results -> exactly 2 s later Mogly flies in and talks through the scan.
+  let mvDebriefTimer = 0;
+  window.moglyScheduleScanDebrief = function() {
+    if (mvDebriefTimer) clearTimeout(mvDebriefTimer);
+    mvDebriefTimer = setTimeout(() => {
+      mvDebriefTimer = 0;
+      const res = mvEl("result");
+      if (!res || !res.classList.contains("active") || document.hidden) return;
+      if (!mvOpenOverlay(!mvIsPremium())) return;
+      mvRunFunction("scan");
+    }, 2000);
+  };
+  window.moglyCancelScanDebrief = function() {
+    if (mvDebriefTimer) { clearTimeout(mvDebriefTimer); mvDebriefTimer = 0; }
   };
   window.closeMoglyVoiceSheet = function() { mvCloseOverlay(false); };
   window.moglyVoiceOrbTap = function() {
     mvEnsureCtx();
     if (mvState === "idle" && mvResumeBlocked()) return;
-    if (mvState === "idle") { mvStartListening(); return; }
+    if (mvState === "idle" && mvResumeSynthPending()) return;
+    if (mvState === "idle") { if (mvGuestBlocked()) return; mvStartListening(); return; }
     if (mvState === "listening") { mvStopListening(true); return; }
     mvHaptic("light");
     mvCancelTurn(true);
   };
-  window.moglyVoiceChip = function(fn) { mvRunFunction(fn); };
+  window.moglyVoiceChip = function(fn) { mvUnlockSpeech(); if (mvGuestBlocked()) return; mvRunFunction(fn); };
   window.moglyVoiceAction = function() {
     const kind = mvActionKind;
     mvCloseOverlay(false);
@@ -19267,6 +19760,7 @@ window.syncTDEEChoiceUI = function() {
       if (kind === "exercises") openExercises();
       else if (kind === "daily") openScreen("daily");
       else if (kind === "foodscan") openFoodScan();
+      else if (kind === "scan") { openScreen("home"); setTimeout(() => { if (window.handleMoglyPrimaryScanClick) window.handleMoglyPrimaryScanClick(); }, 250); }
       else if (kind === "exercise-start") {
         const done = readExerciseDoneToday();
         const ex = FACE_EXERCISES.find(e => !done.has(e.id)) || FACE_EXERCISES[0];

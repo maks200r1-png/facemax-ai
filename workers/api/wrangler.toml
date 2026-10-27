@@ -13,7 +13,7 @@ REVENUECAT_PUBLIC_API_KEY = "appl_najSElZgKcUrHaOrJuCQfcFbXpg"
 # Premium subscription state (mirrors what RevenueCat webhooks set).
 [[kv_namespaces]]
 binding = "PREMIUM_KV"
-id = "c2d93ef4414440988ba881feb8c0a81b"
+id = "35cb8d5dd82345db9dfc2c691380598a"
 
 # ---------------------------------------------------------------------------
 # Secrets (set via `wrangler secret put NAME` or the Cloudflare dashboard):

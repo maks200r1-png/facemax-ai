@@ -1901,7 +1901,7 @@ const VOICE_MAX_ANSWER_CHARS = 700;
 // Looksmaxxing chips (fixfirst..hair) plus the older chips kept for app builds
 // that still send them.
 const VOICE_FUNCTIONS = new Set([
-  "fixfirst", "jawline", "debloat", "eyes", "skin", "hair",
+  "scan", "fixfirst", "jawline", "debloat", "eyes", "skin", "hair",
   "brief", "priority", "today", "exercise", "meal",
 ]);
 const VOICE_MAX_SEGMENTS = 3;
@@ -2127,6 +2127,7 @@ function voiceContextBlock(ctx) {
 function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise }) {
   const ru = lang === "ru";
   const functionGoal = {
+    scan: "The user just completed their facial scan. Give an immediate, charismatic, and punchy looksmaxxing breakdown based on their real metrics and scores in context (overall score, jawline, cheekbones, eyes, skin, face shape). Highlight their strongest facial feature, state their #1 priority weakness to fix first and why, give one immediate softmaxx action for today (like debloating, tongue posture, skincare), and encourage them. Speak in 4 to 5 concise, impactful sentences.",
     fixfirst: "The user tapped 'Fix first'. Rank their improvable areas from the Key scan metrics and weak points, lowest softmaxx-fixable score first. Skip fixed bone structure (orbital shape, skull, jaw bone width) or say in one clause that it is hardmaxx territory. Name the single area with the biggest visible payoff, why, using their real number, and ONE concrete step for today. Up to 5 short sentences. If there is no scan, say a scan is needed to rank them and give the universal first fix: lower body fat and debloat.",
     jawline: "The user tapped 'Jawline'. Use their jawline score and gender. Explain honestly what makes a jawline look sharper: body fat and water retention first, then neck and tongue posture, then masseter tone from normal chewing. Explain mewing honestly: correct resting tongue posture on the palate is a good habit and improves the neck and chin line in photos, but it does not visibly reshape adult bone; real bone change is hardmaxxing, meaning orthodontics or surgery with a professional. Give one concrete action for today. Up to 5 short sentences. End with [[go:exercises]].",
     debloat: "The user tapped 'Debloat'. Explain the fastest softmaxxing win for facial puffiness: lower sodium and alcohol, steady water, potassium foods, sleep 7 to 9 hours with the head slightly raised, and a gentle lymphatic drainage massage in the morning, cold water helps. Use their data if relevant. Give a concrete plan for the next 24 hours. Up to 5 short sentences. Never suggest dehydration, diuretics or fasting. End with [[go:exercises]].",
@@ -2297,14 +2298,15 @@ async function voiceChat(request, env) {
 
   const userId = sanitizeUserId(body.user_id || body.userId || body.email);
   if (!userId) return json({ ok: false, error: "user_id required" }, 400);
-  if (VOICE_REQUIRES_PREMIUM) {
-    const p = await readPremium(env, userId);
-    if (!p.active) return json({ ok: false, error: "premium_required", premium: false }, 402);
-  }
 
   const lang = body.lang === "ru" || body.language === "ru" ? "ru" : "en";
   const gender = body.voice_gender === "female" ? "female" : "male";
   const fn = VOICE_FUNCTIONS.has(String(body.function || "")) ? String(body.function) : "";
+
+  if (VOICE_REQUIRES_PREMIUM && fn !== "scan") {
+    const p = await readPremium(env, userId);
+    if (!p.active) return json({ ok: false, error: "premium_required", premium: false }, 402);
+  }
 
   // Optional audio. Used for free mode and for "transcribe only" (the app shows
   // what the user said right away, then sends the text for the real answer).
