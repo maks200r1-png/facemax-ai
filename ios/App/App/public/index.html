@@ -11538,7 +11538,7 @@ const MOGLY_FACE_SHAPES = {
 function moglyFaceShapeFor(metrics, report){
   let key = null;
   const raw = (report && typeof report.face_shape === "string" && report.face_shape) || "";
-  const k = raw.toLowerCase();
+  const k = raw.toLowerCase().trim();
   for (const name of Object.keys(MOGLY_FACE_SHAPES)) if (k.includes(name)) { key = name; break; }
   if (!key && /rect|long/.test(k)) key = "oblong";
   if (!key && /triang/.test(k)) key = "heart";
@@ -11550,7 +11550,7 @@ function moglyFaceShapeFor(metrics, report){
       key = d >= 5 ? "square" : d <= -7 ? "heart" : d <= -4 ? "diamond" : (jaw + cheek) / 2 >= 72 ? "oval" : "round";
     } else key = "oval";
   }
-  return { key, label: MOGLY_FACE_SHAPES[key]["en"] };
+  return { key, label: MOGLY_FACE_SHAPES[key] ? MOGLY_FACE_SHAPES[key]["en"] : "Oval" };
 }
 window.moglyFaceShapeFor = moglyFaceShapeFor;
 

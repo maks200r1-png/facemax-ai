@@ -1266,7 +1266,7 @@ ${JSON.stringify(userContext)}
 Return strictly JSON:
 {
   "overall_score": number,
-  
+  "face_shape": "Oval | Square | Round | Heart | Diamond | Oblong",
   "photo_check": "1 short sentence about how to take a better selfie",
   "summary": "1 short overall conclusion",
   "fastest_upgrade": {"title":"short","text":"1 short explanation"},
@@ -1333,6 +1333,14 @@ function normalizeReport(parsed) {
   const cleanedScores = {};
   for (const key of requiredScoreKeys) cleanedScores[key] = cleanScore(scores[key], key);
   parsed.scores = cleanedScores;
+
+  // Face shape is determined by Gemini Vision directly from the photo
+  if (parsed.face_shape != null) {
+    const rawShape = String(parsed.face_shape).trim();
+    const VALID_SHAPES = ["Oval", "Square", "Round", "Heart", "Diamond", "Oblong"];
+    const matched = VALID_SHAPES.find(s => s.toLowerCase() === rawShape.toLowerCase());
+    parsed.face_shape = matched || rawShape;
+  }
 
   const requireText = (value, name) => {
     const text = String(value || "").trim();
@@ -1608,13 +1616,14 @@ Scoring calibration (follow strictly):
 Per-feature scoring rubric (apply these definitions when you set the sub-scores):
 - jawline: grade the visible definition of the lower face. Look at how clearly the mandible line runs from ear to chin, the gonial (jaw) angle, chin projection, and how much soft submental / under-chin fat ("double chin") blurs the line. A crisp, well-separated jaw with a clean neck-to-jaw transition and little under-chin fat scores high (80+). A soft, rounded or fat-obscured jaw scores in the 50s-60s. Account for the camera angle: a downward tilt or a smile can flatten a good jaw, so do not over-penalize a clearly decent jaw shot from a bad angle.
 - skin: grade clarity and condition of the skin. Look at tone evenness, active blemishes / acne and acne scarring, visible pore size and surface texture, oiliness or shine, redness or irritation, and under-eye dark circles or puffiness. Clear, even, smooth skin with small pores scores high (80+); active breakouts, rough texture, strong redness or heavy dark circles score in the 50s-60s. Do not confuse lighting glare or compression artifacts with real skin problems.
+- face_shape: determine the subject's exact visual face shape: strictly one of "Oval", "Square", "Round", "Heart", "Diamond", "Oblong" based on the ratio of cheekbone width, jawline width, forehead width and chin taper.
 
 Explain the score: the "jawline" and "skin" output fields MUST EACH begin with ONE short, specific sentence that names what in THIS photo drove that sub-score (which of the rubric factors above you actually saw - e.g. jaw sharpness vs. under-chin softness, or clear tone vs. visible breakouts / dark circles), and only AFTER that sentence give the concrete improvement advice. Never give generic advice that ignores what the photo shows.
 
 Return strictly JSON:
 {
   "overall_score": number,
-  
+  "face_shape": "Oval | Square | Round | Heart | Diamond | Oblong",
   "photo_check": "1 short sentence",
   "summary": "1 short overall conclusion",
   "fastest_upgrade": {"title":"short","text":"1 short explanation"},
