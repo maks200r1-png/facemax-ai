@@ -135,7 +135,7 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 #profile .btn.ghost.compact{font-size:15px!important;padding:12px 14px}
 #profile .btn.ghost{font-size:15px}
 .dim{color:var(--dim);font-size:12px;line-height:1.5}
-.btn{width:100%;border:0;border-radius:27px;color:#fff;background:linear-gradient(135deg,#0055FF 0%,#007AFF 50%,#00C2FF 100%);height:54px;font-weight:700;font-size:15px;letter-spacing:-0.01em;cursor:pointer;transition:transform .1s,filter .15s,opacity .15s;box-shadow:0 10px 30px rgba(0,122,255,.45),0 4px 14px rgba(0,194,255,.30),inset 0 1px 0 rgba(255,255,255,.35);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn{width:100%;border:0;border-radius:27px;color:#fff;background:linear-gradient(135deg,#0055FF 0%,#007AFF 50%,#00C2FF 100%);height:54px;font-weight:700;font-size:15px;letter-spacing:-0.01em;cursor:pointer;transition:transform .1s,filter .15s,opacity .15s;box-shadow:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn:hover{filter:brightness(1.06)}
 .btn:active{transform:scale(.985)}
 .btn:disabled{opacity:.42;cursor:not-allowed;filter:saturate(.4)}
@@ -1447,9 +1447,7 @@ html.fm-native .bottom{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bo
 .live-camera-bar .lc-close{background:rgba(255,255,255,.14);border:none;border-radius:50%;color:#fff;display:grid;place-items:center;cursor:pointer}
 .live-camera-bar .lc-close svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
 .live-camera-bar .lc-shutter{width:74px;height:74px;border-radius:50%;background:transparent;border:4px solid #fff;padding:5px;cursor:pointer;position:relative;overflow:visible}
-.lc-shutter::before,.lc-shutter::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);animation:shutterRing 2.6s ease-in-out infinite;pointer-events:none;z-index:1}
-.lc-shutter::after{inset:-20px;border-color:rgba(255,255,255,.18);animation-delay:1.0s}
-@keyframes shutterRing{0%{transform:scale(.95);opacity:.5}50%{transform:scale(1.05);opacity:1}100%{transform:scale(.95);opacity:.5}}
+.lc-shutter::before,.lc-shutter::after{display:none !important;}
 .live-camera-bar .lc-shutter span{display:block;width:100%;height:100%;border-radius:50%;background:#fff;transition:transform .12s}
 .live-camera-bar .lc-shutter:active span{transform:scale(.9)}
 .live-camera .lc-error{position:absolute;left:18px;right:18px;bottom:120px;padding:16px 18px;background:rgba(248,113,113,.16);border:1px solid rgba(248,113,113,.35);border-radius:14px;color:#fca5a5;font-size:13px;line-height:1.5;text-align:center}
@@ -2635,7 +2633,7 @@ html.cam-active .app { background:transparent !important; }
 #result.fm-teaser .result-unlock { display:block !important; animation:quizSlide .4s cubic-bezier(.4,0,.2,1); }
 
 /* Big "SCAN MY FACE" CTA on the test-result screen */
-.btn.btn-scanface { font-size:18px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; padding:18px 22px; border-radius:18px; background:radial-gradient(140% 160% at 30% 0%,rgba(255,255,255,.28) 0%,rgba(255,255,255,.08) 30%,transparent 55%),linear-gradient(135deg,#0055FF 0%,#007AFF 50%,#00C2FF 100%) !important; border:1px solid rgba(0,194,255,.65) !important; box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(0,0,0,.12); position:relative; overflow:hidden; -webkit-text-fill-color:#fff !important; color:#fff !important; }
+.btn.btn-scanface { font-size:18px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; padding:18px 22px; border-radius:18px; background:radial-gradient(140% 160% at 30% 0%,rgba(255,255,255,.28) 0%,rgba(255,255,255,.08) 30%,transparent 55%),linear-gradient(135deg,#0055FF 0%,#007AFF 50%,#00C2FF 100%) !important; border:1px solid rgba(0,194,255,.65) !important; box-shadow:none !important; position:relative; overflow:hidden; -webkit-text-fill-color:#fff !important; color:#fff !important; }
 .btn.btn-scanface .btn-ico { width:22px; height:22px; position:relative; z-index:1; }
 .btn.btn-scanface span { position:relative; z-index:1; }
 
@@ -2661,15 +2659,9 @@ html.cam-active .app { background:transparent !important; }
    Single block → easy to find, easy to delete if you change your mind.
 ────────────────────────────────────────────────────────────────────── */
 
-/* 1. Kill all box-shadows site-wide */
+/* 1. Kill all box-shadows site-wide: zero shadows, zero glows */
 *, *::before, *::after {
   box-shadow: none !important;
-}
-
-/* 1a. Exception: SCAN MY FACE button and welcome CTA keep a clean subtle shadow */
-.btn.btn-scanface,
-.btn.btn-welcome-cta {
-  box-shadow: 0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.32), inset 0 -1px 0 rgba(0,0,0,.12) !important;
 }
 
 /* 2. Kill all text-shadows */
@@ -3091,13 +3083,27 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 }
 .mv-orb-btn:active { transform: scale(0.93); }
 
-/* Shared orb construction: glow, fluid canvas, glass shell with specular highlights. */
+/* Shared orb construction (Apple Siri liquid glass): deep glass backing, fluid canvas,
+   glass shell with rim refraction, bottom caustic and a curved specular reflection.
+   No border stroke around the sphere. */
 .mv-orb {
   position: relative;
   width: 100%;
   height: 100%;
+  border: none;
   border-radius: 50%;
+  overflow: hidden;
   isolation: isolate;
+}
+.mv-orb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 120%, rgba(10, 24, 52, 0.95) 0%, rgba(5, 12, 28, 0.85) 60%, rgba(2, 6, 16, 0.9) 100%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(190%);
+  z-index: 0;
 }
 .mv-orb-glow {
   position: absolute;
@@ -3118,24 +3124,47 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   height: 100%;
   border-radius: 50%;
   display: block;
+  z-index: 1;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 68%, transparent 100%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 68%, transparent 100%);
+  mix-blend-mode: screen;
+  filter: saturate(1.4) contrast(1.15);
 }
 .mv-orb-glass {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   pointer-events: none;
+  z-index: 2;
   background:
-    radial-gradient(70% 55% at 30% 14%, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.14) 45%, rgba(255, 255, 255, 0) 72%),
-    radial-gradient(90% 60% at 50% 112%, rgba(130, 225, 255, 0.4) 0%, rgba(130, 225, 255, 0) 62%);
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.8),
-    inset 0 -12px 24px rgba(80, 170, 255, 0.32),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.14),
-    0 16px 36px rgba(0, 0, 0, 0.55),
-    0 0 44px rgba(50, 140, 255, 0.26);
-  -webkit-backdrop-filter: blur(3px) saturate(170%);
-  backdrop-filter: blur(3px) saturate(170%);
+    radial-gradient(circle at 50% 105%, rgba(0, 162, 255, 0.22) 0%, rgba(0, 80, 220, 0.08) 35%, transparent 70%),
+    radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.08) 35%, transparent 65%);
+  /* Inset rim light only (part of the glass material); !important beats the site-wide no-shadow rule. */
+  box-shadow: inset 0 -4px 14px rgba(0, 162, 255, 0.35), inset 0 2px 8px rgba(255, 255, 255, 0.45) !important;
+}
+/* Curved specular reflection across the top of the sphere. */
+.mv-orb-glass::before {
+  content: "";
+  position: absolute;
+  top: 7%;
+  left: 16%;
+  width: 68%;
+  height: 38%;
+  border-radius: 50% 50% 45% 45% / 70% 70% 30% 30%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 65%, transparent 100%);
+  filter: blur(0.5px);
+}
+/* Specular light hotspot. */
+.mv-orb-glass::after {
+  content: "";
+  position: absolute;
+  top: 12%;
+  left: 32%;
+  width: 36%;
+  height: 14%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.2) 60%, transparent 100%);
+  filter: blur(1px);
 }
 
 /* Voice overlay */
@@ -3639,7 +3668,7 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.28) !important;
   overflow: hidden !important;
-  box-shadow: 0 20px 52px rgba(0, 0, 0, 0.85), inset 0 1px 1.5px rgba(255, 255, 255, 0.35), 0 0 28px rgba(0, 102, 255, 0.20) !important;
+  box-shadow: none !important;
   margin: clamp(6px, 1.4vh, 12px) auto 0 auto !important;
   cursor: pointer !important;
 }
@@ -3651,8 +3680,8 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   right: 0;
   top: 0;
   height: 3px;
-  background: linear-gradient(90deg, transparent 0%, #00C2FF 50%, transparent 100%);
-  box-shadow: 0 0 18px 3px #00C2FF;
+  background: linear-gradient(90deg, transparent 0%, #FFFFFF 50%, transparent 100%);
+  box-shadow: none !important;
   z-index: 10;
   display: none;
   pointer-events: none;
@@ -3724,7 +3753,7 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   cursor: pointer;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  box-shadow: none !important;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.15s ease, background 0.15s ease;
 }
@@ -3741,9 +3770,9 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   transform: translate(-50%, -50%);
   width: 150px;
   height: 200px;
-  border: 1.5px dashed rgba(0, 194, 255, 0.6);
+  border: 1.5px dashed rgba(255, 255, 255, 0.45);
   border-radius: 75px / 100px;
-  box-shadow: 0 0 20px rgba(0, 194, 255, 0.3);
+  box-shadow: none !important;
   pointer-events: none;
 }
 
@@ -3765,7 +3794,7 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   border: 3px solid #FFFFFF;
   padding: 4px;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(0, 194, 255, 0.6);
+  box-shadow: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3782,7 +3811,7 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
 
 .mogly-cam-snap-btn:active .mogly-snap-inner {
   transform: scale(0.85);
-  background: #00C2FF;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .mogly-cam-cancel-btn {
@@ -3862,14 +3891,14 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   justify-content: center !important;
   gap: 10px !important;
   cursor: pointer !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease !important;
+  box-shadow: none !important;
+  transition: transform 0.15s ease, filter 0.15s ease !important;
   -webkit-tap-highlight-color: transparent !important;
 }
 
 .mogly-btn-primary:active {
   transform: scale(0.97) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: none !important;
 }
 
 .mogly-btn-icon {
@@ -3894,7 +3923,7 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
   justify-content: center !important;
   gap: 8px !important;
   cursor: pointer !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
+  box-shadow: none !important;
   transition: background 0.2s ease, transform 0.12s ease !important;
   -webkit-tap-highlight-color: transparent !important;
 }
@@ -3902,6 +3931,7 @@ html.fm-quiz-active .mv-scan-dock { display: none; }
 .mogly-btn-secondary:active {
   transform: scale(0.97) !important;
   background: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
 }
 
 /* Results Block */
@@ -5239,10 +5269,9 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 
     <!-- CTA button -->
     <div style="width:100%;flex-shrink:0;box-sizing:border-box;">
-      <button class="btn btn-welcome-cta" onclick="quizHaptic();quizBuyPlan('weekly')" style="width:100%;height:60px;font-size:17px;font-weight:700;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 10px 28px rgba(0,122,255,0.45)!important;background:linear-gradient(135deg, #0055FF, #007AFF, #00C2FF)!important;">
+      <button class="btn btn-welcome-cta" onclick="quizHaptic();quizBuyPlan('weekly')" style="width:100%;height:60px;font-size:17px;font-weight:700;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:none!important;background:linear-gradient(135deg, #0055FF, #007AFF, #00C2FF)!important;">
         <span>🔓 Unlock for</span><b data-price-plan="weekly" style="font-size:17px;">…</b><span>/ week</span>
       </button>
-      <button class="btn ghost" onclick="quizHaptic();quizBuyPlan('weekly')" style="width:100%;height:44px;margin-top:10px;background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:999px;color:rgba(255,255,255,.85);font-size:14px;font-weight:600;">🎁 Start free trial</button>
       <p style="font-size:10px;color:rgba(255,255,255,.28);text-align:center;margin:8px 0 0;line-height:1.5;padding:0 4px;">Subscription auto-renews until canceled. Cancel anytime in App Store settings at least 24 hours before the end of the billing period.</p>
       <div style="display:flex;justify-content:space-around;align-items:center;width:100%;margin:8px 0 0;padding:0 8px;box-sizing:border-box;">
         <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener" style="color:rgba(255,255,255,.5);text-decoration:none;font-size:13px;font-weight:500;padding:6px 0;">Terms of Use</a>
@@ -5296,7 +5325,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
         <span class="qp-plan-price"><b data-price-plan="yearly">…</b><span class="qp-plan-unit">/ year</span></span>
       </button>
     </div>
-    <button class="btn ghost" onclick="quizHaptic();quizBuyPlan(_quizSelectedPlan)" style="width:100%;height:44px;margin-top:12px;background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:999px;color:rgba(255,255,255,.85);font-size:14px;font-weight:600;">🎁 Start free trial</button>
+    <button class="btn ghost" onclick="quizHaptic();quizBuyPlan(_quizSelectedPlan)" style="width:100%;height:44px;margin-top:12px;background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:999px;color:rgba(255,255,255,.85);font-size:14px;font-weight:600;">Continue</button>
     <p class="qp-pay-disclosure" style="margin-top:14px;font-size:11px;">Weekly, monthly and yearly plans auto-renew until canceled. Cancel anytime in App Store settings at least 24 hours before the end of the current billing period.</p>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:0 4px;">
       <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener" style="flex:1;text-align:center;color:rgba(255,255,255,.55);text-decoration:none;font-size:13px;font-weight:500;padding:8px 0;">Terms of Use</a>
@@ -5735,7 +5764,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
   </div><!-- /.result-card-bg -->
 
   <div class="result-cta" id="resultCtaWrap">
-    <button class="btn btn-hero" id="resultMainCta" onclick="resultCtaAction()" style="background:linear-gradient(135deg,#0055FF,#007AFF,#00C2FF);box-shadow:0 4px 24px rgba(0,122,255,.45)">
+    <button class="btn btn-hero" id="resultMainCta" onclick="resultCtaAction()" style="background:linear-gradient(135deg,#0055FF,#007AFF,#00C2FF)">
       <svg class="btn-ico" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" fill="none" stroke-width="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" fill="none" stroke-width="2"/></svg>
       <span id="resultMainCtaLabel">Get Mogly Pro</span>
     </button>
@@ -6070,7 +6099,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 
       <button type="button" class="ipw-plan-v4" data-internal-plan="weekly" onclick="selectInternalPlan('weekly')">
         <span class="ipw-radio-v4"></span>
-        <span class="ipw-plan-copy-v4"><b>1 Week Access</b><small>3-day free trial, then <span data-price-plan="weekly">$4.99</span>/wk</small></span>
+        <span class="ipw-plan-copy-v4"><b>1 Week Access</b><small>Billed weekly · cancel anytime</small></span>
         <span class="ipw-price-v4"><b data-price-plan="weekly">$4.99</b><small>/ week</small></span>
       </button>
 
@@ -17939,7 +17968,7 @@ window.syncInternalPaywallCta = function() {
   if (plan === 'yearly') {
     cta.textContent = price ? 'Claim 75% Off · ' + price + '/yr' : 'Claim 75% Off';
   } else if (plan === 'weekly') {
-    cta.textContent = 'Start 3-Day Free Trial';
+    cta.textContent = price ? 'Continue with Weekly (' + price + ')' : 'Continue with Weekly';
   } else {
     cta.textContent = price ? 'Continue with Monthly (' + price + ')' : 'Continue with Monthly';
   }
@@ -18167,12 +18196,13 @@ window.syncTDEEChoiceUI = function() {
     if (isScan) {
       if (scanBtn) {
         scanBtn.style.pointerEvents = "none";
-        scanBtn.style.opacity = "0.9";
-        scanBtn.style.filter = "brightness(1.1)";
+        scanBtn.style.opacity = "1";
+        scanBtn.style.filter = "none";
       }
       if (secondaryBtn) {
         secondaryBtn.style.pointerEvents = "none";
-        secondaryBtn.style.opacity = "0.4";
+        secondaryBtn.style.opacity = "1";
+        secondaryBtn.style.filter = "none";
       }
       if (scanBtnText) scanBtnText.textContent = "ANALYZING BIOMETRICS...";
       if (scanBtnIconWrap) {
@@ -18688,9 +18718,10 @@ window.syncTDEEChoiceUI = function() {
   // Flow: tap orb on Home -> voice overlay. Tap the big orb and talk (free mode) or
   // tap one of the six looksmaxxing chips. Audio goes to /api/voice-chat (OpenRouter:
   // speech-to-text -> Gemini -> text-to-speech) and comes back as wav/mp3.
-  // Mogly never depends on that endpoint alone: on 404/5xx/timeout/offline the answer is
-  // built on the device from the scan (mvLocalAnswer) and shown as text. Mogly only ever
-  // speaks with the real OpenAI voice (Onyx / Nova); the iOS robot voice is never used.
+  // Every answer comes from the AI: there are no canned on-device answers. On
+  // 404/5xx/timeout/offline the turn says so honestly (mvFailTurn) and offers a retry
+  // button. Mogly only ever speaks with the real OpenAI voice (Onyx / Nova); the iOS
+  // robot voice is never used.
   const MV_TXT = {
     en: {
       tapToTalk: "Tap the orb and speak",
@@ -18731,6 +18762,8 @@ window.syncTDEEChoiceUI = function() {
       openFoodScan: "Scan a meal",
       startExercise: "Open the exercise",
       openScan: "Scan my face",
+      coachDown: "Couldn't reach coach. Check connection and tap to retry.",
+      retry: "Tap to retry",
     }
   };
   const mvLang = () => "en";
@@ -18755,6 +18788,7 @@ window.syncTDEEChoiceUI = function() {
   let mvHistory = [];
   let mvLevel = 0;
   let mvActionKind = null;
+  let mvLastAsk = null;          // { payload, said, extra } of the last server turn, replayed by mvRetryTurn
   let mvGuest = false;           // overlay opened by the free scan debrief: chips and talk need Premium
 
   // ----- orb renderer (fluid blobs inside the glass sphere) -----
@@ -18785,9 +18819,10 @@ window.syncTDEEChoiceUI = function() {
     const c = o.ctx;
     c.globalCompositeOperation = "source-over";
     c.clearRect(0, 0, S, S);
+    // Translucent backing so the liquid glass depth (.mv-orb::before) shows through.
     const bg = c.createRadialGradient(S * 0.5, S * 0.42, S * 0.04, S * 0.5, S * 0.5, S * 0.55);
-    bg.addColorStop(0, "#10294f");
-    bg.addColorStop(1, "#050b18");
+    bg.addColorStop(0, "rgba(16, 41, 79, 0.62)");
+    bg.addColorStop(1, "rgba(5, 11, 24, 0)");
     c.fillStyle = bg;
     c.beginPath();
     c.arc(S / 2, S / 2, S / 2, 0, Math.PI * 2);
@@ -19003,7 +19038,7 @@ window.syncTDEEChoiceUI = function() {
     mvActionKind = kind;
     const b = mvEl("mvAction");
     if (!b) return;
-    const label = { exercises: "openExercises", daily: "openDaily", foodscan: "openFoodScan", "exercise-start": "startExercise", scan: "openScan" }[kind];
+    const label = { exercises: "openExercises", daily: "openDaily", foodscan: "openFoodScan", "exercise-start": "startExercise", scan: "openScan", retry: "retry" }[kind];
     if (!kind || !label) { b.hidden = true; return; }
     b.textContent = mvT(label) + "  ›";
     b.hidden = false;
@@ -19198,228 +19233,6 @@ window.syncTDEEChoiceUI = function() {
     return true;
   }
 
-  // ----- on-device brain: Mogly answers even when the backend is down -----
-  //
-  // Same looksmaxxing persona as the worker prompt: softmaxxing (body fat, water, lymph,
-  // posture, skin, haircut) is what the user can change, hardmaxxing (bone, canthal tilt)
-  // is said honestly, and bonesmashing / steroids / DNP / starvation are refused.
-  // Built from the user's real scan metrics, in Russian or English.
-  function mvLocalFace() {
-    const c = mvContext();
-    const m = c.metrics || {};
-    const num = (v) => { const n = Number(v); return isFinite(n) && n > 0 ? Math.round(Math.max(1, Math.min(99, n))) : null; };
-    const score = num(c.score);
-    const areas = [
-      { key: "jawline", v: num(m.jawline) },
-      { key: "cheekbones", v: num(m.cheekbones) },
-      { key: "eyes", v: num(m.eyes != null ? m.eyes : m.eye_area) },
-      { key: "skin", v: num(m.skin) },
-    ].filter(a => a.v != null);
-    let shape = null;
-    try {
-      const raw = c.face_shape ? { face_shape: c.face_shape } : null;
-      shape = (typeof moglyFaceShapeFor === "function") ? moglyFaceShapeFor(m, raw) : null;
-    } catch (e) {}
-    const sorted = areas.slice().sort((a, b) => a.v - b.v);
-    return {
-      ctx: c, score, areas,
-      weak: sorted[0] || null,
-      strong: sorted.length > 1 ? sorted[sorted.length - 1] : null,
-      sym: num(m.symmetry), nose: num(m.nose), lips: num(m.lips),
-      shape, female: c.gender === "female",
-      hasScan: score != null || areas.length > 0,
-    };
-  }
-  const MV_AREA = {
-    en: { jawline: "jawline", cheekbones: "cheekbones", eyes: "eye area", skin: "skin" },
-  };
-  function mvBand(v) {
-    if (v >= 85) return "that's top tier";
-    if (v >= 75) return "that's above average";
-    if (v >= 65) return "that's a solid base with clear upside";
-    if (v >= 50) return "that's average, with a lot of room to climb";
-    return "it's a low start, which means the fastest gains";
-  }
-  // One expert plan per area. Each returns a list of sentences.
-  function mvAreaPlan(key, f, short) {
-    const a = f.areas.find(x => x.key === key);
-    const v = a ? a.v : null;
-    const strong = v != null && v >= 80;
-    if (key === "jawline") {
-      const out = [
-        strong ? "Your jawline is already a standout feature, so we focus on maintenance and debloat." : "Here's the honest jawline breakdown.",
-        "Jaw definition is mostly body fat and water, not bone. If you're above about fifteen percent body fat, a slow cut is the biggest jaw upgrade you can get.",
-        "Mewing, honestly: whole tongue on the palate, lips sealed, neck stacked over your shoulders. It instantly improves how your jaw reads in profile and photos, but it won't reshape adult bone.",
-      ];
-      if (!short) {
-        out.push(f.female
-          ? "Skip hard gum for you, it widens the lower face. Do two minutes of lymphatic drainage along the jaw toward the ears and down the neck instead."
-          : "For the masseter, hard gum ten to fifteen minutes a day, no more, or you'll overload the jaw joint.");
-        out.push("Keep salt and alcohol low in the evening. And no bonesmashing, that's just injury.");
-      }
-      return out;
-    }
-    if (key === "cheekbones") {
-      const out = [
-        "Cheekbones are framed by facial contour. Water and soft tissue almost always hide them. Drop the bloat and the cheekbones pop.",
-        "You can't change the zygomatic bone, but water and soft tissue almost always hide it. Drop the bloat and the cheekbones show.",
-      ];
-      if (!short) out.push("Tonight: low salt, no alcohol, last big meal three hours before bed. Morning: one minute of cold water or an ice roller, then two minutes of lymphatic drainage from the nose along the cheekbones to the ears and down the neck.");
-      return out;
-    }
-    if (key === "eyes") {
-      const out = [
-        "Eye area is key to your facial intensity. Here's the honest breakdown.",
-        "Canthal tilt and orbital bone are hardmaxxing, you can't train them, and I won't pretend you can.",
-        "What does change: under-eye puffiness and dark circles. Seven and a half to nine hours of sleep, a cold compress in the morning, a caffeine eye serum.",
-      ];
-      if (!short) out.push("Keep your brows full and low-set, clean only the stray hairs between and under them. A straight, low brow line is what reads as hunter eyes. And stop squinting, wear sunglasses outside.");
-      return out;
-    }
-    if (key === "skin") {
-      const out = [
-        strong ? "Skin quality is in solid shape, so you're in maintenance mode." : "For skin clarity, here's the proven base.",
-        "The proven stack: gentle cleanser, moisturizer and SPF thirty plus every morning. At night a retinoid, adapalene or retinol, pea-sized, two to three nights a week, then build up.",
-      ];
-      if (!short) out.push("Benzoyl peroxide on active spots. Skin turns over in about twenty-eight days, so judge it after six to eight weeks, not three days. If acne is deep or won't clear, see a dermatologist.");
-      return out;
-    }
-    return [];
-  }
-  const MV_AREA_ACTION = { jawline: "exercises", cheekbones: "exercises", eyes: "exercises", skin: "daily" };
-  function mvHairPlan(f) {
-    const k = f.shape ? f.shape.key : "oval";
-    const label = f.shape ? f.shape.label.toLowerCase() : ("oval");
-    const M = {
-      en: {
-        oval: "Oval is the most forgiving shape. A textured crop or a medium quiff works, keep the sides tighter than the top so the jaw stays visible.",
-        round: "For a round face you want height and angles: volume on top, low or mid fade on the sides. Avoid a heavy straight fringe, it makes the face look wider.",
-        square: "Square jaw is a strength, show it. Short works: a crew cut or a textured top with clean sides. Avoid boxy, flat tops that double the width.",
-        heart: "With a heart shape, balance the narrower jaw: medium length, a bit more fullness at the sides, a side part. Avoid very tight sides with a tall top.",
-        diamond: "Diamond means the cheekbones are the widest point. Keep some fullness at the forehead and sides, a fringe or side-swept top works. Avoid very short sides.",
-        oblong: "For a longer face, don't add height. Keep the top flatter, some fringe, and more width at the sides.",
-      },
-    };
-    const F = {
-      en: "For you: layers that start at the jaw or cheekbone, curtain bangs, and volume placed where your face is narrowest.",
-    };
-    const lang = "en";
-    const out = [`Your face shape reads as ${label}.`, M[lang][k] || M[lang].oval];
-    if (f.female) out.push(F[lang]);
-    out.push("Show your barber a photo, get the cut, then rescan in the same light and we'll see how the harmony moved.");
-    return out;
-  }
-  function mvIntentFromText(text) {
-    const t = String(text || "").toLowerCase();
-    if (!t) return "";
-    if (/bone ?smash|steroid|\bsarm|\bdnp\b|starv/.test(t)) return "refuse";
-    if (/jaw|mew|chin|masseter/.test(t)) return "jawline";
-    if (/bloat|puff|swell|water retention/.test(t)) return "debloat";
-    if (/eye|canthal|brow|hunter/.test(t)) return "eyes";
-    if (/skin|acne|pimple|spot|retino/.test(t)) return "skin";
-    if (/hair|haircut|barber/.test(t)) return "hair";
-    if (/cheek/.test(t)) return "debloat";
-    if (/eat|food|meal|diet/.test(t)) return "meal";
-    if (/plan|today|streak/.test(t)) return "today";
-    return "";
-  }
-  function mvLocalAnswer(fn, heard) {
-    const f = mvLocalFace();
-    const names = MV_AREA["en"];
-    let intent = fn || mvIntentFromText(heard) || "fixfirst";
-    if (intent === "priority") intent = "fixfirst";
-    if (intent === "brief") intent = "today";
-    const S = [];
-    let action = null;
-    const noScan = "I don't have your scan yet, so no numbers. Tap Scan my face on Home and I'll tell you exactly what to fix first.";
-
-    if (intent === "refuse") {
-      S.push("I won't coach bonesmashing, steroids, DNP or starvation. That's fractures, hormone damage and organ damage, and it wrecks your face long term.");
-      S.push("The safe version of the same goal: cut to a healthy body fat, drop the bloat, fix posture and tongue position, skincare, and the right haircut.");
-      action = "exercises";
-    } else if (intent === "scan") {
-      if (!f.hasScan) { S.push(noScan); action = "scan"; }
-      else {
-        if (f.score != null) S.push(`Your scan is in, placing you in the ${mvBand(f.score)} tier.`);
-        const d = f.ctx.progress && f.ctx.progress.scan_delta;
-        if (d && isFinite(d.overall)) {
-          const since = d.days > 1 ? `in ${d.days} days` : "since your last scan";
-          S.push(d.overall > 0 ? `That's up ${d.overall} ${since}. The work is showing.` : d.overall < 0 ? `That's down ${-d.overall} ${since}. Usually that's water, light or angle, not your face. Same light, same angle next time.` : `Flat ${since}. Holding is fine, now we push.`);
-          const moves = Object.keys(d.areas).filter(k => d.areas[k] !== 0).sort((x, y) => Math.abs(d.areas[y]) - Math.abs(d.areas[x])).slice(0, 2);
-          if (moves.length) S.push("Biggest moves: " + moves.map(k => `${names[k]} ${d.areas[k] > 0 ? "up" : "down"} ${Math.abs(d.areas[k])}`).join(", ") + ".");
-        }
-        if (f.shape) S.push(`Face shape reads as ${f.shape.label.toLowerCase()}.`);
-        if (f.strong) S.push(`Your strongest feature is your ${names[f.strong.key]}. That's your visual edge.`);
-        if (f.weak) {
-          S.push(`First area to level up: your ${names[f.weak.key]}.`);
-          S.push(...mvAreaPlan(f.weak.key, f, true).slice(1));
-          action = MV_AREA_ACTION[f.weak.key];
-        }
-        if (f.sym != null) S.push(f.sym >= 80
-          ? "Facial symmetry is well balanced."
-          : "To balance symmetry: chew on both sides and avoid sleeping on only one side.");
-        S.push("Daily biomechanics: tongue on the palate, lips sealed, neck stacked over your shoulders. Posture changes how your face reads instantly.");
-        S.push("Tap Fix first and I'll give you the full plan.");
-      }
-    } else if (intent === "fixfirst") {
-      if (!f.hasScan) {
-        S.push(noScan);
-        S.push("Until then, the universal levers: sleep, less salt at night, tongue on the palate, and SPF every morning.");
-        action = "scan";
-      } else {
-        if (heard && !fn) S.push("Here's what matters most for your face right now.");
-        if (f.score != null) S.push("Here's your personal facial breakdown.");
-        if (f.strong) S.push(`Your strongest feature is your ${names[f.strong.key]}.`);
-        if (f.weak) {
-          S.push(`Fix this first: your ${names[f.weak.key]}.`);
-          S.push(...mvAreaPlan(f.weak.key, f, false));
-          action = MV_AREA_ACTION[f.weak.key];
-        }
-        S.push("Do this for fourteen days, then rescan in the same light, that's how we see the real delta.");
-      }
-    } else if (intent === "jawline" || intent === "eyes" || intent === "skin") {
-      S.push(...mvAreaPlan(intent, f, false));
-      action = MV_AREA_ACTION[intent];
-    } else if (intent === "debloat") {
-      S.push("Puffiness hides your cheekbones and your jawline. It's the fastest lever, you see it within a day.");
-      S.push("Tonight: salt down, no alcohol, last big meal three hours before bed, drink your water during the day, not at night. Sleep with your head slightly raised.");
-      S.push("Morning: one minute of cold water or an ice roller, then two minutes of lymphatic drainage from the center of your face out to the ears and down the neck. Forty minutes later your face looks noticeably sharper.");
-      action = "exercises";
-    } else if (intent === "hair") {
-      S.push(...mvHairPlan(f));
-    } else if (intent === "meal") {
-      S.push("Eat to cut water and inflammation. Protein at every meal: eggs, fish, chicken, Greek yogurt.");
-      S.push("Potassium to balance salt: bananas, potatoes, spinach, avocado. Keep salt and alcohol low, especially after seven pm, and cut ultra-processed carbs, they pull water into your face.");
-      S.push("Two to three liters of water spread through the day.");
-      try {
-        const plan = f.ctx.meal_plan;
-        if (plan && plan.meals && plan.meals[0] && plan.meals[0].name) S.push(`Your plan today starts with ${plan.meals[0].name}.`);
-      } catch (e) {}
-      action = "foodscan";
-    } else if (intent === "today") {
-      const t = f.ctx.today || {}, p = f.ctx.progress || {};
-      const h = Number(p.local_hour != null ? p.local_hour : new Date().getHours());
-      S.push((h < 12 ? "Good morning." : h < 18 ? "Good afternoon." : "Good evening."));
-      S.push(h < 12
-        ? "Two-minute ritual first: sixty seconds of cold water or an ice roller to drain the overnight puff. Then stand tall, ears over shoulders, tongue flat on the palate, lips sealed. That's your jaw posture all day."
-        : h < 18
-          ? "Midday check: shoulders back, chin in, tongue up. Finish your water now so it's not in your face tonight."
-          : "Tonight decides tomorrow's face: salt down, no alcohol, last big meal three hours before bed, head slightly raised on the pillow.");
-      if (p.streak) S.push(`You're on a ${p.streak} day streak${p.streak_at_risk ? ", and it ends tonight unless you finish the four exercises" : ""}.`);
-      else S.push("Today we start a streak. Four exercises, two minutes.");
-      if (t.exercises_total) S.push(`Exercises: ${t.exercises_done || 0} of ${t.exercises_total} done.${t.next_exercise ? ` Next up is ${t.next_exercise}.` : ""}`);
-      if (t.water_goal) S.push(`Water: ${t.water_glasses || 0} of ${t.water_goal} glasses.`);
-      if (p.first_score != null && p.last_score != null && p.scans > 1) S.push(`Your score went from ${p.first_score} to ${p.last_score}.`);
-      if (p.days_since_scan != null && p.days_since_scan >= 7) S.push(`Your last scan was ${p.days_since_scan} days ago, time to rescan.`);
-      if (f.weak) S.push(`Today's focus is your ${names[f.weak.key]}.`);
-      action = t.next_exercise ? "exercises" : "daily";
-    } else if (intent === "exercise") {
-      S.push("Opening the exercise. Follow the video, slow and pain-free, the timer starts on its own.");
-    }
-    if (!S.length) S.push(noScan);
-    return { answer: S.join(" "), action };
-  }
-
   // ----- on-device voice: none. The iOS speechSynthesis robot is banned from the app;
   // without real audio the answer stays on screen as text.
   // A real tap unlocks the AudioContext for later automatic answers (the scan debrief 2 s after results).
@@ -19427,8 +19240,6 @@ window.syncTDEEChoiceUI = function() {
   window.moglyUnlockVoice = mvUnlockSpeech;
   ["touchend", "click"].forEach(evt => document.addEventListener(evt, mvUnlockSpeech, { capture: true, once: true, passive: true }));
 
-  // Answers on the device: used when the server is unreachable, returns an error, or for
-  // the scan debrief. The user never sees a server error, Mogly just answers.
   function mvExerciseOnEnd(exercise) {
     return exercise ? () => {
       try {
@@ -19437,22 +19248,28 @@ window.syncTDEEChoiceUI = function() {
       } catch (e) {}
     } : null;
   }
-  function mvLocalTurn(fn, myTurn, heard, extra) {
-    if (myTurn !== mvTurn) return;
-    const exercise = extra && extra.exercise;
-    const r = mvLocalAnswer(fn, heard);
-    if (heard && !fn) { mvHistory.push({ role: "user", text: heard }, { role: "assistant", text: r.answer }); mvHistory = mvHistory.slice(-8); }
+  // The server could not answer: say so honestly and offer a retry. No made-up advice.
+  function mvFailTurn(message, heard, canRetry) {
     mvStopPlayback();
-    mvShow(heard || (fn ? mvT(fn) : ""), r.answer);
-    mvSetAction(exercise ? null : r.action);
-    if (exercise) {
-      mvCloseOverlay(true);
-      try { openExerciseDetail(exercise.id); } catch (e) {}
-    }
-    // Text only: never the device robot voice.
+    mvShow(heard || "", message || mvT("coachDown"));
+    mvSetAction(canRetry === false || !mvLastAsk ? null : "retry");
     mvSetState("idle");
-    mvNote(mvT("noVoice"));
-    if (exercise) mvSetAction("exercise-start");
+    mvNote("");
+  }
+  // Replays the last failed turn (same audio or chip), no need to speak again.
+  function mvRetryTurn() {
+    const last = mvLastAsk;
+    if (!last) return;
+    mvCancelTurn(true);
+    mvEnsureCtx();
+    mvAudioSession("playback");
+    const myTurn = ++mvTurn;
+    mvHaptic("light");
+    mvShow(last.said || "", "");
+    mvSetAction(null);
+    mvSetState("thinking");
+    mvAsk(last.payload, myTurn, last.said, last.extra)
+      .catch(() => { if (myTurn === mvTurn) mvFailTurn(mvT("coachDown"), last.said); });
   }
 
   // ----- backend -----
@@ -19546,7 +19363,7 @@ window.syncTDEEChoiceUI = function() {
     // Covers the whole body, not just the headers, so a stalled stream cannot hang the orb.
     let timedOut = false;
     // 15 s for the server to start answering (a dead worker must not keep the orb
-    // spinning, the device answers instead), then 45 s for the rest of the stream.
+    // spinning, the turn fails with a retry instead), then 45 s for the rest of the stream.
     let timer = setTimeout(() => { timedOut = true; controller.abort(); }, 15000);
     try {
       const res = await fetch(API_BASE + "/api/voice-chat", {
@@ -19596,7 +19413,7 @@ window.syncTDEEChoiceUI = function() {
     }
   }
 
-  // { handled } = paywall opened; { local: reason } = the device answers instead;
+  // { handled } = paywall opened; { fail: reason } = the turn fails honestly with a retry;
   // { retry } = premium just confirmed, ask the server once more.
   async function mvHandleFailure(r, retry) {
     if (r.status === 402) {
@@ -19606,15 +19423,15 @@ window.syncTDEEChoiceUI = function() {
         await new Promise(res => setTimeout(res, 1800));
         return { retry: true };
       }
-      // Paying user the server does not know about yet: answer on the device.
-      if (nowPremium || mvIsPremium()) return { local: "premium_not_synced" };
+      // Paying user the server does not know about yet: let them retry in a moment.
+      if (nowPremium || mvIsPremium()) return { fail: "premium_not_synced" };
       mvCloseOverlay();
       showGate(mvT("gateTitle"), mvT("gateText"), () => window.openMoglyVoiceSheet(true));
       return { handled: true };
     }
-    // 404 (worker not deployed), 5xx, daily_limit, bad JSON: the device answers.
+    // 404 (worker not deployed), 5xx, daily_limit, bad JSON: honest failure.
     if (!r.data || !r.data.ok) {
-      return { local: (r.data && r.data.error) || ("http_" + r.status) };
+      return { fail: (r.data && r.data.error) || ("http_" + r.status) };
     }
     return { handled: false };
   }
@@ -19718,7 +19535,7 @@ window.syncTDEEChoiceUI = function() {
       // The transcript event arrives first, so the user sees their words before the answer.
       await mvAsk({ audio_base64: audioB64, audio_format: mime, history: mvHistory.slice(-6) }, myTurn, "");
     } catch (e) {
-      if (myTurn === mvTurn) mvLocalTurn("", myTurn, "", null);
+      if (myTurn === mvTurn) mvFailTurn(mvT("coachDown"));
     }
   }
   async function mvAsk(payload, myTurn, said, extra) {
@@ -19730,10 +19547,13 @@ window.syncTDEEChoiceUI = function() {
     let streamErr = null;          // {type:"error", error, reason} from the worker
     // Hands-free exercise: when the voice is ready, open the exercise, speak, then start the timer.
     const onEnd = mvExerciseOnEnd(exercise);
-    // Server unreachable / failed before answering: Mogly answers on the device instead.
-    const local = (why) => {
-      if (why) console.warn("[mogly voice] server unavailable, answering on device:", why);
-      mvLocalTurn(payload.function || "", myTurn, heard, extra);
+    mvLastAsk = { payload, said, extra };
+    // Server unreachable / failed before answering: honest error + retry, never a canned answer.
+    const fail = (why) => {
+      if (myTurn !== mvTurn) return;
+      if (why) console.warn("[mogly voice] coach unavailable:", why);
+      if (why === "daily_limit") { mvFailTurn(mvT("limit"), heard, false); return; }
+      mvFailTurn(mvT("coachDown"), heard);
     };
     const onEvent = (ev) => {
       if (ev.type === "transcript") {
@@ -19766,22 +19586,22 @@ window.syncTDEEChoiceUI = function() {
       r = await mvStreamCall(payload, myTurn, onEvent);
     } catch (e) {
       if (myTurn !== mvTurn) return;
-      // Network drop / timeout. Before the answer: the device answers. After it: keep it.
-      if (!answer) { local(e && e.mvKind); return; }
+      // Network drop / timeout. Before the answer: honest failure + retry. After it: keep it.
+      if (!answer) { fail(e && e.mvKind); return; }
       cut = (e && e.mvKind) || "network";
       r = { status: 200, data: { ok: true }, streamed: true };
     }
     if (myTurn !== mvTurn) return;
     if (!r.streamed) {
-      let fail = await mvHandleFailure(r, true);
-      if (fail.retry) {
+      let res = await mvHandleFailure(r, true);
+      if (res.retry) {
         try { r = await mvStreamCall(payload, myTurn, onEvent); }
-        catch (e) { if (myTurn === mvTurn) local(e && e.mvKind); return; }
+        catch (e) { fail(e && e.mvKind); return; }
         if (myTurn !== mvTurn) return;
-        fail = r.streamed ? { handled: false } : await mvHandleFailure(r, false);
+        res = r.streamed ? { handled: false } : await mvHandleFailure(r, false);
       }
-      if (fail.handled) return;
-      if (fail.local) { local(fail.local); return; }
+      if (res.handled) return;
+      if (res.fail) { fail(res.fail); return; }
     }
     if (!r.streamed) {
       const d = r.data;
@@ -19792,7 +19612,7 @@ window.syncTDEEChoiceUI = function() {
       if (d.audio_base64) onEvent({ type: "audio", audio_base64: d.audio_base64, audio_format: d.audio_format });
       onEvent({ type: "done", tts_ok: !!d.audio_base64 });
     }
-    if (!answer) { local(streamErr ? streamErr.error : (finished ? "empty_answer" : "network")); return; }
+    if (!answer) { fail(streamErr ? streamErr.error : (finished ? "empty_answer" : "network")); return; }
     if (!finished && !cut) cut = "network";
     if (heard) { mvHistory.push({ role: "user", text: heard }, { role: "assistant", text: answer }); mvHistory = mvHistory.slice(-8); }
     // The full answer text stays on screen whatever happens to the audio.
@@ -19836,7 +19656,7 @@ window.syncTDEEChoiceUI = function() {
     try {
       await mvAsk(payload, myTurn, mvT(fn), extra);
     } catch (e) {
-      if (myTurn === mvTurn) mvLocalTurn(fn, myTurn, "", extra);
+      if (myTurn === mvTurn) mvFailTurn(mvT("coachDown"), mvT(fn));
     }
   }
 
@@ -20001,6 +19821,7 @@ window.syncTDEEChoiceUI = function() {
   window.moglyVoiceChip = function(fn) { mvUnlockSpeech(); if (mvGuestBlocked()) return; mvRunFunction(fn); };
   window.moglyVoiceAction = function() {
     const kind = mvActionKind;
+    if (kind === "retry") { mvRetryTurn(); return; }
     mvCloseOverlay(false);
     try {
       if (kind === "exercises" || kind === "daily" || kind === "foodscan") openExercises();
@@ -20017,7 +19838,7 @@ window.syncTDEEChoiceUI = function() {
   //   brief   -> once a day the orb offers a time-of-day brief (morning debloat,
   //              midday posture, evening salt/sleep) with streak, next exercise
   //              and the weekly rescan prompt. Server voice (Onyx/Nova) via the
-  //              "brief" function, on-device answer when the worker is down.
+  //              "brief" function; honest error + retry when the worker is down.
   //   scan    -> after every scan Mogly audits the change vs. the previous scan
   //              (mvScanDelta) and names the focus zone.
   //   workout -> short spoken cues inside each of the 4 exercises (start,

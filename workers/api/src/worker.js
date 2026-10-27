@@ -1880,23 +1880,15 @@ Rules:
 //
 // Pipeline, everything through OpenRouter:
 //   mic audio -> /audio/transcriptions (gpt-4o-mini-transcribe) -> Gemini
-//   2.5 Flash-Lite (same route as every other AI flow) -> /audio/speech
-//   (Gemini 3.8 Flash Lite TTS) -> audio back to the app.
+//   2.5 Flash-Lite (same route as every other AI flow) -> /chat/completions
+//   (openai/gpt-audio-mini, stream:true) -> audio back to the app.
 //
-// TTS model chain: OpenRouter does not list openai/gpt-4o-mini-tts in its
-// speech catalog (GET /models?output_modalities=speech, checked 2026-10-27;
-// its endpoints route returns 404), so every speech call to it failed and the
-// app only ever showed text. Gemini 3.8 Flash Lite TTS is the cheapest
-// natural multilingual voice in that catalog. Gemini TTS only returns raw
-// 16-bit PCM, which is wrapped into a WAV container here so <audio> can play
-// it. Gemini 3.8 Flash TTS (same voices) is the fallback; OpenAI is last in
-// case it comes back.
-//
-// Why this replaced the old openai/gpt-audio-mini call: OpenRouter only returns
-// audio output from chat completions when stream:true is set, and the old code
-// sent a non-streaming request. It therefore never got audio back, and the app
-// quietly fell back to the Apple system voice. The dedicated speech endpoint
-// returns a plain mp3 and has no such restriction.
+// TTS is OpenAI only: Onyx (male looksmax coach) and Nova (female beauty /
+// looksmax stylist). OpenRouter only returns audio from chat completions when
+// stream:true is set, so the audio deltas are read from the SSE stream as
+// 24 kHz pcm16 and wrapped into a WAV container so <audio> can play it. There
+// is deliberately no Gemini or system-voice fallback: a failed speech call
+// returns reason "tts_unavailable" and the app keeps the text answer.
 //
 // Endpoints:
 //   POST /api/voice-chat     free mode + function buttons (premium, daily limit)
@@ -1910,12 +1902,9 @@ Rules:
 // returns a single JSON object (older builds).
 
 const VOICE_STT_MODEL = "openai/gpt-4o-mini-transcribe";
-const VOICE_TTS_CHAIN = [
-  { model: "google/gemini-3.8-flash-lite-tts", format: "pcm", voices: { male: ["Charon", "Orus"], female: ["Kore", "Sulafat"] } },
-  { model: "google/gemini-3.8-flash-tts", format: "pcm", voices: { male: ["Charon"], female: ["Kore"] } },
-  { model: "openai/gpt-4o-mini-tts-2025-12-15", format: "mp3", voices: { male: ["ash"], female: ["alloy"] } },
-];
-const VOICE_PCM_RATE = 24000;           // Gemini TTS: 24 kHz mono s16le
+const VOICE_TTS_MODEL = "openai/gpt-audio-mini";
+const VOICE_TTS_VOICES = { male: "onyx", female: "nova" };
+const VOICE_PCM_RATE = 24000;           // gpt-audio pcm16: 24 kHz mono s16le
 const DAILY_VOICE_LIMIT = 40;          // voice turns per user per day
 const DAILY_VOICE_LEGACY_IP_LIMIT = 12; // old builds send no user id
 const VOICE_REQUIRES_PREMIUM = true;
@@ -2011,143 +2000,87 @@ function pcmToWav(pcm, rate) {
   return out;
 }
 
-function pcmRate(contentType) {
-  const m = String(contentType || "").match(/rate=(\d+)/i);
-  const r = m ? Number(m[1]) : 0;
-  return r >= 8000 && r <= 48000 ? r : VOICE_PCM_RATE;
+// Collects the base64 audio deltas of an OpenRouter chat-completions SSE
+// stream (choices[0].delta.audio.data) into one PCM byte array.
+async function readSseAudio(res) {
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  const chunks = [];
+  let buffer = "";
+  let total = 0;
+  const take = (line) => {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("data:")) return;
+    const dataStr = trimmed.slice(5).trim();
+    if (!dataStr || dataStr === "[DONE]") return;
+    let delta;
+    try { delta = JSON.parse(dataStr)?.choices?.[0]?.delta?.audio?.data; } catch { return; }
+    if (!delta) return;
+    const raw = atob(delta);
+    const u8 = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+    chunks.push(u8);
+    total += u8.length;
+  };
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop();
+    lines.forEach(take);
+  }
+  take(buffer + decoder.decode());
+  const pcm = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) { pcm.set(c, offset); offset += c.length; }
+  return pcm;
 }
 
-async function voiceSpeakOpenAI(env, text, lang, gender) {
+// Speech is OpenAI only: Onyx for the male looksmax coach, Nova for the female
+// beauty / looksmax stylist. There is no Gemini or other fallback voice; if
+// OpenAI fails the turn honestly reports tts_unavailable and the app keeps the
+// text answer.
+async function voiceSpeak(env, text, lang, gender) {
   const key = String(env.OPENROUTER_API_KEY || "").trim();
-  if (!key) return null;
+  if (!key) return { ok: false, status: 503, reason: "tts_unavailable" };
   const input = String(text || "").trim().slice(0, 1200);
-  if (!input) return null;
+  if (!input) return { ok: false, reason: "empty text" };
   const isFemale = gender === "female";
-  const voice = isFemale ? "nova" : "onyx";
-  const systemPrompt = lang === "ru"
-    ? "Repeat the exact text provided by the user verbatim in Russian with a confident, natural human tone. Do NOT add anything else."
-    : "Repeat the exact text provided by the user verbatim with a confident, natural human tone. Do NOT add anything else.";
+  const voice = isFemale ? VOICE_TTS_VOICES.female : VOICE_TTS_VOICES.male;
+  const tone = isFemale
+    ? "You are the voice of an aesthetic beauty advisor and looksmax stylist: warm, polished, confident."
+    : "You are the voice of a brutal, no-nonsense looksmax coach: deep, direct, confident.";
+  const systemPrompt = tone + (lang === "ru"
+    ? " Read the user's text aloud verbatim in Russian, in a natural human tone. Do NOT add, drop or change any words."
+    : " Read the user's text aloud verbatim, in a natural human tone. Do NOT add, drop or change any words.");
 
   try {
     const res = await voiceFetch(openRouterBase(env) + "/chat/completions", {
       method: "POST",
       headers: voiceHeaders(key),
       body: JSON.stringify({
-        model: "openai/gpt-audio-mini",
+        model: VOICE_TTS_MODEL,
         modalities: ["text", "audio"],
         audio: { voice, format: "pcm16" },
         stream: true,
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: input }
-        ]
+          { role: "user", content: input },
+        ],
       }),
-    }, 25000);
-
-    if (!res.ok) return null;
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    const audioBuffers = [];
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop();
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed.startsWith("data: ")) continue;
-        const dataStr = trimmed.slice(6);
-        if (dataStr === "[DONE]") continue;
-        try {
-          const json = JSON.parse(dataStr);
-          const audioDelta = json.choices?.[0]?.delta?.audio?.data;
-          if (audioDelta) {
-            const raw = atob(audioDelta);
-            const u8 = new Uint8Array(raw.length);
-            for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
-            audioBuffers.push(u8);
-          }
-        } catch (e) {}
-      }
+    }, 30000);
+    if (!res.ok || !res.body) {
+      await res.text().catch(() => "");
+      return { ok: false, status: res.status || 502, reason: "tts_unavailable" };
     }
-    const totalLen = audioBuffers.reduce((acc, b) => acc + b.length, 0);
-    if (totalLen < 800) return null;
-    const fullPcm = new Uint8Array(totalLen);
-    let offset = 0;
-    for (const b of audioBuffers) {
-      fullPcm.set(b, offset);
-      offset += b.length;
-    }
-    const wav = pcmToWav(fullPcm, 24000);
-    return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: "openai/gpt-audio-mini" };
+    const pcm = await readSseAudio(res);
+    if (pcm.length < 800) return { ok: false, status: 502, reason: "tts_unavailable" };
+    const wav = pcmToWav(pcm, VOICE_PCM_RATE);
+    return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: VOICE_TTS_MODEL };
   } catch (e) {
-    return null;
+    return { ok: false, status: 502, reason: "tts_unavailable" };
   }
-}
-
-async function voiceSpeak(env, text, lang, gender) {
-  const key = String(env.OPENROUTER_API_KEY || "").trim();
-  if (!key) return { ok: false, reason: "OPENROUTER_API_KEY missing" };
-  const input = String(text || "").trim().slice(0, 1200);
-  if (!input) return { ok: false, reason: "empty text" };
-  const instructions = lang === "ru"
-    ? "Говори по-русски, естественно, спокойно и уверенно, как живой тренер. Не театрально, без спешки."
-    : "Speak naturally, calm and confident, like a real coach. Warm and direct, never theatrical.";
-  const g = gender === "female" ? "female" : "male";
-
-  // Premier ultra-realistic OpenAI voice (Onyx for male, Nova for female)
-  if (env.VOICE_ENGINE !== "gemini") {
-    try {
-      const openAiRes = await voiceSpeakOpenAI(env, input, lang, g);
-      if (openAiRes && openAiRes.ok) return openAiRes;
-    } catch (e) {}
-  }
-
-  let lastReason = "speech failed";
-  let lastStatus = 0;
-  for (const tts of VOICE_TTS_CHAIN) {
-    voices:
-    for (const voice of tts.voices[g]) {
-      for (let attempt = 0; attempt < 2; attempt++) {
-        try {
-          const res = await voiceFetch(openRouterBase(env) + "/audio/speech", {
-            method: "POST",
-            headers: voiceHeaders(key),
-            body: JSON.stringify({ model: tts.model, input, voice, response_format: tts.format, instructions }),
-          }, 30000);
-          lastStatus = res.status;
-          if (res.ok) {
-            const buf = new Uint8Array(await res.arrayBuffer());
-            if (buf.length > 800) {
-              if (tts.format === "pcm") {
-                const wav = pcmToWav(buf, pcmRate(res.headers.get("Content-Type")));
-                return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: tts.model };
-              }
-              return { ok: true, base64: bytesToBase64(buf), format: "mp3", voice, model: tts.model };
-            }
-            lastReason = "speech returned no audio";
-            break;
-          }
-          const raw = await res.text().catch(() => "");
-          let data = {};
-          try { data = raw ? JSON.parse(raw) : {}; } catch {}
-          lastReason = data?.error?.message || raw.slice(0, 200) || ("speech HTTP " + res.status);
-          // Auth or credit errors: no model will work, stop. Model not found:
-          // next model. Bad voice / bad request: next voice.
-          if ([401, 402, 403].includes(res.status)) return { ok: false, status: res.status, reason: lastReason };
-          if (res.status === 404) break voices;
-          if ([400, 422].includes(res.status)) break;
-          if (attempt === 0) await new Promise(r => setTimeout(r, 600));
-        } catch (e) {
-          lastReason = e?.name === "AbortError" ? "speech timed out" : (e?.message || String(e));
-          if (attempt === 0) await new Promise(r => setTimeout(r, 400));
-        }
-      }
-    }
-  }
-  return { ok: false, status: lastStatus, reason: lastReason };
 }
 
 function voiceClip(value, max) {

@@ -13,12 +13,28 @@ const worker = (await import(resolve(here, "../workers/api/src/worker.js"))).def
 
 const calls = [];
 let chatReply = "Your jawline is solid at eighty eight. Cut late salt tonight and your face will look sharper tomorrow.";
-let ttsMode = "ok"; // ok | fail-voice | fail-model | fail-auth
+let ttsMode = "ok"; // ok | fail-auth | fail-server | no-audio
 let sttText = "How do I debloat my face before tomorrow?";
 let chatMode = "ok"; // ok | busy | timeout
 
-const mp3 = new Uint8Array(2000).fill(7);
 const pcm = new Uint8Array(4800).fill(3); // 0.1 s of 24 kHz 16-bit mono
+
+// gpt-audio-mini over OpenRouter: chat completions with modalities + stream:true,
+// audio arrives as base64 pcm16 deltas in the SSE stream.
+function sseAudio(bytes) {
+  const half = bytes.length / 2;
+  const b64 = (u8) => Buffer.from(u8).toString("base64");
+  const ev = (o) => "data: " + JSON.stringify(o) + "\n\n";
+  const text = ev({ choices: [{ delta: { role: "assistant" } }] })
+    + ev({ choices: [{ delta: { audio: { data: b64(bytes.subarray(0, half)), transcript: "x" } } }] })
+    + ev({ choices: [{ delta: { audio: { data: b64(bytes.subarray(half)) } } }] })
+    + "data: [DONE]\n\n";
+  return new Response(text, { status: 200, headers: { "Content-Type": "text/event-stream" } });
+}
+// Speech calls are the chat completions that ask for audio output.
+const isTts = (c) => c.url.endsWith("/chat/completions") && !!(c.body && c.body.modalities);
+const isLlm = (c) => c.url.endsWith("/chat/completions") && !(c.body && c.body.modalities);
+const ttsInput = (c) => c.body.messages.find(m => m.role === "user").content;
 
 globalThis.fetch = async (url, init) => {
   const u = String(url);
@@ -27,24 +43,16 @@ globalThis.fetch = async (url, init) => {
   if (u.endsWith("/audio/transcriptions")) {
     return new Response(JSON.stringify({ text: sttText }), { status: 200 });
   }
+  if (u.endsWith("/chat/completions") && body.modalities) {
+    if (ttsMode === "fail-auth") return new Response(JSON.stringify({ error: { message: "no credits" } }), { status: 402 });
+    if (ttsMode === "fail-server") return new Response(JSON.stringify({ error: { message: "upstream" } }), { status: 500 });
+    if (ttsMode === "no-audio") return sseAudio(new Uint8Array(0));
+    return sseAudio(pcm);
+  }
   if (u.endsWith("/chat/completions")) {
     if (chatMode === "busy") return new Response(JSON.stringify({ error: { message: "rate limited" } }), { status: 429 });
     if (chatMode === "timeout") return new Response(JSON.stringify({ error: { message: "timeout" } }), { status: 408 });
     return new Response(JSON.stringify({ choices: [{ message: { content: chatReply } }] }), { status: 200 });
-  }
-  if (u.endsWith("/audio/speech")) {
-    if (ttsMode === "fail-auth") return new Response(JSON.stringify({ error: { message: "no credits" } }), { status: 402 });
-    // Mirrors the live catalog: OpenAI TTS is not served by OpenRouter.
-    if (body.model.startsWith("openai/")) return new Response(JSON.stringify({ error: { message: "Not Found" } }), { status: 404 });
-    if (ttsMode === "fail-model" && body.model === "google/gemini-3.8-flash-lite-tts") {
-      return new Response(JSON.stringify({ error: { message: "Not Found" } }), { status: 404 });
-    }
-    if (ttsMode === "fail-voice" && body.voice === "Charon") {
-      return new Response(JSON.stringify({ error: { message: "unknown voice" } }), { status: 400 });
-    }
-    // Gemini TTS only returns raw PCM.
-    if (body.response_format !== "pcm") return new Response(JSON.stringify({ error: { message: "pcm only" } }), { status: 400 });
-    return new Response(pcm, { status: 200, headers: { "Content-Type": "audio/pcm" } });
   }
   throw new Error("unexpected fetch " + u);
 };
@@ -128,7 +136,7 @@ setPremium("u1", true);
   const stt = calls.find(c => c.url.endsWith("/audio/transcriptions"));
   assert.equal(stt.body.input_audio.format, "m4a");
   assert.equal(stt.body.language, "ru");
-  const chat = calls.find(c => c.url.endsWith("/chat/completions"));
+  const chat = calls.find(isLlm);
   const prompt = promptOf(chat.body);
   assert.match(prompt, /Reply language: Russian/);
   assert.match(prompt, /jawline: 88\/100/);
@@ -141,13 +149,19 @@ setPremium("u1", true);
   assert.equal(last.role, "user");
   assert.equal(msgText(last), "How do I debloat my face before tomorrow?");
   assert.deepEqual(msgs.slice(1, -1), [{ role: "user", content: "hello" }], "past turns keep their own roles");
-  const tts = calls.find(c => c.url.endsWith("/audio/speech"));
-  assert.equal(tts.body.model, "google/gemini-3.8-flash-lite-tts");
-  assert.equal(tts.body.response_format, "pcm");
-  assert.equal(tts.body.voice, "Charon");
-  assert.match(tts.body.instructions, /по-русски/);
+  const ttsCalls = calls.filter(isTts);
+  assert.equal(ttsCalls.length, 1);
+  const tts = ttsCalls[0];
+  assert.equal(tts.body.model, "openai/gpt-audio-mini");
+  assert.deepEqual(tts.body.modalities, ["text", "audio"]);
+  assert.equal(tts.body.stream, true, "OpenRouter only returns audio when streaming");
+  assert.deepEqual(tts.body.audio, { voice: "onyx", format: "pcm16" });
+  assert.match(tts.body.messages[0].content, /brutal, no-nonsense looksmax coach/);
+  assert.match(tts.body.messages[0].content, /in Russian/);
+  assert.equal(ttsInput(tts), r.data.answer, "speaks exactly the answer");
+  assert.ok(!calls.some(c => c.url.endsWith("/audio/speech")), "no Gemini /audio/speech call");
   assert.equal(chat.body.model, "google/gemini-2.5-flash-lite");
-  ok("free mode: audio -> transcript -> answer -> Gemini TTS PCM wrapped as playable WAV");
+  ok("free mode: audio -> transcript -> answer -> OpenAI Onyx (gpt-audio-mini SSE pcm16) wrapped as playable WAV");
 }
 
 // 3b. voice follows the app's Male/Female setting; VOICE_LLM_MODEL swaps the brain only for voice
@@ -157,15 +171,18 @@ setPremium("u1", true);
   const r = await post("/api/voice-chat", { user_id: "u1", lang: "en", text: "skin tips?", voice_gender: "female" });
   delete env.VOICE_LLM_MODEL;
   assert.equal(r.data.tts_ok, true);
-  assert.equal(calls.find(c => c.url.endsWith("/audio/speech")).body.voice, "Kore");
-  const chat = calls.find(c => c.url.endsWith("/chat/completions")).body;
+  const tts = calls.find(isTts).body;
+  assert.equal(tts.audio.voice, "nova");
+  assert.equal(tts.model, "openai/gpt-audio-mini");
+  assert.match(tts.messages[0].content, /aesthetic beauty advisor and looksmax stylist/);
+  const chat = calls.find(isLlm).body;
   assert.equal(chat.model, "anthropic/claude-haiku-5.5");
   assert.ok(!chat.provider.order, "no Google provider order for a non-Google model");
   assert.equal(chat.provider.data_collection, "deny");
   assert.match(promptOf(chat), /elite female aesthetic mentor/);
   assert.match(promptOf(chat), /Darling, no candidate is fixing/);
   assert.match(promptOf(chat), /Strictly NO masculine slang/);
-  ok("female voice -> Kore + female aesthetic mentor persona; VOICE_LLM_MODEL override keeps data_collection deny");
+  ok("female voice -> OpenAI Nova + female aesthetic mentor persona; VOICE_LLM_MODEL override keeps data_collection deny");
 }
 
 // 4. transcribe_only does not call the LLM or TTS and does not use quota
@@ -199,9 +216,9 @@ setPremium("u1", true);
   });
   assert.equal(r.data.action, "exercises");
   assert.ok(!r.data.answer.includes("[["));
-  const tts = calls.find(c => c.url.endsWith("/audio/speech"));
-  assert.ok(!tts.body.input.includes("[["));
-  const prompt = promptOf(calls.find(c => c.url.endsWith("/chat/completions")).body);
+  const tts = calls.find(isTts);
+  assert.ok(!ttsInput(tts).includes("[["));
+  const prompt = promptOf(calls.find(isLlm).body);
   assert.match(prompt, /exercises done 1 of 4/);
   assert.match(prompt, /water 3 of 8 glasses/);
   ok("function: today uses day data, tag stripped, action returned");
@@ -222,30 +239,29 @@ setPremium("u1", true);
   ok("function: exercise passes exercise name, steps and duration");
 }
 
-// 8. voice fallback: bad voice -> next voice; missing model -> next model; payment error -> text only
+// 8. TTS is OpenAI only: any failure is an honest tts_unavailable, never a Gemini fallback
 {
-  ttsMode = "fail-voice";
-  calls.length = 0;
-  let r = await post("/api/voice-chat", { user_id: "u1", lang: "en", text: "tips for skin?" });
-  assert.equal(r.data.tts_ok, true);
-  const voices = calls.filter(c => c.url.endsWith("/audio/speech")).map(c => c.body.voice);
-  assert.deepEqual(voices, ["Charon", "Orus"]);
-
-  ttsMode = "fail-model";
-  calls.length = 0;
-  r = await post("/api/voice-chat", { user_id: "u1", lang: "en", text: "tips for skin?" });
-  assert.equal(r.data.tts_ok, true);
-  const models = calls.filter(c => c.url.endsWith("/audio/speech")).map(c => c.body.model);
-  assert.deepEqual(models, ["google/gemini-3.8-flash-lite-tts", "google/gemini-3.8-flash-tts"], "404 skips the other voices of that model");
-
-  ttsMode = "fail-auth";
-  r = await post("/api/voice-chat", { user_id: "u1", lang: "en", text: "tips for skin?" });
-  assert.equal(r.status, 200);
-  assert.equal(r.data.tts_ok, false);
-  assert.equal(r.data.audio_base64, null);
-  assert.ok(r.data.answer.length > 10);
+  for (const mode of ["fail-auth", "fail-server", "no-audio"]) {
+    ttsMode = mode;
+    calls.length = 0;
+    const r = await post("/api/voice-chat", { user_id: "u1", lang: "en", text: "tips for skin?" });
+    assert.equal(r.status, 200, mode);
+    assert.equal(r.data.tts_ok, false, mode);
+    assert.equal(r.data.tts_error, "tts_unavailable", mode);
+    assert.equal(r.data.audio_base64, null, mode);
+    assert.ok(r.data.answer.length > 10, mode + ": the text answer survives");
+    const tts = calls.filter(isTts);
+    assert.equal(tts.length, 1, mode + ": one OpenAI attempt, no retry chain");
+    assert.ok(tts.every(c => c.body.model === "openai/gpt-audio-mini"), mode);
+    assert.ok(!calls.some(c => c.url.endsWith("/audio/speech")), mode + ": no Gemini TTS fallback");
+  }
   ttsMode = "ok";
-  ok("TTS: bad voice -> next voice, missing model -> next model, payment failure -> text answer");
+  const src = readFileSync(resolve(here, "../workers/api/src/worker.js"), "utf8");
+  assert.ok(!/VOICE_TTS_CHAIN|pcmRate|gemini-[\w.-]*tts|\/audio\/speech/.test(src), "Gemini TTS chain and helpers purged");
+  assert.match(src, /const VOICE_TTS_VOICES = \{ male: "onyx", female: "nova" \};/);
+  assert.match(src, /async function readSseAudio\(res\)/);
+  assert.match(src, /return \{ ok: false, status: res\.status \|\| 502, reason: "tts_unavailable" \};/);
+  ok("TTS: OpenAI only (Onyx / Nova); 402 / 5xx / no audio -> tts_unavailable + text answer, no Gemini fallback");
 }
 
 // 9. daily limit
@@ -289,7 +305,7 @@ async function postStream(body) {
   assert.ok(audio.every(e => e.count === 3 && e.audio_format === "wav" && e.audio_base64.length > 100));
   assert.equal(types[types.length - 1], "done");
   assert.equal(r.events[types.length - 1].tts_ok, true);
-  const inputs = calls.filter(c => c.url.endsWith("/audio/speech")).map(c => c.body.input);
+  const inputs = calls.filter(isTts).map(ttsInput);
   assert.equal(inputs.length, 3);
   assert.ok(inputs[0].length < inputs.join(" ").length / 2, "first segment is the short one");
   assert.equal(inputs.join(" "), r.events[1].answer, "segments cover the whole answer, nothing lost");
@@ -352,7 +368,7 @@ async function postStream(body) {
   chatReply = "Drink two glasses of water now and skip salty snacks tonight.";
   const r = await postStream({ user_id: "u4", lang: "en", stream: true, text: "quick tip?" });
   assert.equal(r.events.filter(e => e.type === "audio").length, 1);
-  assert.equal(calls.filter(c => c.url.endsWith("/audio/speech")).length, 1);
+  assert.equal(calls.filter(isTts).length, 1);
   ok("stream: one-sentence answer is voiced in a single request");
 }
 
@@ -482,7 +498,7 @@ async function postStream(body) {
     assert.equal((mvTxt.match(new RegExp(k + ': "', "g")) || []).length, 1, k + " in English");
   }
   assert.match(web, /case "ai_busy": return mvT\("errBusy"\)/);
-  assert.match(web, /if \(!answer\) \{ local\(e && e\.mvKind\); return; \}/, "network drop before the answer -> device answers");
+  assert.match(web, /if \(!answer\) \{ fail\(e && e\.mvKind\); return; \}/, "network drop before the answer -> honest failure + retry");
   assert.match(web, /The full answer text stays on screen whatever happens to the audio/);
   assert.match(web, /mvNote\(cut \? mvT\("cutOff"\) : mvT\("noVoice"\)\)/, "TTS failure / cut keeps text and only notes the status");
   assert.match(web, /ctx\.face_shape = shape\.trim\(\)/);
@@ -498,15 +514,24 @@ async function postStream(body) {
   ok("client: 6 chips (Fix first primary), error events, kept text on drop, specific messages, live sentence highlight + auto-scroll, web == ios");
 }
 
-// 19. offline-first: a dead /api/voice-chat (404 in prod while the worker deploy is broken),
-//     5xx, timeout or offline never shows an error; the device answers and speaks.
+// 19. no canned answers: a dead /api/voice-chat (404 / 5xx / timeout / offline) gets an
+//     honest "couldn't reach coach" turn with a retry button, never fake on-device advice.
 {
   const web = readFileSync(resolve(here, "../web/index.html"), "utf8");
+  for (const name of ["mvLocalAnswer", "mvLocalFace", "mvBand", "mvAreaPlan", "MV_AREA", "MV_AREA_ACTION", "mvHairPlan", "mvIntentFromText", "mvLocalTurn"]) {
+    assert.ok(!new RegExp("\\b" + name + "\\b").test(web), name + " removed");
+  }
   // Failure routing
-  assert.match(web, /\/\/ 404 \(worker not deployed\), 5xx, daily_limit, bad JSON: the device answers\.\n\s+if \(!r\.data \|\| !r\.data\.ok\) \{\n\s+return \{ local:/);
-  assert.match(web, /if \(fail\.local\) \{ local\(fail\.local\); return; \}/);
-  assert.match(web, /if \(!answer\) \{ local\(streamErr \? streamErr\.error/);
-  assert.match(web, /if \(myTurn === mvTurn\) mvLocalTurn\(fn, myTurn, "", extra\);/, "chip exception -> device answer");
+  assert.match(web, /\/\/ 404 \(worker not deployed\), 5xx, daily_limit, bad JSON: honest failure\.\n\s+if \(!r\.data \|\| !r\.data\.ok\) \{\n\s+return \{ fail:/);
+  assert.match(web, /if \(res\.fail\) \{ fail\(res\.fail\); return; \}/);
+  assert.match(web, /if \(!answer\) \{ fail\(streamErr \? streamErr\.error/);
+  assert.match(web, /if \(myTurn === mvTurn\) mvFailTurn\(mvT\("coachDown"\), mvT\(fn\)\);/, "chip exception -> honest failure");
+  assert.match(web, /coachDown: "Couldn't reach coach\. Check connection and tap to retry\.",/);
+  assert.match(web, /function mvFailTurn\(message, heard, canRetry\) \{[\s\S]{0,300}mvSetAction\(canRetry === false \|\| !mvLastAsk \? null : "retry"\);/, "failed turn shows a retry button");
+  assert.match(web, /function mvRetryTurn\(\) \{[\s\S]{0,500}mvAsk\(last\.payload, myTurn, last\.said, last\.extra\)/, "retry replays the same request");
+  assert.match(web, /mvLastAsk = \{ payload, said, extra \};/);
+  assert.match(web, /if \(kind === "retry"\) \{ mvRetryTurn\(\); return; \}/, "action button retries without closing the overlay");
+  assert.match(web, /if \(why === "daily_limit"\) \{ mvFailTurn\(mvT\("limit"\), heard, false\); return; \}/, "daily limit is not retried");
   assert.match(web, /timer = setTimeout\(\(\) => \{ timedOut = true; controller\.abort\(\); \}, 15000\);/, "dead server gives up in 15 s");
   // The iOS robot voice is banned: no speechSynthesis anywhere, text only without real audio.
   const ios = readFileSync(resolve(here, "../ios/App/App/public/index.html"), "utf8");
@@ -538,57 +563,7 @@ async function postStream(body) {
   assert.ok(!openHist.includes("moglyScheduleScanDebrief"), "history reopen does not talk");
   assert.match(web, /function mvGuestBlocked\(\)/, "free debrief, premium chips");
 
-  // Run the on-device brain for real with stubbed context.
-  const src = web.slice(web.indexOf("  function mvLocalFace() {"), web.indexOf("  // ----- on-device voice"));
-  const shapeSrc = web.slice(web.indexOf("const MOGLY_FACE_SHAPES = {"), web.indexOf("window.moglyFaceShapeFor = moglyFaceShapeFor;"));
-  const build = (lang, ctx) => new Function("ctxObj", "langCode", `
-    var _currentLang = langCode;
-    ${shapeSrc}
-    const mvLang = () => langCode;
-    const mvT = (k) => k;
-    const mvContext = () => ctxObj;
-    ${src}
-    return { mvLocalAnswer, mvIntentFromText };
-  `)(ctx, lang);
-  const ctx = { score: 71, gender: "male", metrics: { jawline: 62, cheekbones: 68, eyes: 74, skin: 58, symmetry: 80 },
-    today: { exercises_done: 1, exercises_total: 4, next_exercise: "Masseter Release", water_glasses: 3, water_goal: 8 },
-    progress: { streak: 5, scans: 2, first_score: 66, last_score: 71, days_since_scan: 9, local_hour: 20 } };
-  const en = build("en", ctx);
-  const fixEn = en.mvLocalAnswer("fixfirst", "");
-  assert.match(fixEn.answer, /Here's your personal facial breakdown/);
-  assert.match(fixEn.answer, /Fix this first: your skin/, "lowest metric (skin 58) is the first fix");
-  assert.match(fixEn.answer, /retinoid/);
-  assert.equal(fixEn.action, "daily");
-  const scanEn = en.mvLocalAnswer("scan", "");
-  assert.match(scanEn.answer, /Your scan is in/);
-  assert.match(scanEn.answer, /strongest feature is your eye area/);
-  assert.match(scanEn.answer, /Face shape reads as diamond/, "jaw 62 vs cheekbones 68 -> diamond");
-  assert.match(scanEn.answer, /tongue on the palate/);
-  assert.match(en.mvLocalAnswer("jawline", "").answer, /won't reshape adult bone/, "honest mewing");
-  assert.match(en.mvLocalAnswer("jawline", "").answer, /no bonesmashing/);
-  assert.match(en.mvLocalAnswer("eyes", "").answer, /Canthal tilt and orbital bone are hardmaxxing/);
-  assert.match(en.mvLocalAnswer("debloat", "").answer, /lymphatic drainage/);
-  assert.match(en.mvLocalAnswer("hair", "").answer, /Diamond means the cheekbones are the widest point/);
-  assert.match(en.mvLocalAnswer("today", "").answer, /Good evening\. Tonight decides tomorrow's face: salt down.*You're on a 5 day streak.*1 of 4 done.*Masseter Release.*3 of 8 glasses.*66 to 71.*9 days ago/);
-  // Daily brief adapts to the time of day (morning debloat ritual).
-  const morning = build("en", Object.assign({}, ctx, { progress: Object.assign({}, ctx.progress, { local_hour: 8 }) }));
-  assert.match(morning.mvLocalAnswer("brief", "").answer, /Good morning\. Two-minute ritual first: sixty seconds of cold water.*tongue flat on the palate/);
-  // Scan audit: change vs. the previous scan, biggest movers named.
-  const delta = build("en", Object.assign({}, ctx, { progress: Object.assign({}, ctx.progress, { scan_delta: { days: 7, overall: 3, areas: { jawline: 4, skin: -1, eyes: 0 } } }) }));
-  assert.match(delta.mvLocalAnswer("scan", "").answer, /That's up 3 in 7 days\. The work is showing\. Biggest moves: jawline up 4, skin down 1\./);
-  assert.match(en.mvLocalAnswer("", "should I try bonesmashing?").answer, /I won't coach bonesmashing, steroids, DNP or starvation/);
-  assert.equal(en.mvIntentFromText("how do I get rid of puffy face"), "debloat");
-  assert.equal(en.mvIntentFromText("what haircut suits me"), "hair");
-  for (const fn of ["fixfirst", "jawline", "debloat", "eyes", "skin", "hair", "scan", "brief", "priority", "today", "meal", "exercise"]) {
-    for (const b of [en, morning, delta]) {
-      const a = b.mvLocalAnswer(fn, "").answer;
-      assert.ok(a.length > 40 && !/undefined|null|NaN/.test(a), fn + " answer is clean: " + a.slice(0, 60));
-    }
-  }
-  const empty = build("en", { metrics: {} });
-  assert.match(empty.mvLocalAnswer("fixfirst", "").answer, /I don't have your scan yet/);
-  assert.equal(empty.mvLocalAnswer("scan", "").action, "scan");
-  ok("offline-first: 404/5xx/timeout -> on-device looksmax answer (English), time-of-day brief, scan delta audit, shown as text (no robot voice), scan orb at +3 s (tap = debrief, swipe/✕ = dismiss)");
+  ok("no canned answers: 404/5xx/timeout -> 'Couldn't reach coach' + retry button, no robot voice, scan orb at +3 s (tap = debrief, swipe/✕ = dismiss)");
 }
 
 // 20. wake word: "Hey Mogly, ..." reaches the model without the address; just "Mogly" gets a greeting
@@ -665,6 +640,41 @@ async function postStream(body) {
     assert.ok(cancel.includes(part), "cancel resets " + part);
   }
   ok("orb tap: idle -> listening -> thinking -> speaking -> idle; double tap, late events and cancels never stick");
+}
+
+// 22. Siri liquid glass orb (no border stroke), no weekly free trial, no button glow, Scan History never dimmed
+{
+  const web = readFileSync(resolve(here, "../web/index.html"), "utf8");
+  const rule = (sel) => { const i = web.indexOf("\n" + sel + " {"); assert.ok(i >= 0, sel); return web.slice(i, web.indexOf("\n}", i)); };
+  const orb = rule(".mv-orb");
+  assert.match(orb, /border: none;/);
+  assert.match(orb, /overflow: hidden;/);
+  assert.match(orb, /isolation: isolate;/);
+  const orbCss = web.slice(web.indexOf("\n.mv-orb {"), web.indexOf("/* Voice overlay */"));
+  assert.ok(!/border: 1px solid/.test(orbCss), "no wrapping stroke around the orb");
+  assert.match(rule(".mv-orb::before"), /backdrop-filter: blur\(28px\) saturate\(190%\);/);
+  const canvas = rule(".mv-orb-canvas");
+  assert.match(canvas, /mask-image: radial-gradient\(circle at 50% 50%, #000 68%, transparent 100%\);/);
+  assert.match(canvas, /mix-blend-mode: screen;/);
+  assert.match(canvas, /z-index: 1;/);
+  const glass = rule(".mv-orb-glass");
+  assert.match(glass, /z-index: 2;/);
+  assert.match(glass, /box-shadow: inset 0 -4px 14px rgba\(0, 162, 255, 0\.35\), inset 0 2px 8px rgba\(255, 255, 255, 0\.45\) !important;/);
+  assert.match(rule(".mv-orb-glass::before"), /border-radius: 50% 50% 45% 45% \/ 70% 70% 30% 30%;/, "curved specular reflection");
+  assert.match(rule(".mv-orb-glass::after"), /rgba\(255, 255, 255, 0\.85\)/, "specular hotspot");
+  assert.match(web, /bg\.addColorStop\(0, "rgba\(16, 41, 79, 0\.62\)"\);/, "translucent canvas backing");
+  // Weekly charges from day 0: no trial promise anywhere.
+  assert.ok(!/free trial|3-day trial|Start 3-Day/i.test(web), "no free trial copy");
+  assert.match(web, /cta\.textContent = price \? 'Continue with Weekly \(' \+ price \+ '\)' : 'Continue with Weekly';/);
+  // Zero glow on buttons.
+  assert.match(web, /\*, \*::before, \*::after \{\n  box-shadow: none !important;\n\}/, "site-wide no-shadow rule kept");
+  assert.match(web, /\.btn\.btn-scanface \{[^}]*box-shadow:none !important;/);
+  assert.ok(!/class="btn[^"]*"[^>]*style="[^"]*box-shadow:0 /.test(web), "no inline button glow");
+  // Scan History is never left dimmed during or after analysis.
+  const setBtns = web.slice(web.indexOf('const secondaryBtn = document.getElementById("moglySecondaryBtn");'));
+  const sets = setBtns.slice(0, 4000).match(/secondaryBtn\.style\.opacity = "([^"]+)"/g) || [];
+  assert.ok(sets.length >= 3 && sets.every(x => x.endsWith('"1"')), "Scan History opacity stays 1");
+  ok("Siri liquid glass orb without border stroke, weekly plan has no free trial, no button glow, Scan History never dimmed");
 }
 
 console.log(`\nvoice-chat audit: ${passed} checks passed`);
