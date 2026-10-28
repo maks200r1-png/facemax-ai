@@ -1673,8 +1673,8 @@ html.food-camera-active #liveCamera{visibility:visible!important}
 }
 
 .exercise-tile.ex-done {
-  border-color: rgba(74, 222, 128, 0.4) !important;
-  background: rgba(74, 222, 128, 0.07) !important;
+  border-color: rgba(0, 194, 255, 0.35) !important;
+  background: rgba(0, 122, 255, 0.08) !important;
 }
 
 .exercise-tile.ex-done .et-name {
@@ -1697,9 +1697,9 @@ html.food-camera-active #liveCamera{visibility:visible!important}
 }
 
 .exercise-tile.ex-done .ex-step-num {
-  background: rgba(74, 222, 128, 0.2) !important;
-  color: #4ade80 !important;
-  border-color: rgba(74, 222, 128, 0.4) !important;
+  background: rgba(0, 194, 255, 0.22) !important;
+  color: #00C2FF !important;
+  border-color: rgba(0, 194, 255, 0.45) !important;
 }
 
 .exercise-thumb {
@@ -1755,8 +1755,8 @@ html.food-camera-active #liveCamera{visibility:visible!important}
   width: 28px !important;
   height: 28px !important;
   border-radius: 50% !important;
-  background: rgba(74, 222, 128, 0.2) !important;
-  border: 1px solid rgba(74, 222, 128, 0.4) !important;
+  background: rgba(0, 194, 255, 0.22) !important;
+  border: 1px solid rgba(0, 194, 255, 0.45) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1766,7 +1766,7 @@ html.food-camera-active #liveCamera{visibility:visible!important}
 .ex-check svg {
   width: 16px;
   height: 16px;
-  stroke: #4ade80;
+  stroke: #00C2FF;
   fill: none;
   stroke-width: 2.8;
   stroke-linecap: round;
@@ -4910,35 +4910,40 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 #home .mogly-orb-hint{margin-top:12px;color:#fff;font-size:14.5px;font-weight:700;text-shadow:0 0 16px rgba(0,170,255,.7)}
 
 /* ---------------- Exercises: big streak card on top ---------------- */
-.ex-streak-card{position:relative;margin:4px 16px 14px;padding:20px 18px 18px;border-radius:24px;overflow:hidden;
-  background:radial-gradient(120% 90% at 50% 0%,rgba(255,159,10,.20),rgba(255,159,10,0) 60%),linear-gradient(160deg,#141008,#050505 70%);
-  border:1px solid rgba(255,184,0,.28);box-shadow:0 0 40px rgba(255,159,10,.16),inset 0 1px 0 rgba(255,214,120,.14)!important;text-align:center}
+.ex-streak-card{position:relative;margin:4px 0 14px;padding:18px 16px 16px;border-radius:24px;overflow:hidden;
+  background:radial-gradient(100% 120% at 50% 0%,rgba(0,194,255,.12),rgba(0,122,255,.04) 55%,rgba(10,12,18,.95) 100%);
+  border:1px solid rgba(0,194,255,.22);box-shadow:inset 0 1px 0 rgba(120,200,255,.25),0 16px 40px rgba(0,0,0,.5),0 0 30px rgba(0,170,255,.10)!important;text-align:left}
 .ex-streak-card.is-checkin{cursor:pointer}
 .ex-streak-card.is-checkin:active{transform:scale(.98)}
-.ex-streak-head{font-size:30px;line-height:1.1;font-weight:800;letter-spacing:-.02em;color:#FFD60A;
-  text-shadow:0 0 18px rgba(255,159,10,.65),0 0 42px rgba(255,120,0,.35);font-variant-numeric:tabular-nums}
-.ex-streak-sub{margin-top:8px;font-size:14px;font-weight:600;line-height:1.35;color:rgba(255,255,255,.78)}
-.ex-streak-card.is-done .ex-streak-sub{color:#30D158}
-.ex-streak-card.is-checkin .ex-streak-sub{color:#5AC8FA}
+.ex-streak-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ex-streak-head{font-size:26px;line-height:1.1;font-weight:850;letter-spacing:-.02em;color:#fff;flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-shadow:0 0 20px rgba(0,194,255,.4);font-variant-numeric:tabular-nums}
+.ex-streak-status{flex:0 0 auto;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:750;letter-spacing:.01em;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);color:rgba(255,255,255,.72);font-variant-numeric:tabular-nums}
+.ex-streak-status.is-progress{background:rgba(0,194,255,.15);border-color:rgba(0,194,255,.30);color:#00C2FF}
+.ex-streak-status.is-done{background:rgba(0,242,254,.20);border-color:rgba(0,242,254,.38);color:#00F2FE}
+.ex-streak-sub{margin-top:6px;font-size:14px;font-weight:600;line-height:1.35;color:rgba(255,255,255,.66)}
+.ex-streak-card.is-done .ex-streak-sub{color:#00F2FE}
+.ex-streak-card.is-checkin .ex-streak-sub{color:#00C2FF}
 .ex-protocol-pills{display:flex;gap:8px;margin-top:14px}
-.ex-pill{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 8px;border-radius:18px;
-  border:1px solid rgba(255,214,120,.26);background:rgba(255,255,255,.06);color:rgba(255,255,255,.88);font:inherit;font-size:12px;font-weight:700;
-  line-height:1.2;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.ex-pill span,.ex-pill b{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ex-pill b{font-size:13px;font-weight:800;color:#FFD60A;font-variant-numeric:tabular-nums}
-.ex-pill:active{transform:scale(.96)}
-.ex-pill.is-done{border-color:rgba(48,209,88,.5);background:rgba(48,209,88,.12)}
-.ex-pill.is-done b{color:#30D158}
+.ex-pill{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 10px;border-radius:999px;
+  border:1px solid rgba(0,194,255,.20);background:rgba(255,255,255,.05);color:#fff;font:inherit;font-size:13px;font-weight:700;letter-spacing:-.01em;
+  line-height:1.2;cursor:pointer;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;transition:transform .15s,background .15s}
+.ex-pill span,.ex-pill b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ex-pill span{flex:0 1 auto;min-width:0}
+.ex-pill b{flex:0 0 auto;font-size:12px;font-weight:750;color:#00C2FF;font-variant-numeric:tabular-nums}
+.ex-pill:active{transform:scale(.96);background:rgba(255,255,255,.09)}
+.ex-pill.is-done{border-color:rgba(0,194,255,.38);background:rgba(0,122,255,.12)}
 .ex-streak-dots{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:16px}
 .ex-streak-dots .ex-week-dot{display:flex;flex-direction:column;align-items:center;gap:6px}
-.ex-streak-dots .ewd-circle{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);box-sizing:border-box}
-.ex-streak-dots .ewd-circle svg{width:16px;height:16px;stroke:#000;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-.ex-streak-dots .ex-week-dot.done .ewd-circle{background:linear-gradient(145deg,#FFD60A,#30D158);border-color:transparent;
-  box-shadow:0 0 14px rgba(255,200,40,.55)!important}
-.ex-streak-dots .ex-week-dot.today .ewd-circle{border-color:#FF9F0A;border-width:2px}
-.ex-streak-dots .ewd-day{font-size:12px;font-weight:700;color:rgba(255,255,255,.5)}
-.ex-streak-dots .ex-week-dot.today .ewd-day{color:#FFD60A}
+.ex-streak-dots .ewd-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);box-sizing:border-box}
+.ex-streak-dots .ewd-circle svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ex-streak-dots .ex-week-dot.done .ewd-circle{background:linear-gradient(135deg,#007AFF,#00C2FF);border-color:transparent;
+  box-shadow:0 0 12px rgba(0,194,255,.45)!important}
+.ex-streak-dots .ex-week-dot.today .ewd-circle{border:2px solid #00C2FF}
+.ex-streak-dots .ewd-day{font-size:12px;font-weight:700;color:rgba(255,255,255,.45)}
+.ex-streak-dots .ex-week-dot.today .ewd-day{color:#00C2FF}
 
 /* ---------------- Daily ritual overlay (hands-free voice session) ---------------- */
 .mr-overlay{position:fixed;inset:0;z-index:310;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;
@@ -6748,11 +6753,14 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 
   <!-- Big streak card: streak, Mogly's mission + the 4 exercises that lock today, this week's days -->
   <div class="ex-streak-card" id="exStreakCard" onclick="moglyStreakCardTap()" aria-live="polite">
-    <div class="ex-streak-head" id="exStreakHead">🔥 0-DAY STREAK</div>
-    <div class="ex-streak-sub" id="exStreakSub">🎙️ Mogly Voice Brief + ⚡ 4 Exercises to lock Day 1 · Next check-in in 7 days</div>
+    <div class="ex-streak-top">
+      <div class="ex-streak-head" id="exStreakHead">🔥 0-DAY STREAK</div>
+      <span class="ex-streak-status" id="exStreakStatus">0/4 Today</span>
+    </div>
+    <div class="ex-streak-sub" id="exStreakSub">4 exercises to secure today's streak</div>
     <div class="ex-protocol-pills">
-      <button type="button" class="ex-pill" id="exVoicePill" onclick="moglyProtocolVoiceTap(event)"><span>🎙️ Daily Voice Mission</span><b id="exVoicePillState">Pending</b></button>
-      <button type="button" class="ex-pill" id="exRoutinePill" onclick="moglyProtocolRoutineTap(event)"><span>⚡ 4 Face Exercises</span><b id="exRoutinePillState">0/4 Done</b></button>
+      <button type="button" class="ex-pill" id="exVoicePill" onclick="moglyProtocolVoiceTap(event)"><span>🎙️ Mogly Brief</span><b id="exVoicePillState">● Listen</b></button>
+      <button type="button" class="ex-pill" id="exRoutinePill" onclick="moglyProtocolRoutineTap(event)"><span>⚡ 4 Exercises</span><b id="exRoutinePillState">0/4</b></button>
     </div>
     <div class="ex-streak-dots" id="exWeekDots"></div>
   </div>
@@ -12987,8 +12995,6 @@ function renderExerciseStreakHeadline() {
   let st = null;
   try { if (typeof window.moglyRitualState === "function") st = window.moglyRitualState(); } catch (e) {}
   const total = FACE_EXERCISES.length;
-  const left = st ? Math.max(1, st.nextCheckin - st.completed) : 7;
-  const next = `Next check-in in ${left} ${left === 1 ? "day" : "days"}`;
   const day = st ? st.day : 1;
   const voiceDone = st ? st.voiceDoneToday : false;
   const exDone = st ? st.exercisesDone : 0;
@@ -12998,22 +13004,28 @@ function renderExerciseStreakHeadline() {
     text = `📸 Day ${st.checkinDay} check-in ready — tap to scan`;
     cls = "is-checkin";
   } else if (routineDone) {
-    text = `✓ Day ${day} Secured: Mogly locked in your streak 🔥`;
+    text = `✓ Day ${day} secured · Mogly locked in your streak 🔥`;
     cls = "is-done";
   } else if (exDone > 0) {
     const remaining = total - exDone;
-    text = `⚡ ${remaining} ${remaining === 1 ? "exercise" : "exercises"} left to lock Day ${day} streak`;
+    text = `${remaining} ${remaining === 1 ? "exercise" : "exercises"} left to lock Day ${day}`;
   } else {
-    text = `🎙️ Mogly Voice Brief + ⚡ ${total} Exercises to lock Day ${day} · ${next}`;
+    text = `${total} exercises to secure today's streak`;
   }
   if (head) head.textContent = `🔥 ${streak}-DAY STREAK`;
   if (sub) sub.textContent = text;
+  const status = el("exStreakStatus");
+  if (status) {
+    status.textContent = routineDone ? "✓ Secured" : `${Math.min(exDone, total)}/${total} Today`;
+    status.classList.toggle("is-done", routineDone);
+    status.classList.toggle("is-progress", !routineDone && exDone > 0);
+  }
   const vp = el("exVoicePill"), vs = el("exVoicePillState");
   if (vp) vp.classList.toggle("is-done", !!voiceDone);
-  if (vs) vs.textContent = voiceDone ? "Received ✓" : "Pending";
+  if (vs) vs.textContent = voiceDone ? "✓ Heard" : "● Listen";
   const rp = el("exRoutinePill"), rs = el("exRoutinePillState");
   if (rp) rp.classList.toggle("is-done", routineDone);
-  if (rs) rs.textContent = `${Math.min(exDone, total)}/${total} Done`;
+  if (rs) rs.textContent = routineDone ? "✓ Done" : `${Math.min(exDone, total)}/${total}`;
   card.classList.toggle("is-done", cls === "is-done");
   card.classList.toggle("is-checkin", cls === "is-checkin");
   // Home: the caption under the sphere says what Mogly has for today.

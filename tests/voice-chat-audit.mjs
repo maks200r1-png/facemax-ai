@@ -740,10 +740,10 @@ async function postStream(body) {
   assert.match(web, /key: `mission_\$\{st\.day\}_\$\{st\.phase\}_\$\{mvPersonaTag\(\)\}`/);
   assert.match(web, /if \(dayComplete\) moglyRecordDayComplete\(\);/, "4th exercise records the day");
   assert.match(web, /mdcSpeakReward\(`locked_\$\{day\}_\$\{persona\}`, line\)/, "Mogly speaks the reward");
-  assert.match(web, /Daily Voice Mission<\/span><b id="exVoicePillState">/);
+  assert.match(web, /Mogly Brief<\/span><b id="exVoicePillState">/);
   assert.match(web, /Tap to hear today's mission from Mogly/);
   assert.ok(!/protocolStreakCount|PROTOCOL_SINCE_KEY/.test(web), "the 4 exercises alone lock the day");
-  assert.match(web, /\.ex-streak-head\{font-size:30px/, "big bold streak headline");
+  assert.match(web, /\.ex-streak-head\{font-size:26px/, "big bold streak headline");
   assert.match(web, /const DAY_LABELS = \["M","T","W","T","F","S","S"\];/);
   assert.ok(!/_makeFaceCrop|tensorflow\/tfjs/.test(web), "no TF.js crop after the scan (froze the result screen)");
   assert.match(web, /st\.completed > 0 && !isLocalPremiumActive\(\)/, "day 1 free, then Premium");
