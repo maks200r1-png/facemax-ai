@@ -107,6 +107,20 @@ for dom in ["facemaxaiapp.com", "www.facemaxaiapp.com"]:
     dom_res = cf_api("POST", f"/accounts/{account_id}/pages/projects/{target_project}/domains", {
         "name": dom
     })
-    print(f"Domain {dom} attach result:", dom_res)
+print("\n=== 5. CHECKING WORKERS IN ACCOUNT ===")
+workers_res = cf_api("GET", f"/accounts/{account_id}/workers/scripts")
+if workers_res.get("success"):
+    for w in workers_res.get("result", []):
+        w_id = w.get("id")
+        print(f"Worker script found: {w_id}")
+        if "restless" in w_id.lower() or "brook" in w_id.lower():
+            print(f"Deploying dist/worker.js to frontend worker {w_id}...")
+            try:
+                subprocess.run(["wrangler", "deploy", "dist/worker.js", f"--name={w_id}"], check=True)
+                print(f"Successfully updated worker {w_id} with new dist/worker.js!")
+            except Exception as e:
+                print(f"Failed to update worker {w_id}: {e}")
+else:
+    print("Workers list result:", workers_res)
 
-print("\nCloudflare Pages deployment finished successfully!")
+print("\nCloudflare Pages and Worker deployment finished successfully!")

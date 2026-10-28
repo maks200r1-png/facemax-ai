@@ -1970,7 +1970,7 @@ async function voiceTranscribe(env, audioB64, format, lang) {
     payload.language = "ru";
     payload.prompt = "Mogly looksmaxxing коуч: челюсть, скулы, гигачад, мьюинг, деблоат, глаза охотника, стрижка, тренировки.";
   } else {
-    payload.prompt = "Mogly looksmaxxing coach: How do I become a gigachad, how to debloat, sharp jawline, cheekbones, haircut, glow up, aesthetics, posture, skin, face.";
+    payload.prompt = "Mogly looksmaxxing coach: How do I become a gigachad, how to debloat, sharp jawline, cheekbones, haircut, glow up, aesthetics, posture, skin, face. Челюсть, скулы, мьюинг, деблоат, стрижка, осанка, тренировки.";
   }
   try {
     const res = await voiceFetch(openRouterBase(env) + "/audio/transcriptions", {
@@ -2013,13 +2013,19 @@ async function readSseAudio(res) {
   const chunks = [];
   let buffer = "";
   let total = 0;
+  let transcript = "";
   const take = (line) => {
     const trimmed = line.trim();
     if (!trimmed.startsWith("data:")) return;
     const dataStr = trimmed.slice(5).trim();
     if (!dataStr || dataStr === "[DONE]") return;
     let delta;
-    try { delta = JSON.parse(dataStr)?.choices?.[0]?.delta?.audio?.data; } catch { return; }
+    try {
+      const parsed = JSON.parse(dataStr)?.choices?.[0]?.delta;
+      if (parsed?.audio?.transcript) transcript += parsed.audio.transcript;
+      else if (parsed?.content) transcript += parsed.content;
+      delta = parsed?.audio?.data;
+    } catch { return; }
     if (!delta) return;
     const raw = atob(delta);
     const u8 = new Uint8Array(raw.length);
@@ -2039,6 +2045,7 @@ async function readSseAudio(res) {
   const pcm = new Uint8Array(total);
   let offset = 0;
   for (const c of chunks) { pcm.set(c, offset); offset += c.length; }
+  pcm.transcript = transcript.trim();
   return pcm;
 }
 
@@ -2059,8 +2066,8 @@ async function voiceSpeak(env, text, lang, gender) {
   // gpt-audio-mini is a chat model with audio output; it must act as a pure
   // verbatim reader or it improvises greetings / commentary.
   const isRu = lang === "ru" || /[а-яё]/i.test(input);
-  const systemPrompt = tone + " You are operating strictly as a deterministic text-to-speech engine. Your ONLY job is to read the user's text aloud verbatim. Absolutely NEVER reply to the user, NEVER converse, NEVER add greetings, commentary, remarks, or extra words, and NEVER change or omit any words. Speak ONLY the exact words provided in the message."
-    + (isRu ? " The text is in Russian; read it aloud in Russian." : "");
+  const systemPrompt = tone + " You are operating strictly as a deterministic text-to-speech engine. Your ONLY job is to read the user's text aloud verbatim. Absolutely NEVER reply to the user, NEVER converse, NEVER add greetings, commentary, remarks, or extra words, and NEVER change, translate, or omit any words. Speak ONLY the exact words provided in the message."
+    + (isRu ? " The text is in Russian; read it aloud in Russian verbatim, do not translate." : "");
 
   try {
     const res = await voiceFetch(openRouterBase(env) + "/chat/completions", {
@@ -2071,6 +2078,7 @@ async function voiceSpeak(env, text, lang, gender) {
         modalities: ["text", "audio"],
         audio: { voice, format: "pcm16" },
         stream: true,
+        temperature: 0.1,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: input },
@@ -2084,7 +2092,7 @@ async function voiceSpeak(env, text, lang, gender) {
     const pcm = await readSseAudio(res);
     if (pcm.length < 800) return { ok: false, status: 502, reason: "tts_unavailable" };
     const wav = pcmToWav(pcm, VOICE_PCM_RATE);
-    return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: VOICE_TTS_MODEL };
+    return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: VOICE_TTS_MODEL, transcript: pcm.transcript || "" };
   } catch (e) {
     return { ok: false, status: 502, reason: "tts_unavailable" };
   }

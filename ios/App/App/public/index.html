@@ -4919,9 +4919,10 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 #home .mogly-assistant-fab-container{padding-top:0;min-height:150px}
 #home .mv-orb-btn{width:118px;height:118px;border-radius:50%;
   box-shadow:0 0 0 1px rgba(120,200,255,.22),0 0 34px rgba(0,170,255,.55),0 0 80px rgba(10,132,255,.38)!important;
-  animation:moglyOrbBreath 3.6s ease-in-out infinite}
+  filter:drop-shadow(0 0 calc(12px + var(--lvl, 0) * 36px) rgba(0,185,255,.65));
+  transition:transform .28s cubic-bezier(0.2, 0.9, 0.3, 1.25), filter .25s ease}
 #home .mv-orb-btn .mv-orb-glow{opacity:1;filter:saturate(1.5) brightness(1.15)}
-#home .mv-orb-btn:active{transform:scale(0.93);animation:none}
+#home .mv-orb-btn:active{transform:scale(0.93)}
 @keyframes moglyOrbBreath{
   0%,100%{filter:drop-shadow(0 0 10px rgba(0,170,255,.45))}
   50%{filter:drop-shadow(0 0 22px rgba(0,200,255,.75))}}
@@ -5119,7 +5120,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
       </div>
       <label class="consent-check">
         <input type="checkbox" id="consentCheckbox" onchange="onConsentCheckboxChange()">
-        <span>I agree to my photo being sent to a third-party AI service for analysis, as described in the <a href="https://facemaxaiapp.pages.dev/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+        <span>I agree to my photo being sent to a third-party AI service for analysis, as described in the <a href="https://facemaxaiapp.com/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</span>
       </label>
       <button class="consent-agree-btn" id="consentAgreeBtn" onclick="onConsentAgree()">Agree &amp; continue</button>
       <button class="consent-cancel-btn" onclick="onConsentCancel()">Not now</button>
@@ -5391,7 +5392,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
       <div style="display:flex;justify-content:space-around;align-items:center;width:100%;margin:8px 0 0;padding:0 8px;box-sizing:border-box;">
         <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener" style="color:rgba(255,255,255,.5);text-decoration:none;font-size:13px;font-weight:500;padding:6px 0;">Terms of Use</a>
         <a href="#" onclick="restoreApplePurchases();return false;" style="color:rgba(255,255,255,.5);text-decoration:none;font-size:13px;font-weight:500;padding:6px 0;">Restore</a>
-        <a href="https://facemaxaiapp.pages.dev/privacy" target="_blank" rel="noopener" style="color:rgba(255,255,255,.5);text-decoration:none;font-size:13px;font-weight:500;padding:6px 0;">Privacy Policy</a>
+        <a href="https://facemaxaiapp.com/privacy" target="_blank" rel="noopener" style="color:rgba(255,255,255,.5);text-decoration:none;font-size:13px;font-weight:500;padding:6px 0;">Privacy Policy</a>
       </div>
     </div>
 
@@ -5445,7 +5446,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:0 4px;">
       <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener" style="flex:1;text-align:center;color:rgba(255,255,255,.55);text-decoration:none;font-size:13px;font-weight:500;padding:8px 0;">Terms of Use</a>
       <a href="#" onclick="restoreApplePurchases();return false;" style="flex:1;text-align:center;color:rgba(255,255,255,.55);text-decoration:none;font-size:13px;font-weight:500;padding:8px 0;">Restore Purchase</a>
-      <a href="https://facemaxaiapp.pages.dev/privacy" target="_blank" rel="noopener" style="flex:1;text-align:center;color:rgba(255,255,255,.55);text-decoration:none;font-size:13px;font-weight:500;padding:8px 0;">Privacy Policy</a>
+      <a href="https://facemaxaiapp.com/privacy" target="_blank" rel="noopener" style="flex:1;text-align:center;color:rgba(255,255,255,.55);text-decoration:none;font-size:13px;font-weight:500;padding:8px 0;">Privacy Policy</a>
     </div>
   </div>
 </section>
@@ -6119,12 +6120,12 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
       <span class="pf-row-copy"><b>Terms of Use</b></span>
       <svg class="pf-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
     </button>
-    <button type="button" class="pf-row" onclick="fmOpenExternal('https://facemaxaiapp.pages.dev/privacy')">
+    <button type="button" class="pf-row" onclick="fmOpenExternal('https://facemaxaiapp.com/privacy')">
       <span class="pf-ico pf-ico-gray"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg></span>
       <span class="pf-row-copy"><b>Privacy Policy</b></span>
       <svg class="pf-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
     </button>
-    <button type="button" class="pf-row" onclick="fmOpenExternal('https://facemaxaiapp.pages.dev/support')">
+    <button type="button" class="pf-row" onclick="fmOpenExternal('https://facemaxaiapp.com/support')">
       <span class="pf-ico pf-ico-gray"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg></span>
       <span class="pf-row-copy"><b>Support</b></span>
       <svg class="pf-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
@@ -6224,7 +6225,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
       <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
     </button>
     <button class="ipw-restore-v4" onclick="restoreApplePurchases()">Restore purchases</button>
-    <p class="ipw-legal-v4">Auto-renews until canceled in App Store settings. Cancel anytime at least 24 hours before renewal. <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms</a> · <a href="https://facemaxaiapp.pages.dev/privacy" target="_blank" rel="noopener">Privacy</a></p>
+    <p class="ipw-legal-v4">Auto-renews until canceled in App Store settings. Cancel anytime at least 24 hours before renewal. <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms</a> · <a href="https://facemaxaiapp.com/privacy" target="_blank" rel="noopener">Privacy</a></p>
   </div>
 </section>
 
@@ -9274,7 +9275,7 @@ window.openScreen = function(id){
     setTimeout(drawAllOverlays, 120);
     setTimeout(drawAllOverlays, 600);
   }
-  if (id === "home") { renderHomeHistory(); renderHomeStats(); renderGlowUpPlan(); refreshDailyTiles && refreshDailyTiles(); updateDailyCalWidget(); }
+  if (id === "home") { renderHomeHistory(); renderHomeStats(); renderGlowUpPlan(); refreshDailyTiles && refreshDailyTiles(); updateDailyCalWidget(); if (typeof mvKick === "function") mvKick(); }
   if (id === "profile") { renderProfileScreen(); }
   if (id === "notifications") { renderNotificationInbox(); fmInboxSyncDelivered(); }
   if (id === "daily") { refreshDailyGreeting && refreshDailyGreeting(); refreshDailyTiles && refreshDailyTiles(); }
@@ -16405,7 +16406,7 @@ function quizRender(){
       <div class="quiz-cta">
         <button class="btn btn-welcome-cta" onclick="quizHaptic();quizGoTo(1)">${quizEsc(step.cta)} →</button>
         <div class="quiz-cta-note">${"No signup. No photo upload yet."}</div>
-        <p class="quiz-legal-note">By continuing, you agree to our <a href="https://facemaxaiapp.pages.dev/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms of Use</a>.</p>
+        <p class="quiz-legal-note">By continuing, you agree to our <a href="https://facemaxaiapp.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms of Use</a>.</p>
       </div>`;
     // Typewriter effect on the title
     (function quizTypewriter(){
@@ -19138,13 +19139,24 @@ window.syncTDEEChoiceUI = function() {
 
   let mvRaf = 0;
   let mvFrame = 0;
+  let mvLastTs = 0;
+  let mvSimTime = 0;
   function mvTick(ts) {
     mvRaf = 0;
     mvKaraokeTick();
-    const t = ts / 1000;
     let anyVisible = false;
     for (let i = 0; i < mvOrbs.length; i++) if (mvOrbs[i].isVisible()) { anyVisible = true; break; }
-    if (!anyVisible || document.hidden) return;
+    if (!anyVisible || document.hidden) {
+      mvLastTs = 0;
+      return;
+    }
+    if (!mvLastTs) mvLastTs = ts;
+    const rawDt = (ts - mvLastTs) / 1000;
+    mvLastTs = ts;
+    // Cap dt so backgrounding or tab switching never leaps forward
+    const dt = Math.max(0, Math.min(rawDt, 0.033));
+    mvSimTime += dt;
+    const t = mvSimTime;
     // Idle breathing is slow: 30 fps is visually identical and halves the GPU
     // and battery cost of the orb that sits on Home all day.
     if (mvState === "idle" && (mvFrame++ & 1)) { mvRaf = requestAnimationFrame(mvTick); return; }
@@ -19630,6 +19642,10 @@ window.syncTDEEChoiceUI = function() {
     // 15 s for the server to start answering (a dead worker must not keep the orb
     // spinning, the turn fails with a retry instead), then 45 s for the rest of the stream.
     let timer = setTimeout(() => { timedOut = true; controller.abort(); }, 15000);
+    if (payload && payload.audio_base64) {
+      clearTimeout(timer);
+      timer = setTimeout(() => { timedOut = true; controller.abort(); }, 32000);
+    }
     try {
       const res = await fetch(API_BASE + "/api/voice-chat", {
         method: "POST",
@@ -19983,6 +19999,15 @@ window.syncTDEEChoiceUI = function() {
   function mvPhrase(key) {
     const ck = _voiceGender + ":" + key;
     if (mvPhraseCache.has(ck)) return mvPhraseCache.get(ck);
+    const lk = "mogly_clip_" + ck;
+    try {
+      const saved = localStorage.getItem(lk);
+      if (saved && saved.length > 500) {
+        const hit = Promise.resolve({ bytes: mvBase64ToBytes(saved), format: "wav", text: "" });
+        mvPhraseCache.set(ck, hit);
+        return hit;
+      }
+    } catch (e) {}
     const p = (async () => {
       const ctl = (typeof AbortController === "function") ? new AbortController() : null;
       const t = setTimeout(() => { if (ctl) ctl.abort(); }, 15000);
@@ -19995,6 +20020,7 @@ window.syncTDEEChoiceUI = function() {
         });
         const d = await r.json().catch(() => null);
         if (!r.ok || !d || !d.ok || !d.audio_base64) return null;
+        try { localStorage.setItem(lk, d.audio_base64); } catch (e) {}
         return { bytes: mvBase64ToBytes(d.audio_base64), format: d.audio_format || "wav", text: d.text };
       } catch (e) {
         return null;
@@ -20222,7 +20248,7 @@ window.syncTDEEChoiceUI = function() {
   const MDC_VOICE_KEY = "mogly_coach_voice";
   function mdcLoad() { try { return JSON.parse(localStorage.getItem(MDC_KEY) || "{}") || {}; } catch (e) { return {}; } }
   function mdcSave(o) { try { localStorage.setItem(MDC_KEY, JSON.stringify(o)); } catch (e) {} }
-  function mdcVoiceOn() { try { return localStorage.getItem(MDC_VOICE_KEY) !== "0"; } catch (e) { return true; } }
+  function mdcVoiceOn() { try { return localStorage.getItem(MDC_VOICE_KEY) === "1"; } catch (e) { return false; } }
 
   // Exercise cues: OpenAI Nova (female) / Onyx (male) via /api/voice-ritual decoded with Web Audio.
   // Guaranteed zero HTMLMediaElement autoplay policy blocks on Safari/WebKit.
@@ -20361,7 +20387,7 @@ window.syncTDEEChoiceUI = function() {
   window.moglyCoachRenderToggle = mdcRenderVoiceToggle;
 
   window.moglyCoachCue = function(kind, ex) {
-    if (!ex) return;
+    if (!ex || !mdcVoiceOn()) return;
     if (kind === "start") {
       const moveKey = "ex_" + ex.id;
       mdcSpeakPhrase(moveKey, ex.name + ". Go.");
@@ -20582,31 +20608,42 @@ window.syncTDEEChoiceUI = function() {
   function mrClip(key) {
     const ck = _voiceGender + ":" + key;
     if (mrClips.has(ck)) return mrClips.get(ck);
+    const lk = "mogly_clip_" + ck;
     const p = (async () => {
-      const ctl = (typeof AbortController === "function") ? new AbortController() : null;
-      const t = setTimeout(() => { if (ctl) ctl.abort(); }, 20000);
+      let b64 = "";
       try {
-        const r = await fetch(API_BASE + "/api/voice-ritual", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ key, voice_gender: _voiceGender, user_id: currentUserId() }),
-          signal: ctl ? ctl.signal : undefined,
-        });
-        const d = await r.json().catch(() => null);
-        if (!r.ok || !d || !d.ok || !d.audio_base64) return null;
-        const bytes = mvBase64ToBytes(d.audio_base64);
-        const url = URL.createObjectURL(new Blob([bytes], { type: d.audio_format === "wav" ? "audio/wav" : "audio/mpeg" }));
-        const audio = new Audio();
-        audio.preload = "auto";
-        audio.setAttribute("playsinline", "");
-        audio.src = url;
-        try { audio.load(); } catch (e) {}
-        return { audio, text: String(d.text || "") };
-      } catch (e) {
-        return null;
-      } finally {
-        clearTimeout(t);
+        const s = localStorage.getItem(lk);
+        if (s && s.length > 500) b64 = s;
+      } catch (e) {}
+      if (!b64) {
+        const ctl = (typeof AbortController === "function") ? new AbortController() : null;
+        const t = setTimeout(() => { if (ctl) ctl.abort(); }, 20000);
+        try {
+          const r = await fetch(API_BASE + "/api/voice-ritual", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ key, voice_gender: _voiceGender, user_id: currentUserId() }),
+            signal: ctl ? ctl.signal : undefined,
+          });
+          const d = await r.json().catch(() => null);
+          if (r.ok && d && d.ok && d.audio_base64) {
+            b64 = d.audio_base64;
+            try { localStorage.setItem(lk, b64); } catch (e) {}
+          }
+        } catch (e) {
+        } finally {
+          clearTimeout(t);
+        }
       }
+      if (!b64) return null;
+      const bytes = mvBase64ToBytes(b64);
+      const url = URL.createObjectURL(new Blob([bytes], { type: "audio/wav" }));
+      const audio = new Audio();
+      audio.preload = "auto";
+      audio.setAttribute("playsinline", "");
+      audio.src = url;
+      try { audio.load(); } catch (e) {}
+      return { audio, text: "" };
     })();
     mrClips.set(ck, p);
     // A failed phrase is fetched again next session instead of staying silent.
@@ -20911,6 +20948,7 @@ window.syncTDEEChoiceUI = function() {
       if (fab) {
         if (id === "home") {
           fab.classList.add("is-home");
+          if (typeof mvKick === "function") mvKick();
         } else {
           fab.classList.remove("is-home");
           if (typeof window.toggleMoglyVoiceListening === "function") {
@@ -20960,6 +20998,7 @@ window.syncTDEEChoiceUI = function() {
       if (exBtn) exBtn.classList.add("active");
     } else {
       homeBtn.classList.add("active");
+      if (typeof mvKick === "function") mvKick();
     }
   }
 
