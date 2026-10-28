@@ -6808,9 +6808,6 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
       <button class="btn" id="timerStartBtn" onclick="toggleTimer()"><svg class="btn-ico" viewBox="0 0 24 24"><path d="m8 5 12 7-12 7z"/></svg><span>Start timer</span></button>
       <button class="timer-reset-v4" onclick="resetTimer()" aria-label="Reset timer"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg></button>
     </div>
-    <button type="button" class="ed-coach-voice is-on" id="edCoachVoiceBtn" aria-pressed="true" onclick="setMoglyCoachVoice(this.getAttribute('aria-pressed') !== 'true')">
-      <svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg><span>Voice coach on</span>
-    </button>
   </div>
 
   <div class="steps-card-v4"><div class="section-title-v4"><div><span>Technique</span><h3>How to do it</h3></div></div><div class="ed-steps" id="edSteps"></div></div>
@@ -20303,113 +20300,11 @@ window.syncTDEEChoiceUI = function() {
     }
   }
 
-  window.moglyCoachPreload = function() {
-    const keys = [
-      "ex_cheek_lift", "ex_masseter_release", "ex_thumbpulling", "ex_chin_glide",
-      "halfway", "five_seconds", "resume",
-      "next_cheek_lift", "next_masseter_release", "next_thumbpulling", "next_chin_glide",
-      "all_exercises_done"
-    ];
-    keys.forEach(k => { mdcGetBuffer(k).catch(() => {}); });
-  };
-
-  async function mdcSpeakPhrase(key, fallbackText) {
-    if (!mdcVoiceOn() || document.hidden) return;
-    const ov = mvEl("mvOverlay");
-    if (ov && ov.classList.contains("active")) return; // never talk over the mentor
-
-    const ctx = mvEnsureCtx();
-    if (ctx && ctx.state === "suspended") {
-      try { await ctx.resume(); } catch (e) {}
-    }
-
-    mvAudioSession("playback");
-    mvHaptic("light");
-
-    try {
-      const buf = await mdcGetBuffer(key);
-      if (document.hidden) return;
-      if (ov && ov.classList.contains("active")) return;
-
-      if (buf && ctx) {
-        if (mdcCurrentSource) {
-          try { mdcCurrentSource.stop(); } catch (e) {}
-          mdcCurrentSource = null;
-        }
-        const src = ctx.createBufferSource();
-        src.buffer = buf;
-        src.connect(ctx.destination);
-        src.onended = () => {
-          if (mdcCurrentSource === src) mdcCurrentSource = null;
-        };
-        mdcCurrentSource = src;
-        src.start(0);
-      } else {
-        mdcChime([880, 1318.5]);
-      }
-    } catch (e) {
-      mdcChime([880, 1318.5]);
-    }
-
-    if (fallbackText) {
-      try { if (typeof showToast === "function") showToast(fallbackText, 2500); } catch (e) {}
-    }
-  }
-
-  function mdcSay(text, notes) {
-    if (!text || document.hidden) return;
-    const ov = mvEl("mvOverlay");
-    if (ov && ov.classList.contains("active")) return;
-    if (mdcVoiceOn()) {
-      mvAudioSession("playback");
-      mdcChime(notes || [880, 1318.5]);
-    }
-    mvHaptic("light");
-    try { if (typeof showToast === "function") showToast(text, 3200); } catch (e) {}
-  }
-  window.moglyCoachSay = mdcSay;
-
-  window.setMoglyCoachVoice = function(on) {
-    try { localStorage.setItem(MDC_VOICE_KEY, on ? "1" : "0"); } catch (e) {}
-    if (!on) window.moglyCoachStop();
-    mdcRenderVoiceToggle();
-    mvHaptic("selection");
-  };
-  function mdcRenderVoiceToggle() {
-    const b = mvEl("edCoachVoiceBtn");
-    if (!b) return;
-    const on = mdcVoiceOn();
-    b.classList.toggle("is-on", on);
-    b.setAttribute("aria-pressed", on ? "true" : "false");
-    const l = b.querySelector("span");
-    if (l) l.textContent = on ? "Voice coach on" : "Voice coach off";
-  }
-  window.moglyCoachRenderToggle = mdcRenderVoiceToggle;
-
-  window.moglyCoachCue = function(kind, ex) {
-    if (!ex || !mdcVoiceOn()) return;
-    if (kind === "start") {
-      const moveKey = "ex_" + ex.id;
-      mdcSpeakPhrase(moveKey, ex.name + ". Go.");
-    } else if (kind === "resume") {
-      mdcSpeakPhrase("resume", "Back to it.");
-    } else if (kind === "mid") {
-      mdcSpeakPhrase("halfway", "Halfway. Keep it slow.");
-    } else if (kind === "last5") {
-      mdcSpeakPhrase("five_seconds", "Five seconds. Finish strong.");
-    } else if (kind === "done") {
-      let next = null;
-      try {
-        const done = readExerciseDoneToday();
-        next = FACE_EXERCISES.find(e => !done.has(e.id)) || null;
-      } catch (e) {}
-      if (next) {
-        mdcSpeakPhrase("next_" + next.id, "Done. Next up, " + next.name + ".");
-      } else {
-        mdcSpeakPhrase("all_exercises_done", "All four exercises done! Great discipline.");
-      }
-    }
-  };
+  window.moglyCoachPreload = function() {};
+  window.moglyCoachSay = function() {};
+  window.setMoglyCoachVoice = function() {};
+  window.moglyCoachRenderToggle = function() {};
+  window.moglyCoachCue = function() {};
 
   const MDC_MILESTONES = {
     3: { title: "3-day streak", line: "Three days straight. This is where the morning puff starts dropping for real. Don't break it now." },

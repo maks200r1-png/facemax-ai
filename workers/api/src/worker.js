@@ -2008,6 +2008,25 @@ function pcmToWav(pcm, rate) {
   return out;
 }
 
+// Trims trailing dead silence from 16-bit mono s16le PCM (leaves ~0.35s natural fade pad).
+function trimPcmSilence(pcm, rate = 24000) {
+  const samples = Math.floor(pcm.length / 2);
+  if (samples < rate / 2) return pcm;
+  const view = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength);
+  let lastSpeechSample = -1;
+  for (let i = samples - 1; i >= 0; i--) {
+    const s = Math.abs(view.getInt16(i * 2, true));
+    if (s > 250) {
+      lastSpeechSample = i;
+      break;
+    }
+  }
+  if (lastSpeechSample < 0) return pcm;
+  const pad = Math.round(rate * 0.35);
+  const endSample = Math.min(samples, lastSpeechSample + pad);
+  return pcm.subarray(0, endSample * 2);
+}
+
 // Collects the base64 audio deltas of an OpenRouter chat-completions SSE
 // stream (choices[0].delta.audio.data) into one PCM byte array.
 async function readSseAudio(res, timeoutMs = 28000) {
@@ -2017,14 +2036,23 @@ async function readSseAudio(res, timeoutMs = 28000) {
   let buffer = "";
   let total = 0;
   let transcript = "";
+  let doneStreaming = false;
+
   const take = (line) => {
     const trimmed = line.trim();
     if (!trimmed.startsWith("data:")) return;
     const dataStr = trimmed.slice(5).trim();
-    if (!dataStr || dataStr === "[DONE]") return;
+    if (!dataStr || dataStr === "[DONE]") {
+      doneStreaming = true;
+      return;
+    }
     let delta;
     try {
-      const parsed = JSON.parse(dataStr)?.choices?.[0]?.delta;
+      const choice = JSON.parse(dataStr)?.choices?.[0];
+      if (choice?.finish_reason) {
+        doneStreaming = true;
+      }
+      const parsed = choice?.delta;
       if (parsed?.audio?.transcript) transcript += parsed.audio.transcript;
       else if (parsed?.content) transcript += parsed.content;
       delta = parsed?.audio?.data;
@@ -2046,15 +2074,21 @@ async function readSseAudio(res, timeoutMs = 28000) {
     timerId = setTimeout(() => reject(new Error("sse_audio_timeout")), timeoutMs);
   });
   const readLoop = async () => {
-    while (true) {
+    while (!doneStreaming) {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split("\n");
       buffer = lines.pop();
-      lines.forEach(take);
+      for (let i = 0; i < lines.length; i++) {
+        take(lines[i]);
+        if (doneStreaming) break;
+      }
     }
-    take(buffer + decoder.decode());
+    if (!doneStreaming && buffer) {
+      take(buffer + decoder.decode());
+    }
+    try { await reader.cancel(); } catch {}
   };
   try {
     await Promise.race([readLoop(), timer]);
@@ -2064,9 +2098,10 @@ async function readSseAudio(res, timeoutMs = 28000) {
   } finally {
     if (timerId !== null) clearTimeout(timerId);
   }
-  const pcm = new Uint8Array(total);
+  let pcm = new Uint8Array(total);
   let offset = 0;
   for (const c of chunks) { pcm.set(c, offset); offset += c.length; }
+  pcm = trimPcmSilence(pcm, 24000);
   pcm.transcript = transcript.trim();
   return pcm;
 }
@@ -2101,6 +2136,7 @@ async function voiceSpeak(env, text, lang, gender) {
         audio: { voice, format: "pcm16" },
         stream: true,
         temperature: 0.1,
+        max_tokens: Math.max(300, Math.min(1500, Math.ceil(input.length * 4))),
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: input },
@@ -2486,6 +2522,7 @@ function voiceStreamResponse(run, ctx) {
   const send = (ev) => writer.write(enc.encode(JSON.stringify(ev) + "\n"));
   const p = (async () => {
     try {
+      await writer.write(enc.encode("\n"));
       await run(send);
     } catch (e) {
       try { await send({ type: "error", error: "ai_error", reason: e?.message || String(e) }); } catch {}
@@ -2632,9 +2669,10 @@ async function voiceChat(request, env, ctx) {
       await send({ type: "answer", answer: answer.answer, action: answer.action, segments, used: limit.used, limit: limit.limit });
       let ttsOk = false;
       let ttsError = null;
+      const segmentPromises = segments.map((seg) => voiceSpeak(env, seg, lang, gender));
       for (let i = 0; i < segments.length; i++) {
         try {
-          const speech = await voiceSpeak(env, segments[i], lang, gender);
+          const speech = await segmentPromises[i];
           if (speech.ok && speech.base64) {
             ttsOk = true;
             await send({ type: "audio", index: i, count: segments.length, text: segments[i], audio_base64: speech.base64, audio_format: speech.format });
