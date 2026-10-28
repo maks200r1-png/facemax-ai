@@ -49,12 +49,13 @@ const delayedRes = createDelayedSseResponse([chunk1, chunk2, chunk3], 50);
 // We can test via worker fetch or by importing worker internals
 const src = (await import("node:fs")).readFileSync(resolve(here, "../workers/api/src/worker.js"), "utf8");
 
-// Extract readSseAudio function from worker source for isolated testing
+// Extract readSseAudio and trimPcmSilence functions from worker source for isolated testing
+const trimPcmMatch = src.match(/function trimPcmSilence\(pcm[\s\S]*?\n\}/);
 const readSseAudioMatch = src.match(/async function readSseAudio\(res[\s\S]*?\n\}/);
 assert.ok(readSseAudioMatch, "readSseAudio found in worker.js");
 
-const fnCode = readSseAudioMatch[0];
-const readSseAudio = new Function("return " + fnCode)();
+const fnCode = (trimPcmMatch ? trimPcmMatch[0] + "\n" : "") + readSseAudioMatch[0];
+const readSseAudio = new Function(fnCode + "; return readSseAudio;")();
 
 // Test 1: Verify multi-chunk stream over 150ms delay completes fully with default timeout
 console.log("Test 1: Reading 3 delayed chunks (50ms interval) with default timeout (28000ms)...");

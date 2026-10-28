@@ -19279,6 +19279,20 @@ window.syncTDEEChoiceUI = function() {
     const m = t.match(/[^.!?…]+(?:[.!?…]+["»”')]*|$)\s*/g) || [t];
     return m.map(x => x.trim()).filter(Boolean);
   }
+  function mvAppendAnswerSegment(text) {
+    const a = mvEl("mvAnswer");
+    if (!a || !text) return;
+    const ov = mvEl("mvOverlay");
+    if (ov) ov.classList.add("mv-has-text");
+    const sents = mvSplitSentences(text);
+    sents.forEach(t => {
+      const span = document.createElement("span");
+      span.className = "mv-sent";
+      span.textContent = t + " ";
+      a.appendChild(span);
+    });
+    mvShownAnswer = (mvShownAnswer ? mvShownAnswer + " " : "") + text.trim();
+  }
   function mvKaraokeClear() {
     mvSentNow = -1;
     const a = mvEl("mvAnswer");
@@ -19447,22 +19461,22 @@ window.syncTDEEChoiceUI = function() {
     mvReleaseCurrent();
     mvKaraokeClear();
   }
-  function mvStartQueue(myTurn, onEnd) {
+  function mvStartQueue(myTurn, onEnd, fullAnswer, heard) {
     mvStopPlayback();
-    mvQueue = { turn: myTurn, items: [], played: [], done: false, blocked: false, onEnd, sent: 0 };
+    mvQueue = { turn: myTurn, items: [], played: [], done: false, blocked: false, onEnd, sent: 0, fullAnswer: fullAnswer || "", heard: heard || "" };
   }
   // text: what this segment says (worker stream). Without it (single JSON reply) the
   // segment covers every sentence still unspoken.
   function mvQueuePush(bytes, format, text) {
     const q = mvQueue;
     if (!q) return;
-    const all = mvSplitSentences(mvShownAnswer);
-    const own = text ? mvSplitSentences(text) : [];
-    const from = Math.min(q.sent, Math.max(0, all.length - 1));
-    const to = own.length ? Math.min(all.length, from + own.length) : all.length;
+    const all = mvSplitSentences(q.fullAnswer || mvShownAnswer);
+    const own = text ? mvSplitSentences(text) : (all.length ? all.slice(q.sent) : []);
+    const from = all.length ? Math.min(q.sent, Math.max(0, all.length - 1)) : q.sent;
+    const to = own.length ? Math.min(all.length || (from + own.length), from + own.length) : (all.length || from);
     q.sent = to;
-    const lens = all.slice(from, to).map(x => x.length);
-    q.items.push({ bytes, mime: format === "wav" ? "audio/wav" : "audio/mpeg", from: lens.length ? from : null, lens });
+    const lens = (all.length ? all.slice(from, to) : own).map(x => x.length);
+    q.items.push({ bytes, mime: format === "wav" ? "audio/wav" : "audio/mpeg", text: text || own.join(" "), from: lens.length ? from : null, lens });
     mvPlayNext();
   }
   function mvQueueEnd() {
@@ -19475,6 +19489,14 @@ window.syncTDEEChoiceUI = function() {
     if (!q || q.blocked || mvPlayback || q.turn !== mvTurn) return;
     if (!q.items.length) {
       if (q.done) {
+        const a = mvEl("mvAnswer");
+        const existing = a ? a.querySelectorAll(".mv-sent").length : 0;
+        const total = q.fullAnswer ? mvSplitSentences(q.fullAnswer).length : 0;
+        if (q.fullAnswer && (existing === 0 || existing < total)) {
+          mvShow(q.heard, q.fullAnswer);
+        } else if (q.fullAnswer) {
+          mvShownAnswer = q.fullAnswer;
+        }
         mvQueue = null;
         mvKaraokeClear();
         mvSetState("idle");
@@ -19504,7 +19526,14 @@ window.syncTDEEChoiceUI = function() {
     mvEnvelope(item.bytes).then(env => { if (mvPlayback && mvPlayback.audio === audio) mvPlayback.envelope = env; });
     try {
       await audio.play();
-      if (mvQueue === q) mvSetState("speaking");
+      if (mvQueue === q) {
+        const a = mvEl("mvAnswer");
+        const existing = a ? a.querySelectorAll(".mv-sent").length : 0;
+        if (existing <= (item.from || 0)) {
+          mvAppendAnswerSegment(item.text);
+        }
+        mvSetState("speaking");
+      }
     } catch (e) {
       // Autoplay refused: keep every segment and play them on the next tap of the orb.
       if (!mvPlayback || mvPlayback.audio !== audio) return;
@@ -19514,6 +19543,7 @@ window.syncTDEEChoiceUI = function() {
       q.played = [];
       q.blocked = true;
       mvSetState("idle");
+      if (q.fullAnswer) mvShow(q.heard, q.fullAnswer);
       const st = mvEl("mvStatus");
       if (st) st.textContent = mvT("playBlocked");
     }
@@ -19859,11 +19889,11 @@ window.syncTDEEChoiceUI = function() {
       if (ev.type === "transcript") {
         heard = String(ev.text || "").trim();
         mvShow(heard, "");
-      } else if (ev.type === "answer") {
-        answer = String(ev.answer || "");
-        mvShow(heard, answer);
+      } else if (ev.type === "answer" || ev.type === "meta") {
+        answer = String(ev.answer || ev.text || "");
+        mvShow(heard, "");
         mvSetAction(exercise ? null : (ev.action || null));
-        mvStartQueue(myTurn, onEnd);
+        mvStartQueue(myTurn, onEnd, answer, heard);
       } else if (ev.type === "audio" && ev.audio_base64) {
         if (!gotAudio && exercise) {
           mvCloseOverlay(true);
@@ -19909,14 +19939,14 @@ window.syncTDEEChoiceUI = function() {
       // Worker without streaming: replay its single JSON reply as events.
       if (d.transcript && !said) onEvent({ type: "transcript", text: d.transcript });
       onEvent({ type: "answer", answer: d.answer, action: d.action });
-      if (d.audio_base64) onEvent({ type: "audio", audio_base64: d.audio_base64, audio_format: d.audio_format });
+      if (d.audio_base64) onEvent({ type: "audio", audio_base64: d.audio_base64, audio_format: d.audio_format, text: d.answer });
       onEvent({ type: "done", tts_ok: !!d.audio_base64 });
     }
     if (!answer) { fail(streamErr ? streamErr.error : (finished ? "empty_answer" : "network")); return; }
     if (!finished && !cut) cut = "network";
     if (heard) { mvHistory.push({ role: "user", text: heard }, { role: "assistant", text: answer }); mvHistory = mvHistory.slice(-8); }
     // The full answer text stays on screen whatever happens to the audio.
-    mvShow(heard, answer);
+    if (!gotAudio) mvShow(heard, answer);
     // Stream cut after some audio: play what arrived.
     if (gotAudio) {
       if (!finished) mvQueueEnd();
