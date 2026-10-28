@@ -58,7 +58,7 @@ if projects_res.get("success"):
         pname = p.get("name")
         project_names.append(pname)
         subdomain = p.get("subdomain")
-        domains = [d.get("name") for d in p.get("domains", [])]
+        domains = [d if isinstance(d, str) else d.get("name", "") for d in p.get("domains", [])]
         print(f"Pages Project: {pname} -> {subdomain}.pages.dev (domains: {domains})")
         if "facemaxaiapp.com" in domains or "www.facemaxaiapp.com" in domains:
             print(f"==> MATCH: {pname} is currently holding facemaxaiapp.com domains")
