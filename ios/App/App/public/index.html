@@ -166,13 +166,14 @@ h3{margin:0 0 12px;color:var(--muted);text-transform:uppercase;font-size:12.5px;
 /* ---------- Launch splash (animated logo intro) ---------- */
 #fmSplash{position:fixed;inset:0;background:#000000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;opacity:1;pointer-events:auto;transition:opacity .42s ease;will-change:opacity}
 #fmSplash.fm-splash-out{opacity:0;pointer-events:none;display:none!important}
-.fm-splash-logo{width:104px;height:104px;border-radius:28px;overflow:hidden;background:#000000;box-shadow:0 24px 70px rgba(0,122,255,.45),inset 0 1px 0 rgba(255,255,255,.15);transform:scale(.6);opacity:0;animation:fm-splash-logo-in 1.1s cubic-bezier(.34,1.46,.4,1) .05s forwards}
+.fm-splash-logo{width:104px;height:104px;border-radius:28px;overflow:hidden;background:#000000;box-shadow:0 24px 70px rgba(0,122,255,.45),inset 0 1px 0 rgba(255,255,255,.15);transform:scale(1);opacity:1}
 .fm-splash-logo img{width:100%;height:100%;object-fit:cover;display:block}
-.fm-splash-glow{position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(0,194,255,.45),rgba(0,122,255,0) 65%);opacity:0;animation:fm-splash-glow-in 1.4s ease-out .1s forwards;pointer-events:none;filter:blur(8px)}
-.fm-splash-name{margin-top:22px;font-size:18px;font-weight:800;letter-spacing:-0.022em;color:#fff;opacity:0;transform:translateY(8px);animation:fm-splash-text-in .55s cubic-bezier(.34,1.3,.4,1) .55s forwards}
+.fm-splash-glow{position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(0,194,255,.45),rgba(0,122,255,0) 65%);opacity:.7;animation:fm-splash-glow-breathe 2.4s ease-in-out infinite;pointer-events:none;filter:blur(8px)}
+.fm-splash-name{margin-top:22px;font-size:18px;font-weight:800;letter-spacing:-0.022em;color:#fff;opacity:1;transform:translateY(0)}
 .fm-splash-sub{display:none!important}
-@keyframes fm-splash-logo-in{0%{transform:scale(.6);opacity:0}55%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
-@keyframes fm-splash-glow-in{0%{opacity:0;transform:scale(.7)}50%{opacity:.85}100%{opacity:.5;transform:scale(1.05)}}
+@keyframes fm-splash-glow-breathe{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:.9;transform:scale(1.08)}}
+@keyframes fm-splash-logo-in{0%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes fm-splash-glow-in{0%{opacity:.7}100%{opacity:.7}}
 @keyframes fm-splash-text-in{to{opacity:1;transform:translateY(0)}}
 @media (prefers-reduced-motion: reduce){.fm-splash-logo,.fm-splash-glow,.fm-splash-name,.fm-splash-sub{animation:none;opacity:1;transform:none}}
 .report-loading .ring-num{animation:num-blink 1.2s ease-in-out infinite}
@@ -5046,11 +5047,11 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
   function dismiss(){
     var s=document.getElementById("fmSplash"); if(!s) return;
     s.classList.add("fm-splash-out");
-    setTimeout(function(){ s.parentNode && s.parentNode.removeChild(s); }, 380);
+    setTimeout(function(){ s.parentNode && s.parentNode.removeChild(s); }, 420);
   }
-  // Snappy launch: dismiss splash within 600ms for instant app responsiveness.
-  setTimeout(dismiss, 650);
-  window.addEventListener("load", function(){ setTimeout(dismiss, 500); }, { once:true });
+  // Hold the splash cleanly for ~1000ms so the user sees the crisp branding, then fade out
+  setTimeout(dismiss, 1050);
+  window.addEventListener("load", function(){ setTimeout(dismiss, 950); }, { once:true });
 })();
 </script>
 
@@ -10496,10 +10497,10 @@ async function cancelRetentionPack(){
 
 /* Called after quiz completes — offer notifications once with a friendly
  * iOS-system prompt. Only fires on native + only first time. */
-async function maybeOfferNotifications(){
+async function maybeOfferNotifications(force){
   if (!window.facemax || !window.facemax.notif || !window.facemax.notif.isAvailable()) return;
   try {
-    if (localStorage.getItem("facemax_notif_asked")) return;
+    if (!force && localStorage.getItem("facemax_notif_asked")) return;
     const perm = await window.facemax.notif.requestPermission();
     localStorage.setItem("facemax_notif_asked", "1");
     if (perm && perm.display === "granted") {
@@ -15561,7 +15562,7 @@ const QUIZ_STEPS_EN = [
     emoji: "🗿",
     eyebrow: "MOGLY AI",
     title: "Your custom AI aesthetic protocol.",
-    sub: "Answer <b>5 quick questions</b> to calculate your personalized plan for debloating, jawline sharpening, and hunter eyes.",
+    sub: "Answer quick questions to calculate your personalized plan for debloating, jawline sharpening, and hunter eyes.",
     cta: "Start Protocol",
     next: () => quizGoTo(1),
   },
@@ -15569,7 +15570,7 @@ const QUIZ_STEPS_EN = [
   {
     type: "single",
     key: "age",
-    eyebrow: "Step 1 of 5",
+    eyebrow: "Step 1 of 6",
     title: "Your age and category?",
     sub: "Each age bracket requires a different balance of androgens, nutrition, and jawline mechanics.",
     options: [
@@ -15583,7 +15584,7 @@ const QUIZ_STEPS_EN = [
   {
     type: "single",
     key: "goals",
-    eyebrow: "Step 2 of 5",
+    eyebrow: "Step 2 of 6",
     title: "Main focus for next 30 days?",
     sub: "Select the primary biometric target for your daily AI routine.",
     options: [
@@ -15597,7 +15598,7 @@ const QUIZ_STEPS_EN = [
   {
     type: "single",
     key: "concerns",
-    eyebrow: "Step 3 of 5",
+    eyebrow: "Step 3 of 6",
     title: "What holds your face back the most?",
     sub: "An honest answer targets the root cause in your first 7 days.",
     options: [
@@ -15611,7 +15612,7 @@ const QUIZ_STEPS_EN = [
   {
     type: "single",
     key: "routine",
-    eyebrow: "Step 4 of 5",
+    eyebrow: "Step 4 of 6",
     title: "Your current nutrition & habits?",
     sub: "80% of facial puffiness is governed by sodium and water-electrolyte balance.",
     options: [
@@ -15625,13 +15626,25 @@ const QUIZ_STEPS_EN = [
   {
     type: "single",
     key: "commitment",
-    eyebrow: "Step 5 of 5",
+    eyebrow: "Step 5 of 6",
     title: "How much time can you commit?",
     sub: "Consistency beats intensity. We calibrate the routine to your schedule.",
     options: [
       { e: "⏱️", v: "5",  t: "5 min / day · Express Start", d: "Core debloat massage & sodium control" },
       { e: "⚡", v: "15", t: "15 min / day · Optimal Growth", d: "Mewing + jaw resistance + clean nutrition" },
       { e: "🏆", v: "25", t: "25 min / day · Hardcore Mogly", d: "Complete transformation & advanced protocol" },
+    ],
+  },
+  // 6 — Daily Reminders & Retention
+  {
+    type: "single",
+    key: "notifications",
+    eyebrow: "Step 6 of 6",
+    title: "Enable daily protocol reminders?",
+    sub: "Consistency beats intensity. A quick 5-min alert every morning to debloat and train your jawline. You can turn this off anytime in Settings.",
+    options: [
+      { e: "🔔", v: "yes", t: "Turn on reminders (Recommended)", d: "Daily morning debloat & evening jawline alerts" },
+      { e: "⏱️", v: "no",  t: "I'll remember on my own", d: "No push notifications" },
     ],
   },
 ];
@@ -16373,6 +16386,11 @@ function quizClose(){
   } catch {}
   document.documentElement.classList.remove("fm-quiz-active", "fm-first-launch-lock", "fm-fixed-screen");
   openScreen("home");
+  try {
+    setTimeout(function(){
+      if (typeof maybeOfferNotifications === "function") maybeOfferNotifications();
+    }, 1200);
+  } catch {}
 }
 window.quizClose = quizClose;
 window.quizSkip = quizClose;
@@ -16611,7 +16629,23 @@ function quizPick(key, value, mode){
   quizRender();
 }
 
-function quizContinue(){ quizHaptic(); quizGoTo(quizState.step + 1); }
+function quizContinue(){
+  quizHaptic();
+  const step = QUIZ_STEPS[quizState.step];
+  if (step && step.key === "notifications") {
+    const val = quizState.answers.notifications;
+    if (val === "yes") {
+      try {
+        if (typeof maybeOfferNotifications === "function") {
+          maybeOfferNotifications(true);
+        }
+      } catch (e) {}
+    } else {
+      try { localStorage.setItem("facemax_notif_asked", "1"); } catch (e) {}
+    }
+  }
+  quizGoTo(quizState.step + 1);
+}
 
 // Post-quiz "biometric calibration" HUD: ring + counter run 0→100% while four
 // calibration modules light up in sequence, each with a haptic tick, then a
@@ -19447,16 +19481,16 @@ window.syncTDEEChoiceUI = function() {
     mvReleaseCurrent();
     mvKaraokeClear();
   }
-  function mvStartQueue(myTurn, onEnd) {
+  function mvStartQueue(myTurn, onEnd, fullAnswer, onVoiceStart) {
     mvStopPlayback();
-    mvQueue = { turn: myTurn, items: [], played: [], done: false, blocked: false, onEnd, sent: 0 };
+    mvQueue = { turn: myTurn, items: [], played: [], done: false, blocked: false, onEnd, sent: 0, fullAnswer: fullAnswer || "", onVoiceStart };
   }
   // text: what this segment says (worker stream). Without it (single JSON reply) the
   // segment covers every sentence still unspoken.
   function mvQueuePush(bytes, format, text) {
     const q = mvQueue;
     if (!q) return;
-    const all = mvSplitSentences(mvShownAnswer);
+    const all = mvSplitSentences(q.fullAnswer || mvShownAnswer);
     const own = text ? mvSplitSentences(text) : [];
     const from = Math.min(q.sent, Math.max(0, all.length - 1));
     const to = own.length ? Math.min(all.length, from + own.length) : all.length;
@@ -19504,7 +19538,13 @@ window.syncTDEEChoiceUI = function() {
     mvEnvelope(item.bytes).then(env => { if (mvPlayback && mvPlayback.audio === audio) mvPlayback.envelope = env; });
     try {
       await audio.play();
-      if (mvQueue === q) mvSetState("speaking");
+      if (mvQueue === q) {
+        mvSetState("speaking");
+        if (q.onVoiceStart) {
+          try { q.onVoiceStart(); } catch (e) {}
+          q.onVoiceStart = null;
+        }
+      }
     } catch (e) {
       // Autoplay refused: keep every segment and play them on the next tap of the orb.
       if (!mvPlayback || mvPlayback.audio !== audio) return;
@@ -19522,6 +19562,10 @@ window.syncTDEEChoiceUI = function() {
     const q = mvQueue;
     if (!q || !q.blocked) return false;
     q.blocked = false;
+    if (q.onVoiceStart) {
+      try { q.onVoiceStart(); } catch (e) {}
+      q.onVoiceStart = null;
+    }
     mvSetState("speaking");
     mvPlayNext();
     return true;
@@ -19862,15 +19906,17 @@ window.syncTDEEChoiceUI = function() {
         if (!isVoiceConvo) mvShow(heard, "");
       } else if (ev.type === "answer") {
         answer = String(ev.answer || "");
-        if (isVoiceConvo) {
-          // Voice conversation mode: user speaks -> Mogly listens and speaks.
-          // In this mode, do NOT display text on screen — pure clean voice interface!
-          mvShow("", "");
-        } else {
-          mvShow(heard, answer);
-        }
         mvSetAction(exercise ? null : (ev.action || null));
-        mvStartQueue(myTurn, onEnd);
+        // Defer text reveal until voice actually starts speaking (or fallback on error).
+        // In voice convo mode (mic talk): text is never shown.
+        // In chip/routine mode: text appears the exact moment voice starts talking.
+        mvStartQueue(myTurn, onEnd, answer, () => {
+          if (!isVoiceConvo) {
+            mvShow(heard, answer);
+          } else {
+            mvShow("", "");
+          }
+        });
       } else if (ev.type === "audio" && ev.audio_base64) {
         if (!gotAudio && exercise) {
           mvCloseOverlay(true);
