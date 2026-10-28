@@ -6,6 +6,7 @@ on:
     paths:
       - "web/**"
       - "workers/**"
+      - "scripts/**"
       - "package.json"
       - ".github/workflows/web-deploy.yml"
   workflow_dispatch:
