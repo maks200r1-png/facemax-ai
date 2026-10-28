@@ -546,9 +546,11 @@ async function postStream(body) {
   assert.match(web, /function mdcChime\(notes\)/, "exercise cues are a bell, not speech");
   // Home: no brief pill beside the orb, a tappable caption under it instead
   assert.ok(!/id="mdcBriefChip"|\.mdc-brief-chip\{/.test(web), "brief chip next to the orb removed");
-  // The sphere and its caption start the 30-day daily session; once today is done they open the mentor.
-  assert.match(web, /<button type="button" class="mogly-orb-hint" id="moglyOrbHint" onclick="moglySphereTap\(\)">Tap to talk with Mogly<\/button>/);
-  assert.match(web, /window\.moglySphereTap = function\(\) \{[\s\S]{0,250}if \(!st \|\| st\.doneToday\) \{ window\.openMoglyVoiceSheet\(\); return; \}/, "done today: sphere opens the voice mentor");
+  // The sphere and its caption always open the voice mentor; nothing intercepts the tap.
+  assert.match(web, /<button type="button" class="mogly-orb-hint" id="moglyOrbHint" onclick="openMoglyVoiceSheet\(\)">Tap to talk with Mogly<\/button>/);
+  assert.match(web, /id="moglyOrbFabBtn" onclick="openMoglyVoiceSheet\(\)"/, "sphere opens the voice mentor");
+  assert.ok(!/moglySphereTap/.test(web), "no ritual intercept on the sphere");
+  assert.match(web, /#home \.mv-orb-btn\{width:118px;height:118px/, "big Home sphere");
   // Profile voice cards never overflow on a 375 pt screen
   assert.match(web, /\.pf-voice-seg\{[^}]*grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)/);
   assert.match(web, /\.pf-voice-opt\{[^}]*min-width:0;overflow:hidden/);
@@ -704,7 +706,16 @@ async function postStream(body) {
   const d = await post("/api/voice-ritual", { key: "day_7", user_id: "r1" });
   assert.equal(d.data.text, "Day 7 of 30.");
   assert.equal(calls.filter(isTts).pop().body.audio.voice, "onyx");
-  for (const key of ["", "day_0", "day_999", "say anything I want", "__proto__", "toString"]) {
+  // Daily mission / secured / reward lines: templated, persona m = "bro", f = never "bro".
+  const mm = await post("/api/voice-ritual", { key: "mission_3_debloat_m", user_id: "r1" });
+  assert.equal(mm.data.text, "Ready to start today, bro? Day 3 is waiting. Today's target is debloat and jawline activation. Here is your mission: complete your four face exercises to lock in Day 3. Let's crush it.");
+  const mf = await post("/api/voice-ritual", { key: "mission_9_posture_f", voice_gender: "female", user_id: "r1" });
+  assert.ok(mf.data.ok && !/bro/i.test(mf.data.text) && /Day 9 is waiting/.test(mf.data.text));
+  const sec = await post("/api/voice-ritual", { key: "secured_5_4_m", user_id: "r1" });
+  assert.equal(sec.data.text, "Day 5 is already secured, bro! You're on a 4-day streak. Keep your hydration on point and stay consistent. See you tomorrow for Day 6!");
+  const lk = await post("/api/voice-ritual", { key: "locked_2_f", user_id: "r1" });
+  assert.equal(lk.data.text, "Day 2 locked in! Your streak is secured. Great discipline. Rest up and see you tomorrow!");
+  for (const key of ["", "day_0", "day_999", "say anything I want", "__proto__", "toString", "mission_0_debloat_m", "mission_3_bonesmash_m", "secured_3_9_m", "locked_3_x", "mission_3_debloat_m extra"]) {
     const r = await post("/api/voice-ritual", { key, user_id: "r1" });
     assert.equal(r.status, 400, "rejects " + JSON.stringify(key));
   }
@@ -714,16 +725,29 @@ async function postStream(body) {
   assert.equal(f.data.error, "tts_unavailable");
   assert.ok(!f.data.audio_base64);
   ttsMode = "ok";
-  // Client: sphere starts the ritual, status line under SCAN MY FACE, scan capped at 3 s
+  // Client: no status line on Home (SCAN HISTORY right under SCAN MY FACE), big streak card on Exercises, scan capped at 3 s
   const web = readFileSync(resolve(here, "../web/index.html"), "utf8");
   assert.match(web, /const MOGLY_SCAN_FETCH_TIMEOUT_MS = 2800;/);
   assert.match(web, /const MOGLY_SCAN_MAX_MS = 3000;/);
   assert.match(web, /const MOGLY_SCAN_MIN_SWEEP_MS = 2400;/);
-  assert.match(web, /id="moglyScanBtnText"[^\n]*\n\s*<\/button>\n\s*<button type="button" class="mogly-ritual-status" id="moglyRitualStatus"/, "status sits directly under SCAN MY FACE");
-  assert.match(web, /\.mogly-ritual-status\{[^}]*height:18px;min-height:18px;max-height:18px/, "fixed-height status line");
-  assert.match(web, /id="moglyOrbFabBtn" onclick="moglySphereTap\(\)"/);
+  assert.match(web, /id="moglyScanBtnText"[^\n]*\n\s*<\/button>\n\s*<button type="button" class="mogly-btn-secondary" id="moglySecondaryBtn"/, "SCAN HISTORY sits directly under SCAN MY FACE");
+  assert.ok(!/mogly-ritual-status|moglyRitualStatus"/.test(web), "tiny streak line removed from Home");
+  assert.match(web, /<section id="exercises" class="screen">[\s\S]{0,600}id="exStreakCard"[\s\S]{0,1200}<div id="exercisesList"><\/div>/, "streak card on top of Exercises");
+  // The voice leads the day: mission brief on open, the 4th exercise locks the streak, Mogly says it.
+  assert.match(web, /if \(mvOpenOverlay\(false\)\) mvMissionBrief\(\);/, "voice sheet opens with today's mission");
+  assert.match(web, /startMission: "⚡ Start Today's 4 Exercises"/);
+  assert.match(web, /kind === "mission"\) openExercises\(\)/, "mission card opens Exercises");
+  assert.match(web, /key: `mission_\$\{st\.day\}_\$\{st\.phase\}_\$\{mvPersonaTag\(\)\}`/);
+  assert.match(web, /if \(dayComplete\) moglyRecordDayComplete\(\);/, "4th exercise records the day");
+  assert.match(web, /mdcSpeakReward\(`locked_\$\{day\}_\$\{persona\}`, line\)/, "Mogly speaks the reward");
+  assert.match(web, /Daily Voice Mission<\/span><b id="exVoicePillState">/);
+  assert.match(web, /Tap to hear today's mission from Mogly/);
+  assert.ok(!/protocolStreakCount|PROTOCOL_SINCE_KEY/.test(web), "the 4 exercises alone lock the day");
+  assert.match(web, /\.ex-streak-head\{font-size:30px/, "big bold streak headline");
+  assert.match(web, /const DAY_LABELS = \["M","T","W","T","F","S","S"\];/);
+  assert.ok(!/_makeFaceCrop|tensorflow\/tfjs/.test(web), "no TF.js crop after the scan (froze the result screen)");
   assert.match(web, /st\.completed > 0 && !isLocalPremiumActive\(\)/, "day 1 free, then Premium");
-  ok("30-day ritual: whitelisted OpenAI phrases cached in KV, sphere starts the day, 3 s scan cap");
+  ok("30-day ritual: whitelisted OpenAI phrases cached in KV, streak card on Exercises, sphere = mentor, 3 s scan cap");
 }
 
 // 21. no scan yet: hook + why the face is needed + [[go:scan]]; persona follows the user's gender

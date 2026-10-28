@@ -2115,6 +2115,40 @@ function ritualPhrase(key) {
     const n = Number(m[1]);
     if (n >= 1 && n <= RITUAL_MAX_DAY) return n <= 30 ? `Day ${n} of 30.` : `Day ${n}.`;
   }
+  return ritualCoachLine(k);
+}
+
+// Daily mission lines the voice sheet opens with, and the reward line when the
+// 4th exercise locks the day. Templated on day / streak / persona only, so the
+// whitelist stays closed. m = male persona ("bro"), f = female (never "bro").
+const RITUAL_MISSION_TARGETS = {
+  debloat: "debloat and jawline activation",
+  posture: "posture and mewing",
+  tone: "jawline tone and control",
+};
+function ritualCoachLine(k) {
+  const day = (v) => { const n = Number(v); return n >= 1 && n <= RITUAL_MAX_DAY ? n : 0; };
+  let m = /^mission_(\d{1,3})_(debloat|posture|tone)_([mf])$/.exec(k);
+  if (m) {
+    const n = day(m[1]);
+    if (!n) return "";
+    const bro = m[3] === "m" ? ", bro" : "";
+    return `Ready to start today${bro}? Day ${n} is waiting. Today's target is ${RITUAL_MISSION_TARGETS[m[2]]}. Here is your mission: complete your four face exercises to lock in Day ${n}. Let's crush it.`;
+  }
+  m = /^secured_(\d{1,3})_(\d{1,3})_([mf])$/.exec(k);
+  if (m) {
+    const n = day(m[1]), s = day(m[2]);
+    if (!n || !s || s > n) return "";
+    const bro = m[3] === "m" ? ", bro" : "";
+    return `Day ${n} is already secured${bro}! You're on a ${s}-day streak. Keep your hydration on point and stay consistent. See you tomorrow for Day ${n + 1}!`;
+  }
+  m = /^locked_(\d{1,3})_([mf])$/.exec(k);
+  if (m) {
+    const n = day(m[1]);
+    if (!n) return "";
+    const tail = m[2] === "m" ? "Great discipline, bro." : "Great discipline.";
+    return `Day ${n} locked in! Your streak is secured. ${tail} Rest up and see you tomorrow!`;
+  }
   return "";
 }
 

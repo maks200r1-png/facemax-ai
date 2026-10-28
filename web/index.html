@@ -3333,6 +3333,9 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 }
 .mv-action[hidden] { display: none; }
 .mv-action.mv-action-scan { background: linear-gradient(180deg, #2E8BFF, #0A6CFF); color: #fff; }
+/* Today's mission: the one thing Mogly wants done to lock the streak day. */
+.mv-action.mv-action-mission { background: linear-gradient(180deg, #FFD60A, #FF9F0A); color: #000;
+  box-shadow: 0 0 26px rgba(255,159,10,.5) !important; }
 
 .mv-chips {
   width: 100%;
@@ -4894,20 +4897,48 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
   text-shadow:0 0 14px rgba(90,160,255,.45);-webkit-tap-highlight-color:transparent;cursor:pointer}
 .mogly-orb-hint:active{opacity:.6}
 
-/* ---------------- Home: 30-day ritual status under SCAN MY FACE ----------------
-   One fixed 18px line in every state, so switching state never moves the layout. */
-.mogly-ritual-status{display:block;width:100%;height:18px;min-height:18px;max-height:18px;margin:-6px 0;padding:0;border:0;background:transparent;
-  color:rgba(235,235,245,.58);font-size:12px;font-weight:600;line-height:18px;letter-spacing:.01em;text-align:center;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;cursor:default;
-  -webkit-tap-highlight-color:transparent;transition:color .3s ease,text-shadow .3s ease}
-.mogly-ritual-status.is-done{color:#30D158;text-shadow:0 0 10px rgba(48,209,88,.45)}
-.mogly-ritual-status.is-checkin{color:#5AC8FA;cursor:pointer}
-.mogly-ritual-status.is-checkin:active{opacity:.6}
-/* The line costs 14px; Home gives the same 14px back from spacing above the
-   sphere, so the sphere, its caption and the tab bar stay where they were. */
-#home .mogly-square-card{margin-top:clamp(2px,.5vh,4px)!important}
-#home .mogly-actions-container{margin-top:4px!important}
-#home .mogly-assistant-fab-container{padding-top:0}
+/* ---------------- Home: big vibrant Mogly sphere (opens the voice mentor) ---------------- */
+#home .mogly-assistant-fab-container{padding-top:0;min-height:150px}
+#home .mv-orb-btn{width:118px;height:118px;border-radius:50%;
+  box-shadow:0 0 0 1px rgba(120,200,255,.22),0 0 34px rgba(0,170,255,.55),0 0 80px rgba(10,132,255,.38)!important;
+  animation:moglyOrbBreath 3.6s ease-in-out infinite}
+#home .mv-orb-btn .mv-orb-glow{opacity:1;filter:saturate(1.5) brightness(1.15)}
+#home .mv-orb-btn:active{transform:scale(0.93);animation:none}
+@keyframes moglyOrbBreath{
+  0%,100%{filter:drop-shadow(0 0 10px rgba(0,170,255,.45))}
+  50%{filter:drop-shadow(0 0 22px rgba(0,200,255,.75))}}
+#home .mogly-orb-hint{margin-top:12px;color:#fff;font-size:14.5px;font-weight:700;text-shadow:0 0 16px rgba(0,170,255,.7)}
+
+/* ---------------- Exercises: big streak card on top ---------------- */
+.ex-streak-card{position:relative;margin:4px 16px 14px;padding:20px 18px 18px;border-radius:24px;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 0%,rgba(255,159,10,.20),rgba(255,159,10,0) 60%),linear-gradient(160deg,#141008,#050505 70%);
+  border:1px solid rgba(255,184,0,.28);box-shadow:0 0 40px rgba(255,159,10,.16),inset 0 1px 0 rgba(255,214,120,.14)!important;text-align:center}
+.ex-streak-card.is-checkin{cursor:pointer}
+.ex-streak-card.is-checkin:active{transform:scale(.98)}
+.ex-streak-head{font-size:30px;line-height:1.1;font-weight:800;letter-spacing:-.02em;color:#FFD60A;
+  text-shadow:0 0 18px rgba(255,159,10,.65),0 0 42px rgba(255,120,0,.35);font-variant-numeric:tabular-nums}
+.ex-streak-sub{margin-top:8px;font-size:14px;font-weight:600;line-height:1.35;color:rgba(255,255,255,.78)}
+.ex-streak-card.is-done .ex-streak-sub{color:#30D158}
+.ex-streak-card.is-checkin .ex-streak-sub{color:#5AC8FA}
+.ex-protocol-pills{display:flex;gap:8px;margin-top:14px}
+.ex-pill{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 8px;border-radius:18px;
+  border:1px solid rgba(255,214,120,.26);background:rgba(255,255,255,.06);color:rgba(255,255,255,.88);font:inherit;font-size:12px;font-weight:700;
+  line-height:1.2;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ex-pill span,.ex-pill b{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ex-pill b{font-size:13px;font-weight:800;color:#FFD60A;font-variant-numeric:tabular-nums}
+.ex-pill:active{transform:scale(.96)}
+.ex-pill.is-done{border-color:rgba(48,209,88,.5);background:rgba(48,209,88,.12)}
+.ex-pill.is-done b{color:#30D158}
+.ex-streak-dots{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:16px}
+.ex-streak-dots .ex-week-dot{display:flex;flex-direction:column;align-items:center;gap:6px}
+.ex-streak-dots .ewd-circle{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);box-sizing:border-box}
+.ex-streak-dots .ewd-circle svg{width:16px;height:16px;stroke:#000;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ex-streak-dots .ex-week-dot.done .ewd-circle{background:linear-gradient(145deg,#FFD60A,#30D158);border-color:transparent;
+  box-shadow:0 0 14px rgba(255,200,40,.55)!important}
+.ex-streak-dots .ex-week-dot.today .ewd-circle{border-color:#FF9F0A;border-width:2px}
+.ex-streak-dots .ewd-day{font-size:12px;font-weight:700;color:rgba(255,255,255,.5)}
+.ex-streak-dots .ex-week-dot.today .ewd-day{color:#FFD60A}
 
 /* ---------------- Daily ritual overlay (hands-free voice session) ---------------- */
 .mr-overlay{position:fixed;inset:0;z-index:310;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;
@@ -5444,8 +5475,6 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
         </span>
         <span id="moglyScanBtnText" data-i18n="btn_scan_face">SCAN MY FACE</span>
       </button>
-      <button type="button" class="mogly-ritual-status" id="moglyRitualStatus" onclick="moglyRitualStatusTap()" aria-live="polite">🔥 0-day streak · Day 7 check-in in 7 days</button>
-
       <button type="button" class="mogly-btn-secondary" id="moglySecondaryBtn" onclick="handleMoglySecondaryClick()">
         <span id="moglySecondaryBtnIconWrap">
           <svg viewBox="0 0 24 24" width="18" height="18" id="moglySecondaryBtnIcon" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
@@ -5461,14 +5490,14 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 
     <!-- Mogly voice orb (liquid glass). Tap opens the voice overlay. -->
     <div class="mogly-assistant-fab-container is-home" id="moglyAssistantFabContainer">
-      <button type="button" class="mv-orb-btn" id="moglyOrbFabBtn" onclick="moglySphereTap()" aria-label="Mogly daily session">
+      <button type="button" class="mv-orb-btn" id="moglyOrbFabBtn" onclick="openMoglyVoiceSheet()" aria-label="Talk with Mogly">
         <div class="mv-orb">
           <div class="mv-orb-glow"></div>
           <canvas class="mv-orb-canvas" id="mvHomeCanvas"></canvas>
           <div class="mv-orb-glass"></div>
         </div>
       </button>
-      <button type="button" class="mogly-orb-hint" id="moglyOrbHint" onclick="moglySphereTap()">Tap to talk with Mogly</button>
+      <button type="button" class="mogly-orb-hint" id="moglyOrbHint" onclick="openMoglyVoiceSheet()">Tap to talk with Mogly</button>
     </div>
 
     <!-- Results Block (Kept hidden on Home; full results presented on FaceScan screen) -->
@@ -6717,6 +6746,17 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
     <span class="stb-title" data-i18n="nav_exercises">Exercises</span>
   </div>
 
+  <!-- Big streak card: streak, Mogly's mission + the 4 exercises that lock today, this week's days -->
+  <div class="ex-streak-card" id="exStreakCard" onclick="moglyStreakCardTap()" aria-live="polite">
+    <div class="ex-streak-head" id="exStreakHead">🔥 0-DAY STREAK</div>
+    <div class="ex-streak-sub" id="exStreakSub">🎙️ Mogly Voice Brief + ⚡ 4 Exercises to lock Day 1 · Next check-in in 7 days</div>
+    <div class="ex-protocol-pills">
+      <button type="button" class="ex-pill" id="exVoicePill" onclick="moglyProtocolVoiceTap(event)"><span>🎙️ Daily Voice Mission</span><b id="exVoicePillState">Pending</b></button>
+      <button type="button" class="ex-pill" id="exRoutinePill" onclick="moglyProtocolRoutineTap(event)"><span>⚡ 4 Face Exercises</span><b id="exRoutinePillState">0/4 Done</b></button>
+    </div>
+    <div class="ex-streak-dots" id="exWeekDots"></div>
+  </div>
+
   <div id="exercisesList"></div>
 </section>
 
@@ -6983,8 +7023,9 @@ function hasValidLocalPremiumBridge(){
     // A confirmed purchase can briefly arrive before RevenueCat exposes its
     // expiration date. Allow only a bounded bridge; never let a legacy flag
     // become a permanent subscription after a trial has expired.
+    // A future-dated stamp (clock change) would never age out, so it is rejected.
     const confirmedAt = premiumTimestampMs(localStorage.getItem("FACEMAX_PREMIUM_CONFIRMED_AT"));
-    if (confirmedAt && now - confirmedAt <= LOCAL_PREMIUM_BRIDGE_MS) return true;
+    if (confirmedAt && confirmedAt <= now + 60 * 1000 && now - confirmedAt <= LOCAL_PREMIUM_BRIDGE_MS) return true;
     clearLocalPremiumUnlock();
   } catch {}
   return false;
@@ -9334,21 +9375,18 @@ window.closePremiumGate = function(){
 };
 
 window.showGate = function(title, text, resumeAction){
-  // A generic in-app paywall must never replace the first-run quiz funnel.
-  // If something tries to open it while onboarding is still unfinished, keep
-  // the user in the quiz. Once a first scan is actually pending, route to the
-  // dedicated quiz pre-pay/paywall instead.
+  // Only a first scan that is actually pending inside the unfinished quiz
+  // funnel is rerouted, to the quiz pre-pay/paywall (still a paywall). Every
+  // other call — Home, Exercises, Profile, Results, even a lost onboarding
+  // flag — always opens #gate. Nothing here may swallow the paywall.
   if (typeof fmFirstRunFunnelActive === "function" && fmFirstRunFunnelActive()) {
     const sid = (typeof fmActiveScreenId === "function") ? fmActiveScreenId() : "";
     const scanPending = !!(onbState && onbState.pendingScan);
     if (scanPending || sid === "prePay" || sid === "capture" || sid === "loading" || sid === "quizPaywall") {
       try { onbState.flow = "onboarding"; onbState.pendingScan = true; } catch {}
-      if (typeof showPrePay === "function") showPrePay();
-      else if (typeof quizShowPaywall === "function") quizShowPaywall();
-    } else {
-      console.warn("[facemax] suppressed generic premium gate during onboarding", { sid, title });
+      if (typeof showPrePay === "function") { showPrePay(); return; }
+      if (typeof quizShowPaywall === "function") { quizShowPaywall(); return; }
     }
-    return;
   }
   _pendingPremiumAction = typeof resumeAction === "function" ? resumeAction : null;
   _gateOpenSeq++;
@@ -9370,8 +9408,9 @@ window.isLocalPremiumActive = isLocalPremiumActive;
 
 // Last time RevenueCat/backend confirmed an active entitlement. Lets paid taps
 // open instantly instead of waiting on a fresh network round-trip every time.
+// Reset to 0 whenever a check comes back inactive.
 let _premiumConfirmedAt = 0;
-const PREMIUM_RECHECK_MS = 10 * 60 * 1000;
+const PREMIUM_RECHECK_MS = 2 * 60 * 1000;
 const PREMIUM_TAP_WAIT_MS = 2500;
 
 function runSharedPremiumCheck(){
@@ -9380,7 +9419,7 @@ function runSharedPremiumCheck(){
   if (!_premiumCheckInFlight) {
     _premiumCheckInFlight = Promise.resolve()
       .then(() => checkPremium(false))
-      .then(active => { if (active) _premiumConfirmedAt = Date.now(); return active; })
+      .then(active => { _premiumConfirmedAt = active ? Date.now() : 0; return !!active; })
       .catch(() => false)
       .finally(() => { _premiumCheckInFlight = null; });
   }
@@ -9405,8 +9444,9 @@ async function ensurePremiumForAction(resumeAction, title, text){
     });
     return false;
   }
-  // Locally premium and confirmed recently: open right away, refresh quietly.
-  if (Date.now() - _premiumConfirmedAt < PREMIUM_RECHECK_MS) {
+  // Confirmed active by RevenueCat/backend moments ago (in-memory flag, not the
+  // localStorage bridge): open right away, refresh quietly.
+  if (premium === true && _premiumConfirmedAt > 0 && Date.now() - _premiumConfirmedAt < PREMIUM_RECHECK_MS) {
     runSharedPremiumCheck();
     return true;
   }
@@ -9725,8 +9765,8 @@ function renderProfileScreen(){
   renderGenderSetting();
 }
 
-// The daily ritual is the 4 exercises; a day counts when all of them are done.
-// Profile, the voice brief and the streak celebrations all read this one number.
+// Mogly briefs the mission, the 4 exercises lock the day. Profile, the voice brief
+// and the streak celebrations all read this one number.
 function moglyStreakCount(){
   try { return exerciseStreakCount(); } catch { return 0; }
 }
@@ -11029,69 +11069,6 @@ function _makeInstantCrop(dataUrl) {
   });
 }
 
-async function _makeFaceCrop(dataUrl) {
-  try {
-    if (!window.tf || !window.blazeface) {
-      // lazy-load blazeface
-      if (!_blazefaceModel && !_blazefaceLoading) {
-        _blazefaceLoading = true;
-        await new Promise((res, rej) => {
-          const s = document.createElement('script');
-          s.src = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.21.0/dist/tf.min.js';
-          s.onload = res; s.onerror = rej;
-          document.head.appendChild(s);
-        }).catch(() => {});
-        await new Promise((res, rej) => {
-          const s = document.createElement('script');
-          s.src = 'https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.0.7/dist/blazeface.min.js';
-          s.onload = res; s.onerror = rej;
-          document.head.appendChild(s);
-        }).catch(() => {});
-        if (window.blazeface) {
-          _blazefaceModel = await window.blazeface.load().catch(() => null);
-        }
-        _blazefaceLoading = false;
-      }
-    }
-    if (!_blazefaceModel) return null;
-
-    const img = new Image();
-    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = dataUrl; });
-
-    const predictions = await _blazefaceModel.estimateFaces(img, false);
-    if (!predictions || !predictions.length) return null;
-
-    const face = predictions[0];
-    const [x1, y1] = face.topLeft;
-    const [x2, y2] = face.bottomRight;
-    const fw = x2 - x1;
-    const fh = y2 - y1;
-
-    // Square crop: expand bbox by 60% so head + a bit of neck fits nicely
-    const pad = Math.max(fw, fh) * 0.6;
-    const cx = (x1 + x2) / 2;
-    const cy = (y1 + y2) / 2 - fh * 0.05; // slight upward bias for forehead
-    const half = (Math.max(fw, fh) + pad) / 2;
-
-    const sx = Math.max(0, Math.round(cx - half));
-    const sy = Math.max(0, Math.round(cy - half));
-    const size = Math.min(
-      Math.round(half * 2),
-      img.naturalWidth  - sx,
-      img.naturalHeight - sy
-    );
-
-    const c = document.createElement('canvas');
-    c.width = c.height = 400;
-    c.getContext('2d').drawImage(img, sx, sy, size, size, 0, 0, 400, 400);
-    return c.toDataURL('image/jpeg', 0.92);
-  } catch (e) {
-    return null;
-  }
-}
-
-
-
 function _applyAvatarCrop(cropUrl) {
   const url = cropUrl || selectedImageData;
   _avatarCropUrl = url;
@@ -11125,10 +11102,6 @@ function applySelectedPhoto(dataUrl){
   // so the swap is just a subtle recenter, not a visible "half a face" jump.
   _makeInstantCrop(dataUrl).then(instant => {
     if (instant && !_avatarCropUrl) _applyAvatarCrop(instant);
-  }).catch(() => {});
-  // Async: detect face, crop square, apply to avatar circles
-  _makeFaceCrop(dataUrl).then(crop => {
-    if (crop) _applyAvatarCrop(crop);
   }).catch(() => {});
 }
 
@@ -12624,6 +12597,13 @@ window.checkPremium = async function(showAlert = false){
       // timestamp only as historical routing information when native has none.
       premiumUntil = nativeStatus.premium_until || serverUntil || null;
       premium = forcePaywall ? false : !!nativeStatus.active;
+      // RevenueCat says inactive (expired, refunded, cancelled trial): a stored
+      // FACEMAX_PREMIUM_UNTIL must not keep unlocking. Only a purchase confirmed
+      // in the last LOCAL_PREMIUM_BRIDGE_MS may outlive a lagging RevenueCat.
+      if (!nativeStatus.active && !forcePaywall) {
+        const confirmedAt = premiumTimestampMs(localStorage.getItem("FACEMAX_PREMIUM_CONFIRMED_AT"));
+        if (!confirmedAt || Date.now() - confirmedAt > LOCAL_PREMIUM_BRIDGE_MS) clearLocalPremiumUnlock();
+      }
 
       // Reconcile a delayed or stale backend mirror without blocking UI.
       // This runs in both directions: a new purchase is granted only after the
@@ -12900,6 +12880,49 @@ function writeRoutineLog(log){ lsWrite("facemax_routine_log", log); }
 function readExerciseLog(){ return lsRead("facemax_exercise_log", {}); }
 function writeExerciseLog(log){ lsWrite("facemax_exercise_log", log); }
 
+// ── Daily Glow-Up Protocol ────────────────────────────────────────────────────
+// Mogly's voice gives today's mission (🎙️ "received" once the sheet briefs it);
+// the 4-exercise face routine is what locks the day and the streak.
+const VOICE_MISSION_LOG_KEY = "facemax_voice_checkin_log";
+function readVoiceMissionLog(){ return lsRead(VOICE_MISSION_LOG_KEY, {}); }
+function protocolDayDone(dayKey, exLog){
+  const v = (exLog || readExerciseLog())[dayKey];
+  return Array.isArray(v) && v.length >= FACE_EXERCISES.length;
+}
+function moglyIsVoiceMissionReceivedToday(){ return !!readVoiceMissionLog()[todayKey()]; }
+function moglyIsProtocolDoneToday(){ return protocolDayDone(todayKey()); }
+// Returns true the first time today's mission brief is recorded.
+function moglyRecordVoiceMissionToday(){
+  const k = todayKey();
+  const log = readVoiceMissionLog();
+  if (log[k]) return false;
+  log[k] = Date.now();
+  const keep = Object.keys(log).sort().slice(-120);
+  const trimmed = {};
+  keep.forEach(d => { trimmed[d] = log[d]; });
+  lsWrite(VOICE_MISSION_LOG_KEY, trimmed);
+  try { renderExerciseWeekTracker(); } catch {}
+  return true;
+}
+// The 4th exercise of the day: lock the day, quiet tonight's streak reminder,
+// refresh every streak surface and let Mogly celebrate it out loud.
+function moglyRecordDayComplete(opts){
+  try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch {}
+  try { renderExerciseWeekTracker(); } catch {}
+  try { if (typeof window.moglyRenderRitualStatus === "function") window.moglyRenderRitualStatus(); } catch {}
+  const streak = moglyStreakCount();
+  // The hands-free ritual says its own praise.
+  if (opts && opts.silent) return streak;
+  if (typeof window.moglyOnDayComplete === "function") {
+    setTimeout(() => { try { window.moglyOnDayComplete(); } catch {} }, 700);
+  }
+  return streak;
+}
+window.moglyRecordDayComplete = moglyRecordDayComplete;
+window.moglyRecordVoiceMissionToday = moglyRecordVoiceMissionToday;
+window.moglyIsVoiceMissionReceivedToday = moglyIsVoiceMissionReceivedToday;
+window.moglyIsProtocolDoneToday = moglyIsProtocolDoneToday;
+
 // ── Weekly exercise tracker ───────────────────────────────────────────────────
 // Returns the Monday of the current week as YYYY-MM-DD
 function _exWeekMondayKey() {
@@ -12926,15 +12949,13 @@ function renderExerciseWeekTracker() {
   const hintEl = el("exWeekHint");
 
   const log = readExerciseLog();
-  const total = (typeof FACE_EXERCISES !== 'undefined') ? FACE_EXERCISES.length : 7;
   const todayStr = todayKey();
   const days = _exWeekDays();
-  const DAY_LABELS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const DAY_LABELS = ["M","T","W","T","F","S","S"];
 
   let doneDays = 0;
   dotsEl.innerHTML = days.map((dayKey, i) => {
-    const arr = log[dayKey];
-    const isDone = Array.isArray(arr) && arr.length >= total;
+    const isDone = protocolDayDone(dayKey, log);
     const isToday = dayKey === todayStr;
     const isFuture = dayKey > todayStr;
     if (isDone) doneDays++;
@@ -12948,11 +12969,58 @@ function renderExerciseWeekTracker() {
   }).join("");
 
   if (countEl) countEl.textContent = doneDays + " / 7 days";
+  renderExerciseStreakHeadline();
   if (hintEl) {
     if (doneDays === 7) hintEl.textContent = "Perfect week — incredible consistency! 🏆";
     else if (doneDays >= 4) hintEl.textContent = "Great week — "+doneDays+" sessions done. Target: 4–5×/week";
     else if (doneDays >= 2) hintEl.textContent = doneDays+" of 4–5 target sessions this week. Keep going!";
     else hintEl.textContent = "Aim for 4–5 complete sessions per week for best results";
+  }
+}
+
+// Headline + subtitle of the Exercises streak card.
+function renderExerciseStreakHeadline() {
+  const card = el("exStreakCard"); if (!card) return;
+  const head = el("exStreakHead");
+  const sub = el("exStreakSub");
+  const streak = moglyStreakCount();
+  let st = null;
+  try { if (typeof window.moglyRitualState === "function") st = window.moglyRitualState(); } catch (e) {}
+  const total = FACE_EXERCISES.length;
+  const left = st ? Math.max(1, st.nextCheckin - st.completed) : 7;
+  const next = `Next check-in in ${left} ${left === 1 ? "day" : "days"}`;
+  const day = st ? st.day : 1;
+  const voiceDone = st ? st.voiceDoneToday : false;
+  const exDone = st ? st.exercisesDone : 0;
+  const routineDone = exDone >= total;
+  let text, cls = "";
+  if (st && st.checkinReady) {
+    text = `📸 Day ${st.checkinDay} check-in ready — tap to scan`;
+    cls = "is-checkin";
+  } else if (routineDone) {
+    text = `✓ Day ${day} Secured: Mogly locked in your streak 🔥`;
+    cls = "is-done";
+  } else if (exDone > 0) {
+    const remaining = total - exDone;
+    text = `⚡ ${remaining} ${remaining === 1 ? "exercise" : "exercises"} left to lock Day ${day} streak`;
+  } else {
+    text = `🎙️ Mogly Voice Brief + ⚡ ${total} Exercises to lock Day ${day} · ${next}`;
+  }
+  if (head) head.textContent = `🔥 ${streak}-DAY STREAK`;
+  if (sub) sub.textContent = text;
+  const vp = el("exVoicePill"), vs = el("exVoicePillState");
+  if (vp) vp.classList.toggle("is-done", !!voiceDone);
+  if (vs) vs.textContent = voiceDone ? "Received ✓" : "Pending";
+  const rp = el("exRoutinePill"), rs = el("exRoutinePillState");
+  if (rp) rp.classList.toggle("is-done", routineDone);
+  if (rs) rs.textContent = `${Math.min(exDone, total)}/${total} Done`;
+  card.classList.toggle("is-done", cls === "is-done");
+  card.classList.toggle("is-checkin", cls === "is-checkin");
+  // Home: the caption under the sphere says what Mogly has for today.
+  const hint = el("moglyOrbHint");
+  if (hint) {
+    const h = routineDone ? `Day ${day} secured · Tap to talk with Mogly` : "Tap to hear today's mission from Mogly";
+    if (hint.textContent !== h) hint.textContent = h;
   }
 }
 
@@ -14735,21 +14803,19 @@ window.markExerciseDone = function(id){
   const log = readExerciseLog();
   const k = todayKey();
   const arr = Array.isArray(log[k]) ? log[k].slice() : [];
+  const wasComplete = arr.length >= FACE_EXERCISES.length;
   if (!arr.includes(id)) arr.push(id);
   log[k] = arr; writeExerciseLog(log);
-  const dayComplete = arr.length >= FACE_EXERCISES.length;
-  if (dayComplete) showToast("All 4 done — streak secured 🔥");
+  // The 4th exercise locks today's streak day (once; repeats change nothing).
+  const dayComplete = !wasComplete && arr.length >= FACE_EXERCISES.length;
+  if (dayComplete) showToast("All 4 done — Day secured 🔥");
   else showToast("Exercise done ✓");
   renderExerciseList();
   renderExerciseWeekTracker();
   refreshDailyTiles();
   if (typeof window.moglyRenderRitualStatus === "function") window.moglyRenderRitualStatus();
   try { if (typeof _fmSyncAchievementUnlocks === "function") _fmSyncAchievementUnlocks(); } catch {}
-  // Tonight's streak reminder must not fire once the day is secured.
-  if (dayComplete) { try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch {} }
-  if (dayComplete && typeof window.moglyOnDayComplete === "function") {
-    setTimeout(() => { try { window.moglyOnDayComplete(); } catch {} }, 700);
-  }
+  if (dayComplete) moglyRecordDayComplete();
 };
 
 window.openExerciseDetail = function(id, _premiumChecked){
@@ -18648,10 +18714,9 @@ window.syncTDEEChoiceUI = function() {
     _makeInstantCrop(cleanDataUrl).then(instant => {
       if (instant && !_avatarCropUrl) _applyAvatarCrop(instant);
     }).catch(() => {});
-    // The BlazeFace crop (TF.js download + WebGL inference) runs on the main
-    // thread and froze the laser and every timer for seconds; it now runs only
-    // after the results screen is up. The thumbnail starts now so it is ready
-    // when the laser stops.
+    // Canvas-only crop. The BlazeFace crop (TF.js CDN download + WebGL inference)
+    // ran on the main thread and froze the results screen on iOS WebKit.
+    // The thumbnail starts now so it is ready when the laser stops.
     const thumbPromise = makeThumbnail(cleanDataUrl, 240).catch(() => null);
     const scanStartedAt = Date.now();
 
@@ -18753,12 +18818,6 @@ window.syncTDEEChoiceUI = function() {
       requestAnimationFrame(() => {
         paintResultV2(finalScore, finalMetrics, aiReport);
       });
-      // Sharper face-centred avatar, once the results are already on screen.
-      setTimeout(() => {
-        _makeFaceCrop(cleanDataUrl).then(crop => {
-          if (crop) _applyAvatarCrop(crop);
-        }).catch(() => {});
-      }, 1200);
     }, Math.max(150, Math.min(350, MOGLY_SCAN_TOTAL_MS - elapsed)));
   }
 
@@ -18926,6 +18985,7 @@ window.syncTDEEChoiceUI = function() {
       openFoodScan: "Scan a meal",
       startExercise: "Open the exercise",
       openScan: "📷 Take Face Scan",
+      startMission: "⚡ Start Today's 4 Exercises",
       coachDown: "Couldn't reach coach. Check connection and tap to retry.",
       retry: "Tap to retry",
     }
@@ -19204,11 +19264,12 @@ window.syncTDEEChoiceUI = function() {
     mvActionKind = kind;
     const b = mvEl("mvAction");
     if (!b) return;
-    const label = { exercises: "openExercises", daily: "openDaily", foodscan: "openFoodScan", "exercise-start": "startExercise", scan: "openScan", retry: "retry" }[kind];
+    const label = { exercises: "openExercises", daily: "openDaily", foodscan: "openFoodScan", "exercise-start": "startExercise", scan: "openScan", mission: "startMission", retry: "retry" }[kind];
     if (!kind || !label) { b.hidden = true; return; }
-    // No scan yet: the camera is the primary next step, so no chevron and the blue primary style.
-    b.textContent = kind === "scan" ? mvT(label) : mvT(label) + "  ›";
+    // No scan yet / today's mission: the primary next step, so no chevron and a filled style.
+    b.textContent = kind === "scan" || kind === "mission" ? mvT(label) : mvT(label) + "  ›";
     b.classList.toggle("mv-action-scan", kind === "scan");
+    b.classList.toggle("mv-action-mission", kind === "mission");
     b.hidden = false;
   }
   function mvRenderLabels() {
@@ -19856,8 +19917,96 @@ window.syncTDEEChoiceUI = function() {
       const ok = await ensurePremiumForAction(() => window.openMoglyVoiceSheet(true), mvT("gateTitle"), mvT("gateText"));
       if (!ok) return;
     }
-    mvOpenOverlay(false);
+    if (mvOpenOverlay(false)) mvMissionBrief();
   };
+
+  // ----- today's mission: Mogly opens every session by leading the day -----
+  // Not done yet: "Ready to start today? Day N is waiting..." + the ⚡ action card.
+  // Done: "Day N is already secured..." The lines are fixed templates spoken by the
+  // worker's OpenAI voice (/api/voice-ritual whitelist), never a device voice.
+  const MV_MISSION_TARGETS = { debloat: "debloat & jawline activation", posture: "posture & mewing", tone: "jawline tone & control" };
+  function mvPersonaTag() { return currentGender() === "female" ? "f" : "m"; }
+  function mvMissionLine(st) {
+    const bro = mvPersonaTag() === "m" ? ", bro" : "";
+    if (st.doneToday) {
+      return {
+        key: `secured_${st.day}_${Math.max(1, Math.min(st.streak, st.day))}_${mvPersonaTag()}`,
+        text: `Day ${st.day} is already secured${bro}! You're on a ${Math.max(1, st.streak)}-day streak. Keep your hydration on point and stay consistent. See you tomorrow for Day ${st.day + 1}!`,
+        action: null,
+      };
+    }
+    return {
+      key: `mission_${st.day}_${st.phase}_${mvPersonaTag()}`,
+      text: `Ready to start today${bro}? Day ${st.day} is waiting. Today's target is ${MV_MISSION_TARGETS[st.phase] || MV_MISSION_TARGETS.debloat}. Here is your mission: complete your 4 face exercises to lock in Day ${st.day}. Let's crush it.`,
+      action: "mission",
+    };
+  }
+  // Phrase audio as raw bytes for the sheet's playback queue (orb envelope + karaoke).
+  const mvPhraseCache = new Map();
+  function mvPhrase(key) {
+    const ck = _voiceGender + ":" + key;
+    if (mvPhraseCache.has(ck)) return mvPhraseCache.get(ck);
+    const p = (async () => {
+      const ctl = (typeof AbortController === "function") ? new AbortController() : null;
+      const t = setTimeout(() => { if (ctl) ctl.abort(); }, 15000);
+      try {
+        const r = await fetch(API_BASE + "/api/voice-ritual", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ key, voice_gender: _voiceGender, user_id: currentUserId() }),
+          signal: ctl ? ctl.signal : undefined,
+        });
+        const d = await r.json().catch(() => null);
+        if (!r.ok || !d || !d.ok || !d.audio_base64) return null;
+        return { bytes: mvBase64ToBytes(d.audio_base64), format: d.audio_format || "wav" };
+      } catch (e) {
+        return null;
+      } finally {
+        clearTimeout(t);
+      }
+    })();
+    mvPhraseCache.set(ck, p);
+    p.then(v => { if (!v && mvPhraseCache.get(ck) === p) mvPhraseCache.delete(ck); });
+    return p;
+  }
+  function mvMissionBrief() {
+    let st;
+    try { st = window.moglyRitualState(); } catch (e) { return; }
+    const m = mvMissionLine(st);
+    const myTurn = ++mvTurn;
+    mvShow("", m.text);
+    mvSetAction(m.action);
+    try { moglyRecordVoiceMissionToday(); } catch (e) {}
+    mvSetState("thinking");
+    mvStartQueue(myTurn, null);
+    mvPhrase(m.key).then(clip => {
+      if (myTurn !== mvTurn || !mvQueue) return;
+      if (clip) mvQueuePush(clip.bytes, clip.format, m.text);
+      else mvNote(mvT("noVoice"));
+      mvQueueEnd();
+    });
+  }
+  // First open on a new day: Mogly greets the user with today's mission by himself.
+  const MV_AUTO_BRIEF_KEY = "mogly_auto_brief_day";
+  window.moglyMaybeAutoBrief = function() {
+    try {
+      if (document.hidden) return;
+      if (localStorage.getItem(MV_AUTO_BRIEF_KEY) === todayKey()) return;
+      if (typeof fmFirstRunFunnelActive === "function" && fmFirstRunFunnelActive()) return;
+      if (fmActiveScreenId() !== "home" || !isLocalPremiumActive()) return;
+      const busy = document.querySelector("#mvOverlay.active, #mrOverlay.active, #mdcCelebrate:not([hidden])");
+      if (busy) return;
+      localStorage.setItem(MV_AUTO_BRIEF_KEY, todayKey());
+    } catch (e) { return; }
+    window.openMoglyVoiceSheet(true);
+  };
+  let mvAutoBriefTimer = 0;
+  function mvScheduleAutoBrief() {
+    clearTimeout(mvAutoBriefTimer);
+    mvAutoBriefTimer = setTimeout(() => window.moglyMaybeAutoBrief(), 1500);
+  }
+  window.addEventListener("load", mvScheduleAutoBrief);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) mvScheduleAutoBrief(); });
   function mvOpenOverlay(guest) {
     const ov = mvEl("mvOverlay");
     if (!ov) return false;
@@ -19994,7 +20143,7 @@ window.syncTDEEChoiceUI = function() {
     if (kind === "retry") { mvRetryTurn(); return; }
     mvCloseOverlay(false);
     try {
-      if (kind === "exercises" || kind === "daily" || kind === "foodscan") openExercises();
+      if (kind === "exercises" || kind === "daily" || kind === "foodscan" || kind === "mission") openExercises();
       // Same tap: iOS only opens the camera inside the user's gesture.
       else if (kind === "scan") { openScreen("home"); if (window.handleMoglyPrimaryScanClick) window.handleMoglyPrimaryScanClick(); }
       else if (kind === "exercise-start") {
@@ -20126,29 +20275,54 @@ window.syncTDEEChoiceUI = function() {
     14: { title: "14-day streak", line: "Fourteen days. Two weeks of discipline, this is when people start to notice. Rescan, I want to see the delta.", rescan: true },
     30: { title: "30-day streak", line: "Thirty days. That's not motivation anymore, that's who you are. Rescan and we set the next target.", rescan: true },
   };
+  // The 4th exercise locked the day: celebration card + Mogly says it out loud.
   window.moglyOnDayComplete = function() {
     const st = mdcLoad();
     const today = todayKey();
     if (st.dayDone === today) return;
     st.dayDone = today;
     const streak = (typeof moglyStreakCount === "function") ? moglyStreakCount() : 1;
+    let day = streak;
+    try { day = window.moglyRitualState().day; } catch (e) {}
+    const persona = mvPersonaTag();
+    const line = `Day ${day} locked in! Your streak is secured 🔥. ${persona === "m" ? "Great discipline, bro." : "Great discipline."} Rest up and see you tomorrow!`;
     st.ms = st.ms || {};
     const ms = MDC_MILESTONES[streak];
     if (ms && !st.ms[streak]) {
       st.ms[streak] = today;
-      mdcSave(st);
       mvHaptic("heavy");
       setTimeout(() => mvHaptic("medium"), 120);
       mdcCelebrate(streak, ms);
-      mdcSay(ms.line);
-      return;
+    } else {
+      mvHaptic("success");
+      mdcCelebrate(streak, { title: `Day ${day} locked in`, line });
     }
     mdcSave(st);
-    mvHaptic("success");
-    mdcSay(streak > 1
-      ? `All four done. Day ${streak} in a row. Same time tomorrow.`
-      : "All four done. That's day one. Come back tomorrow and make it two.");
+    mdcSpeakReward(`locked_${day}_${persona}`, line);
   };
+  let mdcRewardAudio = null;
+  function mdcSpeakReward(key, line) {
+    if (!mdcVoiceOn() || document.hidden) return;
+    mvAudioSession("playback");
+    mdcChime([880, 1108.7, 1318.5]);
+    const ov = mvEl("mvOverlay");
+    if (ov && ov.classList.contains("active")) return; // never talk over the mentor
+    mvPhrase(key).then(clip => {
+      if (!clip || document.hidden) return;
+      if (ov && ov.classList.contains("active")) return;
+      try {
+        if (mdcRewardAudio) { mdcRewardAudio.pause(); URL.revokeObjectURL(mdcRewardAudio.src); }
+        const a = new Audio();
+        a.setAttribute("playsinline", "");
+        a.src = URL.createObjectURL(new Blob([clip.bytes], { type: clip.format === "wav" ? "audio/wav" : "audio/mpeg" }));
+        a.onended = () => { try { URL.revokeObjectURL(a.src); } catch (e) {} if (mdcRewardAudio === a) mdcRewardAudio = null; };
+        mdcRewardAudio = a;
+        mvAudioSession("playback");
+        const pr = a.play();
+        if (pr && pr.catch) pr.catch(() => {});
+      } catch (e) {}
+    });
+  }
   function mdcCelebrate(streak, ms) {
     const ov = mvEl("mdcCelebrate");
     if (!ov) return;
@@ -20243,14 +20417,16 @@ window.syncTDEEChoiceUI = function() {
   }
   function mrPhaseFor(day) { return day <= 7 ? "debloat" : day <= 14 ? "posture" : "tone"; }
 
-  // Program day = days with all 4 exercises done; today counts once finished.
+  // Program day = days with all 4 exercises done; today counts once they are.
+  // voiceDoneToday: Mogly already briefed today's mission.
   window.moglyRitualState = function() {
     const log = readExerciseLog();
-    const total = FACE_EXERCISES.length;
-    const full = (v) => Array.isArray(v) && v.length >= total;
-    const completed = Object.keys(log).filter(k => full(log[k])).length;
+    const completed = Object.keys(log).filter(k => protocolDayDone(k, log)).length;
     const doneSet = readExerciseDoneToday();
-    const doneToday = FACE_EXERCISES.every(e => doneSet.has(e.id));
+    const exercisesDone = FACE_EXERCISES.filter(e => doneSet.has(e.id)).length;
+    const exercisesDoneToday = exercisesDone >= FACE_EXERCISES.length;
+    const voiceDoneToday = moglyIsVoiceMissionReceivedToday();
+    const doneToday = exercisesDoneToday;
     const day = doneToday ? completed : completed + 1;
     const streak = (typeof moglyStreakCount === "function") ? moglyStreakCount() : 0;
     // Check-in: the latest milestone reached, until a scan is taken after it.
@@ -20267,6 +20443,7 @@ window.syncTDEEChoiceUI = function() {
     }
     return {
       completed, doneToday, day, streak,
+      exercisesDone, exercisesDoneToday, voiceDoneToday,
       phase: mrPhaseFor(day),
       doneIds: doneSet,
       nextCheckin: mrNextCheckin(completed),
@@ -20274,50 +20451,28 @@ window.syncTDEEChoiceUI = function() {
     };
   };
 
+  // The streak lives on the Exercises tab now; the Home sphere is always the voice mentor.
   window.moglyRenderRitualStatus = function() {
-    const b = mvEl("moglyRitualStatus");
+    try { renderExerciseWeekTracker(); } catch (e) {}
+  };
+  // Streak card pills: 🎙️ opens the voice mentor, ⚡ scrolls to the routine.
+  window.moglyProtocolVoiceTap = function(ev) {
+    if (ev) ev.stopPropagation();
+    window.openMoglyVoiceSheet();
+  };
+  window.moglyProtocolRoutineTap = function(ev) {
+    if (ev) ev.stopPropagation();
+    mvHaptic("light");
+    const list = mvEl("exercisesList");
+    if (list) list.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  window.moglyStreakCardTap = function() {
     let st;
     try { st = window.moglyRitualState(); } catch (e) { return; }
-    const left = Math.max(1, st.nextCheckin - st.completed);
-    let text, cls = "";
-    if (st.checkinReady) {
-      text = `📸 Day ${st.checkinDay} check-in ready — tap to scan`;
-      cls = "is-checkin";
-    } else if (st.doneToday) {
-      text = `✓ Day ${st.day} done · 🔥 ${st.streak}-day streak`;
-      cls = "is-done";
-    } else {
-      text = `🔥 ${st.streak}-day streak · Day ${st.nextCheckin} check-in in ${left} ${left === 1 ? "day" : "days"}`;
-    }
-    if (b) {
-      if (b.textContent !== text) b.textContent = text;
-      b.classList.toggle("is-done", cls === "is-done");
-      b.classList.toggle("is-checkin", cls === "is-checkin");
-    }
-    const hint = mvEl("moglyOrbHint");
-    if (hint) {
-      const h = st.doneToday ? "Tap to talk with Mogly" : `Tap Mogly to start Day ${st.day}`;
-      if (hint.textContent !== h) hint.textContent = h;
-    }
-  };
-  window.moglyRitualStatusTap = function() {
-    let st;
-    try { st = window.moglyRitualState(); } catch (e) { return; }
-    if (st.checkinReady) {
-      mvHaptic("light");
-      if (typeof window.handleMoglyPrimaryScanClick === "function") window.handleMoglyPrimaryScanClick();
-    } else if (!st.doneToday) {
-      window.moglySphereTap();
-    }
-  };
-
-  // Ritual already done today: the sphere is the voice mentor again.
-  window.moglySphereTap = function() {
-    mvUnlockSpeech();
-    let st = null;
-    try { st = window.moglyRitualState(); } catch (e) {}
-    if (!st || st.doneToday) { window.openMoglyVoiceSheet(); return; }
-    window.moglyStartRitual();
+    if (!st.checkinReady) return;
+    mvHaptic("light");
+    if (typeof openScreen === "function") openScreen("home");
+    setTimeout(() => { if (window.handleMoglyPrimaryScanClick) window.handleMoglyPrimaryScanClick(); }, 300);
   };
 
   // --- phrase audio: fetched once per voice, replayed from memory ---
@@ -20459,7 +20614,7 @@ window.syncTDEEChoiceUI = function() {
     mvHaptic("medium");
     let st;
     try { st = window.moglyRitualState(); } catch (e) { return; }
-    if (st.doneToday) { window.moglyRenderRitualStatus(); return; }
+    if (st.exercisesDoneToday) { window.moglyRenderRitualStatus(); return; }
     // Day 1 is free; from day 2 the program is Premium.
     if (!_premiumChecked && st.completed > 0 && !isLocalPremiumActive()) {
       ensurePremiumForAction(
@@ -20525,12 +20680,14 @@ window.syncTDEEChoiceUI = function() {
   async function mrFinish(run) {
     // Same bookkeeping as finishing the 4 moves on the Exercises screen, minus its
     // chime + toast (Mogly says it here).
+    // The hands-free session is Mogly briefing the day too.
+    try { moglyRecordVoiceMissionToday(); } catch (e) {}
     try {
       const mdc = mdcLoad();
       mdc.dayDone = todayKey();
       mdcSave(mdc);
     } catch (e) {}
-    try { if (notifLoadPrefs().dailyOn) scheduleRetentionPack(); } catch (e) {}
+    try { moglyRecordDayComplete({ silent: true }); } catch (e) {}
     mrRefreshApp();
     const st = window.moglyRitualState();
     mvHaptic("success");
