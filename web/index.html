@@ -19927,12 +19927,13 @@ window.syncTDEEChoiceUI = function() {
     if (!keepAudio) mvCancelTurn(); else { mvStopMic(); mvSetState("idle"); }
   }
 
-  window.openMoglyVoiceSheet = async function(_premiumChecked) {
+  window.openMoglyVoiceSheet = async function(_premiumChecked, forceBrief) {
     mvHaptic("light");
     if (!_premiumChecked) {
-      const ok = await ensurePremiumForAction(() => window.openMoglyVoiceSheet(true), mvT("gateTitle"), mvT("gateText"));
+      const ok = await ensurePremiumForAction(() => window.openMoglyVoiceSheet(true, forceBrief), mvT("gateTitle"), mvT("gateText"));
       if (!ok) return;
     }
+    if (forceBrief) window.__moglyForceBrief = true;
     if (mvOpenOverlay(false)) mvMissionBrief();
   };
 
@@ -19988,6 +19989,19 @@ window.syncTDEEChoiceUI = function() {
   function mvMissionBrief() {
     let st;
     try { st = window.moglyRitualState(); } catch (e) { return; }
+    const forceBrief = !!window.__moglyForceBrief;
+    window.__moglyForceBrief = false;
+    // If protocol is already completed today OR the brief was already heard,
+    // don't repeat the long spoken monologue unless user explicitly asked via brief pill.
+    if (!forceBrief && (st.doneToday || st.voiceDoneToday)) {
+      const bro = mvPersonaTag() === "m" ? ", bro" : "";
+      const promptText = st.doneToday
+        ? `Day ${st.day} secured 🔥 I'm listening${bro}. Ask me anything.`
+        : `I'm listening${bro}. Tap the sphere to speak or pick a topic below.`;
+      mvShow("", promptText);
+      mvSetState("idle");
+      return;
+    }
     const m = mvMissionLine(st);
     const myTurn = ++mvTurn;
     mvShow("", m.text);
@@ -20014,7 +20028,7 @@ window.syncTDEEChoiceUI = function() {
       if (busy) return;
       localStorage.setItem(MV_AUTO_BRIEF_KEY, todayKey());
     } catch (e) { return; }
-    window.openMoglyVoiceSheet(true);
+    window.openMoglyVoiceSheet(true, true);
   };
   let mvAutoBriefTimer = 0;
   function mvScheduleAutoBrief() {
@@ -20474,7 +20488,7 @@ window.syncTDEEChoiceUI = function() {
   // Streak card pills: 🎙️ opens the voice mentor, ⚡ scrolls to the routine.
   window.moglyProtocolVoiceTap = function(ev) {
     if (ev) ev.stopPropagation();
-    window.openMoglyVoiceSheet();
+    window.openMoglyVoiceSheet(false, true);
   };
   window.moglyProtocolRoutineTap = function(ev) {
     if (ev) ev.stopPropagation();
