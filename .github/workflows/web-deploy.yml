@@ -51,7 +51,42 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          wrangler pages deploy web --project-name=facemaxaiapp || wrangler pages deploy web --project-name=facemax-ai || wrangler pages deploy web --project-name=facemax || true
+          python3 -c '
+          import subprocess, sys, re
+          res = subprocess.run(["wrangler", "pages", "project", "list"], capture_output=True, text=True)
+          print("=== CLOUDFLARE PAGES PROJECTS ===")
+          print(res.stdout)
+          if res.stderr:
+              print(res.stderr)
+          
+          # Match lines in table or output
+          names = []
+          for line in res.stdout.splitlines():
+              m = re.findall(r"│\s*([a-zA-Z0-9_\-\.]+)\s*│", line)
+              for cand in m:
+                  cand = cand.strip()
+                  if cand and cand not in ("Project Name", "Project Domains", "Git Provider", "Last Modified"):
+                      names.append(cand)
+          
+          print("Extracted candidates:", names)
+          target = None
+          for n in names:
+              if any(k in n.lower() for k in ["facemax", "mogly", "look", "beauty"]):
+                  target = n
+                  break
+          if not target and names:
+              target = names[0]
+          
+          print("Target project to deploy:", target)
+          if target:
+              cmd = ["wrangler", "pages", "deploy", "web", f"--project-name={target}"]
+              print("Running:", " ".join(cmd))
+              subprocess.run(cmd, check=True)
+          else:
+              print("No existing project found, creating facemaxaiapp...")
+              subprocess.run(["wrangler", "pages", "project", "create", "facemaxaiapp", "--production-branch=main"], check=False)
+              subprocess.run(["wrangler", "pages", "deploy", "web", "--project-name=facemaxaiapp"], check=True)
+          '
 
       - name: Verify deployed current-app-compatible Worker
         env:
