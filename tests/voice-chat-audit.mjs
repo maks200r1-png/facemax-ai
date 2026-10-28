@@ -180,7 +180,7 @@ setPremium("u1", true);
   assert.ok(!chat.provider.order, "no Google provider order for a non-Google model");
   assert.equal(chat.provider.data_collection, "deny");
   assert.match(promptOf(chat), /elite female aesthetic mentor/);
-  assert.match(promptOf(chat), /Darling, no candidate is fixing/);
+  assert.match(promptOf(chat), /playfully deflect with your own fresh words on the fly/);
   assert.match(promptOf(chat), /Strictly NO masculine slang/);
   ok("female voice -> OpenAI Nova + female aesthetic mentor persona; VOICE_LLM_MODEL override keeps data_collection deny");
 }
@@ -443,7 +443,7 @@ async function postStream(body) {
   assert.match(prompt, /You talk ONLY about looksmaxxing/);
   assert.match(prompt, /politics, news.*coding, weather.*do NOT answer it, not even briefly/);
   assert.match(prompt, /Never sound like a robot refusing/);
-  assert.match(prompt, /Listen, no candidate is fixing your jawline/);
+  assert.match(prompt, /playfully deflect with your own fresh words on the fly/);
   // "Bro" is allowed for men, just not in every sentence.
   assert.match(prompt, /"Bro" is welcome, but at most once per answer and not in every answer/);
   // Numbers: the screen shows them, the voice turns them into meaning; numbers only for progress.

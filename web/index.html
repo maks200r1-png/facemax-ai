@@ -3278,7 +3278,25 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   transition: color 0.25s ease;
 }
 .mv-overlay[data-state="listening"] .mv-status { color: #6fdcff; }
+.mv-overlay[data-state="thinking"] .mv-status { color: #ffe600; }
 .mv-overlay[data-state="speaking"] .mv-status { color: #b9a6ff; }
+.mv-dots {
+  display: inline-flex;
+  margin-left: 2px;
+  vertical-align: baseline;
+}
+.mv-dots span {
+  display: inline-block;
+  opacity: 0.25;
+  animation: mvDotPulse 1.4s infinite ease-in-out both;
+}
+.mv-dots span:nth-child(1) { animation-delay: 0s; }
+.mv-dots span:nth-child(2) { animation-delay: 0.22s; }
+.mv-dots span:nth-child(3) { animation-delay: 0.44s; }
+@keyframes mvDotPulse {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0) scale(0.9); }
+  40% { opacity: 1; transform: translateY(-3.5px) scale(1.25); }
+}
 
 /* The answer is spoken, so long text scrolls; the action button below it never does. */
 .mv-text {
@@ -14789,6 +14807,7 @@ function openExercisesNow(){
   resetTimer();
   renderExerciseList();
   renderExerciseWeekTracker();
+  if (typeof window.moglyCoachPreload === "function") window.moglyCoachPreload();
   openScreen("exercises");
 }
 
@@ -14837,6 +14856,7 @@ window.openExerciseDetail = function(id, _premiumChecked){
     showGate("Exercise program — Premium", "Choose a plan to continue with your daily exercise program.", () => window.openExerciseDetail(id, true));
     return;
   }
+  if (typeof window.moglyCoachPreload === "function") window.moglyCoachPreload();
   currentExerciseId = id;
   el("edArea").textContent = e.area;
   el("edTitle").textContent = e.step + ". " + e.name;
@@ -18298,11 +18318,11 @@ window.syncTDEEChoiceUI = function() {
     }
   };
 
-  // Voice Gender Selection. The coach voice only drives the timbre (Onyx / Nova)
-  // and the coach avatar in the Home square. It must NOT touch the user's own
-  // gender (fm_gender), which the face analysis and haircut advice read.
+  // Voice Gender Selection. The coach voice drives the timbre (Onyx / Nova)
+  // and the coach avatar in the Home square. Both switchers stay 100% in sync.
   window.setMoglyVoiceGender = function(gender, opts) {
     _voiceGender = (gender === "female") ? "female" : "male";
+    _heroGender = _voiceGender;
     try { localStorage.setItem("mogly_voice_gender", _voiceGender); } catch(e) {}
 
     document.querySelectorAll("[data-voice-gender]").forEach(btn => {
@@ -18313,8 +18333,22 @@ window.syncTDEEChoiceUI = function() {
     const seg = document.getElementById("pfVoiceSeg");
     if (seg) seg.setAttribute("data-active", _voiceGender);
 
-    // Coach avatar follows the voice: male voice -> male model, female -> female.
-    if (typeof window.setMoglyHeroGender === "function") window.setMoglyHeroGender(_voiceGender, { silent: true });
+    const btnMale = document.getElementById("mgtBtnMale");
+    const btnFemale = document.getElementById("mgtBtnFemale");
+    if (btnMale) btnMale.classList.toggle("active", _voiceGender === "male");
+    if (btnFemale) btnFemale.classList.toggle("active", _voiceGender === "female");
+
+    if (typeof window.updateMoglySquareHeroPhoto === "function") window.updateMoglySquareHeroPhoto();
+
+    const dict = MOGLY_I18N.en;
+    const transcriptEl = document.getElementById("moglyTranscriptText");
+    if (transcriptEl && dict) {
+      transcriptEl.textContent = _voiceGender === "female" ? dict.debrief_female : dict.debrief_male;
+    }
+
+    try { mvPhraseCache.clear(); } catch(e) {}
+    try { mdcBufferCache.clear(); } catch(e) {}
+    if (typeof window.moglyCoachStop === "function") window.moglyCoachStop();
 
     if (!(opts && opts.silent) && window.facemax && typeof window.facemax.haptic === "function") {
       window.facemax.haptic("selection");
@@ -18322,26 +18356,9 @@ window.syncTDEEChoiceUI = function() {
   };
   window.getMoglyVoiceGender = function() { return _voiceGender; };
 
-  // Example Model Switcher (Male / Female in Square)
+  // Example Model Switcher (Male / Female in Square) - stays 100% in sync with voice
   window.setMoglyHeroGender = function(gender, opts) {
-    _heroGender = (gender === "female") ? "female" : "male";
-    const btnMale = document.getElementById("mgtBtnMale");
-    const btnFemale = document.getElementById("mgtBtnFemale");
-
-    if (btnMale) btnMale.classList.toggle("active", _heroGender === "male");
-    if (btnFemale) btnFemale.classList.toggle("active", _heroGender === "female");
-
-    window.updateMoglySquareHeroPhoto();
-
-    const dict = MOGLY_I18N.en;
-    const transcriptEl = document.getElementById("moglyTranscriptText");
-    if (transcriptEl) {
-      transcriptEl.textContent = _heroGender === "female" ? dict.debrief_female : dict.debrief_male;
-    }
-
-    if (!(opts && opts.silent) && window.facemax && typeof window.facemax.haptic === "function") {
-      window.facemax.haptic("light");
-    }
+    window.setMoglyVoiceGender(gender, opts);
   };
 
   // The square hero viewfinder on Home shows the coach model that matches the
@@ -19105,7 +19122,7 @@ window.syncTDEEChoiceUI = function() {
     return Math.sqrt(sum / data.length);
   }
   function mvTargetLevel(t) {
-    if (mvState === "listening" && mvMicAnalyser) return Math.min(1, mvRms(mvMicAnalyser, mvMicData) * 6);
+    if (mvState === "listening" && mvMicAnalyser) return Math.min(1, mvRms(mvMicAnalyser, mvMicData) * 14);
     if (mvState === "speaking" && mvPlayback) {
       const a = mvPlayback.audio;
       if (mvPlayback.envelope) {
@@ -19185,7 +19202,13 @@ window.syncTDEEChoiceUI = function() {
     const ov = mvEl("mvOverlay");
     if (ov) ov.setAttribute("data-state", s);
     const st = mvEl("mvStatus");
-    if (st) st.textContent = s === "idle" ? mvT("tapToTalk") : s === "listening" ? mvT("listening") : s === "thinking" ? mvT("thinking") : mvT("speaking");
+    if (st) {
+      if (s === "thinking") {
+        st.innerHTML = 'Thinking<span class="mv-dots"><span>.</span><span>.</span><span>.</span></span>';
+      } else {
+        st.textContent = s === "idle" ? mvT("tapToTalk") : s === "listening" ? mvT("listening") : mvT("speaking");
+      }
+    }
     mvKick();
   }
   function mvShow(you, answer) {
@@ -19747,9 +19770,9 @@ window.syncTDEEChoiceUI = function() {
       const now = performance.now();
       const rms = mvRms(mvMicAnalyser, mvMicData);
       if (samples < 6) { floor += rms; samples++; if (samples === 6) floor /= 6; return; }
-      const threshold = Math.max(0.02, floor * 2.6 + 0.008);
+      const threshold = Math.max(0.006, floor * 1.6 + 0.003);
       if (rms > threshold) { mvHeardSpeech = true; lastVoiceAt = now; }
-      const spoke = mvHeardSpeech && now - lastVoiceAt > 1400 && now - startedAt > 900;
+      const spoke = mvHeardSpeech && now - lastVoiceAt > 1800 && now - startedAt > 900;
       if (spoke || now - startedAt > 25000 || (!mvHeardSpeech && now - startedAt > 9000)) mvStopListening(false);
     }, 100);
   }
@@ -19770,7 +19793,7 @@ window.syncTDEEChoiceUI = function() {
     mvAudioSession("playback");
     const blob = new Blob(mvChunks, { type: mime });
     mvChunks = [];
-    if ((!mvHeardSpeech && !mvManualStop) || blob.size < 1500) { mvError(mvT("notHeard")); return; }
+    if ((!mvHeardSpeech && !mvManualStop) || blob.size < 800) { mvError(mvT("notHeard")); return; }
     try {
       const audioB64 = await mvBlobToBase64(blob);
       if (myTurn !== mvTurn) return;
@@ -19936,20 +19959,22 @@ window.syncTDEEChoiceUI = function() {
   // Not done yet: "Ready to start today? Day N is waiting..." + the ⚡ action card.
   // Done: "Day N is already secured..." The lines are fixed templates spoken by the
   // worker's OpenAI voice (/api/voice-ritual whitelist), never a device voice.
-  const MV_MISSION_TARGETS = { debloat: "debloat & jawline activation", posture: "posture & mewing", tone: "jawline tone & control" };
-  function mvPersonaTag() { return currentGender() === "female" ? "f" : "m"; }
+  const MV_MISSION_TARGETS = { debloat: "debloat and jawline activation", posture: "posture and mewing", tone: "jawline tone and control" };
+  function mvPersonaTag() { return _voiceGender === "female" ? "f" : "m"; }
   function mvMissionLine(st) {
-    const bro = mvPersonaTag() === "m" ? ", bro" : "";
+    const persona = mvPersonaTag();
+    const bro = persona === "m" ? ", bro" : "";
     if (st.doneToday) {
+      const s = Math.max(1, Math.min(st.streak, st.day));
       return {
-        key: `secured_${st.day}_${Math.max(1, Math.min(st.streak, st.day))}_${mvPersonaTag()}`,
-        text: `Day ${st.day} is already secured${bro}! You're on a ${Math.max(1, st.streak)}-day streak. Keep your hydration on point and stay consistent. See you tomorrow for Day ${st.day + 1}!`,
+        key: `secured_${st.day}_${s}_${persona}`,
+        text: `Day ${st.day} is already secured${bro}! You're on a ${s}-day streak. Keep your hydration on point and stay consistent. See you tomorrow for Day ${st.day + 1}!`,
         action: null,
       };
     }
     return {
       key: `mission_${st.day}_${st.phase}_${mvPersonaTag()}`,
-      text: `Ready to start today${bro}? Day ${st.day} is waiting. Today's target is ${MV_MISSION_TARGETS[st.phase] || MV_MISSION_TARGETS.debloat}. Here is your mission: complete your 4 face exercises to lock in Day ${st.day}. Let's crush it.`,
+      text: `Ready to start today${bro}? Day ${st.day} is waiting. Today's target is ${MV_MISSION_TARGETS[st.phase] || MV_MISSION_TARGETS.debloat}. Here is your mission: complete your four face exercises to lock in Day ${st.day}. Let's crush it.`,
       action: "mission",
     };
   }
@@ -19970,7 +19995,7 @@ window.syncTDEEChoiceUI = function() {
         });
         const d = await r.json().catch(() => null);
         if (!r.ok || !d || !d.ok || !d.audio_base64) return null;
-        return { bytes: mvBase64ToBytes(d.audio_base64), format: d.audio_format || "wav" };
+        return { bytes: mvBase64ToBytes(d.audio_base64), format: d.audio_format || "wav", text: d.text };
       } catch (e) {
         return null;
       } finally {
@@ -20006,7 +20031,10 @@ window.syncTDEEChoiceUI = function() {
     mvStartQueue(myTurn, null);
     mvPhrase(m.key).then(clip => {
       if (myTurn !== mvTurn || !mvQueue) return;
-      if (clip) mvQueuePush(clip.bytes, clip.format, m.text);
+      if (clip) {
+        if (clip.text) mvShow("", clip.text);
+        mvQueuePush(clip.bytes, clip.format, clip.text || m.text);
+      }
       else mvNote(mvT("noVoice"));
       mvQueueEnd();
     });
@@ -20196,13 +20224,21 @@ window.syncTDEEChoiceUI = function() {
   function mdcSave(o) { try { localStorage.setItem(MDC_KEY, JSON.stringify(o)); } catch (e) {} }
   function mdcVoiceOn() { try { return localStorage.getItem(MDC_VOICE_KEY) !== "0"; } catch (e) { return true; } }
 
-  // Exercise cues: a soft two-note bell (Web Audio), a haptic tick and the cue on screen.
-  // Never the device speech engine.
+  // Exercise cues: OpenAI Nova (female) / Onyx (male) via /api/voice-ritual decoded with Web Audio.
+  // Guaranteed zero HTMLMediaElement autoplay policy blocks on Safari/WebKit.
   let mdcChimeNodes = [];
+  let mdcCurrentSource = null;
+  const mdcBufferCache = new Map();
+
   window.moglyCoachStop = function() {
+    if (mdcCurrentSource) {
+      try { mdcCurrentSource.stop(); } catch (e) {}
+      mdcCurrentSource = null;
+    }
     mdcChimeNodes.forEach(n => { try { n.stop(); } catch (e) {} });
     mdcChimeNodes = [];
   };
+
   function mdcChime(notes) {
     const AC = mvEnsureCtx();
     if (!AC) return;
@@ -20223,10 +20259,81 @@ window.syncTDEEChoiceUI = function() {
       } catch (e) {}
     });
   }
+
+  async function mdcGetBuffer(key) {
+    const gender = _voiceGender === "female" ? "female" : "male";
+    const ck = gender + ":" + key;
+    if (mdcBufferCache.has(ck)) return mdcBufferCache.get(ck);
+    const clip = await mvPhrase(key);
+    if (!clip || !clip.bytes) return null;
+    const ctx = mvEnsureCtx();
+    if (!ctx) return null;
+    try {
+      const buf = await ctx.decodeAudioData(clip.bytes.buffer.slice(0));
+      mdcBufferCache.set(ck, buf);
+      return buf;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  window.moglyCoachPreload = function() {
+    const keys = [
+      "ex_cheek_lift", "ex_masseter_release", "ex_thumbpulling", "ex_chin_glide",
+      "halfway", "five_seconds", "resume",
+      "next_cheek_lift", "next_masseter_release", "next_thumbpulling", "next_chin_glide",
+      "all_exercises_done"
+    ];
+    keys.forEach(k => { mdcGetBuffer(k).catch(() => {}); });
+  };
+
+  async function mdcSpeakPhrase(key, fallbackText) {
+    if (!mdcVoiceOn() || document.hidden) return;
+    const ov = mvEl("mvOverlay");
+    if (ov && ov.classList.contains("active")) return; // never talk over the mentor
+
+    const ctx = mvEnsureCtx();
+    if (ctx && ctx.state === "suspended") {
+      try { await ctx.resume(); } catch (e) {}
+    }
+
+    mvAudioSession("playback");
+    mvHaptic("light");
+
+    try {
+      const buf = await mdcGetBuffer(key);
+      if (document.hidden) return;
+      if (ov && ov.classList.contains("active")) return;
+
+      if (buf && ctx) {
+        if (mdcCurrentSource) {
+          try { mdcCurrentSource.stop(); } catch (e) {}
+          mdcCurrentSource = null;
+        }
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.connect(ctx.destination);
+        src.onended = () => {
+          if (mdcCurrentSource === src) mdcCurrentSource = null;
+        };
+        mdcCurrentSource = src;
+        src.start(0);
+      } else {
+        mdcChime([880, 1318.5]);
+      }
+    } catch (e) {
+      mdcChime([880, 1318.5]);
+    }
+
+    if (fallbackText) {
+      try { if (typeof showToast === "function") showToast(fallbackText, 2500); } catch (e) {}
+    }
+  }
+
   function mdcSay(text, notes) {
     if (!text || document.hidden) return;
     const ov = mvEl("mvOverlay");
-    if (ov && ov.classList.contains("active")) return; // never talk over the mentor
+    if (ov && ov.classList.contains("active")) return;
     if (mdcVoiceOn()) {
       mvAudioSession("playback");
       mdcChime(notes || [880, 1318.5]);
@@ -20253,44 +20360,28 @@ window.syncTDEEChoiceUI = function() {
   }
   window.moglyCoachRenderToggle = mdcRenderVoiceToggle;
 
-  const MDC_CUES = {
-    cheek_lift: {
-      start: "Palms flat beside your nose. Sweep up and out toward the temples, light and steady.",
-      mid: "Halfway. Slow sweeps, this is what drains the cheeks.",
-    },
-    masseter_release: {
-      start: "Knuckles on the jaw angle. Slow, firm circles. Let your teeth come apart.",
-      mid: "Halfway. Unclench and breathe through your nose.",
-    },
-    thumbpulling: {
-      start: "Clean thumbs on the hard palate behind your front teeth. Press up and slightly out, hold, release.",
-      mid: "Halfway. Steady pressure, never pain. Nose breathing.",
-    },
-    chin_glide: {
-      start: "Knuckles under the chin. Glide out along the jawline to the ears. Stay on the bone.",
-      mid: "Halfway. Long, smooth strokes all the way to the ears.",
-    },
-  };
-  const MDC_NUM = ["zero", "one", "two", "three", "four"];
   window.moglyCoachCue = function(kind, ex) {
     if (!ex) return;
-    const cue = MDC_CUES[ex.id] || {};
     if (kind === "start") {
-      mdcSay(`Exercise ${MDC_NUM[ex.step] || ex.step} of four. ${cue.start || ex.cue + "."} Thirty seconds, go.`);
+      const moveKey = "ex_" + ex.id;
+      mdcSpeakPhrase(moveKey, ex.name + ". Go.");
     } else if (kind === "resume") {
-      mdcSay("Back to it.");
+      mdcSpeakPhrase("resume", "Back to it.");
     } else if (kind === "mid") {
-      mdcSay(cue.mid || "Halfway. Keep it smooth.");
+      mdcSpeakPhrase("halfway", "Halfway. Keep it slow.");
     } else if (kind === "last5") {
-      mdcSay("Five seconds. Finish strong.");
+      mdcSpeakPhrase("five_seconds", "Five seconds. Finish strong.");
     } else if (kind === "done") {
       let next = null;
       try {
         const done = readExerciseDoneToday();
         next = FACE_EXERCISES.find(e => !done.has(e.id)) || null;
       } catch (e) {}
-      if (next) mdcSay(`Done. Next up, ${next.name}.`);
-      // The last exercise is voiced by moglyOnDayComplete instead.
+      if (next) {
+        mdcSpeakPhrase("next_" + next.id, "Done. Next up, " + next.name + ".");
+      } else {
+        mdcSpeakPhrase("all_exercises_done", "All four exercises done! Great discipline.");
+      }
     }
   };
 
@@ -20304,16 +20395,17 @@ window.syncTDEEChoiceUI = function() {
   window.moglyOnDayComplete = function() {
     const st = mdcLoad();
     const today = todayKey();
-    if (st.dayDone === today) return;
+    const alreadyDone = st.dayDone === today;
     st.dayDone = today;
     const streak = (typeof moglyStreakCount === "function") ? moglyStreakCount() : 1;
     let day = streak;
     try { day = window.moglyRitualState().day; } catch (e) {}
     const persona = mvPersonaTag();
-    const line = `Day ${day} locked in! Your streak is secured 🔥. ${persona === "m" ? "Great discipline, bro." : "Great discipline."} Rest up and see you tomorrow!`;
+    const tail = persona === "m" ? "Great discipline, bro." : "Great discipline.";
+    const line = `Day ${day} locked in! Your streak is secured. ${tail} Rest up and see you tomorrow!`;
     st.ms = st.ms || {};
     const ms = MDC_MILESTONES[streak];
-    if (ms && !st.ms[streak]) {
+    if (!alreadyDone && ms && !st.ms[streak]) {
       st.ms[streak] = today;
       mvHaptic("heavy");
       setTimeout(() => mvHaptic("medium"), 120);
@@ -20325,28 +20417,13 @@ window.syncTDEEChoiceUI = function() {
     mdcSave(st);
     mdcSpeakReward(`locked_${day}_${persona}`, line);
   };
-  let mdcRewardAudio = null;
   function mdcSpeakReward(key, line) {
     if (!mdcVoiceOn() || document.hidden) return;
     mvAudioSession("playback");
     mdcChime([880, 1108.7, 1318.5]);
     const ov = mvEl("mvOverlay");
     if (ov && ov.classList.contains("active")) return; // never talk over the mentor
-    mvPhrase(key).then(clip => {
-      if (!clip || document.hidden) return;
-      if (ov && ov.classList.contains("active")) return;
-      try {
-        if (mdcRewardAudio) { mdcRewardAudio.pause(); URL.revokeObjectURL(mdcRewardAudio.src); }
-        const a = new Audio();
-        a.setAttribute("playsinline", "");
-        a.src = URL.createObjectURL(new Blob([clip.bytes], { type: clip.format === "wav" ? "audio/wav" : "audio/mpeg" }));
-        a.onended = () => { try { URL.revokeObjectURL(a.src); } catch (e) {} if (mdcRewardAudio === a) mdcRewardAudio = null; };
-        mdcRewardAudio = a;
-        mvAudioSession("playback");
-        const pr = a.play();
-        if (pr && pr.catch) pr.catch(() => {});
-      } catch (e) {}
-    });
+    mdcSpeakPhrase(key, line);
   }
   function mdcCelebrate(streak, ms) {
     const ov = mvEl("mdcCelebrate");
