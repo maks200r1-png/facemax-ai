@@ -2064,6 +2064,7 @@ async function voiceSpeak(env, text, lang, gender) {
         model: VOICE_TTS_MODEL,
         modalities: ["text", "audio"],
         audio: { voice, format: "pcm16" },
+        temperature: 0.0,
         stream: true,
         messages: [
           { role: "system", content: systemPrompt },
