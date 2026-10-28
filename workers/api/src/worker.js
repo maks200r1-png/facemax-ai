@@ -2479,12 +2479,12 @@ function voiceSegments(answer) {
 //   {type:"audio", index, count, text, audio_base64, audio_format}
 //   {type:"done", tts_ok, tts_error}
 //   {type:"error", error, reason}
-function voiceStreamResponse(run) {
+function voiceStreamResponse(run, ctx) {
   const { readable, writable } = new TransformStream();
   const writer = writable.getWriter();
   const enc = new TextEncoder();
   const send = (ev) => writer.write(enc.encode(JSON.stringify(ev) + "\n"));
-  (async () => {
+  const p = (async () => {
     try {
       await run(send);
     } catch (e) {
@@ -2493,6 +2493,9 @@ function voiceStreamResponse(run) {
       try { await writer.close(); } catch {}
     }
   })();
+  if (ctx && typeof ctx.waitUntil === "function") {
+    ctx.waitUntil(p);
+  }
   return new Response(readable, {
     status: 200,
     headers: {
@@ -2627,22 +2630,34 @@ async function voiceChat(request, env, ctx) {
       // segments[i] is the exact text audio i speaks: the app highlights it while it plays.
       const segments = voiceSegments(answer.answer);
       await send({ type: "answer", answer: answer.answer, action: answer.action, segments, used: limit.used, limit: limit.limit });
-      // All segments are synthesised in parallel; each is sent as soon as it
-      // and every segment before it is ready.
-      const jobs = segments.map(seg => voiceSpeak(env, seg, lang, gender));
-      let ttsOk = true;
+      let ttsOk = false;
       let ttsError = null;
-      for (let i = 0; i < jobs.length; i++) {
-        const speech = await jobs[i];
-        if (!speech.ok) {
-          ttsOk = false;
-          ttsError = speech.reason;
-          break;
+      for (let i = 0; i < segments.length; i++) {
+        try {
+          const speech = await voiceSpeak(env, segments[i], lang, gender);
+          if (speech.ok && speech.base64) {
+            ttsOk = true;
+            await send({ type: "audio", index: i, count: segments.length, text: segments[i], audio_base64: speech.base64, audio_format: speech.format });
+          } else {
+            ttsError = speech.reason || "segment_failed";
+          }
+        } catch (e) {
+          ttsError = e?.message || "segment_error";
         }
-        await send({ type: "audio", index: i, count: jobs.length, text: segments[i], audio_base64: speech.base64, audio_format: speech.format });
+      }
+      // If individual segments didn't deliver, fallback to whole-answer synthesis:
+      if (!ttsOk) {
+        try {
+          const fullSpeech = await voiceSpeak(env, answer.answer, lang, gender);
+          if (fullSpeech.ok && fullSpeech.base64) {
+            ttsOk = true;
+            ttsError = null;
+            await send({ type: "audio", index: 0, count: 1, text: answer.answer, audio_base64: fullSpeech.base64, audio_format: fullSpeech.format });
+          }
+        } catch {}
       }
       await send({ type: "done", tts_ok: ttsOk, tts_error: ttsError });
-    });
+    }, ctx);
   }
 
   const answer = await getAnswer();
