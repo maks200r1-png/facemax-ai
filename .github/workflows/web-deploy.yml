@@ -46,83 +46,10 @@ jobs:
         run: wrangler deploy --minify
 
       - name: Deploy Web to Cloudflare Pages
-        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          python3 -c '
-          import os, sys, json, urllib.request, urllib.error, subprocess
-
-          token = os.environ.get("CLOUDFLARE_API_TOKEN", "").strip()
-          account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "").strip()
-
-          def cf_api(method, path, data=None):
-              url = f"https://api.cloudflare.com/client/v4{path}"
-              headers = {
-                  "Authorization": f"Bearer {token}",
-                  "Content-Type": "application/json"
-              }
-              body = json.dumps(data).encode("utf-8") if data else None
-              req = urllib.request.Request(url, data=body, headers=headers, method=method)
-              try:
-                  with urllib.request.urlopen(req) as resp:
-                      return json.loads(resp.read().decode("utf-8"))
-              except urllib.error.HTTPError as e:
-                  err_body = e.read().decode("utf-8")
-                  print(f"CF API {method} {path} HTTP {e.code}: {err_body}")
-                  try:
-                      return json.loads(err_body)
-                  except Exception:
-                      return {"success": False, "error": err_body}
-              except Exception as e:
-                  print(f"CF API {method} {path} error: {e}")
-                  return {"success": False, "error": str(e)}
-
-          print("=== 1. CLOUDFLARE ZONES ===")
-          zones = cf_api("GET", "/zones")
-          if zones.get("success"):
-              for z in zones.get("result", []):
-                  print(f"Zone: {z.get('name')} | id: {z.get('id')} | status: {z.get('status')}")
-          else:
-              print("Zones result:", zones)
-
-          print("\n=== 2. CLOUDFLARE PAGES PROJECTS ===")
-          projects_res = cf_api("GET", f"/accounts/{account_id}/pages/projects")
-          project_names = []
-          if projects_res.get("success"):
-              for p in projects_res.get("result", []):
-                  pname = p.get("name")
-                  project_names.append(pname)
-                  subdomain = p.get("subdomain")
-                  domains = [d.get("name") for d in p.get("domains", [])]
-                  print(f"Pages Project: {pname} -> {subdomain}.pages.dev (domains: {domains})")
-          else:
-              print("Pages projects result:", projects_res)
-
-          # Dedicated project strictly for FaceMax / Mogly (NEVER flora-ai!)
-          target_project = "facemaxaiapp"
-          if target_project not in project_names:
-              print(f"\nCreating Cloudflare Pages project: {target_project}...")
-              create_res = cf_api("POST", f"/accounts/{account_id}/pages/projects", {
-                  "name": target_project,
-                  "production_branch": "main"
-              })
-              print("Create project response:", create_res)
-
-          print(f"\n=== 3. DEPLOYING WEB TO {target_project} ===")
-          deploy_cmd = ["wrangler", "pages", "deploy", "web", f"--project-name={target_project}", "--branch=main"]
-          print("Running:", " ".join(deploy_cmd))
-          subprocess.run(deploy_cmd, check=True)
-
-          print("\n=== 4. ATTACHING CUSTOM DOMAINS ===")
-          for dom in ["facemaxaiapp.com", "www.facemaxaiapp.com"]:
-              print(f"Attaching custom domain: {dom} to {target_project}...")
-              dom_res = cf_api("POST", f"/accounts/{account_id}/pages/projects/{target_project}/domains", {
-                  "name": dom
-              })
-              print(f"Domain {dom} attach result:", dom_res)
-          '
+        run: python3 scripts/deploy_cloudflare_pages.py
 
       - name: Verify deployed current-app-compatible Worker
         env:
