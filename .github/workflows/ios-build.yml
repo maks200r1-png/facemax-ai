@@ -10,6 +10,8 @@ on:
         type: boolean
   push:
     branches: [main]
+    paths-ignore:
+      - ".github/workflows/web-deploy.yml"
 
 concurrency:
   group: ios-build-${{ github.ref }}
