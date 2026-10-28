@@ -259,7 +259,7 @@ setPremium("u1", true);
   const src = readFileSync(resolve(here, "../workers/api/src/worker.js"), "utf8");
   assert.ok(!/VOICE_TTS_CHAIN|pcmRate|gemini-[\w.-]*tts|\/audio\/speech/.test(src), "Gemini TTS chain and helpers purged");
   assert.match(src, /const VOICE_TTS_VOICES = \{ male: "onyx", female: "nova" \};/);
-  assert.match(src, /async function readSseAudio\(res\)/);
+  assert.match(src, /async function readSseAudio\(res/);
   assert.match(src, /return \{ ok: false, status: res\.status \|\| 502, reason: "tts_unavailable" \};/);
   ok("TTS: OpenAI only (Onyx / Nova); 402 / 5xx / no audio -> tts_unavailable + text answer, no Gemini fallback");
 }

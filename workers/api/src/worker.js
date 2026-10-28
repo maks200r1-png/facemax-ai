@@ -2010,7 +2010,7 @@ function pcmToWav(pcm, rate) {
 
 // Collects the base64 audio deltas of an OpenRouter chat-completions SSE
 // stream (choices[0].delta.audio.data) into one PCM byte array.
-async function readSseAudio(res) {
+async function readSseAudio(res, timeoutMs = 28000) {
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   const chunks = [];
@@ -2041,7 +2041,10 @@ async function readSseAudio(res) {
     chunks.push(u8);
     total += u8.length;
   };
-  const timer = new Promise((_, reject) => setTimeout(() => reject(new Error("sse_audio_timeout")), timeoutMs));
+  let timerId = null;
+  const timer = new Promise((_, reject) => {
+    timerId = setTimeout(() => reject(new Error("sse_audio_timeout")), timeoutMs);
+  });
   const readLoop = async () => {
     while (true) {
       const { done, value } = await reader.read();
@@ -2058,6 +2061,8 @@ async function readSseAudio(res) {
   } catch (e) {
     try { reader.cancel(); } catch {}
     if (total === 0) throw e;
+  } finally {
+    if (timerId !== null) clearTimeout(timerId);
   }
   const pcm = new Uint8Array(total);
   let offset = 0;
@@ -2103,14 +2108,19 @@ async function voiceSpeak(env, text, lang, gender) {
       }),
     }, 30000);
     if (!res.ok || !res.body) {
-      await res.text().catch(() => "");
+      const errText = await res.text().catch(() => "");
+      console.error("[voiceSpeak] upstream HTTP error:", res.status, errText);
       return { ok: false, status: res.status || 502, reason: "tts_unavailable" };
     }
-    const pcm = await readSseAudio(res);
-    if (pcm.length < 800) return { ok: false, status: 502, reason: "tts_unavailable" };
+    const pcm = await readSseAudio(res, 28000);
+    if (pcm.length < 800) {
+      console.error("[voiceSpeak] PCM too short:", pcm.length);
+      return { ok: false, status: 502, reason: "tts_unavailable" };
+    }
     const wav = pcmToWav(pcm, VOICE_PCM_RATE);
     return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: VOICE_TTS_MODEL, transcript: pcm.transcript || "" };
   } catch (e) {
+    console.error("[voiceSpeak] synthesis failed:", e?.message || e);
     return { ok: false, status: 502, reason: "tts_unavailable" };
   }
 }
