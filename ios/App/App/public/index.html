@@ -4916,24 +4916,30 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 .ex-streak-card.is-checkin{cursor:pointer}
 .ex-streak-card.is-checkin:active{transform:scale(.98)}
 .ex-streak-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.ex-streak-head{font-size:26px;line-height:1.1;font-weight:850;letter-spacing:-.02em;color:#fff;flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  text-shadow:0 0 20px rgba(0,194,255,.4);font-variant-numeric:tabular-nums}
+.ex-streak-head{font-size:25px;line-height:1.1;font-weight:850;letter-spacing:-.02em;flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:7px}
+.ex-flame-ico{flex:0 0 auto;width:24px;height:24px;filter:drop-shadow(0 0 8px rgba(255,149,0,.65))}
+.ex-streak-head-txt{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 0;
+  background:linear-gradient(135deg,#FFD60A 0%,#FF9F0A 60%,#FF6B00 100%);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 0 16px rgba(255,159,10,.5))}
 .ex-streak-status{flex:0 0 auto;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:750;letter-spacing:.01em;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);color:rgba(255,255,255,.72);font-variant-numeric:tabular-nums}
-.ex-streak-status.is-progress{background:rgba(0,194,255,.15);border-color:rgba(0,194,255,.30);color:#00C2FF}
-.ex-streak-status.is-done{background:rgba(0,242,254,.20);border-color:rgba(0,242,254,.38);color:#00F2FE}
+.ex-streak-status.is-progress{background:rgba(0,194,255,.15);border-color:rgba(0,194,255,.30);color:#00F2FE}
+.ex-streak-status.is-done{background:rgba(0,240,118,.18);border-color:rgba(0,240,118,.36);color:#00F076}
 .ex-streak-sub{margin-top:6px;font-size:14px;font-weight:600;line-height:1.35;color:rgba(255,255,255,.66)}
 .ex-streak-card.is-done .ex-streak-sub{color:#00F2FE}
 .ex-streak-card.is-checkin .ex-streak-sub{color:#00C2FF}
 .ex-protocol-pills{display:flex;gap:8px;margin-top:14px}
-.ex-pill{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 10px;border-radius:999px;
-  border:1px solid rgba(0,194,255,.20);background:rgba(255,255,255,.05);color:#fff;font:inherit;font-size:13px;font-weight:700;letter-spacing:-.01em;
+.ex-pill{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px;padding:9px 11px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;font:inherit;font-size:13px;font-weight:700;letter-spacing:-.02em;
   line-height:1.2;cursor:pointer;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;transition:transform .15s,background .15s}
 .ex-pill span,.ex-pill b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ex-pill span{flex:0 1 auto;min-width:0}
-.ex-pill b{flex:0 0 auto;font-size:12px;font-weight:750;color:#00C2FF;font-variant-numeric:tabular-nums}
+.ex-pill span{flex:0 1 auto;min-width:0;display:inline-flex;align-items:center;gap:5px}
+.ex-chip-ico{flex:0 0 auto;width:14px;height:14px;color:#00F2FE}
+.ex-pill b{flex:0 0 auto;font-size:12px;font-weight:750;letter-spacing:-.01em;color:#00F2FE;font-variant-numeric:tabular-nums}
+.ex-pill.is-done b{color:#00F076}
 .ex-pill:active{transform:scale(.96);background:rgba(255,255,255,.09)}
-.ex-pill.is-done{border-color:rgba(0,194,255,.38);background:rgba(0,122,255,.12)}
+.ex-pill.is-done{border-color:rgba(0,242,254,.32);background:rgba(0,242,254,.10)}
+.ex-ico-sprite{position:absolute;width:0;height:0;overflow:hidden}
 .ex-streak-dots{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:16px}
 .ex-streak-dots .ex-week-dot{display:flex;flex-direction:column;align-items:center;gap:6px}
 .ex-streak-dots .ewd-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
@@ -6754,18 +6760,25 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
   <!-- Big streak card: streak, Mogly's mission + the 4 exercises that lock today, this week's days -->
   <div class="ex-streak-card" id="exStreakCard" onclick="moglyStreakCardTap()" aria-live="polite">
     <div class="ex-streak-top">
-      <div class="ex-streak-head" id="exStreakHead">🔥 0-DAY STREAK</div>
+      <div class="ex-streak-head"><svg class="ex-flame-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#exIcoFlame"/></svg><span class="ex-streak-head-txt" id="exStreakHead">0-DAY STREAK</span></div>
       <span class="ex-streak-status" id="exStreakStatus">0/4 Today</span>
     </div>
     <div class="ex-streak-sub" id="exStreakSub">4 exercises to secure today's streak</div>
     <div class="ex-protocol-pills">
-      <button type="button" class="ex-pill" id="exVoicePill" onclick="moglyProtocolVoiceTap(event)"><span>🎙️ Mogly Brief</span><b id="exVoicePillState">● Listen</b></button>
-      <button type="button" class="ex-pill" id="exRoutinePill" onclick="moglyProtocolRoutineTap(event)"><span>⚡ 4 Exercises</span><b id="exRoutinePillState">0/4</b></button>
+      <button type="button" class="ex-pill" id="exVoicePill" onclick="moglyProtocolVoiceTap(event)"><span><svg class="ex-chip-ico" aria-hidden="true"><use href="#exIcoMic"/></svg>Mogly Brief</span><b id="exVoicePillState">● Listen</b></button>
+      <button type="button" class="ex-pill" id="exRoutinePill" onclick="moglyProtocolRoutineTap(event)"><span><svg class="ex-chip-ico" aria-hidden="true"><use href="#exIcoBolt"/></svg>4 Exercises</span><b id="exRoutinePillState">0/4</b></button>
     </div>
     <div class="ex-streak-dots" id="exWeekDots"></div>
   </div>
 
   <div id="exercisesList"></div>
+  <!-- Streak card icons: SVG, never raw emoji (no emoji font = tofu boxes). Not display:none, or WebKit drops the gradient. -->
+  <svg class="ex-ico-sprite" aria-hidden="true" focusable="false">
+    <defs><linearGradient id="exFlameGrad" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#FF3B30"/><stop offset="55%" stop-color="#FF9500"/><stop offset="100%" stop-color="#FFD60A"/></linearGradient></defs>
+    <symbol id="exIcoFlame" viewBox="0 0 24 24"><path fill="url(#exFlameGrad)" d="M12 23c-4.97 0-9-3.8-9-8.5 0-3.1 1.7-6 4-7.5-.1 1.2.3 2.5 1 3.5.5-2.8 2.5-5.5 5-7.5.5 2.2 2 4.3 3.5 5.5 1.5 1.2 2.5 3 2.5 5 0 5.2-3.1 9.5-7 9.5z"/></symbol>
+    <symbol id="exIcoMic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></symbol>
+    <symbol id="exIcoBolt" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+  </svg>
 </section>
 
 <!-- =============================== EXERCISE DETAIL =============================== -->
@@ -13001,10 +13014,10 @@ function renderExerciseStreakHeadline() {
   const routineDone = exDone >= total;
   let text, cls = "";
   if (st && st.checkinReady) {
-    text = `📸 Day ${st.checkinDay} check-in ready — tap to scan`;
+    text = `Day ${st.checkinDay} check-in ready — tap to scan`;
     cls = "is-checkin";
   } else if (routineDone) {
-    text = `✓ Day ${day} secured · Mogly locked in your streak 🔥`;
+    text = `✓ Day ${day} secured · Mogly locked in your streak`;
     cls = "is-done";
   } else if (exDone > 0) {
     const remaining = total - exDone;
@@ -13012,7 +13025,7 @@ function renderExerciseStreakHeadline() {
   } else {
     text = `${total} exercises to secure today's streak`;
   }
-  if (head) head.textContent = `🔥 ${streak}-DAY STREAK`;
+  if (head) head.textContent = `${streak}-DAY STREAK`;
   if (sub) sub.textContent = text;
   const status = el("exStreakStatus");
   if (status) {

@@ -743,7 +743,8 @@ async function postStream(body) {
   assert.match(web, /Mogly Brief<\/span><b id="exVoicePillState">/);
   assert.match(web, /Tap to hear today's mission from Mogly/);
   assert.ok(!/protocolStreakCount|PROTOCOL_SINCE_KEY/.test(web), "the 4 exercises alone lock the day");
-  assert.match(web, /\.ex-streak-head\{font-size:26px/, "big bold streak headline");
+  assert.match(web, /\.ex-streak-head\{font-size:25px/, "big bold streak headline");
+  assert.match(web, /<use href="#exIcoFlame"\/>[\s\S]{0,700}<use href="#exIcoMic"\/>[\s\S]{0,300}<use href="#exIcoBolt"\/>/, "streak card icons are SVG, not emoji (tofu in no-emoji fonts)");
   assert.match(web, /const DAY_LABELS = \["M","T","W","T","F","S","S"\];/);
   assert.ok(!/_makeFaceCrop|tensorflow\/tfjs/.test(web), "no TF.js crop after the scan (froze the result screen)");
   assert.match(web, /st\.completed > 0 && !isLocalPremiumActive\(\)/, "day 1 free, then Premium");
