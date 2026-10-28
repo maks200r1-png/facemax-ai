@@ -1092,7 +1092,7 @@ html.fm-native .bottom{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bo
 .fm-result-v2 .result-score-big{display:flex;align-items:baseline;justify-content:center;gap:2px;margin:0 0 3px}
 .fm-result-v2 .result-score-num{font-size:30px;font-weight:800;letter-spacing:-.04em;color:#fff;font-variant-numeric:tabular-nums;line-height:1;text-shadow:0 2px 16px rgba(0,194,255,.4)}
 .fm-result-v2 .result-score-of{font-size:15px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:-.01em}
-.fm-result-v2 .result-avatar-ring img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block}
+.fm-result-v2 .result-avatar-ring img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block}
 .fm-result-v2 .result-avatar-ring canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .fm-result-v2 .arch-badge-v2{display:flex;align-items:center;justify-content:center;gap:8px;
   margin:0 auto 12px;padding:6px 14px;border-radius:999px;width:fit-content;
@@ -5307,7 +5307,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
       <!-- Avatar — big circle -->
       <div style="display:flex;justify-content:center;margin-bottom:12px;">
         <div id="prePayAvatar" style="width:clamp(140px,40vw,180px);height:clamp(140px,40vw,180px);border-radius:50%;overflow:hidden;border:5px solid rgba(0,194,255,.9);box-shadow:0 0 18px rgba(0,122,255,.5),0 0 6px rgba(0,194,255,.3);background:#1a1a2e;flex-shrink:0;">
-          <img id="prePayImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block;">
+          <img id="prePayImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;">
         </div>
       </div>
 
@@ -11405,6 +11405,14 @@ window.startScan = async function(_premiumChecked){
     document.documentElement.classList.remove("fm-quiz-active");
     document.documentElement.classList.remove("fm-first-launch-lock");
     stopMeshAnim();
+    const finalAvatar = thumb || _avatarCropUrl || selectedImageData;
+    ["resultImg", "reportImg", "prePayImg"].forEach(id => {
+      const img = el(id);
+      if (img) {
+        img.src = finalAvatar;
+        img.style.objectPosition = "center center";
+      }
+    });
     openScreen("result");
     applyPremiumToResult();
     // 2 s after the results appear, Mogly voices the scan breakdown.
@@ -18612,14 +18620,19 @@ window.syncTDEEChoiceUI = function() {
 
     let dataUrl = "";
     if (video && canvas) {
-      const w = video.videoWidth || 640;
-      const h = video.videoHeight || 640;
-      canvas.width = w;
-      canvas.height = h;
+      const vw = video.videoWidth || 640;
+      const vh = video.videoHeight || 640;
+      // Viewfinder is a 1:1 square card with object-fit: cover.
+      // Crop the center square from video to match exactly what the user saw inside the viewfinder.
+      const side = Math.min(vw, vh);
+      const sx = Math.round((vw - side) / 2);
+      const sy = Math.round((vh - side) / 2);
+      canvas.width = side;
+      canvas.height = side;
       const ctx = canvas.getContext("2d");
-      ctx.translate(w, 0);
+      ctx.translate(side, 0);
       ctx.scale(-1, 1);
-      ctx.drawImage(video, 0, 0, w, h);
+      ctx.drawImage(video, sx, sy, side, side, 0, 0, side, side);
       dataUrl = canvas.toDataURL("image/jpeg", 0.92);
     }
 
@@ -18734,7 +18747,7 @@ window.syncTDEEChoiceUI = function() {
     _avatarCropUrl = null;
     ["resultImg", "reportImg", "prePayImg", "loadingImg"].forEach(id => {
       const img = document.getElementById(id);
-      if (img) { img.src = cleanDataUrl; img.style.objectPosition = "center 10%"; }
+      if (img) { img.src = cleanDataUrl; img.style.objectPosition = "center center"; }
     });
     try { const rc = document.getElementById("resultCanvas"); rc.getContext("2d").clearRect(0, 0, rc.width, rc.height); } catch(e) {}
     _makeInstantCrop(cleanDataUrl).then(instant => {
@@ -18794,6 +18807,7 @@ window.syncTDEEChoiceUI = function() {
     let finalScore = 84;
     let finalMetrics = null;
     let aiReport = null;
+    let thumb = null;
     try {
       finalScore = (aiResult && isFinite(aiResult.overall)) ? aiResult.overall : 84;
       finalMetrics = (aiResult && aiResult.metrics) ? aiResult.metrics : null;
@@ -18811,7 +18825,7 @@ window.syncTDEEChoiceUI = function() {
         try { localStorage.setItem("facemax_last_report", JSON.stringify(aiReport)); } catch {}
       }
       // Started with the laser; a few ms at most by now. Never hold the results for it.
-      const thumb = await Promise.race([
+      thumb = await Promise.race([
         thumbPromise,
         new Promise(r => setTimeout(() => r(null), 150))
       ]);
@@ -18838,6 +18852,14 @@ window.syncTDEEChoiceUI = function() {
     // stays within ~3.5 s even on the slowest path.
     const elapsed = Date.now() - scanStartedAt;
     setTimeout(() => {
+      const finalAvatar = thumb || _avatarCropUrl || cleanDataUrl;
+      ["resultImg", "reportImg", "prePayImg"].forEach(id => {
+        const img = document.getElementById(id);
+        if (img) {
+          img.src = finalAvatar;
+          img.style.objectPosition = "center center";
+        }
+      });
       openScreen("result");
       // 2 s after the results appear, Mogly voices the scan breakdown.
       if (typeof window.moglyScheduleScanDebrief === "function") window.moglyScheduleScanDebrief();
@@ -20062,27 +20084,11 @@ window.syncTDEEChoiceUI = function() {
       mvQueueEnd();
     });
   }
-  // First open on a new day: Mogly greets the user with today's mission by himself.
+  // Voice mentor opens ONLY on explicit user tap (Home sphere or voice button).
+  // Automatic / uninvited popups on first launch, load, visibility change or scan are disabled.
   const MV_AUTO_BRIEF_KEY = "mogly_auto_brief_day";
-  window.moglyMaybeAutoBrief = function() {
-    try {
-      if (document.hidden) return;
-      if (localStorage.getItem(MV_AUTO_BRIEF_KEY) === todayKey()) return;
-      if (typeof fmFirstRunFunnelActive === "function" && fmFirstRunFunnelActive()) return;
-      if (fmActiveScreenId() !== "home" || !isLocalPremiumActive()) return;
-      const busy = document.querySelector("#mvOverlay.active, #mrOverlay.active, #mdcCelebrate:not([hidden])");
-      if (busy) return;
-      localStorage.setItem(MV_AUTO_BRIEF_KEY, todayKey());
-    } catch (e) { return; }
-    window.openMoglyVoiceSheet(true, true);
-  };
-  let mvAutoBriefTimer = 0;
-  function mvScheduleAutoBrief() {
-    clearTimeout(mvAutoBriefTimer);
-    mvAutoBriefTimer = setTimeout(() => window.moglyMaybeAutoBrief(), 1500);
-  }
-  window.addEventListener("load", mvScheduleAutoBrief);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) mvScheduleAutoBrief(); });
+  window.moglyMaybeAutoBrief = function() {};
+  function mvScheduleAutoBrief() {}
   function mvOpenOverlay(guest) {
     const ov = mvEl("mvOverlay");
     if (!ov) return false;
@@ -20338,13 +20344,31 @@ window.syncTDEEChoiceUI = function() {
     mdcSave(st);
     mdcSpeakReward(`locked_${day}_${persona}`, line);
   };
-  function mdcSpeakReward(key, line) {
-    if (!mdcVoiceOn() || document.hidden) return;
+  async function mdcSpeakReward(key, line) {
+    if (document.hidden) return;
     mvAudioSession("playback");
     mdcChime([880, 1108.7, 1318.5]);
     const ov = mvEl("mvOverlay");
-    if (ov && ov.classList.contains("active")) return; // never talk over the mentor
-    mdcSpeakPhrase(key, line);
+    if (ov && ov.classList.contains("active")) return;
+    try {
+      const buf = await mdcGetBuffer(key);
+      const ctx = mvEnsureCtx();
+      if (ctx && ctx.state === "suspended") {
+        try { await ctx.resume(); } catch (e) {}
+      }
+      if (buf && ctx) {
+        if (mdcCurrentSource) {
+          try { mdcCurrentSource.stop(); } catch (e) {}
+          mdcCurrentSource = null;
+        }
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.connect(ctx.destination);
+        src.onended = () => { if (mdcCurrentSource === src) mdcCurrentSource = null; };
+        mdcCurrentSource = src;
+        src.start(0);
+      }
+    } catch (e) {}
   }
   function mdcCelebrate(streak, ms) {
     const ov = mvEl("mdcCelebrate");
