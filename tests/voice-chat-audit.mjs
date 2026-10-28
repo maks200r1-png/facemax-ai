@@ -290,7 +290,7 @@ async function postStream(body) {
   setPremium("u3", true);
   calls.length = 0;
   chatReply = "Good morning. You are on a five day streak and your score went from seventy eight to eighty four. Today the focus is skin, so drink two glasses of water before your first coffee. After breakfast do the cheek depuff for thirty seconds, slow and gentle. Skip salty snacks after seven so you wake up less puffy. Finish the plan tonight to keep the streak alive. [[go:daily]]";
-  const r = await postStream({ user_id: "u3", lang: "en", stream: true, audio_base64: fakeAudio, audio_format: "audio/mp4" });
+  const r = await postStream({ user_id: "u3", lang: "en", stream: true, audio_base64: fakeAudio, audio_format: "audio/mp4", context: { score: 84 } });
   assert.equal(r.status, 200);
   assert.match(r.type, /application\/x-ndjson/);
   const types = r.events.map(e => e.type);
@@ -443,7 +443,9 @@ async function postStream(body) {
   assert.match(prompt, /You talk ONLY about looksmaxxing/);
   assert.match(prompt, /politics, news.*coding, weather.*do NOT answer it, not even briefly/);
   assert.match(prompt, /Never sound like a robot refusing/);
-  assert.match(prompt, /Bro, no candidate is fixing your jawline/);
+  assert.match(prompt, /Listen, no candidate is fixing your jawline/);
+  // "Bro" is allowed for men, just not in every sentence.
+  assert.match(prompt, /"Bro" is welcome, but at most once per answer and not in every answer/);
   // Numbers: the screen shows them, the voice turns them into meaning; numbers only for progress.
   assert.match(prompt, /Never read out lists of measurements, scores, degrees or percentages/);
   assert.match(prompt, /Say a number out loud only to celebrate progress/);
@@ -722,6 +724,60 @@ async function postStream(body) {
   assert.match(web, /id="moglyOrbFabBtn" onclick="moglySphereTap\(\)"/);
   assert.match(web, /st\.completed > 0 && !isLocalPremiumActive\(\)/, "day 1 free, then Premium");
   ok("30-day ritual: whitelisted OpenAI phrases cached in KV, sphere starts the day, 3 s scan cap");
+}
+
+// 21. no scan yet: hook + why the face is needed + [[go:scan]]; persona follows the user's gender
+{
+  kv.clear();
+  setPremium("ns1", true);
+  chatReply = "A sharp jaw is 70% bloat and posture, but I'm not guessing your angles blind. Three seconds on camera and I'll tell you the truth.";
+  for (const fn of ["jawline", "debloat", "skin", "fixfirst"]) {
+    calls.length = 0;
+    const r = await post("/api/voice-chat", { user_id: "ns1", lang: "en", function: fn, context: { gender: "male", has_scan: false } });
+    assert.equal(r.data.ok, true, fn);
+    assert.equal(r.data.action, "scan", fn + " -> scan button even without the tag");
+    const prompt = promptOf(calls.find(isLlm).body);
+    assert.match(prompt, /No scan yet, strict/, fn);
+    assert.match(prompt, /End with exactly the tag \[\[go:scan\]\]/, fn);
+    assert.match(prompt, /follow the No scan yet rules instead of this task/, fn);
+    assert.doesNotMatch(prompt, /Optional navigation/, fn);
+  }
+  // Free talk without a scan, model tag is parsed as a real action.
+  calls.length = 0;
+  chatReply = "Skin is half sleep and sunscreen, but I need to see yours first. Three seconds on camera. [[go:scan]]";
+  const free = await post("/api/voice-chat", { user_id: "ns1", lang: "en", text: "how do I fix my skin", context: { has_scan: false, gender: "female" } });
+  assert.equal(free.data.action, "scan");
+  assert.ok(!free.data.answer.includes("[["));
+  // Female user -> stylist persona even with the male coach voice picked.
+  const fp = promptOf(calls.find(isLlm).body);
+  assert.match(fp, /elite female aesthetic mentor/);
+  assert.match(fp, /Strictly NO masculine slang/);
+  assert.equal(calls.find(isTts).body.audio.voice, "onyx", "voice timbre still follows voice_gender");
+  // has_scan:false wins over a stale score; a real scan keeps the normal chip.
+  calls.length = 0;
+  await post("/api/voice-chat", { user_id: "ns1", lang: "en", function: "jawline", context: { score: 80, has_scan: false } });
+  assert.match(promptOf(calls.find(isLlm).body), /No scan yet, strict/);
+  calls.length = 0;
+  chatReply = "Your jaw is close, debloat first. [[go:exercises]]";
+  const scanned = await post("/api/voice-chat", { user_id: "ns1", lang: "en", function: "jawline", context: { score: 80, has_scan: true, gender: "male" } });
+  assert.equal(scanned.data.action, "exercises");
+  const mp = promptOf(calls.find(isLlm).body);
+  assert.doesNotMatch(mp, /No scan yet, strict/);
+  assert.doesNotMatch(mp, /Strictly NO masculine slang/);
+  // today / meal / exercise / post-scan debrief keep working without a scan.
+  for (const fn of ["today", "meal", "scan"]) {
+    calls.length = 0;
+    await post("/api/voice-chat", { user_id: "ns1", lang: "en", function: fn, context: { has_scan: false } });
+    assert.doesNotMatch(promptOf(calls.find(isLlm).body), /No scan yet, strict/, fn);
+  }
+  // Client: has_scan in context, primary "📷 Take Face Scan" that closes the overlay and starts the scan.
+  const web = readFileSync(resolve(here, "../web/index.html"), "utf8");
+  assert.match(web, /ctx\.has_scan = /);
+  assert.match(web, /openScan: "📷 Take Face Scan"/);
+  assert.match(web, /b\.classList\.toggle\("mv-action-scan", kind === "scan"\)/);
+  assert.match(web, /mvCloseOverlay\(false\);\n[\s\S]{0,400}else if \(kind === "scan"\) \{ openScreen\("home"\); if \(window\.handleMoglyPrimaryScanClick\) window\.handleMoglyPrimaryScanClick\(\); \}/);
+  assert.equal(web, readFileSync(resolve(here, "../ios/App/App/public/index.html"), "utf8"), "web == ios");
+  ok("no scan: hook + [[go:scan]] -> 📷 Take Face Scan, persona bound to user gender, bro rotated");
 }
 
 console.log(`\nvoice-chat audit: ${passed} checks passed`);

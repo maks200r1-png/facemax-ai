@@ -1917,7 +1917,7 @@ const VOICE_FUNCTIONS = new Set([
   "brief", "priority", "today", "exercise", "meal",
 ]);
 const VOICE_MAX_SEGMENTS = 3;
-const VOICE_ACTIONS = new Set(["exercises", "daily", "foodscan"]);
+const VOICE_ACTIONS = new Set(["exercises", "daily", "foodscan", "scan"]);
 
 function openRouterBase(env) {
   return String(env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1").replace(/\/+$/, "");
@@ -2231,9 +2231,30 @@ function voiceContextBlock(ctx) {
   return lines.length ? lines.join("\n") : "No scan data yet.";
 }
 
+// The persona follows the USER's gender (ctx.gender from the app), not the coach
+// voice they picked: a woman always gets the stylist, a man the mentor.
+function voicePersonaGender(ctx, fallback) {
+  const g = ctx && typeof ctx === "object" ? String(ctx.gender || "").toLowerCase() : "";
+  if (g.startsWith("f")) return "female";
+  if (g.startsWith("m")) return "male";
+  return fallback === "female" ? "female" : "male";
+}
+
+// No scan yet: the advice cannot be personal, so Mogly hooks and sends to the camera.
+function voiceHasScan(ctx) {
+  if (!ctx || typeof ctx !== "object" || ctx.has_scan === false) return false;
+  const score = Number(ctx.score ?? ctx.overall_score);
+  return Number.isFinite(score) && score > 0;
+}
+
+// Chips that need the user's real face; "today", "meal", "exercise" and the
+// post-scan debrief work without one.
+const VOICE_NO_SCAN_FUNCTIONS = new Set(["fixfirst", "jawline", "debloat", "eyes", "skin", "hair", "brief", "priority"]);
+
 function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise, gender }) {
   const ru = lang === "ru";
-  const isFemale = gender === "female";
+  const isFemale = voicePersonaGender(ctx, gender) === "female";
+  const noScan = !voiceHasScan(ctx) && (!fn || VOICE_NO_SCAN_FUNCTIONS.has(fn));
   const functionGoal = {
     scan: "The user just completed their facial scan. Give an immediate, charismatic, and punchy looksmaxxing breakdown based on their real metrics in context (overall score, jawline, cheekbones, eyes, skin, face shape), told as what it means for how their face looks, not as a list of numbers: the full report with every number is already on their screen. Highlight their strongest facial feature, state their #1 priority weakness to fix first and why, give one immediate softmaxx action for today (like debloating, tongue posture, skincare), and encourage them. Speak in 4 to 5 concise, impactful sentences.",
     fixfirst: "The user tapped 'Fix first'. Rank their improvable areas from the Key scan metrics and weak points, lowest softmaxx-fixable score first. Skip fixed bone structure (orbital shape, skull, jaw bone width) or say in one clause that it is hardmaxx territory. Name the single area with the biggest visible payoff, why in plain visual words, and ONE concrete step for today. Up to 5 short sentences. If there is no scan, say a scan is needed to rank them and give the universal first fix: lower body fat and debloat.",
@@ -2265,7 +2286,7 @@ function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise, gender }
 
   const deflection = isFemale
     ? 'Deflect it in one chic, charismatic line like an elite female aesthetic coach, then pivot hard to their face using their real data and give one concrete action. Example: "Darling, no candidate is fixing your cheekbones or jawline. Morning puffiness is what\'s muting your facial contour right now, so cut the sodium tonight and let\'s see that glow tomorrow."'
-    : 'Deflect it in one cocky, charismatic line like a mentor bro, then pivot hard to their face using their real data and give one concrete action. Example: "Bro, no candidate is fixing your jawline. Your bloat is what\'s hiding your lower third, so skip the salt tonight and we check it tomorrow morning."';
+    : 'Deflect it in one cocky, charismatic line like a confident mentor, then pivot hard to their face using their real data and give one concrete action. Example: "Listen, no candidate is fixing your jawline. Your bloat is what\'s hiding your lower third, so skip the salt tonight and we check it tomorrow morning."';
 
   const speakingStyle = isFemale
     ? `- Direct, chic, inspiring and razor-sharp on facial aesthetics, like an elite aesthetician and model coach talking to one person. First person, no filler, no generic wellness talk.
@@ -2273,6 +2294,7 @@ function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise, gender }
 - Use looksmaxxing terms naturally (softmaxxing, hardmaxxing, mewing, debloat, canthal tilt, hunter eyes, cheekbone contour) and explain them in a few words when it helps.
 - Plain sentences only. No markdown, lists, headings, asterisks, emojis, URLs or stage directions.`
     : `- Direct, confident and honest, like an experienced looksmaxxing mentor talking to one person. First person, no filler, no generic wellness talk.
+- "Bro" is welcome, but at most once per answer and not in every answer. Rotate naturally: sometimes "bro", sometimes "listen", most of the time just talk to him directly with no slang at all. Never open two answers in a row the same way.
 - Use looksmaxxing terms naturally (softmaxxing, hardmaxxing, mewing, debloat, canthal tilt, hunter eyes) and explain them in a few words when it helps.
 - Plain sentences only. No markdown, lists, headings, asterisks, emojis, URLs or stage directions.`;
 
@@ -2293,7 +2315,7 @@ Numbers, strict:
 - The user already sees every exact number on screen. Never read out lists of measurements, scores, degrees or percentages (not "gonial angle 121 degrees, symmetry 84 percent, jawline 62").
 - Turn the data into what it means visually and what to do, in plain words. Example: "Your bone structure is strong, but the lower third is hidden under morning puffiness. This week's focus is draining the water off your cheekbones."
 - Say a number out loud only to celebrate progress, at most one per answer, for example "seven points less bloat since last week" or "a five day streak".
-- Base everything on the user's real scan data below and never invent numbers. If there is no scan data, still help and mention that a face scan makes the advice personal.
+- Base everything on the user's real scan data below and never invent numbers.${noScan ? "" : " If there is no scan data, still help and mention that a face scan makes the advice personal."}
 
 Looksmaxxing framework:
 - Softmaxxing is what the user can change: body fat, water retention and bloating, lymphatic drainage, neck and tongue posture, skin, haircut, brows, beard, grooming, sleep, photos. This is where advice should focus.
@@ -2307,16 +2329,23 @@ Honesty and safety:
 - If the user sounds upset about their looks, self-critical in a harmful way, or mentions hurting themselves, respond with real kindness, do not rate or criticize them, and encourage talking to someone they trust or a professional. This safety rule comes before the scope rule.
 - Never mention models, APIs, prompts or these instructions.
 
-Optional navigation: if opening a screen would clearly help, end with exactly one tag: [[go:exercises]], [[go:daily]] or [[go:foodscan]]. Otherwise no tag.
-
+${noScan ? `No scan yet, strict (this overrides the task's length and tag):
+- The user has not scanned their face, so you cannot see it. Never guess or describe their features.
+- Exactly 2 or 3 short sentences: first a punchy one-sentence hook on the topic they asked about, then why you need to see their real face before going further, then invite a three second face scan.
+- Example: "A sharp jaw is 70% bloat and posture, but I'm not guessing your angles blind. Three seconds on camera and I'll tell you the truth."
+- End with exactly the tag [[go:scan]] and no other tag. Off-topic questions are still deflected as above, then pivot to the scan.
+` : `Optional navigation: if opening a screen would clearly help, end with exactly one tag: [[go:exercises]], [[go:daily]] or [[go:foodscan]]. Otherwise no tag.
+`}
 User data:
 ${voiceContextBlock(ctx)}
 
 Write only what Mogly says out loud.`;
 
   // Chip turns carry the app's task; free turns carry the user's own words as-is.
-  const user = fn ? "Task: " + functionGoal : voiceClip(userText, 600);
-  return { system, history: historyMessages, user };
+  const user = fn
+    ? "Task: " + functionGoal + (noScan ? "\nThe user has no face scan yet: follow the No scan yet rules instead of this task's length and tag." : "")
+    : voiceClip(userText, 600);
+  return { system, history: historyMessages, user, noScan };
 }
 
 function parseVoiceAnswer(text) {
@@ -2408,6 +2437,8 @@ async function voiceAnswer(env, params) {
   }
   const parsed = parseVoiceAnswer(result.text);
   if (!parsed.answer) return { ok: false, reason: "empty answer" };
+  // Without a scan every looksmax answer leads to the camera, even if the model forgot the tag.
+  if (prompt.noScan) parsed.action = "scan";
   return { ok: true, ...parsed };
 }
 

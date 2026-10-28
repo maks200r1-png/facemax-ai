@@ -67,6 +67,7 @@ html.fm-native .app{padding:0!important;height:100dvh;max-height:100dvh;overflow
 #result.screen.active,
 #routine.screen.active,
 #history.screen.active,
+#compare.screen.active,
 #notifications.screen.active,
 #glowupHub.screen.active{display:block!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior-y:contain!important;-webkit-overflow-scrolling:touch!important;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px calc(env(safe-area-inset-bottom,0px) + 115px) 16px}
 
@@ -3331,6 +3332,7 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   -webkit-tap-highlight-color: transparent;
 }
 .mv-action[hidden] { display: none; }
+.mv-action.mv-action-scan { background: linear-gradient(180deg, #2E8BFF, #0A6CFF); color: #fff; }
 
 .mv-chips {
   width: 100%;
@@ -5442,7 +5444,7 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
         </span>
         <span id="moglyScanBtnText" data-i18n="btn_scan_face">SCAN MY FACE</span>
       </button>
-      <button type="button" class="mogly-ritual-status" id="moglyRitualStatus" onclick="moglyRitualStatusTap()" aria-live="polite">🔥 Streak: 0 Days · Next Check-in: Day 7</button>
+      <button type="button" class="mogly-ritual-status" id="moglyRitualStatus" onclick="moglyRitualStatusTap()" aria-live="polite">🔥 0-day streak · Day 7 check-in in 7 days</button>
 
       <button type="button" class="mogly-btn-secondary" id="moglySecondaryBtn" onclick="handleMoglySecondaryClick()">
         <span id="moglySecondaryBtnIconWrap">
@@ -18923,7 +18925,7 @@ window.syncTDEEChoiceUI = function() {
       openDaily: "Open daily exercises",
       openFoodScan: "Scan a meal",
       startExercise: "Open the exercise",
-      openScan: "Scan my face",
+      openScan: "📷 Take Face Scan",
       coachDown: "Couldn't reach coach. Check connection and tap to retry.",
       retry: "Tap to retry",
     }
@@ -19204,7 +19206,9 @@ window.syncTDEEChoiceUI = function() {
     if (!b) return;
     const label = { exercises: "openExercises", daily: "openDaily", foodscan: "openFoodScan", "exercise-start": "startExercise", scan: "openScan", retry: "retry" }[kind];
     if (!kind || !label) { b.hidden = true; return; }
-    b.textContent = mvT(label) + "  ›";
+    // No scan yet: the camera is the primary next step, so no chevron and the blue primary style.
+    b.textContent = kind === "scan" ? mvT(label) : mvT(label) + "  ›";
+    b.classList.toggle("mv-action-scan", kind === "scan");
     b.hidden = false;
   }
   function mvRenderLabels() {
@@ -19450,6 +19454,8 @@ window.syncTDEEChoiceUI = function() {
       if (typeof shape === "string" && shape.trim()) ctx.face_shape = shape.trim();
     } catch (e) {}
     try { ctx.gender = (typeof currentGender === "function") ? currentGender() : null; } catch (e) {}
+    // The worker switches to "scan first" answers when this is false.
+    try { ctx.has_scan = !!(Number(f.score) > 0 || (Array.isArray(scanHistory) && scanHistory.some(h => h && Number(h.score) > 0))); } catch (e) {}
     try {
       const done = readExerciseDoneToday();
       const next = FACE_EXERCISES.find(e => !done.has(e.id));
@@ -19989,7 +19995,8 @@ window.syncTDEEChoiceUI = function() {
     mvCloseOverlay(false);
     try {
       if (kind === "exercises" || kind === "daily" || kind === "foodscan") openExercises();
-      else if (kind === "scan") { openScreen("home"); setTimeout(() => { if (window.handleMoglyPrimaryScanClick) window.handleMoglyPrimaryScanClick(); }, 250); }
+      // Same tap: iOS only opens the camera inside the user's gesture.
+      else if (kind === "scan") { openScreen("home"); if (window.handleMoglyPrimaryScanClick) window.handleMoglyPrimaryScanClick(); }
       else if (kind === "exercise-start") {
         const done = readExerciseDoneToday();
         const ex = FACE_EXERCISES.find(e => !done.has(e.id)) || FACE_EXERCISES[0];
@@ -20271,7 +20278,7 @@ window.syncTDEEChoiceUI = function() {
     const b = mvEl("moglyRitualStatus");
     let st;
     try { st = window.moglyRitualState(); } catch (e) { return; }
-    const days = (n) => n + (n === 1 ? " Day" : " Days");
+    const left = Math.max(1, st.nextCheckin - st.completed);
     let text, cls = "";
     if (st.checkinReady) {
       text = `📸 Day ${st.checkinDay} check-in ready — tap to scan`;
@@ -20280,7 +20287,7 @@ window.syncTDEEChoiceUI = function() {
       text = `✓ Day ${st.day} done · 🔥 ${st.streak}-day streak`;
       cls = "is-done";
     } else {
-      text = `🔥 Streak: ${days(st.streak)} · Next Check-in: Day ${st.nextCheckin}`;
+      text = `🔥 ${st.streak}-day streak · Day ${st.nextCheckin} check-in in ${left} ${left === 1 ? "day" : "days"}`;
     }
     if (b) {
       if (b.textContent !== text) b.textContent = text;
