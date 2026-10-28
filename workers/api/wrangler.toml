@@ -1,6 +1,7 @@
 name = "facemax-api"
 main = "src/worker.js"
 compatibility_date = "2026-05-15"
+compatibility_flags = ["nodejs_compat"]
 
 # Apple bundle identifier; the worker uses this to validate StoreKit JWS
 # payloads on /api/apple-receipt-verify. Override via the dashboard if you

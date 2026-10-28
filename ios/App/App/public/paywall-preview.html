@@ -2184,7 +2184,7 @@ html.cam-active .app { background:transparent !important; }
 .result-unlock .lock-feats { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:16px; }
 .result-unlock .lock-feat { font-size:12px; font-weight:600; color:var(--text); background:var(--surface-2); border:1px solid var(--line); border-radius:999px; padding:6px 11px; }
 
-/* Bigger quiz typography to feel "крупно" */
+/* Bigger quiz typography to feel bold */
 #quiz .quiz-title { font-size:31px; }
 #quiz .quiz-sub { font-size:15.5px; }
 </style>
@@ -5440,10 +5440,10 @@ window.openGlowUpHub = async function(_premiumChecked) {
     const metricsSection = el("ghMetricsSection");
     const metricsGrid = el("ghMetricsGrid");
     const m = last.metrics || {};
-    // Potential (Glow-up score) — не приходит в metrics, считаем как на экране результата
+    // Potential (Glow-up score) - calculated identically to results screen
     const _ghOverallScore = Number(last.score) || 0;
     m.potential = Math.min(100, Math.round(_ghOverallScore + 9));
-    // Те же метрики что показываются на экране результата face scan (Lips заменён на Potential)
+    // Same metrics as shown on face scan result screen (Lips replaced with Potential)
     const METRIC_DEFS = [
       { key: "jawline",    label: "Jawline",    icon: "💎" },
       { key: "potential",  label: "Potential",  icon: "🚀" },
@@ -5586,7 +5586,7 @@ window.openGlowUpHub = async function(_premiumChecked) {
 
       const mNew = newest.metrics || {};
       const mOld = previous.metrics || {};
-      // Potential (Glow-up score) не хранится в metrics — считаем как на экране результата
+      // Potential (Glow-up score) not stored in metrics - calculated identically to results screen
       mNew.potential = Math.min(100, Math.round((Number(newest.score) || 0) + 9));
       mOld.potential = Math.min(100, Math.round((Number(previous.score) || 0) + 9));
       const DELTA_DEFS = [
@@ -7500,8 +7500,8 @@ function startScanBars(){
       } else if (elapsed > 0){
         b.cur += (b.softCap - b.cur) * 0.022;
       }
-      // Цвет обновляем каждый кадр — иначе при переходе к реальному значению
-      // бар резко меняет цвет с пурпурного на зелёный/жёлтый (вспышка/затемнение).
+      // Update color every frame - prevents abrupt color jump on transition to real value
+      // bar abruptly changing from purple to green/yellow.
       if (b.fill && b.cur > 0) b.fill.style.background = scanBarColor(b.cur);
       if (b.fill) b.fill.style.width = b.cur.toFixed(1) + "%";
       if (b.pct) b.pct.textContent = Math.round(b.cur) + "%";
@@ -7699,7 +7699,7 @@ window.startScan = async function(_premiumChecked){
       });
     });
 
-    // Запросить отзыв на 3-м+ скане с хорошим результатом (Bug 6)
+    // Request review on 3rd+ scan with good result (Bug 6)
     const scanCount = scanHistory ? scanHistory.length : 0;
     if (scanCount >= 3) {
       setTimeout(function () {
@@ -7952,7 +7952,7 @@ function paintResultV2(score, computedMetrics, aiReport){
     return "linear-gradient(90deg,#EF4444,#FB923C)";
   }
   // Reset all bars to 0 synchronously first, so CSS transition always plays from 0→value.
-  // Также скрываем грид метрик чтобы не было видно тёмных/пустых баров пока экран появляется.
+  // Hide metrics grid to avoid flash of dark/empty bars while screen transitions.
   const _metricGrid = el("resultMetricGrid");
   if (_metricGrid) { _metricGrid.style.opacity = "0"; _metricGrid.style.transition = "none"; }
   for (const [, , , , , barId] of tiles) {
@@ -7988,7 +7988,7 @@ function paintResultV2(score, computedMetrics, aiReport){
           bar.style.background = barColor(v);
         }
       }
-      // Показываем грид плавно уже с заполненными значениями — никакого тёмного мелькания
+      // Show grid smoothly with filled values - zero dark flash
       if (_metricGrid) {
         _metricGrid.style.transition = "opacity 0.3s ease";
         _metricGrid.style.opacity = "1";
@@ -8799,7 +8799,7 @@ window.checkPremium = async function(showAlert = false){
     const data = await res.json();
     fmLog("info", "checkPremium status:", { status: res.status, data, nativeStatus, forcePaywall, quizUnlocked });
     const serverPremium = !!(data.active || data.premium);
-    const serverUntil = data.premium_until || data.premium_до || null;
+    const serverUntil = data.premium_until || null;
 
     if (nativeStatus && nativeStatus.ok) {
       // Native active/inactive status wins for the paywall. Keep the server
@@ -10447,7 +10447,7 @@ function renderFoodScanResult(r){
   // helpers
   function levelToScore(lvl){ return lvl==="low"?20:lvl==="medium"?55:lvl==="high"?85:50; }
   function pillClass(pill){ const p=String(pill||"").toLowerCase(); return p==="good"||p==="low"?"good":p==="moderate"||p==="medium"?"moderate":"bad"; }
-  function fsBарColor(sc){
+  function fsBarColor(sc){
     if(sc>=75) return 'linear-gradient(90deg,#4ADE80,#22C55E)';
     if(sc>=60) return 'linear-gradient(90deg,#A3E635,#4ADE80)';
     if(sc>=45) return 'linear-gradient(90deg,#FBBF24,#A3E635)';
@@ -10467,7 +10467,7 @@ function renderFoodScanResult(r){
       const fillEl=el(fillId);
       const pct=Math.max(0,Math.min(100,Number(sc)||0));
       fillEl.style.width=pct+"%";
-      fillEl.style.background=fsBарColor(pct);
+      fillEl.style.background=fsBarColor(pct);
     },100);
   }
   function qualityPenalty(lvl, low, med, high){
@@ -13789,7 +13789,7 @@ window.downloadResultCard = async function() {
 <script>
   // Paste your RevenueCat iOS key (appl_...) here before submitting to App Store.
   // Must not be empty in production builds — see Fix notes in CHANGELOG.
-  // ⚠️  ВАЖНО: вставьте PRODUCTION ключ RevenueCat (appl_...) — тестовый ключ (test_...) НЕ работает в TestFlight!
+  // IMPORTANT: Use PRODUCTION RevenueCat key (appl_...) - test key does not work in TestFlight!
   // RevenueCat Dashboard → Project Settings → API Keys → App-specific → iOS
   window.FACEMAX_REVENUECAT_API_KEY = "appl_najSElZgKcUrHaOrJuCQfcFbXpg";
 </script>
@@ -13978,7 +13978,7 @@ function stopMeshAnim() {
   _meshFading = false; _meshFadeStart = null;
 }
 
-// Плавное затухание — вызывается когда скан завершён
+// Smooth fade out - triggered when scan completes
 function fadeOutMeshAnim() {
   if (!_meshAnimRaf) return;
   if (_meshFading) return;
@@ -14011,7 +14011,7 @@ function _runFakeMeshAnim(canvas, totalDur) {
     const elapsed = now - startT;
     ctx.clearRect(0, 0, W, H);
 
-    // Затухание только по внешнему сигналу (fadeOutMeshAnim)
+    // Fade out on external signal only (fadeOutMeshAnim)
     let alpha = 1;
     if (_meshFading && _meshFadeStart) {
       const t = Math.min(1, (now - _meshFadeStart) / _MESH_FADE_DUR);

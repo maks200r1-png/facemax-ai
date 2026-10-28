@@ -5028,29 +5028,29 @@ button:active:not(:disabled),.btn:active:not(:disabled),.pf-row:active,.exercise
 </div>
 <script>
 (function(){
-  // On iOS Capacitor we keep the native launch storyboard alive until the
-  // WebView has had a frame to render our HTML splash on top of it. Once it
-  // has, we hide the native storyboard \u2014 our CSS overlay takes over the
-  // remaining ~1.3s of intro animation. Both share the pure #000000 background
-  // so the handoff is seamless.
+  // On iOS Capacitor we dismiss the native splash as soon as our WebView is alive.
   function hideNativeStoryboard(){
     try{
       var SS = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen;
-      if (SS && SS.hide) SS.hide({ fadeOutDuration: 200 });
+      if (SS && SS.hide) SS.hide({ fadeOutDuration: 150 });
     }catch(e){}
   }
-  // Wait one paint so #fmSplash is actually on screen before we kill the
-  // native splash underneath. requestAnimationFrame x2 = next composited frame.
-  requestAnimationFrame(function(){ requestAnimationFrame(hideNativeStoryboard); });
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      hideNativeStoryboard();
+      setTimeout(hideNativeStoryboard, 80);
+      setTimeout(hideNativeStoryboard, 240);
+    });
+  });
 
   function dismiss(){
     var s=document.getElementById("fmSplash"); if(!s) return;
     s.classList.add("fm-splash-out");
-    setTimeout(function(){ s.parentNode && s.parentNode.removeChild(s); }, 480);
+    setTimeout(function(){ s.parentNode && s.parentNode.removeChild(s); }, 380);
   }
-  // Hide after a fixed delay so the spring animation finishes cleanly.
-  setTimeout(dismiss, 1350);
-  window.addEventListener("load", function(){ setTimeout(dismiss, 1100); }, { once:true });
+  // Snappy launch: dismiss splash within 600ms for instant app responsiveness.
+  setTimeout(dismiss, 650);
+  window.addEventListener("load", function(){ setTimeout(dismiss, 500); }, { once:true });
 })();
 </script>
 

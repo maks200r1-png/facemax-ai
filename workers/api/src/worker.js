@@ -1430,9 +1430,9 @@ async function callOpenRouter(env, prompt, images, opts = {}) {
   const temperature = opts.temperature != null ? opts.temperature : 0.35;
   // opts.model is only used by voice (VOICE_LLM_MODEL); everything else stays on Gemini.
   const model = String(opts.model || "google/gemini-2.5-flash-lite");
-  const provider = model.startsWith("google/")
+  const provider = opts.provider || (model.startsWith("google/")
     ? { order: ["google-vertex/eu", "google-vertex", "google-ai-studio"], allow_fallbacks: true, data_collection: "deny" }
-    : { allow_fallbacks: true, data_collection: "deny" };
+    : { allow_fallbacks: true, data_collection: "deny" });
   if (opts.responseFormat) provider.require_parameters = true;
 
   const payloadObj = {
@@ -1943,6 +1943,9 @@ async function voiceFetch(url, init, timeoutMs) {
 }
 
 function bytesToBase64(bytes) {
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString("base64");
+  }
   let bin = "";
   const chunk = 0x8000;
   for (let i = 0; i < bytes.length; i += chunk) {
@@ -2027,21 +2030,35 @@ async function readSseAudio(res) {
       delta = parsed?.audio?.data;
     } catch { return; }
     if (!delta) return;
-    const raw = atob(delta);
-    const u8 = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+    let u8;
+    if (typeof Buffer !== "undefined") {
+      u8 = new Uint8Array(Buffer.from(delta, "base64"));
+    } else {
+      const raw = atob(delta);
+      u8 = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+    }
     chunks.push(u8);
     total += u8.length;
   };
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop();
-    lines.forEach(take);
+  const timer = new Promise((_, reject) => setTimeout(() => reject(new Error("sse_audio_timeout")), timeoutMs));
+  const readLoop = async () => {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop();
+      lines.forEach(take);
+    }
+    take(buffer + decoder.decode());
+  };
+  try {
+    await Promise.race([readLoop(), timer]);
+  } catch (e) {
+    try { reader.cancel(); } catch {}
+    if (total === 0) throw e;
   }
-  take(buffer + decoder.decode());
   const pcm = new Uint8Array(total);
   let offset = 0;
   for (const c of chunks) { pcm.set(c, offset); offset += c.length; }
@@ -2484,13 +2501,14 @@ async function voiceAnswer(env, params) {
     system: prompt.system,
     history: prompt.history,
     model: String(env.VOICE_LLM_MODEL || "").trim() || undefined,
-    tries: 2,
+    provider: { allow_fallbacks: true, data_collection: "deny" },
+    tries: 3,
     temperature: 0.6,
     maxTokens: 400,
     timeoutMs: 25000,
   });
   if (!result.ok || !result.text) {
-    return { ok: false, reason: result.reason || "OpenRouter error", status: result.status || 0 };
+    return { ok: false, reason: result.reason || "OpenRouter error", status: result.status || 0, detail: result.detail || null };
   }
   const parsed = parseVoiceAnswer(result.text);
   if (!parsed.answer) return { ok: false, reason: "empty answer" };
@@ -2593,7 +2611,7 @@ async function voiceChat(request, env, ctx) {
       if (transcript) await send({ type: "transcript", text: transcript });
       const answer = await getAnswer();
       if (!answer.ok) {
-        await send({ type: "error", error: voiceErrorCode(answer), reason: answer.reason });
+        await send({ type: "error", error: voiceErrorCode(answer), reason: answer.reason, detail: answer.detail || null });
         return;
       }
       // segments[i] is the exact text audio i speaks: the app highlights it while it plays.
