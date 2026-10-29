@@ -3245,11 +3245,11 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 18px;
+  gap: 22px;
 }
 .mv-big-orb {
-  width: min(62vw, 26vh, 260px);
-  height: min(62vw, 26vh, 260px);
+  width: min(74vw, 34vh, 275px);
+  height: min(74vw, 34vh, 275px);
   flex-shrink: 0;
   padding: 0;
   border: 0;
@@ -3260,21 +3260,21 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   clip-path: circle(50% at 50% 50%);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transform: scale(calc(1 + var(--lvl, 0) * 0.06));
+  transform: scale(calc(1 + var(--lvl, 0) * 0.08));
   transition: transform 0.12s linear, width 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1), height 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1);
 }
-/* With an answer on screen the orb contracts to give the words room. */
+/* In pure voice-first mode the orb stays large and dominant at all times */
 .mv-overlay.mv-has-text .mv-big-orb {
-  width: min(44vw, 19vh, 200px);
-  height: min(44vw, 19vh, 200px);
+  width: min(74vw, 34vh, 275px);
+  height: min(74vw, 34vh, 275px);
 }
 .mv-status {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  min-height: 20px;
+  color: rgba(255, 255, 255, 0.55);
+  min-height: 24px;
   text-align: center;
   transition: color 0.25s ease;
 }
@@ -3299,8 +3299,9 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   40% { opacity: 1; transform: translateY(-3.5px) scale(1.25); }
 }
 
-/* The answer is spoken, so long text scrolls; the action button below it never does. */
+/* Voice-First Mode: text is hidden so user experiences authentic voice conversation */
 .mv-text {
+  display: none !important;
   position: relative;
   width: 100%;
   flex: 0 1 auto;
@@ -3334,13 +3335,13 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 .mv-answer.mv-karaoke .mv-sent.mv-past { opacity: 0.45; }
 .mv-answer.mv-karaoke .mv-sent.mv-now { opacity: 1; color: #fff; text-shadow: 0 0 18px rgba(120, 190, 255, 0.45); }
 .mv-action {
-  margin: 0 auto;
+  margin: 4px auto 0 auto;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   height: 52px;
-  padding: 0 26px;
+  padding: 0 28px;
   border-radius: 999px;
   border: 0;
   background: #fff;
@@ -3412,20 +3413,20 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
 .mv-chip.mv-chip-primary:active { background: #e6e6e6; }
 /* Short phones (SE / mini): keep everything on one screen. */
 @media (max-height: 740px) {
-  .mv-stage { gap: 10px; }
-  .mv-answer { font-size: 20px; }
-  .mv-you { font-size: 15px; margin-bottom: 6px; }
-  .mv-action { height: 46px; font-size: 16px; }
-  .mv-chip { min-height: 68px; padding: 11px 12px; font-size: 15px; }
+  .mv-stage { gap: 14px; }
+  .mv-big-orb { width: min(68vw, 30vh, 230px); height: min(68vw, 30vh, 230px); }
+  .mv-overlay.mv-has-text .mv-big-orb { width: min(68vw, 30vh, 230px); height: min(68vw, 30vh, 230px); }
+  .mv-action { height: 48px; font-size: 16px; }
+  .mv-chip { min-height: 64px; padding: 10px 12px; font-size: 15px; }
   .mv-chip svg { width: 22px; height: 22px; }
-  .mv-chip.mv-chip-primary { min-height: 58px; font-size: 18px; }
+  .mv-chip.mv-chip-primary { min-height: 56px; font-size: 18px; }
 }
 .mv-chip[disabled] { opacity: 0.45; pointer-events: none; }
 
 @media (max-height: 680px) {
-  .mv-big-orb { width: 150px; height: 150px; }
-  .mv-answer { font-size: 17px; }
-  .mv-chip { min-height: 54px; }
+  .mv-big-orb { width: 190px; height: 190px; }
+  .mv-overlay.mv-has-text .mv-big-orb { width: 190px; height: 190px; }
+  .mv-chip { min-height: 52px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .mv-orb-btn, .mv-big-orb, .mv-chip, .mv-overlay, .mv-answer .mv-sent { transition: none; }

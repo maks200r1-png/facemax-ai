@@ -1242,9 +1242,14 @@
     detect();
     bindHaptics();
     styleStatusBar();
-    [50, 150, 400, 1000].forEach(ms => setTimeout(detect, ms));
-    window.addEventListener("pageshow", detect);
-    document.addEventListener("visibilitychange", function() { if (!document.hidden) detect(); });
+    try {
+      if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+        window.addEventListener("pageshow", detect);
+      }
+      if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
+        document.addEventListener("visibilitychange", function() { if (!document.hidden) detect(); });
+      }
+    } catch (_) {}
     // Capacitor plugin registration can lag behind DOMContentLoaded. Bind the
     // local-notification receive/action listeners only after native detection,
     // then retry briefly until LocalNotifications appears on the bridge.
