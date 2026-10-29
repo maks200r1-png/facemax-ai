@@ -1563,18 +1563,34 @@ async function callGemini(env, body) {
     // Also normalise raw base64 strings (no data: prefix) that iOS Capacitor
     // Camera sometimes returns — add the jpeg prefix so they pass validation.
     function imgPart(dataUrl) {
-      let s = String(dataUrl || "");
-      // Normalise raw base64 (no data: prefix) — iOS Camera can return these
-      if (s.length > 100 && !s.startsWith("data:") && /^[A-Za-z0-9+/]/.test(s)) {
-        s = "data:image/jpeg;base64," + s;
+      let s = String(dataUrl || "").trim();
+      if (!s) return null;
+      if (s.startsWith("data:")) {
+        const comma = s.indexOf(",");
+        if (comma > 0) {
+          const header = s.slice(0, comma);
+          const b64 = s.slice(comma + 1).replace(/\s+/g, "");
+          s = header + "," + b64;
+        }
+      } else if (s.length > 100 && /^[A-Za-z0-9+/]/.test(s)) {
+        s = "data:image/jpeg;base64," + s.replace(/\s+/g, "");
       }
-      return /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.test(s) ? s : null;
+      return /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=]+)$/.test(s) ? s : null;
     }
 
     const images = [];
     const main = imgPart(body.image);
     if (main) images.push(main);
 
+    if (body.visual_scan === true && images.length === 0) {
+      return {
+        ok: false,
+        failed: true,
+        source: "error",
+        reason: "Visual scan requested but face photo could not be processed",
+        status: 400
+      };
+    }
 
     // When no images are provided (iOS metrics-only flow), use the shared
     // buildReportPrompt that anchors the report on MediaPipe numbers. The
@@ -1608,9 +1624,10 @@ Rules:
 - Do NOT include an archetype field — it is calculated server-side from the score.
 
 Scoring calibration (follow strictly):
+- BRUTAL HONESTY MANDATE: This is a strict looksmaxxing app. Users upload photos specifically to find their flaws and weaknesses so they can fix them. Do NOT be polite, do NOT be overly generous, and do NOT inflate scores. If a face is unattractive, asymmetrical, carries excess facial fat, has poor bone structure, weak chin/jaw, severe acne, or poor eye area, score it HONESTLY in the 30-55 range. Giving an 80+ to an average or below-average face is strictly prohibited and completely breaks user trust. An 80+ score is reserved EXCLUSIVELY for top-tier handsome/beautiful, model-grade facial aesthetics.
 - Rate this face HONESTLY and OBJECTIVELY. Do not inflate or deflate — score exactly what you see.
 - Score only the attached current photo. Do not use account history, prior results, or earlier metrics. The same photo scanned repeatedly must receive the same score.
-- Use the full 0-100 range. A truly average adult face with no notable strengths or weaknesses = 50-55. Slightly above average = 56-65. Good-looking with clear strengths = 66-75. Genuinely attractive, well-proportioned = 76-85. Exceptional, model-tier = 86-95. Below 50 for visible aesthetic problems; below 35 for severe ones.
+- Use the full 0-100 range. Below 35 for severe aesthetic defects; 35-49 for visibly below-average/unattractive features; 50-55 for a truly average adult face with no notable strengths; 56-65 for slightly above average; 66-75 for good-looking with clear strengths; 76-85 for genuinely attractive, well-proportioned; 86-95 for exceptional, model-tier.
 - overall_score must be consistent with the sub-scores: a weighted average of what you actually rated, not pushed higher or lower artificially.
 
 Per-feature scoring rubric (apply these definitions when you set the sub-scores):
@@ -1715,11 +1732,19 @@ async function faceCheck(request, env) {
   if (!key) return json({ ok: false, error: "ai_unavailable", source: "error", reason: "OPENROUTER_API_KEY missing" }, 503);
 
   function imgPart(dataUrl) {
-    let s = String(dataUrl || "");
-    if (s.length > 100 && !s.startsWith("data:") && /^[A-Za-z0-9+/]/.test(s)) {
-      s = "data:image/jpeg;base64," + s;
+    let s = String(dataUrl || "").trim();
+    if (!s) return null;
+    if (s.startsWith("data:")) {
+      const comma = s.indexOf(",");
+      if (comma > 0) {
+        const header = s.slice(0, comma);
+        const b64 = s.slice(comma + 1).replace(/\s+/g, "");
+        s = header + "," + b64;
+      }
+    } else if (s.length > 100 && /^[A-Za-z0-9+/]/.test(s)) {
+      s = "data:image/jpeg;base64," + s.replace(/\s+/g, "");
     }
-    return /^data:(.+?);base64,(.+)$/.test(s) ? s : null;
+    return /^data:(.+?);base64,([A-Za-z0-9+/=]+)$/.test(s) ? s : null;
   }
   const part = imgPart(image);
   if (!part) return json({ ok: true, has_face: false, source: "bad_image" });
@@ -2928,8 +2953,19 @@ async function callGeminiFoodScan(env, body) {
   if (!String(env.OPENROUTER_API_KEY || "").trim()) return { ok: false, source: "error", reason: "OPENROUTER_API_KEY missing", status: 503 };
 
   function imgPart(dataUrl) {
-    const s = String(dataUrl || "");
-    return /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.test(s) ? s : null;
+    let s = String(dataUrl || "").trim();
+    if (!s) return null;
+    if (s.startsWith("data:")) {
+      const comma = s.indexOf(",");
+      if (comma > 0) {
+        const header = s.slice(0, comma);
+        const b64 = s.slice(comma + 1).replace(/\s+/g, "");
+        s = header + "," + b64;
+      }
+    } else if (s.length > 100 && /^[A-Za-z0-9+/]/.test(s)) {
+      s = "data:image/jpeg;base64," + s.replace(/\s+/g, "");
+    }
+    return /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=]+)$/.test(s) ? s : null;
   }
 
   const main = imgPart(body.image);

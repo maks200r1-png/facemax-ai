@@ -11473,15 +11473,15 @@ function generateResilientBiometrics(imageDataUrl) {
   }
   hash = Math.abs(hash);
 
-  // Realistic handsome looksmax range: 81 to 87
-  const overall = 81 + (hash % 7);
-  const jaw = Math.min(94, overall + 2 + (hash % 5));
-  const cheek = Math.min(92, overall + 1 + ((hash >> 2) % 6));
-  const symm = Math.min(90, overall - 1 + ((hash >> 4) % 5));
-  const skin = Math.max(72, overall - 4 + ((hash >> 6) % 6));
-  const eyes = Math.min(92, overall + ((hash >> 8) % 6));
-  const nose = Math.min(88, overall - 2 + ((hash >> 10) % 5));
-  const lips = Math.min(86, overall - 1 + ((hash >> 12) % 5));
+  // Realistic looksmax baseline: 52 to 67
+  const overall = 52 + (hash % 16);
+  const jaw = Math.max(45, Math.min(72, overall - 2 + (hash % 7)));
+  const cheek = Math.max(45, Math.min(70, overall - 1 + ((hash >> 2) % 6)));
+  const symm = Math.max(46, Math.min(74, overall + ((hash >> 4) % 6) - 2));
+  const skin = Math.max(42, Math.min(75, overall - 4 + ((hash >> 6) % 8)));
+  const eyes = Math.max(48, Math.min(72, overall + ((hash >> 8) % 6) - 2));
+  const nose = Math.max(45, Math.min(71, overall - 2 + ((hash >> 10) % 6)));
+  const lips = Math.max(46, Math.min(70, overall - 2 + ((hash >> 12) % 6)));
   const harmony = Math.round((overall + symm + jaw) / 3);
 
   const report = {
@@ -11495,20 +11495,31 @@ function generateResilientBiometrics(imageDataUrl) {
       skin: skin,
       symmetry: symm,
       harmony: harmony,
-      improvement_potential: Math.min(98, overall + 9)
+      improvement_potential: Math.min(95, overall + 14)
     },
-    summary: "Strong mandibular bone structure with positive canthal tilt. Mild water retention softens the gonial angle.",
+    summary: "Facial balance analyzed. Lower face definition and cheekbone contouring present key optimization targets.",
     fastest_upgrade: {
-      title: "Debloating Protocol",
-      text: "Targeted sodium management and lymphatic drainage along the jawline will add +4 points."
+      title: "Mandibular Definition Protocol",
+      text: "Targeted posture alignment and reducing sodium intake to reduce under-jaw softness."
     },
-    jawline: `Sharp mandibular angle with strong chin projection (${jaw}/100). Maintain upright neck posture.`,
-    skin: `Even complexion (${skin}/100). Maintain daily hydration and lightweight barrier moisturizer.`,
+    jawline: `Mandibular line definition (${jaw}/100). Focus on chin posture and neck alignment.`,
+    skin: `Skin clarity (${skin}/100). Maintain daily hydration and barrier moisturizer.`,
     weak_points: [
-      { title: "Morning Water Retention", text: "Mild puffiness along buccinator muscles" }
+      { title: "Jawline Definition", text: "Submental softness and posture softening the jawline" },
+      { title: "Midface Contour", text: "Opportunity to enhance cheekbone prominence" },
+      { title: "Skin Clarity", text: "Texture and tone require consistent daily routine" }
     ],
     strengths: [
-      { title: "Mandibular Base", text: "Clean gonial angle and forward chin projection" }
+      { title: "Facial Symmetry", text: "Solid horizontal eye alignment and balanced brow line" },
+      { title: "Facial Proportions", text: "Even vertical thirds between forehead, midface, and lower third" },
+      { title: "Eye Area Foundation", text: "Good neutral eye spacing" }
+    ],
+    haircut: "Maintain clean tapered sides with slight volume on top to balance facial verticality.",
+    photo_angle: "Keep camera strictly at eye level with diffuse natural front lighting.",
+    key_points: [
+      "Jawline softness | Correct forward head posture and reduce dietary sodium",
+      "Midface projection | Strengthen upper facial muscle tone and facial drainage",
+      "Skin texture | Implement daily gentle cleanser and lightweight barrier moisturizer"
     ],
     _ai_source: "openrouter"
   };
@@ -11529,14 +11540,20 @@ window.generateResilientBiometrics = generateResilientBiometrics;
 async function fetchGeminiScan(imageDataUrl, _mpScore, _mpMetrics){
   // Normalise to a valid data URI — on iOS Capacitor Camera.getPhoto sometimes
   // returns raw base64 without the "data:image/jpeg;base64," prefix.
-  let normalised = String(imageDataUrl || "");
+  let normalised = String(imageDataUrl || "").trim();
   if (normalised && !normalised.startsWith("data:")) {
     normalised = "data:image/jpeg;base64," + normalised;
+  }
+  if (normalised.startsWith("data:")) {
+    const comma = normalised.indexOf(",");
+    if (comma > 0) {
+      normalised = normalised.slice(0, comma) + "," + normalised.slice(comma + 1).replace(/\s+/g, "");
+    }
   }
 
   // Guard: if we somehow have no image at all, return a hard failure (not no_face)
   // so the user gets a "try again" instead of a confusing "no face detected".
-  const isValidDataUrl = /^data:(image\/[a-zA-Z0-9.+-]+);base64,[A-Za-z0-9+/]{100,}/.test(normalised);
+  const isValidDataUrl = /^data:(image\/[a-zA-Z0-9.+-]+);base64,[A-Za-z0-9+/=]{50,}/.test(normalised);
   if (!isValidDataUrl) {
     console.warn("[facemax] fetchGeminiScan: invalid/empty imageDataUrl, length=", normalised.length, "prefix=", normalised.slice(0,40));
     return { overall: null, metrics: null, report: null, hardFail: true, reason: "no_image" };
@@ -18876,12 +18893,12 @@ window.syncTDEEChoiceUI = function() {
       return;
     }
 
-    let finalScore = 84;
+    let finalScore = 60;
     let finalMetrics = null;
     let aiReport = null;
     let thumb = null;
     try {
-      finalScore = (aiResult && isFinite(aiResult.overall)) ? aiResult.overall : 84;
+      finalScore = (aiResult && isFinite(aiResult.overall)) ? aiResult.overall : 60;
       finalMetrics = (aiResult && aiResult.metrics) ? aiResult.metrics : null;
       aiReport = (aiResult && aiResult.report) ? aiResult.report : null;
 
@@ -18957,9 +18974,16 @@ window.syncTDEEChoiceUI = function() {
       const scanImage = (typeof makeScanImage === "function")
         ? await makeScanImage(dataUrl, 1024).catch(() => null)
         : null;
+      let finalImg = String(scanImage || dataUrl || "").trim();
+      if (finalImg.startsWith("data:")) {
+        const comma = finalImg.indexOf(",");
+        if (comma > 0) {
+          finalImg = finalImg.slice(0, comma) + "," + finalImg.slice(comma + 1).replace(/\s+/g, "");
+        }
+      }
       const body = {
         user_id: currentUserId(),
-        image: scanImage || dataUrl,
+        image: finalImg,
         gender: (typeof currentGender === "function") ? currentGender() : null,
         visual_scan: true,
         local_date: new Date().toLocaleDateString('en-CA'),
@@ -18967,12 +18991,19 @@ window.syncTDEEChoiceUI = function() {
         unlocked: (typeof hasUnlockedAccess === "function" ? hasUnlockedAccess() : true),
       };
 
-      const res = await fetch(API_BASE + "/api/full-report", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
-        signal: controller ? controller.signal : undefined
-      }).catch(() => null);
+      let res = null;
+      for (let attempt = 0; attempt < 2 && !res; attempt++) {
+        if (attempt > 0) await new Promise(r => setTimeout(r, 400));
+        res = await fetch(API_BASE + "/api/full-report", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body),
+          signal: controller ? controller.signal : undefined
+        }).catch(() => null);
+        if (res && res.status >= 500 && attempt === 0) {
+          res = null; // retry once on transient server glitch
+        }
+      }
 
       if (res) {
         if (res.status === 422) {
@@ -18987,7 +19018,7 @@ window.syncTDEEChoiceUI = function() {
           const report = data && (data.data || data.report);
           if (report) {
             const sc = report.scores || {};
-            const pick = (v) => isFinite(v) ? Math.max(1, Math.min(100, Math.round(v))) : 75;
+            const pick = (v) => isFinite(v) ? Math.max(1, Math.min(100, Math.round(v))) : 60;
             return {
               overall: pick(report.overall_score),
               metrics: {
