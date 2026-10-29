@@ -19828,12 +19828,28 @@ window.syncTDEEChoiceUI = function() {
       timer = setTimeout(() => { timedOut = true; controller.abort(); }, 32000);
     }
     try {
-      const res = await fetch(API_BASE + "/api/voice-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
+      let res = null;
+      let lastErr = null;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        if (myTurn !== mvTurn) return { status: 0, data: null, streamed: false };
+        try {
+          res = await fetch(API_BASE + "/api/voice-chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+            signal: controller.signal,
+          });
+          if (res) break;
+        } catch (e) {
+          lastErr = e;
+          if (attempt === 0 && !timedOut && myTurn === mvTurn) {
+            await new Promise(r => setTimeout(r, 600));
+            continue;
+          }
+          throw e;
+        }
+      }
+      if (!res && lastErr) throw lastErr;
       clearTimeout(timer);
       timer = setTimeout(() => { timedOut = true; controller.abort(); }, 45000);
       if (!/ndjson/i.test(res.headers.get("Content-Type") || "")) {
