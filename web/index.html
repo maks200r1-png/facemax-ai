@@ -19599,6 +19599,7 @@ window.syncTDEEChoiceUI = function() {
     const ctx = mvEnsureCtx();
     if (!ctx) return false;
     try {
+      if (ctx.state === "suspended") await ctx.resume().catch(() => {});
       const buf = await ctx.decodeAudioData(bytes.buffer.slice(0));
       const src = ctx.createBufferSource();
       src.buffer = buf;

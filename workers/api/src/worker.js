@@ -2465,7 +2465,7 @@ Scope, strict:
 
 Speaking style:
 ${speakingStyle}
-${fn ? "" : "- Free conversation: speak in 4 to 6 natural, authoritative sentences (about 70 to 95 words, lasting 20 to 30 seconds of speech) unless the user clearly asks for a quick answer. First explain the core aesthetic or biological mechanism behind their question, then give a concrete, high-impact action step for today, and end with an engaging follow-up.\n"}
+${fn ? "" : "- Free conversation: speak in 3 to 4 punchy, natural, authoritative sentences (about 45 to 60 words, lasting 15 to 20 seconds of speech) unless the user clearly asks for a quick answer. First explain the core aesthetic or biological mechanism behind their question, then give a concrete, high-impact action step for today, and end with an engaging follow-up.\n"}
 Exercise and routine rules, strict:
 - NEVER suggest doing facial exercises on general questions or random topics (celebrities, models, hair, skin, diet, sleep, style, memes). Answer their specific question directly. NEVER output [[go:exercises]] on free conversation unless the user explicitly asked to start or do facial exercises.
 - If today's facial exercises are already completed (${allExercisesDone ? "ALL 4 EXERCISES ARE FULLY COMPLETED TODAY" : "when completed"}): NEVER suggest doing exercises, do NOT say 'let's do exercises' or 'start training', and NEVER output [[go:exercises]]. Remind them facial muscles need recovery and acknowledge that today's workout is done.
@@ -2531,8 +2531,9 @@ function parseVoiceAnswer(text) {
   return { answer, action };
 }
 
-// Splits a spoken answer into at most VOICE_MAX_SEGMENTS sentence groups. The
-// first group is kept short so its audio is ready first.
+// Splits a spoken answer into at most VOICE_MAX_SEGMENTS sentence groups.
+// The first group is balanced (~70-110 chars) so playback duration (5-7s)
+// overlaps segment 1 & 2 generation time (3-5s), completely preventing mid-speech silence gaps.
 function voiceSegments(answer) {
   const text = String(answer || "").trim();
   if (!text) return [];
@@ -2541,11 +2542,19 @@ function voiceSegments(answer) {
   if (parts.length < 2) return [text];
   let i = 0;
   let first = "";
-  while (i < parts.length && (first.length < 50 || i === 0)) first = (first ? first + " " : "") + parts[i++];
+  // Balanced first segment: ideally ~70-110 chars, ~25-30% of total text, strictly < 45% of total
+  const targetFirst = Math.max(65, Math.min(110, Math.floor(text.length * 0.28)));
+  while (i < parts.length - 1) {
+    const candidate = (first ? first + " " : "") + parts[i];
+    if (first.length >= targetFirst) break;
+    if (candidate.length >= Math.floor(text.length * 0.45) && first.length > 0) break;
+    first = candidate;
+    i++;
+  }
   const rest = parts.slice(i);
   if (!rest.length) return [first];
   const restText = rest.join(" ");
-  if (VOICE_MAX_SEGMENTS < 3 || rest.length < 2 || restText.length < 200) return [first, restText];
+  if (VOICE_MAX_SEGMENTS < 3 || rest.length < 2 || restText.length < 140) return [first, restText];
   let mid = 0;
   let acc = 0;
   while (mid < rest.length - 1 && acc < restText.length / 2) acc += rest[mid++].length + 1;
@@ -2722,13 +2731,17 @@ async function voiceChat(request, env, ctx) {
       const segmentPromises = segments.map((seg) => voiceSpeak(env, seg, lang, gender));
       for (let i = 0; i < segments.length; i++) {
         try {
-          const speech = await segmentPromises[i];
-          if (speech.ok && speech.base64) {
+          let speech = await segmentPromises[i];
+          if ((!speech || !speech.ok || !speech.base64) && segments[i]) {
+            // Immediate retry once to guard against transient 500/502/rate-limit
+            speech = await voiceSpeak(env, segments[i], lang, gender);
+          }
+          if (speech && speech.ok && speech.base64) {
             ttsOk = true;
             deliveredCount++;
             await send({ type: "audio", index: i, count: segments.length, text: segments[i], audio_base64: speech.base64, audio_format: speech.format });
           } else {
-            ttsError = speech.reason || "segment_failed";
+            ttsError = speech?.reason || "segment_failed";
           }
         } catch (e) {
           ttsError = e?.message || "segment_error";
