@@ -725,11 +725,11 @@ async function postStream(body) {
   assert.equal(f.data.error, "tts_unavailable");
   assert.ok(!f.data.audio_base64);
   ttsMode = "ok";
-  // Client: no status line on Home (SCAN HISTORY right under SCAN MY FACE), big streak card on Exercises, scan capped at 3 s
+  // Client: no status line on Home (SCAN HISTORY right under SCAN MY FACE), big streak card on Exercises, real vision sweep
   const web = readFileSync(resolve(here, "../web/index.html"), "utf8");
-  assert.match(web, /const MOGLY_SCAN_FETCH_TIMEOUT_MS = 2800;/);
-  assert.match(web, /const MOGLY_SCAN_MAX_MS = 3000;/);
-  assert.match(web, /const MOGLY_SCAN_MIN_SWEEP_MS = 2400;/);
+  assert.match(web, /const MOGLY_SCAN_FETCH_TIMEOUT_MS = 14000;/);
+  assert.match(web, /const MOGLY_SCAN_MAX_MS = 15000;/);
+  assert.match(web, /const MOGLY_SCAN_MIN_SWEEP_MS = 3800;/);
   assert.match(web, /id="moglyScanBtnText"[^\n]*\n\s*<\/button>\n\s*<button type="button" class="mogly-btn-secondary" id="moglySecondaryBtn"/, "SCAN HISTORY sits directly under SCAN MY FACE");
   assert.ok(!/mogly-ritual-status|moglyRitualStatus"/.test(web), "tiny streak line removed from Home");
   assert.match(web, /<section id="exercises" class="screen">[\s\S]{0,600}id="exStreakCard"[\s\S]{0,1200}<div id="exercisesList"><\/div>/, "streak card on top of Exercises");

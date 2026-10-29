@@ -1742,8 +1742,11 @@ async function faceCheck(request, env) {
   try {
     const result = await callOpenRouter(env, prompt, [part], { tries: 3 });
     if (!result.ok) return json({ ok: false, error: "ai_unavailable", source: "error", status: result.status, reason: result.reason || "OpenRouter error" }, 503);
+    let txt = String(result.text || "").trim();
+    if (txt.startsWith("```")) txt = txt.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+    txt = extractFirstJsonObject(txt) || txt;
     let parsed = {};
-    try { parsed = JSON.parse(result.text || ""); } catch {}
+    try { parsed = JSON.parse(txt); } catch {}
     if (typeof parsed.has_face !== "boolean") return json({ ok: false, error: "invalid_ai_response", source: "error" }, 502);
     return json({ ok: true, has_face: parsed.has_face, reason: parsed.reason || null, source: "openrouter" });
   } catch (e) {
