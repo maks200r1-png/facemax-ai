@@ -2376,17 +2376,22 @@ function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise, gender }
   const ru = lang === "ru";
   const isFemale = voicePersonaGender(ctx, gender) === "female";
   const noScan = !voiceHasScan(ctx) && (!fn || VOICE_NO_SCAN_FUNCTIONS.has(fn));
+  const doneCount = Number(ctx?.today?.exercises_done ?? ctx?.progress?.plan_done ?? 0);
+  const totalCount = Number(ctx?.today?.exercises_total ?? ctx?.progress?.plan_total ?? 4);
+  const allExercisesDone = Boolean(totalCount > 0 && doneCount >= totalCount);
   const functionGoal = {
     scan: "The user just completed their facial scan. Give an immediate, charismatic, and punchy looksmaxxing breakdown based on their real metrics in context (overall score, jawline, cheekbones, eyes, skin, face shape), told as what it means for how their face looks, not as a list of numbers: the full report with every number is already on their screen. Highlight their strongest facial feature, state their #1 priority weakness to fix first and why, give one immediate softmaxx action for today (like debloating, tongue posture, skincare), and encourage them. Speak in 5 to 7 concise, impactful sentences (about 75 to 95 words, lasting 20 to 30 seconds of speech).",
     fixfirst: "The user tapped 'Fix first'. Rank their improvable areas from the Key scan metrics and weak points, lowest softmaxx-fixable score first. Skip fixed bone structure (orbital shape, skull, jaw bone width) or say in one clause that it is hardmaxx territory. Name the single area with the biggest visible payoff, why in plain visual words, and ONE concrete step for today. Speak in 5 to 6 clear, actionable sentences (around 70 to 85 words, 20 to 25 seconds). If there is no scan, say a scan is needed to rank them and give the universal first fix: lower body fat and debloat.",
-    jawline: "The user tapped 'Jawline'. Use their jawline score and gender. Explain honestly what makes a jawline look sharper: body fat and water retention first, then neck and tongue posture, then masseter tone from normal chewing. Explain mewing honestly: correct resting tongue posture on the palate is a good habit and improves the neck and chin line in photos, but it does not visibly reshape adult bone; real bone change is hardmaxxing, meaning orthodontics or surgery with a professional. Give one concrete action for today. Speak in 5 to 6 authoritative sentences (around 70 to 85 words, 20 to 25 seconds). End with [[go:exercises]].",
-    debloat: "The user tapped 'Debloat'. Explain the fastest softmaxxing win for facial puffiness: lower sodium and alcohol, steady water, potassium foods, sleep 7 to 9 hours with the head slightly raised, and a gentle lymphatic drainage massage in the morning, cold water helps. Use their data if relevant. Give a concrete plan for the next 24 hours. Speak in 5 to 6 practical sentences (around 70 to 85 words, 20 to 25 seconds). Never suggest dehydration, diuretics or fasting. End with [[go:exercises]].",
+    jawline: "The user tapped 'Jawline'. Use their jawline score and gender. Explain honestly what makes a jawline look sharper: body fat and water retention first, then neck and tongue posture, then masseter tone from normal chewing. Explain mewing honestly: correct resting tongue posture on the palate is a good habit and improves the neck and chin line in photos, but it does not visibly reshape adult bone; real bone change is hardmaxxing, meaning orthodontics or surgery with a professional. Give one concrete action for today. Speak in 5 to 6 authoritative sentences (around 70 to 85 words, 20 to 25 seconds)." + (allExercisesDone ? " Today's facial exercises are ALREADY fully completed: praise them for finishing today's workout, remind them facial muscles need recovery, and do NOT suggest doing more exercises or output [[go:exercises]]." : " End with [[go:exercises]]."),
+    debloat: "The user tapped 'Debloat'. Explain the fastest softmaxxing win for facial puffiness: lower sodium and alcohol, steady water, potassium foods, sleep 7 to 9 hours with the head slightly raised, and a gentle lymphatic drainage massage in the morning, cold water helps. Use their data if relevant. Give a concrete plan for the next 24 hours. Speak in 5 to 6 practical sentences (around 70 to 85 words, 20 to 25 seconds). Never suggest dehydration, diuretics or fasting." + (allExercisesDone ? " Today's facial exercises are ALREADY fully completed: do NOT suggest exercises or output [[go:exercises]]." : " End with [[go:exercises]]."),
     eyes: "The user tapped 'Hunter eyes'. Use their eye area score. Be honest: canthal tilt and orbital bone are hardmaxxing and do not change with exercises. What softmaxxing can improve: under-eye puffiness and dark circles through sleep, less salt and cold compresses, brow grooming to frame the eyes, a lower body fat level, and a relaxed but focused gaze in photos. Give one concrete step for today. Speak in 5 to 6 focused sentences (around 70 to 85 words, 20 to 25 seconds).",
     skin: "The user tapped 'Skin'. Use their skin score. Give a simple looksmaxxing skin routine: gentle cleanser, moisturizer, daily sunscreen in the morning; at night a retinoid introduced slowly, two or three times a week; plus sleep, less sugar and dairy if they break out. For cystic acne or persistent problems say to see a dermatologist. Speak in 5 to 6 clear sentences (around 70 to 85 words, 20 to 25 seconds).",
     hair: "The user tapped 'Haircut'. Use their face shape, gender and hair score. Recommend a specific haircut direction that balances their face shape, for example volume on top for round faces, softer sides for long faces, textured fringe for high foreheads, and what to ask the barber or stylist. Mention brows and, for men, beard shaping if it would sharpen the jawline. Speak in 5 to 6 tailored sentences (around 70 to 85 words, 20 to 25 seconds).",
     brief: "The user tapped 'Daily brief', their short daily check-in. Greet them for the time of day. In one sentence, reflect their real progress from the data (streak, plan done today, score change); never invent numbers. Then give today's single focus: the one action with the biggest visible payoff for their weakest improvable area. If the streak is at risk, say so plainly. If the last scan is 7 or more days ago, suggest a re-scan to measure progress. Speak in 5 to 6 motivating sentences (around 70 to 85 words, 20 to 25 seconds). End with [[go:daily]] if today's plan is not finished.",
     priority: "The user tapped 'What should I improve first'. From the metrics, pick the one or two most improvable weak areas (skip anything that is fixed bone structure), say plainly what matters most, and give ONE concrete first step they can do today. Speak in 5 to 6 direct sentences (around 70 to 85 words, 20 to 25 seconds).",
-    today: "The user tapped 'My plan for today'. Briefly say how their day is going using the Today data (exercises done, water), name the next exercise, and ask if they want to start it. Speak in 4 to 5 motivating sentences (around 60 to 75 words, 18 to 22 seconds). If the next exercise exists end with the tag [[go:exercises]].",
+    today: allExercisesDone
+      ? "The user tapped 'My plan for today'. All facial exercises for today are ALREADY completed! Enthusiastically praise them for finishing all 4 exercises and keeping the streak alive. Mention their water intake progress, remind them to sleep well and let the facial muscles rest, and speak in 4 to 5 motivating sentences. Do NOT output [[go:exercises]]."
+      : "The user tapped 'My plan for today'. Briefly say how their day is going using the Today data (exercises done, water), name the next exercise, and ask if they want to start it. Speak in 4 to 5 motivating sentences (around 60 to 75 words, 18 to 22 seconds). If the next exercise exists end with the tag [[go:exercises]].",
     meal: "The user tapped 'What should I eat'. Using the meal plan if present, suggest what to eat next and why it helps with facial bloating. If there is no meal plan, give one practical suggestion and mention the food scanner. Speak in 5 to 6 practical sentences (around 70 to 85 words, 20 to 25 seconds). End with the tag [[go:foodscan]] only if you mention scanning a meal.",
     exercise: exercise
       ? `Coach the user through this exercise out loud, hands-free. One short intro naming the exercise, then the movement steps in order in plain spoken words, then finish by saying the timer starts now for ${Number(exercise.seconds) || 30} seconds. Do not read step numbers. 5 to 7 short sentences.\nExercise: ${voiceClip(exercise.name, 80)} (area: ${voiceClip(exercise.area, 40)})\nWhat it does: ${voiceClip(exercise.desc, 220)}\nSteps: ${voiceClip(JSON.stringify(exercise.steps || []), 600)}`
@@ -2436,6 +2441,9 @@ Scope, strict:
 Speaking style:
 ${speakingStyle}
 ${fn ? "" : "- Free conversation: speak in 4 to 6 natural, authoritative sentences (about 70 to 95 words, lasting 20 to 30 seconds of speech) unless the user clearly asks for a quick answer. First explain the core aesthetic or biological mechanism behind their question, then give a concrete, high-impact action step for today, and end with an engaging follow-up.\n"}
+Exercise and routine rules, strict:
+- NEVER suggest doing facial exercises on general questions or random topics (celebrities, models, hair, skin, diet, sleep, style, memes). Answer their specific question directly. NEVER output [[go:exercises]] on free conversation unless the user explicitly asked to start or do facial exercises.
+- If today's facial exercises are already completed (${allExercisesDone ? "ALL 4 EXERCISES ARE FULLY COMPLETED TODAY" : "when completed"}): NEVER suggest doing exercises, do NOT say 'let's do exercises' or 'start training', and NEVER output [[go:exercises]]. Remind them facial muscles need recovery and acknowledge that today's workout is done.
 Numbers, strict:
 - The user already sees every exact number on screen. Never read out lists of measurements, scores, degrees or percentages (not "gonial angle 121 degrees, symmetry 84 percent, jawline 62").
 - Turn the data into what it means visually and what to do, in plain words. Example: "Your bone structure is strong, but the lower third is hidden under morning puffiness. This week's focus is draining the water off your cheekbones."
@@ -2470,7 +2478,7 @@ Write only what Mogly says out loud.`;
   const user = fn
     ? "Task: " + functionGoal + (noScan ? "\nThe user has no face scan yet: follow the No scan yet rules instead of this task's length and tag." : "")
     : voiceClip(userText, 600);
-  return { system, history: historyMessages, user, noScan };
+  return { system, history: historyMessages, user, noScan, allExercisesDone };
 }
 
 function parseVoiceAnswer(text) {
@@ -2569,6 +2577,11 @@ async function voiceAnswer(env, params) {
   if (!parsed.answer) return { ok: false, reason: "empty answer" };
   // Without a scan every looksmax answer leads to the camera, even if the model forgot the tag.
   if (prompt.noScan) parsed.action = "scan";
+  if (parsed.action === "exercises") {
+    if (prompt.allExercisesDone || (!params.fn && !/exercise|workout|routine|тренир|упражн/i.test(params.userText || ""))) {
+      parsed.action = null;
+    }
+  }
   return { ok: true, ...parsed };
 }
 

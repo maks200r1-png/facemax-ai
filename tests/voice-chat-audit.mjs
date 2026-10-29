@@ -805,4 +805,34 @@ async function postStream(body) {
   ok("no scan: hook + [[go:scan]] -> 📷 Take Face Scan, persona bound to user gender, bro rotated");
 }
 
+// 27. exercises suppression: never push exercises when already finished or on general conversation
+{
+  setPremium("u_ex", true);
+  calls.length = 0;
+  chatReply = "Great job finishing your workout! [[go:exercises]]";
+  const doneRes = await post("/api/voice-chat", {
+    user_id: "u_ex", lang: "en", function: "today",
+    context: { today: { exercises_done: 4, exercises_total: 4, water_glasses: 5, water_goal: 8 } },
+  });
+  assert.equal(doneRes.status, 200);
+  assert.equal(doneRes.data.action, null, "action 'exercises' suppressed because all 4 exercises are done");
+  const donePrompt = promptOf(calls.find(isLlm).body);
+  assert.match(donePrompt, /ALL 4 EXERCISES ARE FULLY COMPLETED TODAY/);
+  assert.match(donePrompt, /All facial exercises for today are ALREADY completed/);
+
+  calls.length = 0;
+  chatReply = "Justin Bieber has solid facial harmony and compact midface. [[go:exercises]]";
+  const generalRes = await post("/api/voice-chat", {
+    user_id: "u_ex", lang: "en", text: "What do you think of Justin Bieber?",
+    context: { has_scan: true, score: 82, today: { exercises_done: 1, exercises_total: 4 } },
+  });
+  assert.equal(generalRes.status, 200);
+  assert.equal(generalRes.data.action, null, "action 'exercises' suppressed on general question even if exercises remain");
+  const generalPrompt = promptOf(calls.find(isLlm).body);
+  assert.match(generalPrompt, /NEVER suggest doing facial exercises on general questions or random topics/);
+
+  ok("exercises suppression: suppressed when already finished or on general conversation");
+}
+
 console.log(`\nvoice-chat audit: ${passed} checks passed`);
+
