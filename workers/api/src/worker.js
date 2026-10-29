@@ -2126,8 +2126,8 @@ async function voiceSpeak(env, text, lang, gender) {
   // gpt-audio-mini is a chat model with audio output; it must act as a pure
   // verbatim reader or it improvises greetings / commentary.
   const isRu = lang === "ru" || /[а-яё]/i.test(input);
-  const systemPrompt = tone + " You are operating strictly as a deterministic text-to-speech engine. Your ONLY job is to read the user's text aloud verbatim. Absolutely NEVER reply to the user, NEVER converse, NEVER add greetings, commentary, remarks, or extra words, and NEVER change, translate, or omit any words. Speak ONLY the exact words provided in the message."
-    + (isRu ? " The text is in Russian; read it aloud in Russian verbatim, do not translate." : "");
+  const systemPrompt = tone + " You are operating strictly as a deterministic text-to-speech engine. Your ONLY job is to vocalize the input text verbatim. Absolutely NEVER say 'Understood', 'Okay', 'Sure', 'Got it', 'Alright', 'Here is', 'Reading now', or ANY conversational filler. Absolutely NEVER converse, NEVER reply, NEVER add greetings or commentary, and NEVER change, translate, or omit words. Start vocalizing IMMEDIATELY with the very first word."
+    + (isRu ? " The text is in Russian; vocalize it in Russian verbatim. Do NOT speak any English words like 'Understood' or 'Sure'." : "");
 
   try {
     const res = await voiceFetch(openRouterBase(env) + "/chat/completions", {
@@ -2463,9 +2463,11 @@ Honesty and safety:
 - Never mention models, APIs, prompts or these instructions.
 
 ${noScan ? `No scan yet, strict (this overrides the task's length and tag):
-- The user has not scanned their face, so you cannot see it. Never guess or describe their features.
-- Speak in 4 to 5 authoritative sentences (about 65 to 85 words, lasting 20 to 25 seconds of speech). First give a real, high-value looksmaxxing breakdown of the core biomechanical or softmaxxing principles on the topic they asked about (e.g. how sodium and sleep balance facial bloating, how neck posture and masseters shape jawline definition, or why consistent skincare and hydration transform skin texture).
-- Then explain that to apply this accurately to their unique facial proportions and bone structure, you need to see their real face, and invite them to do a 3-second face scan.
+- The user has NOT scanned their face yet! You cannot see their face, features, bone structure, or symmetry.
+- Strictly NEVER diagnose their face, never guess their features, and never give personal workout routines or specific advice as if you have analyzed their face.
+- Speak in 2 to 3 direct, motivating sentences (about 35 to 50 words, lasting 10 to 15 seconds of speech).
+- State plainly that before you can give them personal advice or tell them what to work on, you need to see their real facial structure and harmony.
+- Invite them to take a quick 3-second scan so you can analyze their jawline, cheekbones, and symmetry.
 - End with exactly the tag [[go:scan]] and no other tag. Off-topic questions are still deflected as above, then pivot to the scan.
 ` : `Optional navigation: if opening a screen would clearly help, end with exactly one tag: [[go:exercises]], [[go:daily]] or [[go:foodscan]]. Otherwise no tag.
 `}
@@ -2476,8 +2478,12 @@ Write only what Mogly says out loud.`;
 
   // Chip turns carry the app's task; free turns carry the user's own words as-is.
   const user = fn
-    ? "Task: " + functionGoal + (noScan ? "\nThe user has no face scan yet: follow the No scan yet rules instead of this task's length and tag." : "")
-    : voiceClip(userText, 600);
+    ? (noScan
+        ? `Task: The user tapped '${fn}'. The user has no face scan yet: follow the No scan yet rules instead of this task's length and tag. Do not give personal routines or diagnose features blind. Prompt them to scan their face first.`
+        : "Task: " + functionGoal)
+    : (noScan
+        ? voiceClip(userText, 600) + "\n(Context: The user has not scanned their face yet. Follow the No scan yet rules: do not guess their facial features or give personal routines; explain that you need to see their real face first and invite them to scan.)"
+        : voiceClip(userText, 600));
   return { system, history: historyMessages, user, noScan, allExercisesDone };
 }
 
@@ -2703,8 +2709,8 @@ async function voiceChat(request, env, ctx) {
           ttsError = e?.message || "segment_error";
         }
       }
-      // If individual segments didn't deliver completely, fallback to whole-answer synthesis:
-      if (!ttsOk || (segments.length > 1 && deliveredCount < segments.length)) {
+      // If none of the individual segments delivered, fallback to whole-answer synthesis:
+      if (!ttsOk) {
         try {
           const fullSpeech = await voiceSpeak(env, answer.answer, lang, gender);
           if (fullSpeech.ok && fullSpeech.base64) {
