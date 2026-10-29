@@ -37,8 +37,12 @@
   facemax.haptic = function (style) {
     _lastHapticAt = Date.now();
     try {
+      if (!facemax.native && window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform()) {
+        detect();
+      }
       const Haptics = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics;
-      if (Haptics && facemax.native) {
+      if (Haptics && (facemax.native || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()))) {
+        if (!facemax.native) detect();
         // selectionStart() only prepares the generator; the tick is selectionChanged().
         if (style === "selection") {
           return Promise.resolve(Haptics.selectionStart())
@@ -1238,6 +1242,9 @@
     detect();
     bindHaptics();
     styleStatusBar();
+    [50, 150, 400, 1000].forEach(ms => setTimeout(detect, ms));
+    window.addEventListener("pageshow", detect);
+    document.addEventListener("visibilitychange", function() { if (!document.hidden) detect(); });
     // Capacitor plugin registration can lag behind DOMContentLoaded. Bind the
     // local-notification receive/action listeners only after native detection,
     // then retry briefly until LocalNotifications appears on the bridge.

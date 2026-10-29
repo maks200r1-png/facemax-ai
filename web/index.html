@@ -19150,8 +19150,9 @@ window.syncTDEEChoiceUI = function() {
     // to 0 on resize and when the overlay opens, so measure only then.
     if (o.size > 2) return;
     const r = o.canvas.getBoundingClientRect();
+    if (r.width < 24) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const s = Math.max(2, Math.round(r.width * dpr));
+    const s = Math.max(24, Math.round(r.width * dpr));
     if (o.canvas.width !== s) { o.canvas.width = s; o.canvas.height = s; }
     o.size = s;
   }
@@ -19286,12 +19287,16 @@ window.syncTDEEChoiceUI = function() {
     }, "mvDockOrb");
     mvWireDock();
     window.addEventListener("resize", () => mvOrbs.forEach(o => { o.size = 0; }));
+    window.addEventListener("pageshow", () => { mvOrbs.forEach(o => { o.size = 0; }); mvKick(); });
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         if (mvState === "listening") mvCancelTurn();
         // Idle audio graph off while backgrounded; mvEnsureCtx() resumes it on the next tap.
         if (mvAudioCtx && mvState === "idle" && mvAudioCtx.state === "running") { try { mvAudioCtx.suspend(); } catch (e) {} }
-      } else mvKick();
+      } else {
+        mvOrbs.forEach(o => { o.size = 0; });
+        mvKick();
+      }
     });
     setInterval(mvKick, 600);
     mvKick();
