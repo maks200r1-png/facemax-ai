@@ -19505,6 +19505,15 @@ window.syncTDEEChoiceUI = function() {
   // through a normal <audio> element. The first segment starts while the rest is still
   // being synthesised on the server.
   let mvQueue = null;            // { turn, items, played, done, blocked, onEnd }
+  let mvSharedAudio = null;
+  function mvGetSharedAudio() {
+    if (!mvSharedAudio) {
+      mvSharedAudio = new Audio();
+      mvSharedAudio.preload = "auto";
+      mvSharedAudio.setAttribute("playsinline", "");
+    }
+    return mvSharedAudio;
+  }
   function mvReleaseCurrent() {
     const p = mvPlayback;
     mvPlayback = null;
@@ -19540,6 +19549,23 @@ window.syncTDEEChoiceUI = function() {
     mvQueue.done = true;
     mvPlayNext();
   }
+
+  async function mvPlayBufferFallback(bytes, onEndedCallback) {
+    const ctx = mvEnsureCtx();
+    if (!ctx) return false;
+    try {
+      const buf = await ctx.decodeAudioData(bytes.buffer.slice(0));
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      if (typeof onEndedCallback === "function") src.onended = onEndedCallback;
+      src.start(0);
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+
   async function mvPlayNext() {
     const q = mvQueue;
     if (!q || q.blocked || mvPlayback || q.turn !== mvTurn) return;
@@ -19556,21 +19582,40 @@ window.syncTDEEChoiceUI = function() {
     q.played.push(item);
     mvAudioSession("playback");
     const url = URL.createObjectURL(new Blob([item.bytes], { type: item.mime }));
-    const audio = new Audio();
-    audio.preload = "auto";
-    audio.setAttribute("playsinline", "");
+    const audio = mvGetSharedAudio();
     audio.src = url;
+
     // A broken segment is skipped rather than ending the whole answer.
     const next = () => {
       if (!mvPlayback || mvPlayback.audio !== audio) return;
+      if (q && q.turn === mvTurn && q.items.length > 0) {
+        // Direct seamless transition on the SAME active audio element to avoid iOS autoplay restrictions!
+        const nextItem = q.items.shift();
+        q.played.push(nextItem);
+        try { URL.revokeObjectURL(mvPlayback.url); } catch (e) {}
+        const nextUrl = URL.createObjectURL(new Blob([nextItem.bytes], { type: nextItem.mime }));
+        audio.src = nextUrl;
+        mvPlayback = { audio, url: nextUrl, envelope: null, from: nextItem.from, lens: nextItem.lens };
+        mvEnvelope(nextItem.bytes).then(env => { if (mvPlayback && mvPlayback.audio === audio) mvPlayback.envelope = env; });
+        audio.play().catch(async () => {
+          const playedOk = await mvPlayBufferFallback(nextItem.bytes, () => {
+            mvReleaseCurrent();
+            mvPlayNext();
+          });
+          if (!playedOk) {
+            mvReleaseCurrent();
+            mvPlayNext();
+          }
+        });
+        return;
+      }
       mvReleaseCurrent();
       mvPlayNext();
     };
     audio.onended = next;
     audio.onerror = next;
     mvPlayback = { audio, url, envelope: null, from: item.from, lens: item.lens };
-    // The loudness envelope only drives the orb. It is decoded alongside playback and never
-    // delays it: WebKit's decodeAudioData can stall on a suspended AudioContext.
+    // The loudness envelope only drives the orb.
     mvEnvelope(item.bytes).then(env => { if (mvPlayback && mvPlayback.audio === audio) mvPlayback.envelope = env; });
     try {
       await audio.play();
@@ -19582,7 +19627,21 @@ window.syncTDEEChoiceUI = function() {
         }
       }
     } catch (e) {
-      // Autoplay refused: keep every segment and play them on the next tap of the orb.
+      // If HTMLAudioElement play fails on iOS, try Web Audio API fallback immediately:
+      const playedFallback = await mvPlayBufferFallback(item.bytes, () => {
+        mvReleaseCurrent();
+        mvPlayNext();
+      });
+      if (playedFallback) {
+        if (mvQueue === q) {
+          mvSetState("speaking");
+          if (q.onVoiceStart) {
+            try { q.onVoiceStart(); } catch (e) {}
+            q.onVoiceStart = null;
+          }
+        }
+        return;
+      }
       if (!mvPlayback || mvPlayback.audio !== audio) return;
       mvReleaseCurrent();
       if (mvQueue !== q) return;
@@ -19609,8 +19668,17 @@ window.syncTDEEChoiceUI = function() {
 
   // ----- on-device voice: none. The iOS speechSynthesis robot is banned from the app;
   // without real audio the answer stays on screen as text.
-  // A real tap unlocks the AudioContext for later automatic answers (the scan debrief 2 s after results).
-  function mvUnlockSpeech() { mvEnsureCtx(); }
+  // A real tap unlocks the AudioContext and media element for later answers.
+  function mvUnlockSpeech() {
+    mvEnsureCtx();
+    try {
+      const a = mvGetSharedAudio();
+      if (a && a.paused && !a.src) {
+        a.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
+        a.play().then(() => a.pause()).catch(() => {});
+      }
+    } catch(e) {}
+  }
   window.moglyUnlockVoice = mvUnlockSpeech;
   ["touchend", "click"].forEach(evt => document.addEventListener(evt, mvUnlockSpeech, { capture: true, once: true, passive: true }));
 

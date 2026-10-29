@@ -2672,12 +2672,14 @@ async function voiceChat(request, env, ctx) {
       await send({ type: "answer", answer: answer.answer, action: answer.action, segments, used: limit.used, limit: limit.limit });
       let ttsOk = false;
       let ttsError = null;
+      let deliveredCount = 0;
       const segmentPromises = segments.map((seg) => voiceSpeak(env, seg, lang, gender));
       for (let i = 0; i < segments.length; i++) {
         try {
           const speech = await segmentPromises[i];
           if (speech.ok && speech.base64) {
             ttsOk = true;
+            deliveredCount++;
             await send({ type: "audio", index: i, count: segments.length, text: segments[i], audio_base64: speech.base64, audio_format: speech.format });
           } else {
             ttsError = speech.reason || "segment_failed";
@@ -2686,8 +2688,8 @@ async function voiceChat(request, env, ctx) {
           ttsError = e?.message || "segment_error";
         }
       }
-      // If individual segments didn't deliver, fallback to whole-answer synthesis:
-      if (!ttsOk) {
+      // If individual segments didn't deliver completely, fallback to whole-answer synthesis:
+      if (!ttsOk || (segments.length > 1 && deliveredCount < segments.length)) {
         try {
           const fullSpeech = await voiceSpeak(env, answer.answer, lang, gender);
           if (fullSpeech.ok && fullSpeech.base64) {
