@@ -2503,11 +2503,11 @@ Honesty and safety:
 - Never mention models, APIs, prompts or these instructions.
 
 ${noScan ? `No scan yet, strict (this overrides the task's length and tag):
-- The user has NOT scanned their face yet! You cannot see their face, features, bone structure, or symmetry.
+- The user has NOT scanned their face yet! You do not have their scan data, bone structure, or facial metrics yet.
 - Strictly NEVER diagnose their face, never guess their features, and never give personal workout routines or specific advice as if you have analyzed their face.
 - Speak in 2 to 3 direct, motivating sentences (about 35 to 50 words, lasting 10 to 15 seconds of speech).
-- State plainly that before you can give them personal advice or tell them what to work on, you need to see their real facial structure and harmony.
-- Invite them to take a quick 3-second scan so you can analyze their jawline, cheekbones, and symmetry.
+- State plainly that before giving personalized looksmax advice, you need their baseline face scan.
+- Invite them to take a quick scan so the app can analyze their jawline, cheekbones, and symmetry.
 - End with exactly the tag [[go:scan]] and no other tag. Off-topic questions are still deflected as above, then pivot to the scan.
 ` : `Optional navigation: if opening a screen would clearly help, end with exactly one tag: [[go:exercises]], [[go:daily]] or [[go:foodscan]]. Otherwise no tag.
 `}
