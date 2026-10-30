@@ -2044,13 +2044,13 @@ function trimPcmSilence(pcm, rate = 24000) {
   let lastSpeechSample = -1;
   for (let i = samples - 1; i >= 0; i--) {
     const s = Math.abs(view.getInt16(i * 2, true));
-    if (s > 100) {
+    if (s > 250) {
       lastSpeechSample = i;
       break;
     }
   }
   if (lastSpeechSample < 0) return pcm;
-  const pad = Math.round(rate * 0.45);
+  const pad = Math.round(rate * 0.40);
   const endSample = Math.min(samples, lastSpeechSample + pad);
   return pcm.subarray(0, endSample * 2);
 }
@@ -2076,24 +2076,30 @@ async function readSseAudio(res, timeoutMs = 15000) {
       return;
     }
     let delta;
+    let finish = false;
     try {
       const choice = JSON.parse(dataStr)?.choices?.[0];
+      if (choice?.finish_reason) finish = true;
       const parsed = choice?.delta;
       if (parsed?.audio?.transcript) transcript += parsed.audio.transcript;
       else if (parsed?.content) transcript += parsed.content;
       delta = parsed?.audio?.data;
     } catch { return; }
-    if (!delta) return;
-    let u8;
-    if (typeof Buffer !== "undefined") {
-      u8 = new Uint8Array(Buffer.from(delta, "base64"));
-    } else {
-      const raw = atob(delta);
-      u8 = new Uint8Array(raw.length);
-      for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+    if (delta) {
+      let u8;
+      if (typeof Buffer !== "undefined") {
+        u8 = new Uint8Array(Buffer.from(delta, "base64"));
+      } else {
+        const raw = atob(delta);
+        u8 = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+      }
+      chunks.push(u8);
+      total += u8.length;
     }
-    chunks.push(u8);
-    total += u8.length;
+    if (finish) {
+      doneStreaming = true;
+    }
   };
   let timerId = null;
   const timer = new Promise((_, reject) => {
@@ -2108,9 +2114,11 @@ async function readSseAudio(res, timeoutMs = 15000) {
       buffer = lines.pop();
       for (let i = 0; i < lines.length; i++) {
         take(lines[i]);
+        if (doneStreaming) break;
       }
+      if (doneStreaming) break;
     }
-    if (buffer) {
+    if (!doneStreaming && buffer) {
       take(buffer + decoder.decode());
     }
     try { await reader.cancel(); } catch {}
@@ -2161,7 +2169,7 @@ async function voiceSpeak(env, text, lang, gender) {
         audio: { voice, format: "pcm16" },
         stream: true,
         temperature: 0.1,
-        max_tokens: 4096,
+        max_tokens: Math.max(800, Math.min(2500, Math.ceil(input.length * 12))),
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: input },

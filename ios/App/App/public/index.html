@@ -19688,6 +19688,10 @@ window.syncTDEEChoiceUI = function() {
       mvPlayback = { audio, url: nextUrl, envelope: null, from: nextItem.from, lens: nextItem.lens };
       mvEnvelope(nextItem.bytes).then(env => { if (mvPlayback && mvPlayback.audio === audio) mvPlayback.envelope = env; });
       mvSetState("speaking");
+      if (q.onVoiceStart) {
+        try { q.onVoiceStart(); } catch (e) {}
+        q.onVoiceStart = null;
+      }
       audio.play().catch(async () => {
         const playedOk = await mvPlayBufferFallback(nextItem.bytes, () => {
           mvReleaseCurrent();
