@@ -3411,6 +3411,43 @@ html.fm-first-launch-lock .mogly-assistant-fab-container {
   font-weight: 800;
 }
 .mv-chip.mv-chip-primary:active { background: #e6e6e6; }
+.mv-chips .mv-chip.mv-chip-primary.mv-chip-glow-pulse {
+  position: relative;
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  box-shadow: 0 0 24px rgba(0, 194, 255, 0.85), 0 0 50px rgba(0, 122, 255, 0.50) !important;
+  animation: mvChipGlowPulse 1.8s infinite ease-in-out !important;
+}
+.mv-chips .mv-chip.mv-chip-primary.mv-chip-glow-pulse::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, rgba(0, 210, 255, 0.65) 0%, rgba(0, 122, 255, 0.35) 60%, transparent 100%);
+  z-index: -1;
+  filter: blur(12px);
+  animation: mvChipBacklightPulse 1.8s infinite ease-in-out !important;
+  pointer-events: none;
+}
+@keyframes mvChipGlowPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 18px rgba(0, 194, 255, 0.65), 0 0 38px rgba(0, 122, 255, 0.35) !important;
+  }
+  50% {
+    transform: scale(1.028);
+    box-shadow: 0 0 34px rgba(0, 194, 255, 0.95), 0 0 68px rgba(0, 122, 255, 0.65) !important;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 18px rgba(0, 194, 255, 0.65), 0 0 38px rgba(0, 122, 255, 0.35) !important;
+  }
+}
+@keyframes mvChipBacklightPulse {
+  0% { opacity: 0.55; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0.55; transform: scale(0.98); }
+}
 /* Short phones (SE / mini): keep everything on one screen. */
 @media (max-height: 740px) {
   .mv-stage { gap: 14px; }
@@ -13073,7 +13110,10 @@ function renderExerciseStreakHeadline() {
   // Home: the caption under the sphere says what Mogly has for today.
   const hint = el("moglyOrbHint");
   if (hint) {
-    const h = routineDone ? `Day ${day} secured · Tap to talk with Mogly` : "Tap to hear today's mission from Mogly";
+    const hasScan = Array.isArray(scanHistory) && scanHistory.length > 0;
+    const h = routineDone
+      ? `Day ${day} secured · Tap to talk with Mogly`
+      : (hasScan && day >= 2 ? `Day ${day} · Tap for today's plan` : "Tap to hear today's mission from Mogly");
     if (hint.textContent !== h) hint.textContent = h;
   }
 }
@@ -19117,7 +19157,7 @@ window.syncTDEEChoiceUI = function() {
       hair: "Haircut",
       brief: "Daily brief",
       priority: "What to fix first",
-      today: "My plan for today",
+      today: "Today's plan",
       exercise: "Guided exercise",
       meal: "What should I eat",
       scan: "Your scan breakdown",
@@ -19167,7 +19207,27 @@ window.syncTDEEChoiceUI = function() {
   let mvHeardSpeech = false;
   let mvMicPending = false;      // waiting for getUserMedia: a second tap must not open a second mic
   let mvPlayback = null;         // { audio, url, envelope, onEnd }
-  let mvHistory = [];
+  const MV_HISTORY_KEY = "facemax_voice_history_v1";
+  function mvLoadHistory() {
+    try {
+      if (typeof localStorage === "undefined") return [];
+      const raw = localStorage.getItem(MV_HISTORY_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(m => m && (m.role === "user" || m.role === "assistant") && typeof m.text === "string" && m.text.trim().length > 0).slice(-8);
+      }
+    } catch (e) {}
+    return [];
+  }
+  function mvSaveHistory(h) {
+    try {
+      if (typeof localStorage !== "undefined" && Array.isArray(h)) {
+        localStorage.setItem(MV_HISTORY_KEY, JSON.stringify(h.slice(-8)));
+      }
+    } catch (e) {}
+  }
+  let mvHistory = mvLoadHistory();
   let mvLevel = 0;
   let mvActionKind = null;
   let mvLastAsk = null;          // { payload, said, extra } of the last server turn, replayed by mvRetryTurn
@@ -19453,9 +19513,40 @@ window.syncTDEEChoiceUI = function() {
     b.hidden = false;
   }
   function mvRenderLabels() {
+    let st = null;
+    try { if (typeof window.moglyRitualState === "function") st = window.moglyRitualState(); } catch (e) {}
+    const isDay2Plus = !!(st && (st.day >= 2 || st.completed >= 1));
+    const todayPulseKey = "facemax_today_pulse_tapped_" + (st ? st.day : 1);
+    const pulseDone = !!(typeof localStorage !== "undefined" && localStorage.getItem(todayPulseKey));
+
     document.querySelectorAll("#mvChips .mv-chip").forEach(btn => {
       const span = btn.querySelector("span");
-      if (span) span.textContent = mvT(btn.getAttribute("data-fn"));
+      if (btn.classList.contains("mv-chip-primary")) {
+        if (isDay2Plus) {
+          if (span) span.textContent = "Today's plan";
+          btn.setAttribute("data-fn", "today");
+          if (!pulseDone) {
+            btn.classList.add("mv-chip-glow-pulse");
+          } else {
+            btn.classList.remove("mv-chip-glow-pulse");
+          }
+          btn.onclick = function() {
+            btn.classList.remove("mv-chip-glow-pulse");
+            try { localStorage.setItem(todayPulseKey, "1"); } catch (e) {}
+            moglyVoiceChip("today");
+          };
+        } else {
+          if (span) span.textContent = mvT("fixfirst");
+          btn.setAttribute("data-fn", "fixfirst");
+          btn.classList.remove("mv-chip-glow-pulse");
+          btn.onclick = function() {
+            moglyVoiceChip("fixfirst");
+          };
+        }
+      } else {
+        const fn = btn.getAttribute("data-fn");
+        if (span && fn) span.textContent = mvT(fn);
+      }
     });
   }
   function mvError(msg) {
@@ -19776,6 +19867,10 @@ window.syncTDEEChoiceUI = function() {
     try { ctx.gender = (typeof currentGender === "function") ? currentGender() : null; } catch (e) {}
     // The worker switches to "scan first" answers when this is false.
     try { ctx.has_scan = !!(Number(f.score) > 0 || (Array.isArray(scanHistory) && scanHistory.some(h => h && Number(h.score) > 0))); } catch (e) {}
+    try {
+      const st = (typeof window.moglyRitualState === "function") ? window.moglyRitualState() : null;
+      if (st && st.day) ctx.journey_day = st.day;
+    } catch (e) {}
     try {
       const done = readExerciseDoneToday();
       const next = FACE_EXERCISES.find(e => !done.has(e.id));
@@ -20133,7 +20228,11 @@ window.syncTDEEChoiceUI = function() {
     }
     if (!answer) { fail(streamErr ? streamErr.error : (finished ? "empty_answer" : "network")); return; }
     if (!finished && !cut) cut = "network";
-    if (heard) { mvHistory.push({ role: "user", text: heard }, { role: "assistant", text: answer }); mvHistory = mvHistory.slice(-8); }
+    if (heard) {
+      mvHistory.push({ role: "user", text: heard }, { role: "assistant", text: answer });
+      mvHistory = mvHistory.slice(-8);
+      mvSaveHistory(mvHistory);
+    }
     // The full answer text stays on screen whatever happens to the audio.
     if (!isVoiceConvo || !gotAudio) mvShow(heard, answer);
     // Stream cut after some audio: play what arrived.
@@ -20164,7 +20263,7 @@ window.syncTDEEChoiceUI = function() {
     mvShow(mvT(fn), "");
     mvSetAction(null);
     mvSetState("thinking");
-    let payload = { function: fn };
+    let payload = { function: fn, history: mvHistory.slice(-6) };
     let extra = null;
     if (fn === "exercise") {
       const done = readExerciseDoneToday();
@@ -20318,7 +20417,7 @@ window.syncTDEEChoiceUI = function() {
     mvRenderLabels();
     mvShow("", "");
     mvSetAction(null);
-    mvHistory = [];
+    mvHistory = mvLoadHistory();
     mvSetState("idle");
     ov.classList.add("active");
     mvOrbs.forEach(o => { o.size = 0; });
