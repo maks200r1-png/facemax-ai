@@ -2038,20 +2038,27 @@ function pcmToWav(pcm, rate) {
 
 // Trims trailing dead silence from 16-bit mono s16le PCM (leaves ~0.35s natural fade pad).
 function trimPcmSilence(pcm, rate = 24000) {
-  const samples = Math.floor(pcm.length / 2);
-  if (samples < rate / 2) return pcm;
+  const windowSamples = Math.round(rate * 0.05); // 50ms windows
+  const totalWindows = Math.floor((pcm.length / 2) / windowSamples);
+  if (totalWindows < 4) return pcm;
   const view = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength);
-  let lastSpeechSample = -1;
-  for (let i = samples - 1; i >= 0; i--) {
-    const s = Math.abs(view.getInt16(i * 2, true));
-    if (s > 250) {
-      lastSpeechSample = i;
+  let lastActiveWindow = -1;
+  for (let w = totalWindows - 1; w >= 0; w--) {
+    let maxV = 0;
+    for (let s = 0; s < windowSamples; s++) {
+      const idx = (w * windowSamples + s) * 2;
+      const v = Math.abs(view.getInt16(idx, true));
+      if (v > maxV) maxV = v;
+    }
+    // Real speech window energy: peak amplitude >= 1000 (speech is 3,000-20,000, noise floor is < 600)
+    if (maxV >= 1000) {
+      lastActiveWindow = w;
       break;
     }
   }
-  if (lastSpeechSample < 0) return pcm;
-  const pad = Math.round(rate * 0.40);
-  const endSample = Math.min(samples, lastSpeechSample + pad);
+  if (lastActiveWindow < 0) return pcm;
+  const pad = Math.round(rate * 0.35); // 350ms natural fade
+  const endSample = Math.min(Math.floor(pcm.length / 2), (lastActiveWindow + 1) * windowSamples + pad);
   return pcm.subarray(0, endSample * 2);
 }
 
@@ -2156,7 +2163,7 @@ async function voiceSpeak(env, text, lang, gender) {
   // gpt-audio-mini is a chat model with audio output; it must act as a pure
   // verbatim reader or it improvises greetings / commentary.
   const isRu = lang === "ru" || /[а-яё]/i.test(input);
-  const systemPrompt = tone + " You are operating strictly as a deterministic text-to-speech engine. Your ONLY job is to vocalize the input text verbatim. Absolutely NEVER say 'Understood', 'Okay', 'Sure', 'Got it', 'Alright', 'Here is', 'Reading now', or ANY conversational filler. Absolutely NEVER converse, NEVER reply, NEVER add greetings or commentary, and NEVER change, translate, or omit words. Start vocalizing IMMEDIATELY with the very first word."
+  const systemPrompt = tone + " You are operating strictly as a deterministic text-to-speech engine. Your ONLY job is to vocalize the input text verbatim. Read every single word of the input text from start to finish without omitting or skipping anything. Absolutely NEVER say 'Understood', 'Okay', 'Sure', 'Got it', 'Alright', 'Here is', 'Reading now', or ANY conversational filler. Absolutely NEVER converse, NEVER reply, NEVER add greetings or commentary, and NEVER change, translate, or omit words. Start vocalizing IMMEDIATELY with the very first word and continue speaking until the very last word."
     + (isRu ? " The text is in Russian; vocalize it in Russian verbatim. Do NOT speak any English words like 'Understood' or 'Sure'." : "");
 
   try {
@@ -2187,7 +2194,7 @@ async function voiceSpeak(env, text, lang, gender) {
       return { ok: false, status: 502, reason: "tts_unavailable" };
     }
     const wav = pcmToWav(pcm, VOICE_PCM_RATE);
-    return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: VOICE_TTS_MODEL, transcript: pcm.transcript || "" };
+    return { ok: true, base64: bytesToBase64(wav), format: "wav", voice, model: VOICE_TTS_MODEL, transcript: pcm.transcript || "", pcmBytes: pcm.length };
   } catch (e) {
     console.error("[voiceSpeak] synthesis failed:", e?.message || e);
     return { ok: false, status: 502, reason: "tts_unavailable" };
