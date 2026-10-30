@@ -19667,7 +19667,6 @@ window.syncTDEEChoiceUI = function() {
     mvQueue = { turn: myTurn, items: [], played: [], done: false, blocked: false, onEnd, sent: 0, fullAnswer: fullAnswer || "", onVoiceStart };
   }
   // text: what this segment says (worker stream). Without it (single JSON reply) the
-  // segment covers every sentence still unspoken.
   function mvQueuePush(bytes, format, text) {
     const q = mvQueue;
     if (!q) return;
@@ -19678,11 +19677,43 @@ window.syncTDEEChoiceUI = function() {
     q.sent = to;
     const lens = all.slice(from, to).map(x => x.length);
     q.items.push({ bytes, mime: format === "wav" ? "audio/wav" : "audio/mpeg", from: lens.length ? from : null, lens });
+    if (mvPlayback && mvPlayback.waiting && mvPlayback.audio && q.turn === mvTurn) {
+      mvPlayback.waiting = false;
+      const audio = mvPlayback.audio;
+      const nextItem = q.items.shift();
+      q.played.push(nextItem);
+      try { URL.revokeObjectURL(mvPlayback.url); } catch (e) {}
+      const nextUrl = URL.createObjectURL(new Blob([nextItem.bytes], { type: nextItem.mime }));
+      audio.src = nextUrl;
+      mvPlayback = { audio, url: nextUrl, envelope: null, from: nextItem.from, lens: nextItem.lens };
+      mvEnvelope(nextItem.bytes).then(env => { if (mvPlayback && mvPlayback.audio === audio) mvPlayback.envelope = env; });
+      mvSetState("speaking");
+      audio.play().catch(async () => {
+        const playedOk = await mvPlayBufferFallback(nextItem.bytes, () => {
+          mvReleaseCurrent();
+          mvPlayNext();
+        });
+        if (!playedOk) {
+          mvReleaseCurrent();
+          mvPlayNext();
+        }
+      });
+      return;
+    }
     mvPlayNext();
   }
   function mvQueueEnd() {
     if (!mvQueue) return;
     mvQueue.done = true;
+    if (mvPlayback && mvPlayback.waiting) {
+      const q = mvQueue;
+      mvReleaseCurrent();
+      mvKaraokeClear();
+      mvSetState("idle");
+      if (q && q.onEnd) q.onEnd();
+      mvQueue = null;
+      return;
+    }
     mvPlayNext();
   }
 
@@ -19744,6 +19775,12 @@ window.syncTDEEChoiceUI = function() {
             mvPlayNext();
           }
         });
+        return;
+      }
+      if (q && q.turn === mvTurn && !q.done) {
+        // Stream still active: keep the active audio element alive to retain gesture permission on iOS
+        mvPlayback.waiting = true;
+        mvSetState("thinking");
         return;
       }
       mvReleaseCurrent();
@@ -19813,6 +19850,15 @@ window.syncTDEEChoiceUI = function() {
       if (a && a.paused && !a.src) {
         a.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
         a.play().then(() => a.pause()).catch(() => {});
+      }
+      const ctx = mvEnsureCtx();
+      if (ctx) {
+        if (ctx.state === "suspended") ctx.resume().catch(() => {});
+        const osc = ctx.createBuffer(1, 1, 22050);
+        const src = ctx.createBufferSource();
+        src.buffer = osc;
+        src.connect(ctx.destination);
+        src.start(0);
       }
     } catch(e) {}
   }

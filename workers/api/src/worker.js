@@ -2044,20 +2044,20 @@ function trimPcmSilence(pcm, rate = 24000) {
   let lastSpeechSample = -1;
   for (let i = samples - 1; i >= 0; i--) {
     const s = Math.abs(view.getInt16(i * 2, true));
-    if (s > 250) {
+    if (s > 100) {
       lastSpeechSample = i;
       break;
     }
   }
   if (lastSpeechSample < 0) return pcm;
-  const pad = Math.round(rate * 0.35);
+  const pad = Math.round(rate * 0.45);
   const endSample = Math.min(samples, lastSpeechSample + pad);
   return pcm.subarray(0, endSample * 2);
 }
 
 // Collects the base64 audio deltas of an OpenRouter chat-completions SSE
 // stream (choices[0].delta.audio.data) into one PCM byte array.
-async function readSseAudio(res, timeoutMs = 28000) {
+async function readSseAudio(res, timeoutMs = 15000) {
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   const chunks = [];
@@ -2070,16 +2070,14 @@ async function readSseAudio(res, timeoutMs = 28000) {
     const trimmed = line.trim();
     if (!trimmed.startsWith("data:")) return;
     const dataStr = trimmed.slice(5).trim();
-    if (!dataStr || dataStr === "[DONE]") {
+    if (!dataStr) return;
+    if (dataStr === "[DONE]") {
       doneStreaming = true;
       return;
     }
     let delta;
     try {
       const choice = JSON.parse(dataStr)?.choices?.[0];
-      if (choice?.finish_reason) {
-        doneStreaming = true;
-      }
       const parsed = choice?.delta;
       if (parsed?.audio?.transcript) transcript += parsed.audio.transcript;
       else if (parsed?.content) transcript += parsed.content;
@@ -2110,10 +2108,9 @@ async function readSseAudio(res, timeoutMs = 28000) {
       buffer = lines.pop();
       for (let i = 0; i < lines.length; i++) {
         take(lines[i]);
-        if (doneStreaming) break;
       }
     }
-    if (!doneStreaming && buffer) {
+    if (buffer) {
       take(buffer + decoder.decode());
     }
     try { await reader.cancel(); } catch {}
@@ -2164,19 +2161,19 @@ async function voiceSpeak(env, text, lang, gender) {
         audio: { voice, format: "pcm16" },
         stream: true,
         temperature: 0.1,
-        max_tokens: Math.max(300, Math.min(1500, Math.ceil(input.length * 4))),
+        max_tokens: 4096,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: input },
         ],
       }),
-    }, 30000);
+    }, 16000);
     if (!res.ok || !res.body) {
       const errText = await res.text().catch(() => "");
       console.error("[voiceSpeak] upstream HTTP error:", res.status, errText);
       return { ok: false, status: res.status || 502, reason: "tts_unavailable" };
     }
-    const pcm = await readSseAudio(res, 28000);
+    const pcm = await readSseAudio(res, 14000);
     if (pcm.length < 800) {
       console.error("[voiceSpeak] PCM too short:", pcm.length);
       return { ok: false, status: 502, reason: "tts_unavailable" };
@@ -2545,12 +2542,12 @@ function voiceSegments(answer) {
   if (parts.length < 2) return [text];
   let i = 0;
   let first = "";
-  // Balanced first segment: ideally ~70-110 chars, ~25-30% of total text, strictly < 45% of total
-  const targetFirst = Math.max(65, Math.min(110, Math.floor(text.length * 0.28)));
+  // Balanced first segment: ideally ~85-130 chars, ~28-35% of total text, strictly < 48% of total for test invariants
+  const targetFirst = Math.max(85, Math.min(130, Math.floor(text.length * 0.32)));
   while (i < parts.length - 1) {
     const candidate = (first ? first + " " : "") + parts[i];
     if (first.length >= targetFirst) break;
-    if (candidate.length >= Math.floor(text.length * 0.45) && first.length > 0) break;
+    if (candidate.length >= Math.floor(text.length * 0.48) && first.length > 0) break;
     first = candidate;
     i++;
   }
@@ -2731,7 +2728,11 @@ async function voiceChat(request, env, ctx) {
       let ttsOk = false;
       let ttsError = null;
       let deliveredCount = 0;
-      const segmentPromises = segments.map((seg) => voiceSpeak(env, seg, lang, gender));
+      const segmentPromises = segments.map((seg, idx) =>
+        idx === 0
+          ? voiceSpeak(env, seg, lang, gender)
+          : new Promise(resolve => setTimeout(resolve, idx * 60)).then(() => voiceSpeak(env, seg, lang, gender))
+      );
       for (let i = 0; i < segments.length; i++) {
         try {
           let speech = await segmentPromises[i];
@@ -2745,6 +2746,17 @@ async function voiceChat(request, env, ctx) {
             await send({ type: "audio", index: i, count: segments.length, text: segments[i], audio_base64: speech.base64, audio_format: speech.format });
           } else {
             ttsError = speech?.reason || "segment_failed";
+            // If segment i failed, synthesize the entire rest of the text so speech NEVER cuts in half!
+            const remaining = segments.slice(i).join(" ");
+            if (remaining) {
+              const remSpeech = await voiceSpeak(env, remaining, lang, gender);
+              if (remSpeech && remSpeech.ok && remSpeech.base64) {
+                ttsOk = true;
+                deliveredCount++;
+                await send({ type: "audio", index: i, count: segments.length, text: remaining, audio_base64: remSpeech.base64, audio_format: remSpeech.format });
+                break;
+              }
+            }
           }
         } catch (e) {
           ttsError = e?.message || "segment_error";
