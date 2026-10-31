@@ -2406,6 +2406,118 @@ function voiceHasScan(ctx) {
   return Number.isFinite(score) && score > 0;
 }
 
+// "Today's plan" chip. The 30-day program phase (same split as the app's
+// mrPhaseFor) picks the theme; inside a phase each day gets its own angle so
+// the plan is not the same speech every morning. Angles are themes the model
+// builds on with the user's data, never lines read out verbatim.
+const VOICE_TODAY_PHASES = {
+  debloat: {
+    label: "Week 1: Debloat",
+    goal: "flush the water the face holds so the cheekbones and jaw edge show through",
+    angles: [
+      "morning water drain: a big glass of water on waking, cold water face splash, then lymph strokes from the nose out to the ears and down the neck to the collarbone",
+      "the sodium and potassium balance: why a salty dinner shows up as puffy cheeks next morning, and potassium foods like banana, avocado, spinach, potatoes or coconut water that help the body let water go",
+      "hydration paradox: drinking enough water steadily through the day makes the body hold less of it, while under-drinking makes the face puff",
+      "refined carbs and alcohol: stored carbs bind water and alcohol leaves the face puffy, so swap white bread, pastries and late drinks for protein and vegetables today",
+      "sleep and cortisol: short sleep and stress keep water in the face, so seven to nine hours and sleeping on your back with the head slightly raised",
+      "under-eye and cheekbone depuff: cold spoon or cold compress under the eyes, gentle upward strokes along the cheekbone toward the temples",
+      "first-week audit: check the mirror in the same light as day one, notice where the puffiness dropped, and lock the habits that worked",
+    ],
+  },
+  posture: {
+    label: "Week 2: Posture and Mewing",
+    goal: "fix tongue and neck posture so the chin, jaw angle and neck line read sharper in profile",
+    angles: [
+      "full-tongue mewing: the whole tongue including the back third sealed to the palate with a gentle suction hold, lips closed, teeth lightly touching, breathing through the nose",
+      "forward head posture: chin tucks against a wall, ears stacked over the shoulders, because a head pushed forward softens the jaw-to-neck angle",
+      "the correct swallow: swallow with the tongue pressing up into the palate and no lip or cheek squeeze, a habit you repeat hundreds of times a day",
+      "nasal breathing: mouth breathing drops the tongue and lets the jaw hang, so lips sealed and breathe through the nose all day, including during workouts",
+      "phone and screen posture: raise the screen to eye level, because looking down for hours rounds the neck and blurs the jawline",
+      "the jaw angle in photos and real life: tongue up, chin slightly forward and down, neck long, which makes the lower third look defined without any bone change",
+      "posture check-in: side profile photo in the same light, compare the chin and neck line with day one, and keep the habits that held",
+    ],
+  },
+  tone: {
+    label: "Weeks 3 and 4: Facial Toning",
+    goal: "build control and tone in the cheek and jaw muscles so the contours look firmer, on top of the debloat and posture base",
+    angles: [
+      "slow controlled reps: firm pressure, full range, no rushing, because control and time under tension matter more than speed",
+      "masseter tone the safe way: normal firm foods and steady chewing, but no jaw trainers or hours of hard gum that strain the jaw joint",
+      "cheekbone contour: cheek lifts held at the top, paired with a low-salt day so the new tone is not hidden under water",
+      "symmetry: chew evenly on both sides, sleep on the back, and notice which side you lean on, so one side does not dominate",
+      "body fat is the real chisel: a small steady calorie deficit and protein at every meal reveal the jawline faster than any single exercise",
+      "recovery is part of tone: muscles firm up while resting, so sleep, protein and not overtraining the face matter as much as the reps",
+      "skin as part of contour: daily SPF, a simple moisturiser and steady sleep keep the skin tight over the new tone",
+      "progress check: same-light front and side photos, compare with week one, and pick the one area to push hardest next",
+    ],
+  },
+};
+const VOICE_TODAY_IMPROVABLE = new Set(["jawline", "cheekbones", "skin", "eyes", "symmetry"]);
+
+function voiceTodayPhase(day) {
+  return day <= 7 ? "debloat" : day <= 14 ? "posture" : "tone";
+}
+
+function voiceTimeOfDay(hour) {
+  if (!Number.isFinite(hour)) return null;
+  if (hour >= 5 && hour < 12) return "morning";
+  if (hour >= 12 && hour < 18) return "afternoon";
+  if (hour >= 18 && hour < 23) return "evening";
+  return "late night";
+}
+
+// Lowest softmaxx-fixable key metric, so the plan targets the user's real weak zone.
+function voiceWeakestArea(ctx) {
+  const metrics = ctx && typeof ctx.metrics === "object" ? ctx.metrics : null;
+  if (!metrics) return null;
+  let best = null;
+  for (const [label, aliases] of VOICE_KEY_METRICS) {
+    if (!VOICE_TODAY_IMPROVABLE.has(label)) continue;
+    const k = aliases.find(a => metrics[a] !== null && metrics[a] !== "" && Number.isFinite(Number(metrics[a])));
+    if (k && (!best || Number(metrics[k]) < best.score)) best = { label, score: Number(metrics[k]) };
+  }
+  return best ? best.label : null;
+}
+
+function voiceTodayGoal(ctx, { allExercisesDone, doneCount, totalCount }) {
+  const rawDay = Math.floor(Number(ctx?.journey_day));
+  const day = Number.isFinite(rawDay) && rawDay > 0 ? rawDay : 1;
+  const phaseKey = voiceTodayPhase(day);
+  const phase = VOICE_TODAY_PHASES[phaseKey];
+  const phaseStart = phaseKey === "debloat" ? 1 : phaseKey === "posture" ? 8 : 15;
+  const angle = phase.angles[(day - phaseStart) % phase.angles.length];
+  const time = voiceTimeOfDay(Number(ctx?.progress?.local_hour));
+  const weak = voiceWeakestArea(ctx);
+  const next = ctx?.today?.next_exercise ? voiceClip(ctx.today.next_exercise, 80) : "";
+
+  const timeRule = {
+    morning: "It is morning: lead with the morning lymph kick-start, a big glass of water, cold water on the face and the drain strokes toward the ears and down the neck, before the day's focus.",
+    afternoon: "It is the afternoon: build in a posture and tongue check right now, and where they are on water today versus their goal.",
+    evening: "It is evening: build in the evening rules, no salty or processed food and no alcohol tonight, last big drink an hour or two before bed, and sleeping on the back with the head slightly raised so the face is less puffy tomorrow.",
+    "late night": "It is late at night: keep it short on action, the priority is getting to sleep now, on the back with the head slightly raised, nothing salty before bed.",
+  }[time] || "";
+
+  const statusRule = allExercisesDone
+    ? `All facial exercises for today are ALREADY completed (${totalCount} of ${totalCount}). Open by crediting that in fresh words, not a generic "great job". Then give two or three specific recovery and lock-in moves: facial muscles firm up while resting so no extra face reps today, protein and water for recovery, the phase habit that keeps today's work visible (for example low salt tonight, tongue posture held, head raised in sleep). Do NOT suggest more exercises and do NOT output [[go:exercises]].`
+    : doneCount > 0
+      ? `They have done ${doneCount} of ${totalCount} exercises today${next ? ` and the next one is ${next}` : ""}. Acknowledge the start, tie the remaining exercises to today's focus in one clause, and push them to finish now. End with [[go:exercises]].`
+      : `None of today's ${totalCount} exercises are done yet. Make it a driving announcement of today's focus and why it matters for how their face looks, then send them to start the four exercises now${next ? `, beginning with ${next}` : ""}. End with [[go:exercises]].`;
+
+  return [
+    `The user tapped 'Today's plan'. This is Day ${day}${day <= 30 ? " of 30" : ", past the 30-day program, so treat it as maintenance in the toning phase"} of their looksmax program, phase ${phase.label}: ${phase.goal}.`,
+    `Today's angle inside that phase (build the plan around it in your own words, do not recite it): ${angle}.`,
+    weak
+      ? `Their weakest improvable area from the scan is ${weak}: connect today's phase focus to how it will help that area look better. Use the Fastest upgrade and Weak points in the data if present.`
+      : "There is no scan data to target a weak area: keep the plan on the phase focus and say in one clause that a face scan makes it personal.",
+    timeRule,
+    statusRule,
+    "Give real, specific, doable actions with the reason behind each in a few plain words (the mechanism: water, lymph, sodium, posture, muscle control, body fat). No vague advice like 'stay hydrated' or 'be consistent' on its own.",
+    "Keep it honest: mewing and posture change how the jaw and neck line look, not adult bone, and never promise a timeline.",
+    "Make it sound like a live coach on this specific day: start differently from any earlier answer in this conversation, never reuse its sentences, and do not open with 'Day X' or 'Today's plan'. Mention the day number at most once.",
+    "Speak in 5 to 6 sentences (around 80 to 100 words, 25 to 30 seconds).",
+  ].filter(Boolean).join(" ");
+}
+
 // Chips that need the user's real face; "today", "meal", "exercise" and the
 // post-scan debrief work without one.
 const VOICE_NO_SCAN_FUNCTIONS = new Set(["fixfirst", "jawline", "debloat", "eyes", "skin", "hair", "brief", "priority"]);
@@ -2427,9 +2539,7 @@ function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise, gender }
     hair: "The user tapped 'Haircut'. Use their face shape, gender and hair score. Recommend a specific haircut direction that balances their face shape, for example volume on top for round faces, softer sides for long faces, textured fringe for high foreheads, and what to ask the barber or stylist. Mention brows and, for men, beard shaping if it would sharpen the jawline. Speak in 5 to 6 tailored sentences (around 70 to 85 words, 20 to 25 seconds).",
     brief: "The user tapped 'Daily brief', their short daily check-in. Greet them for the time of day. In one sentence, reflect their real progress from the data (streak, plan done today, score change); never invent numbers. Then give today's single focus: the one action with the biggest visible payoff for their weakest improvable area. If the streak is at risk, say so plainly. If the last scan is 7 or more days ago, suggest a re-scan to measure progress. Speak in 5 to 6 motivating sentences (around 70 to 85 words, 20 to 25 seconds). End with [[go:daily]] if today's plan is not finished.",
     priority: "The user tapped 'What should I improve first'. From the metrics, pick the one or two most improvable weak areas (skip anything that is fixed bone structure), say plainly what matters most, and give ONE concrete first step they can do today. Speak in 5 to 6 direct sentences (around 70 to 85 words, 20 to 25 seconds).",
-    today: allExercisesDone
-      ? "The user tapped 'Today's plan'. All facial exercises for today are ALREADY completed! Enthusiastically praise them for finishing all 4 exercises and keeping the streak alive. Mention their water intake progress, remind them to sleep well and let the facial muscles rest, and speak in 3 to 4 motivating sentences (around 45 to 60 words, 15 to 20 seconds). Do NOT output [[go:exercises]]."
-      : `The user tapped 'Today's plan'${ctx?.journey_day ? ` (Day ${ctx.journey_day} of their looksmax program)` : ""}. Briefly announce today's focus (e.g. debloating and jawline activation) based on their face metrics, and invite them to knock out their 4 daily exercises right now. Speak in 3 to 4 punchy, motivating sentences (around 45 to 60 words, 15 to 20 seconds). If the next exercise exists end with the tag [[go:exercises]].`,
+    today: voiceTodayGoal(ctx, { allExercisesDone, doneCount, totalCount }),
     meal: "The user tapped 'What should I eat'. Using the meal plan if present, suggest what to eat next and why it helps with facial bloating. If there is no meal plan, give one practical suggestion and mention the food scanner. Speak in 5 to 6 practical sentences (around 70 to 85 words, 20 to 25 seconds). End with the tag [[go:foodscan]] only if you mention scanning a meal.",
     exercise: exercise
       ? `Coach the user through this exercise out loud, hands-free. One short intro naming the exercise, then the movement steps in order in plain spoken words, then finish by saying the timer starts now for ${Number(exercise.seconds) || 30} seconds. Do not read step numbers. 5 to 7 short sentences.\nExercise: ${voiceClip(exercise.name, 80)} (area: ${voiceClip(exercise.area, 40)})\nWhat it does: ${voiceClip(exercise.desc, 220)}\nSteps: ${voiceClip(JSON.stringify(exercise.steps || []), 600)}`

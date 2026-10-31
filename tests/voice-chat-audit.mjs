@@ -221,6 +221,33 @@ setPremium("u1", true);
   const prompt = promptOf(calls.find(isLlm).body);
   assert.match(prompt, /exercises done 1 of 4/);
   assert.match(prompt, /water 3 of 8 glasses/);
+  assert.match(prompt, /1 of 4 exercises today and the next one is Masseter and Jaw Release/);
+  // Program phase, per-day angle, time of day and weak zone drive the plan.
+  const todayPrompt = async (journey_day, local_hour, done = 0) => {
+    calls.length = 0;
+    await post("/api/voice-chat", {
+      user_id: "u1", lang: "en", function: "today",
+      context: { score: 70, has_scan: true, journey_day, metrics: { jawline: 55, cheekbones: 72, skin: 66 },
+        today: { exercises_done: done, exercises_total: 4 }, progress: { local_hour } },
+    });
+    return promptOf(calls.find(isLlm).body);
+  };
+  const d1 = await todayPrompt(1, 8);
+  assert.match(d1, /Week 1: Debloat/);
+  assert.match(d1, /It is morning: lead with the morning lymph kick-start/);
+  assert.match(d1, /weakest improvable area from the scan is jawline/);
+  assert.match(d1, /None of today's 4 exercises are done yet/);
+  const d2 = await todayPrompt(2, 8);
+  const angleOf = (p) => (p.match(/Today's angle inside that phase[^:]*: ([^.]+)/) || [])[1];
+  assert.ok(angleOf(d1) && angleOf(d2) && angleOf(d1) !== angleOf(d2), "day 1 and day 2 get different angles");
+  const d10 = await todayPrompt(10, 14);
+  assert.match(d10, /Week 2: Posture and Mewing/);
+  assert.match(d10, /It is the afternoon/);
+  const d20 = await todayPrompt(20, 21, 4);
+  assert.match(d20, /Weeks 3 and 4: Facial Toning/);
+  assert.match(d20, /It is evening: build in the evening rules/);
+  assert.match(d20, /All facial exercises for today are ALREADY completed/);
+  assert.doesNotMatch(d20.split("Task:")[1] || "", /End with \[\[go:exercises\]\]/);
   ok("function: today uses day data, tag stripped, action returned");
 }
 
