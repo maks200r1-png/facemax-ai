@@ -2849,7 +2849,7 @@ async function voiceChat(request, env, ctx) {
   const exercise = (fn === "exercise" && body.exercise && typeof body.exercise === "object") ? body.exercise : null;
   const getAnswer = () => greeting
     ? Promise.resolve({ ok: true, answer: VOICE_WAKE_GREETING, action: null })
-    : voiceAnswer(env, { lang, fn, userText, history: body.history, ctx: body.context, exercise, gender });
+    : voiceAnswer(env, { lang, fn, userText, history: body.history, ctx: (body.context || body.scan_context), exercise, gender });
 
   if (body.stream) {
     return voiceStreamResponse(async (send) => {
