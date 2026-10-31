@@ -2036,14 +2036,19 @@ function pcmToWav(pcm, rate) {
   return out;
 }
 
-// Trims trailing dead silence from 16-bit mono s16le PCM (leaves ~0.35s natural fade pad).
+// Trims trailing dead silence and lingering connection hum from 16-bit mono s16le PCM.
+// Scans forward tracking speech windows. If speech has occurred and is followed by >= 1.0s
+// of continuous silence (max amplitude < 1000), speech is deemed finished and any late
+// connection noise / clicks after the dead gap are discarded. Leaves a natural 0.35s fade pad.
 function trimPcmSilence(pcm, rate = 24000) {
   const windowSamples = Math.round(rate * 0.05); // 50ms windows
   const totalWindows = Math.floor((pcm.length / 2) / windowSamples);
   if (totalWindows < 4) return pcm;
   const view = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength);
   let lastActiveWindow = -1;
-  for (let w = totalWindows - 1; w >= 0; w--) {
+  let silenceGap = 0;
+  const maxSilenceGapWindows = Math.round(rate * 1.0 / windowSamples); // 20 windows = 1.0s gap
+  for (let w = 0; w < totalWindows; w++) {
     let maxV = 0;
     for (let s = 0; s < windowSamples; s++) {
       const idx = (w * windowSamples + s) * 2;
@@ -2053,7 +2058,12 @@ function trimPcmSilence(pcm, rate = 24000) {
     // Real speech window energy: peak amplitude >= 1000 (speech is 3,000-20,000, noise floor is < 600)
     if (maxV >= 1000) {
       lastActiveWindow = w;
-      break;
+      silenceGap = 0;
+    } else if (lastActiveWindow >= 0) {
+      silenceGap++;
+      if (silenceGap >= maxSilenceGapWindows) {
+        break;
+      }
     }
   }
   if (lastActiveWindow < 0) return pcm;
