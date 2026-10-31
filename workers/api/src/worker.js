@@ -2347,7 +2347,8 @@ function voiceContextBlock(ctx) {
   if (Number.isFinite(score) && score > 0) lines.push(`Overall face score: ${Math.round(score)}/100`);
   if (ctx.gender) lines.push("Gender: " + (String(ctx.gender).toLowerCase().startsWith("f") ? "female" : "male"));
   if (typeof ctx.face_shape === "string" && ctx.face_shape.trim()) lines.push("Face shape: " + voiceClip(ctx.face_shape, 30));
-  if (Number.isFinite(Number(ctx.journey_day)) && Number(ctx.journey_day) > 0) lines.push(`Journey day: Day ${Number(ctx.journey_day)} of 30-day looksmax program`);
+  const jDay = Number(ctx.journey_day ?? ctx.program_day ?? ctx.day);
+  if (Number.isFinite(jDay) && jDay > 0) lines.push(`Journey day: Day ${jDay} of 30-day looksmax program`);
   if (ctx.metrics && typeof ctx.metrics === "object") {
     const metrics = ctx.metrics;
     const key = [];
@@ -2490,13 +2491,14 @@ function voiceWeakestArea(ctx) {
 }
 
 function voiceTodayGoal(ctx, { allExercisesDone, doneCount, totalCount }) {
-  const rawDay = Math.floor(Number(ctx?.journey_day));
+  const rawDay = Math.floor(Number(ctx?.journey_day ?? ctx?.program_day ?? ctx?.day));
   const day = Number.isFinite(rawDay) && rawDay > 0 ? rawDay : 1;
   const phaseKey = voiceTodayPhase(day);
   const phase = VOICE_TODAY_PHASES[phaseKey];
   const phaseStart = phaseKey === "debloat" ? 1 : phaseKey === "posture" ? 8 : 15;
   const angle = phase.angles[(day - phaseStart) % phase.angles.length];
-  const time = voiceTimeOfDay(Number(ctx?.progress?.local_hour));
+  const rawHour = ctx?.progress?.local_hour ?? ctx?.local_hour;
+  const time = voiceTimeOfDay(Number.isFinite(Number(rawHour)) ? Number(rawHour) : undefined);
   const weak = voiceWeakestArea(ctx);
   const next = ctx?.today?.next_exercise ? voiceClip(ctx.today.next_exercise, 80) : "";
 
@@ -2536,8 +2538,8 @@ function buildVoicePrompt({ lang, fn, userText, history, ctx, exercise, gender }
   const ru = lang === "ru";
   const isFemale = voicePersonaGender(ctx, gender) === "female";
   const noScan = !voiceHasScan(ctx) && (!fn || VOICE_NO_SCAN_FUNCTIONS.has(fn));
-  const doneCount = Number(ctx?.today?.exercises_done ?? ctx?.progress?.plan_done ?? 0);
-  const totalCount = Number(ctx?.today?.exercises_total ?? ctx?.progress?.plan_total ?? 4);
+  const doneCount = Number(ctx?.today?.exercises_done ?? ctx?.progress?.plan_done ?? ctx?.completed_today ?? 0);
+  const totalCount = Number(ctx?.today?.exercises_total ?? ctx?.progress?.plan_total ?? ctx?.total_exercises ?? 4);
   const allExercisesDone = Boolean(totalCount > 0 && doneCount >= totalCount);
   const functionGoal = {
     scan: "The user just completed their facial scan. Give an immediate, charismatic, and punchy looksmaxxing breakdown based on their real metrics in context (overall score, jawline, cheekbones, eyes, skin, face shape), told as what it means for how their face looks, not as a list of numbers: the full report with every number is already on their screen. Highlight their strongest facial feature, state their #1 priority weakness to fix first and why, give one immediate softmaxx action for today (like debloating, tongue posture, skincare), and encourage them. Speak in 3 to 4 concise, impactful sentences (about 45 to 60 words, lasting 15 to 20 seconds of speech).",
@@ -2598,7 +2600,7 @@ Scope, strict:
 
 Speaking style:
 ${speakingStyle}
-${ctx?.journey_day && Number(ctx.journey_day) >= 2 ? `- Ongoing mentor relationship: the user is on Day ${ctx.journey_day} of their looksmax program. If they greet you, greet them warmly as their returning mentor (e.g. "Welcome back! Ready for Day ${ctx.journey_day}?"). Never sound like you are meeting them for the first time.\n` : ""}
+${Number(ctx?.journey_day ?? ctx?.program_day ?? ctx?.day) >= 2 ? `- Ongoing mentor relationship: the user is on Day ${Number(ctx?.journey_day ?? ctx?.program_day ?? ctx?.day)} of their looksmax program. If they greet you, greet them warmly as their returning mentor (e.g. "Welcome back! Ready for Day ${Number(ctx?.journey_day ?? ctx?.program_day ?? ctx?.day)}?"). Never sound like you are meeting them for the first time.\n` : ""}
 ${ctx?.face_shape ? `- Face shape consistency: the user's face shape is ${ctx.face_shape}. If you mention face shape, strictly refer to it as ${ctx.face_shape} to match what is displayed on their screen.\n` : ""}
 ${fn ? "" : "- Free conversation: speak in 3 to 4 punchy, natural, authoritative sentences (about 45 to 60 words, lasting 15 to 20 seconds of speech) unless the user clearly asks for a quick answer. First explain the core aesthetic or biological mechanism behind their question, then give a concrete, high-impact action step for today, and end with an engaging follow-up.\n"}
 Exercise and routine rules, strict:
